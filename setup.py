@@ -5,9 +5,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="quantum-debugger",
-    version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    version="0.1.1",
+    author="warlord9004",  # Update with your real name if desired
+    author_email="your.email@example.com",  # Add your email
     description="Interactive debugger and profiler for quantum circuits",
     long_description=long_description,
     long_description_content_type="text/markdown",

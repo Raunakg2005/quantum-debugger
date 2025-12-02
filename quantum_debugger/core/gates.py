@@ -51,12 +51,14 @@ class GateLibrary:
             [0, np.exp(1j * theta)]
         ], dtype=complex)
     
-    # Two-qubit gates
+    # Two-qubit gates (little-endian: qubit 0 is LSB)
+    # CNOT: control=qubit 0, target=qubit 1
+    # Flips target when control is 1: |10⟩↔|11⟩ (indices 1↔3)
     CNOT = np.array([
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 0, 1],
-        [0, 0, 1, 0]
+        [1, 0, 0, 0],  # |00⟩ → |00⟩
+        [0, 0, 0, 1],  # |10⟩ → |11⟩
+        [0, 0, 1, 0],  # |01⟩ → |01⟩
+        [0, 1, 0, 0],  # |11⟩ → |10⟩
     ], dtype=complex)
     
     CZ = np.array([
@@ -74,15 +76,17 @@ class GateLibrary:
     ], dtype=complex)
     
     # Three-qubit gates
+    # Toffoli (CCNOT) for little-endian: controls on qubits 0,1; target is qubit 2
+    # Flips target when both controls are 1 (indices 3↔7 in little-endian)
     TOFFOLI = np.array([
         [1, 0, 0, 0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1],  # |110⟩ ↔ |111⟩
         [0, 0, 0, 0, 1, 0, 0, 0],
         [0, 0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0, 1, 0]
+        [0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0],  # |111⟩ ↔ |110⟩
     ], dtype=complex)
     
     @staticmethod

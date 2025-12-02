@@ -1,0 +1,6 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+recursive-include examples *.py
+recursive-include quantum_debugger *.py

@@ -67,32 +67,64 @@ class QuantumState:
         return self._expand_gate_to_full_space(gate_matrix, target_qubits)
     
     def _expand_gate_to_full_space(self, gate_matrix: np.ndarray, target_qubits: List[int]) -> np.ndarray:
-        """Expand a gate acting on subset of qubits to full Hilbert space"""
-        full_matrix = np.eye(self.dim, dtype=complex)
+        """
+        Expand a gate acting on subset of qubits to full Hilbert space using tensor products.
         
-        # Build permutation that brings target qubits to front
+        This method builds the full gate matrix by inserting identity matrices for 
+        non-target qubits and using Kronecker products to construct the complete operator.
+        
+        Args:
+            gate_matrix: The gate matrix to expand
+            target_qubits: List of qubit indices the gate acts on
+            
+        Returns:
+            Full gate matrix for entire system
+        """
         num_gate_qubits = len(target_qubits)
-        other_qubits = [q for q in range(self.num_qubits) if q not in target_qubits]
         
-        for i in range(self.dim):
-            for j in range(self.dim):
-                # Extract qubit states
-                i_bits = [(i >> k) & 1 for k in range(self.num_qubits)]
-                j_bits = [(j >> k) & 1 for k in range(self.num_qubits)]
+        # Build list of operators for each qubit
+        # For target qubits, we'll later insert the actual gate
+        # For non-target qubits, use identity
+        I = np.eye(2, dtype=complex)
+        
+        # Sort target qubits to understand their positions
+        target_set = set(target_qubits)
+        
+        # Build the full operator using tensor products
+        # We need to handle the gate acting on possibly non-consecutive qubits
+        
+        # Method: Iterate through all basis states and apply gate where appropriate
+        full_matrix = np.zeros((self.dim, self.dim), dtype=complex)
+        
+        for in_idx in range(self.dim):
+            for out_idx in range(self.dim):
+                # Extract individual qubit states
+                in_bits = [(in_idx >> q) & 1 for q in range(self.num_qubits)]
+                out_bits = [(out_idx >> q) & 1 for q in range(self.num_qubits)]
                 
-                # Check if non-target qubits match
-                match = all(i_bits[q] == j_bits[q] for q in other_qubits)
+                # Check if non-target qubits are unchanged
+                non_target_match = all(
+                    in_bits[q] == out_bits[q] 
+                    for q in range(self.num_qubits) 
+                    if q not in target_set
+                )
                 
-                if match:
-                    # Get indices for gate matrix
-                    i_gate = sum(i_bits[target_qubits[k]] << k for k in range(num_gate_qubits))
-                    j_gate = sum(j_bits[target_qubits[k]] << k for k in range(num_gate_qubits))
+                if non_target_match:
+                    # Build gate indices from target qubit states
+                    # Map physical qubit index to gate matrix index
+                    gate_in_idx = 0
+                    gate_out_idx = 0
                     
-                    full_matrix[i, j] = gate_matrix[i_gate, j_gate]
-                else:
-                    full_matrix[i, j] = 0.0
+                    for k, qubit in enumerate(target_qubits):
+                        # Qubit k in the gate corresponds to target_qubits[k] in the system
+                        gate_in_idx |= (in_bits[qubit] << k)
+                        gate_out_idx |= (out_bits[qubit] << k)
+                    
+                    # Get the matrix element from the gate
+                    full_matrix[out_idx, in_idx] = gate_matrix[gate_out_idx, gate_in_idx]
         
         return full_matrix
+
     
     def measure(self, qubit: int) -> int:
         """
@@ -173,16 +205,24 @@ class QuantumState:
         """
         if self.num_qubits != 2:
             # More complex check needed for >2 qubits
-            return True  # Conservative assumption
+            # For now, use entropy as heuristic
+            return self.entropy() > 0.1
         
-        # Reshape state vector to 2x2 matrix
+        # For 2 qubits: reshape state vector to 2x2 matrix
+        # State is |ψ⟩ = α|00⟩ + β|01⟩ + γ|10⟩ + δ|11⟩
+        # Separable if can be written as (a|0⟩ + b|1⟩) ⊗ (c|0⟩ + d|1⟩)
+        # This means the 2x2 matrix has rank 1
+        
         state_matrix = self.state_vector.reshape(2, 2)
         
         # Check if matrix has rank 1 (separable) or rank 2 (entangled)
         singular_values = np.linalg.svd(state_matrix, compute_uv=False)
         
-        # If only one significant singular value, state is separable
-        return not (singular_values[1] < 1e-10)
+        # If second singular value is small, state is separable (rank 1)
+        # Use relative threshold to handle numerical precision
+        threshold = 1e-10 * max(singular_values)
+        return singular_values[1] > threshold
+
     
     def bloch_vector(self, qubit: int = 0) -> Tuple[float, float, float]:
         """
