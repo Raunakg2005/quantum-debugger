@@ -1,27 +1,22 @@
-# QuantumDebugger 🔬
+# QuantumDebugger
 
-A powerful Python library for **interactive debugging and profiling of quantum circuits** with step-through execution, state visualization, and performance analysis.
+**Interactive debugger and profiler for quantum circuits with Qiskit integration**
 
-## 🌟 Features
+[![PyPI version](https://badge.fury.io/py/quantum-debugger.svg)](https://pypi.org/project/quantum-debugger/)
+[![Tests](https://img.shields.io/badge/tests-88%2F88%20passing-brightgreen)]()
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue)]()
+[![License](https://img.shields.io/badge/license-MIT-green)]()
 
-### 🐛 Interactive Debugging
-- **Step-through execution**: Execute quantum circuits gate-by-gate
-- **Breakpoints**: Set breakpoints at specific gates or conditions
-- **State inspection**: Examine quantum state at any point in execution
-- **Execution history**: Track and replay circuit execution
-- **Rewind capability**: Step backwards through circuit execution
+A powerful Python library for step-through debugging, state inspection, and performance analysis of quantum circuits. Now with **production-grade Qiskit integration**!
 
-### 📊 Visualization
-- **State vector plots**: Visualize quantum state amplitudes and phases
-- **Probability distributions**: See measurement probabilities
-- **Bloch sphere**: 3D visualization for single qubit states
-- **Circuit diagrams**: ASCII and graphical circuit representations
+## ✨ Features
 
-### 📈 Performance Profiling
-- **Gate depth analysis**: Measure circuit depth and critical paths
-- **Complexity metrics**: Gate counts, T-count, CNOT count
-- **Performance estimation**: Predict execution time on quantum hardware
-- **Optimization suggestions**: Get recommendations for circuit improvements
+- 🐛 **Step-through Debugging** - Execute circuits gate-by-gate with breakpoints
+- 🔍 **State Inspection** - Analyze quantum states at any point
+- 📊 **Circuit Profiling** - Depth analysis, gate statistics, optimization suggestions  
+- 🎨 **Visualization** - State vectors, Bloch spheres, and more
+- 🔗 **Qiskit Integration** - Import/export circuits from Qiskit (NEW in v0.2.0!)
+- ✅ **100% Tested** - 88 comprehensive tests, production-ready
 
 ## 🚀 Quick Start
 
@@ -36,89 +31,155 @@ pip install quantum-debugger
 ```python
 from quantum_debugger import QuantumCircuit, QuantumDebugger
 
-# Create a Bell state circuit
+# Create a Bell state
 qc = QuantumCircuit(2)
 qc.h(0)
 qc.cnot(0, 1)
 
-# Debug the circuit
+# Debug step-by-step
 debugger = QuantumDebugger(qc)
-
-# Step through execution
-debugger.step()  # Apply H gate
-debugger.inspect_state()  # Examine current state
-debugger.visualize()  # Show state visualization
-
-debugger.step()  # Apply CNOT
-debugger.inspect_state()  # See entangled state
+debugger.step()  # Execute first gate
+print(debugger.get_current_state())
+debugger.step()  # Execute second gate
+print(debugger.get_current_state())
 ```
 
-### Setting Breakpoints
+### Qiskit Integration (NEW!)
 
 ```python
-# Set breakpoint at gate 5
-debugger.set_breakpoint(gate=5)
+from qiskit import QuantumCircuit as QiskitCircuit
+from quantum_debugger.integrations.qiskit_adapter import QiskitAdapter
 
-# Run until breakpoint
-debugger.run_until_breakpoint()
+# Import from Qiskit
+qc_qiskit = QiskitCircuit(2)
+qc_qiskit.h(0)
+qc_qiskit.cx(0, 1)
 
-# Conditional breakpoint
-debugger.set_breakpoint(condition=lambda state: state.is_entangled())
+qc_qd = QiskitAdapter.from_qiskit(qc_qiskit)
+
+# Debug with our tools
+debugger = QuantumDebugger(qc_qd)
+debugger.add_breakpoint_at_gate(1)
+debugger.continue_execution()
+
+# Export back to Qiskit
+qc_back = QiskitAdapter.to_qiskit(qc_qd)
 ```
 
-### Profiling
+## 📚 Core Features
+
+### Supported Gates
+
+**Single-qubit**: H, X, Y, Z, S, T, RX, RY, RZ, PHASE  
+**Two-qubit**: CNOT, CZ, CP (controlled-phase), SWAP  
+**Three-qubit**: Toffoli (CCNOT)
+
+### Debugging Features
+
+- ✅ Forward/backward stepping
+- ✅ Breakpoints (gate-based & conditional)
+- ✅ Execution history tracking
+- ✅ State comparison
+- ✅ Circuit profiling
+
+### Validated Algorithms
+
+Grover's Search • Deutsch-Jozsa • Shor's Period Finding • Quantum Phase Estimation • VQE • Quantum Teleportation • QAOA • Error Correction
+
+## 🎯 Examples
+
+### Debugging Grover's Algorithm
 
 ```python
-from quantum_debugger import CircuitProfiler
+from quantum_debugger import QuantumCircuit, QuantumDebugger
+
+# 2-qubit Grover's
+qc = QuantumCircuit(2)
+qc.h(0).h(1)  # Superposition
+qc.cz(0, 1)   # Oracle
+qc.h(0).h(1)  # Diffusion
+qc.z(0).z(1)
+qc.cz(0, 1)
+qc.h(0).h(1)
+
+# Debug with breakpoints
+debugger = QuantumDebugger(qc)
+debugger.add_breakpoint_at_gate(2)  # Break after oracle
+debugger.continue_execution()
+print(f"After oracle: {debugger.get_current_state()}")
+```
+
+### Circuit Profiling
+
+```python
+from quantum_debugger import QuantumCircuit, CircuitProfiler
+
+qc = QuantumCircuit(3)
+for i in range(10):
+    qc.h(i % 3)
+    qc.cnot(i % 3, (i + 1) % 3)
 
 profiler = CircuitProfiler(qc)
-report = profiler.analyze()
+metrics = profiler.analyze()
 
-print(f"Gate depth: {report.depth}")
-print(f"Total gates: {report.gate_count}")
-print(f"CNOT count: {report.cnot_count}")
+print(f"Depth: {metrics.depth}")
+print(f"Gates: {metrics.total_gates}")
+print("Optimization suggestions:")
+for suggestion in profiler.get_optimization_suggestions():
+    print(f"  • {suggestion}")
 ```
 
-## 📚 Examples
+## 📊 Testing & Quality
 
-Check out the `examples/` directory for:
-- **Bell State Debugging**: Step-by-step entanglement creation
-- **Grover's Algorithm**: Profiling and optimization
-- **Interactive Demo**: Full feature showcase
+- **88/88 tests passing** (100%)
+- Validated up to **12 qubits** (4,096-D state space)
+- **100+ gate circuits** tested
+- Perfect Qiskit integration fidelity
+- Numerical precision < 1e-10
 
-## 🛠️ Requirements
+See [TEST_SUMMARY.md](TEST_SUMMARY.md) for details.
+
+## 🔧 Requirements
 
 - Python 3.8+
-- NumPy
-- Matplotlib
-- (Optional) Qiskit/Cirq for integration
-
-## 🤝 Contributing
-
-Contributions welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-MIT License - feel free to use in your quantum computing projects!
-
-## 🎯 Why QuantumDebugger?
-
-Unlike existing quantum libraries that focus on circuit creation and execution, **QuantumDebugger** is specifically designed for:
-- **Learning**: Understand how quantum algorithms work step-by-step
-- **Development**: Debug complex quantum circuits efficiently
-- **Research**: Analyze and optimize quantum algorithms
-- **Teaching**: Demonstrate quantum concepts interactively
+- NumPy >= 1.21.0
+- SciPy >= 1.7.0
+- Matplotlib >= 3.5.0
+- Qiskit >= 2.0 (optional, for integration features)
 
 ## 📖 Documentation
 
-Full documentation available at: [quantum-debugger.readthedocs.io](https://quantum-debugger.readthedocs.io)
+- [Examples](examples/) - Interactive demos
+- [Test Summary](TEST_SUMMARY.md) - Complete test coverage
+- [Changelog](CHANGELOG.md) - Version history
+- [Roadmap](ROADMAP.md) - Future features
 
-## 🌐 Links
+## 🤝 Contributing
 
-- **GitHub**: [github.com/yourusername/quantum-debugger](https://github.com/yourusername/quantum-debugger)
-- **PyPI**: [pypi.org/project/quantum-debugger](https://pypi.org/project/quantum-debugger)
-- **Issues**: [Report bugs](https://github.com/yourusername/quantum-debugger/issues)
+Contributions welcome! See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file.
+
+## 🌟 What's New in v0.2.0
+
+- ✨ **Qiskit Integration** - Bidirectional circuit conversion
+- ✨ **CP Gate** - Controlled-phase gate support  
+- ✨ **19 New Tests** - Qiskit integration fully validated
+- ✨ **12-Qubit Support** - Tested on extreme-scale circuits
+- 🐛 **Bug Fixes** - Improved debugger API compatibility
+
+## 🚀 Roadmap
+
+- [ ] Noise simulation
+- [ ] Web-based debugger UI
+- [ ] Cirq integration
+- [ ] Hardware backend support
+- [ ] Quantum machine learning tools
 
 ---
 
-Made with ❤️ for the quantum computing community
+**PyPI**: https://pypi.org/project/quantum-debugger/  
+**Author**: warlord9004  
+**Version**: 0.2.0

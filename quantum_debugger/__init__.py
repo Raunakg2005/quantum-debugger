@@ -5,18 +5,38 @@ A powerful Python library for step-through debugging, state inspection,
 and performance analysis of quantum circuits.
 """
 
-__version__ = "0.1.0"
-__author__ = "Your Name"
+__version__ = "0.2.0"
+__author__ = "warlord9004"
 __license__ = "MIT"
 
-from quantum_debugger.core.circuit import QuantumCircuit
-from quantum_debugger.core.quantum_state import QuantumState
-from quantum_debugger.debugger.debugger import QuantumDebugger
-from quantum_debugger.profiler.profiler import CircuitProfiler
+from .core.circuit import QuantumCircuit
+from .core.quantum_state import QuantumState
+from .core.gates import GateLibrary
+from .debugger.debugger import QuantumDebugger
+from .debugger.breakpoints import Breakpoint, BreakpointManager
+from .debugger.inspector import StateInspector
+from .profiler.profiler import CircuitProfiler
+from .profiler.metrics import CircuitMetrics
+from .visualization.state_viz import StateVisualizer
+from .visualization.bloch_sphere import BlochSphere
+
+# Optional integrations
+try:
+    from .integrations import QiskitAdapter
+    __all_integrations__ = ['QiskitAdapter']
+except ImportError:
+    __all_integrations__ = []
 
 __all__ = [
-    "QuantumCircuit",
-    "QuantumState",
-    "QuantumDebugger",
-    "CircuitProfiler",
-]
+    'QuantumCircuit',
+    'QuantumState',
+    'GateLibrary',
+    'QuantumDebugger',
+    'Breakpoint',
+    'BreakpointManager',
+    'StateInspector',
+    'CircuitProfiler',
+    'CircuitMetrics',
+    'StateVisualizer',
+    'BlochSphere',
+] + __all_integrations__

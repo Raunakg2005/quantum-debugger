@@ -88,6 +88,10 @@ class QuantumCircuit:
         """Apply CZ (controlled-Z) gate"""
         return self._add_gate('CZ', GateLibrary.CZ, [control, target])
     
+    def cp(self, theta: float, control: int, target: int):
+        """Apply controlled-phase gate"""
+        return self._add_gate('CP', GateLibrary.CP(theta), [control, target], {'theta': theta})
+    
     def swap(self, qubit1: int, qubit2: int):
         """Apply SWAP gate"""
         return self._add_gate('SWAP', GateLibrary.SWAP, [qubit1, qubit2])

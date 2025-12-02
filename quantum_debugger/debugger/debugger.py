@@ -144,6 +144,18 @@ class QuantumDebugger:
         """Remove all breakpoints"""
         self.breakpoints.clear()
     
+    def add_breakpoint_at_gate(self, gate_index: int):
+        """Add breakpoint at specific gate index"""
+        return self.set_breakpoint(gate=gate_index, description=f"Breakpoint at gate {gate_index}")
+    
+    def continue_execution(self):
+        """Continue execution until end (alias for run_to_end)"""
+        return self.run_to_end()
+    
+    def get_current_state(self):
+        """Get current quantum state (alias for get_state)"""
+        return self.get_state()
+    
     def inspect_state(self) -> Dict:
         """
         Get detailed information about current state
