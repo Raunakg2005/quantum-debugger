@@ -45,8 +45,8 @@ setup(
     },
     keywords="quantum computing debugging profiling quantum-circuit visualization",
     project_urls={
-        "Bug Reports": "https://github.com/yourusername/quantum-debugger/issues",
-        "Source": "https://github.com/yourusername/quantum-debugger",
-        "Documentation": "https://quantum-debugger.readthedocs.io",
+        "Bug Reports": "https://github.com/Raunakg2005/quantum-debugger/issues",
+        "Source": "https://github.com/Raunakg2005/quantum-debugger",
+        "Documentation": "https://quantum-debugger.readthedocs.io/",
     },
 )
