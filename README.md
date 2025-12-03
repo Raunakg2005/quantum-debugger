@@ -6,6 +6,8 @@
 [![Tests](https://img.shields.io/badge/tests-88%2F88%20passing-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
+[![Documentation](https://img.shields.io/badge/docs-readthedocs-blue)](https://quantum-debugger.readthedocs.io/)
+
 
 A powerful Python library for step-through debugging, state inspection, and performance analysis of quantum circuits. Now with **production-grade Qiskit integration**!
 
