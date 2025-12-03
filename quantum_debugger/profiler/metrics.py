@@ -27,13 +27,13 @@ class CircuitMetrics:
         
         # Special counts
         self.single_qubit_gates = sum(
-            1 for g in self.circuit.gates if g.num_qubits == 1
+            1 for g in self.circuit.gates if len(g.qubits) == 1
         )
         self.two_qubit_gates = sum(
-            1 for g in self.circuit.gates if g.num_qubits == 2
+            1 for g in self.circuit.gates if len(g.qubits) == 2
         )
         self.three_qubit_gates = sum(
-            1 for g in self.circuit.gates if g.num_qubits == 3
+            1 for g in self.circuit.gates if len(g.qubits) == 3
         )
         
         self.cnot_count = self.gate_counts.get('CNOT', 0) + self.gate_counts.get('CX', 0)

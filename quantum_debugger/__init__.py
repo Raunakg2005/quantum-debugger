@@ -5,7 +5,7 @@ A powerful Python library for step-through debugging, state inspection,
 and performance analysis of quantum circuits.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "warlord9004"
 __license__ = "MIT"
 

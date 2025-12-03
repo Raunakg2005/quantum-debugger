@@ -74,6 +74,8 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+/examples/Quantum_Computing_Lab.ipynb
+/examples/Quantum_Lab_ANSWER_KEY.ipynb
 
 # IPython
 profile_default/
