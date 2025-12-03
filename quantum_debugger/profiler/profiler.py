@@ -86,7 +86,7 @@ class CircuitProfiler:
         for q in range(self.circuit.num_qubits):
             sequence = []
             for i, gate in enumerate(self.circuit.gates):
-                if gate.qubits == [q] and gate.num_qubits == 1:
+                if gate.qubits == [q] and len(gate.qubits) == 1:
                     sequence.append(i)
                 else:
                     if len(sequence) >= 2:
