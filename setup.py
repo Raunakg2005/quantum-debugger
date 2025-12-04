@@ -5,13 +5,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="quantum-debugger",
-    version="0.2.2",
-    author="warlord9004",  # Update with your real name if desired
-    author_email="your.email@example.com",  # Add your email
-    description="Interactive debugger and profiler for quantum circuits",
+    version="0.3.0",
+    author="warlord9004",
+    author_email="your.email@example.com",
+    description="Interactive debugger and profiler for quantum circuits with realistic noise simulation",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/quantum-debugger",
+    url="https://github.com/Raunakg2005/quantum-debugger",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -43,7 +43,7 @@ setup(
             "sphinx>=4.5.0",
         ],
     },
-    keywords="quantum computing debugging profiling quantum-circuit visualization",
+    keywords="quantum computing debugging profiling quantum-circuit visualization noise-simulation",
     project_urls={
         "Bug Reports": "https://github.com/Raunakg2005/quantum-debugger/issues",
         "Source": "https://github.com/Raunakg2005/quantum-debugger",

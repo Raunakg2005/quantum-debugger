@@ -9,18 +9,42 @@
 [![Documentation](https://img.shields.io/badge/docs-readthedocs-blue)](https://quantum-debugger.readthedocs.io/)
 
 
-A powerful Python library for step-through debugging, state inspection, and performance analysis of quantum circuits. Now with **production-grade Qiskit integration**!
+A powerful Python library for step-through debugging, state inspection, and performance analysis of quantum circuits. Now with **realistic noise simulation** and **production-grade Qiskit integration**!
 
-## ✨ Features
+## Features
 
-- 🐛 **Step-through Debugging** - Execute circuits gate-by-gate with breakpoints
-- 🔍 **State Inspection** - Analyze quantum states at any point
-- 📊 **Circuit Profiling** - Depth analysis, gate statistics, optimization suggestions  
-- 🎨 **Visualization** - State vectors, Bloch spheres, and more
-- 🔗 **Qiskit Integration** - Import/export circuits from Qiskit (NEW in v0.2.0!)
-- ✅ **100% Tested** - 88 comprehensive tests, production-ready
+- Step-through Debugging - Execute circuits gate-by-gate with breakpoints
+- State Inspection - Analyze quantum states at any point
+- Circuit Profiling - Depth analysis, gate statistics, optimization suggestions  
+- Visualization - State vectors, Bloch spheres, and more
+- **Noise Simulation** - Realistic hardware noise models (NEW in v0.3.0!)
+- Qiskit Integration - Import/export circuits from Qiskit
+- 100% Tested - 177 comprehensive tests, production-ready
 
-## 🚀 Quick Start
+##What's New in v0.3.0
+
+**Realistic Quantum Noise Simulation**
+
+```python
+from quantum_debugger import QuantumCircuit
+from quantum_debugger.noise import IBM_PERTH_2025
+
+# Simulate on IBM hardware
+qc = QuantumCircuit(2, noise_model=IBM_PERTH_2025.noise_model)
+qc.h(0).cnot(0, 1)
+results = qc.run(shots=1000)
+print(f"Fidelity: {results['fidelity']:.4f}")  # ~0.995
+```
+
+**Features:**
+- 4 noise models (Depolarizing, Amplitude/Phase Damping, Thermal Relaxation)
+- 4 hardware profiles (IBM, Google, IonQ, Rigetti with 2025 specs)
+- Automatic fidelity tracking
+- Validated against Qiskit Aer
+
+See [NOISE_TUTORIAL.md](NOISE_TUTORIAL.md) and [DOCUMENTATION.md](DOCUMENTATION.md).
+
+## Quick Start
 
 ### Installation
 
@@ -131,12 +155,12 @@ for suggestion in profiler.get_optimization_suggestions():
     print(f"  • {suggestion}")
 ```
 
-## 📊 Testing & Quality
+## Testing & Quality
 
-- **88/88 tests passing** (100%)
+- **177/177 tests passing** (100%)
 - Validated up to **12 qubits** (4,096-D state space)
 - **100+ gate circuits** tested
-- Perfect Qiskit integration fidelity
+- Qiskit Aer validation complete
 - Numerical precision < 1e-10
 
 See [TEST_SUMMARY.md](TEST_SUMMARY.md) for details.
@@ -164,17 +188,23 @@ Contributions welcome! See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 MIT License - see [LICENSE](LICENSE) file.
 
-## 🌟 What's New in v0.2.0
+## What's New
 
-- ✨ **Qiskit Integration** - Bidirectional circuit conversion
-- ✨ **CP Gate** - Controlled-phase gate support  
-- ✨ **19 New Tests** - Qiskit integration fully validated
-- ✨ **12-Qubit Support** - Tested on extreme-scale circuits
-- 🐛 **Bug Fixes** - Improved debugger API compatibility
+**v0.3.0** (December 2024)
+- Realistic noise simulation (4 models)
+- Hardware profiles (IBM, Google, IonQ, Rigetti)
+- Qiskit Aer validation
+- 89 new tests
 
-## 🚀 Roadmap
+**v0.2.0**
+- Qiskit Integration - Bidirectional circuit conversion
+- CP Gate - Controlled-phase gate support  
+- 19 New Tests - Qiskit integration fully validated
+- 12-Qubit Support - Tested on extreme-scale circuits
 
-- [ ] Noise simulation
+## Roadmap
+
+- [x] Noise simulation (v0.3.0)
 - [ ] Web-based debugger UI
 - [ ] Cirq integration
 - [ ] Hardware backend support
@@ -183,5 +213,6 @@ MIT License - see [LICENSE](LICENSE) file.
 ---
 
 **PyPI**: https://pypi.org/project/quantum-debugger/  
+**Documentation**: [DOCUMENTATION.md](DOCUMENTATION.md)  
 **Author**: warlord9004  
-**Version**: 0.2.0
+**Version**: 0.3.0

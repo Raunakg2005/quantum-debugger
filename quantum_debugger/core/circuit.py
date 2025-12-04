@@ -3,7 +3,8 @@ Quantum circuit representation and execution
 """
 
 import numpy as np
-from typing import List, Optional, Union
+import warnings
+from typing import List, Optional, Union, Any
 from quantum_debugger.core.quantum_state import QuantumState
 from quantum_debugger.core.gates import GateLibrary, Gate
 
@@ -11,19 +12,61 @@ from quantum_debugger.core.gates import GateLibrary, Gate
 class QuantumCircuit:
     """Quantum circuit with gate operations"""
     
-    def __init__(self, num_qubits: int, num_classical: int = 0):
+    def __init__(self, num_qubits: int, num_classical: int = 0, 
+                 noise_model: Optional[Any] = None,
+                 noise_simulation_method: str = 'density_matrix'):
         """
         Initialize a quantum circuit
         
         Args:
             num_qubits: Number of quantum bits
             num_classical: Number of classical bits for measurements
+            noise_model: Optional noise model (NoiseModel or HardwareProfile)
+            noise_simulation_method: 'density_matrix', 'stochastic', or 'approximate'
         """
         self.num_qubits = num_qubits
         self.num_classical = num_classical if num_classical > 0 else num_qubits
         self.gates: List[Gate] = []
         self.measurements: List[tuple] = []
         self._initial_state = QuantumState(num_qubits)
+        
+        # Noise configuration
+        self.noise_model = noise_model
+        self.noise_simulation_method = noise_simulation_method
+        self.apply_noise = noise_model is not None
+        
+        # Memory warning for large circuits with density matrices
+        if self.apply_noise and num_qubits > 10 and noise_simulation_method == 'density_matrix':
+            memory_mb = (2**num_qubits)**2 * 16 / (1024**2)  # complex128 = 16 bytes
+            warnings.warn(
+                f"Density matrix for {num_qubits} qubits requires ~{memory_mb:.1f}MB memory. "
+                f"Consider noise_simulation_method='stochastic' for circuits with >10 qubits.",
+                ResourceWarning,
+                stacklevel=2
+            )
+    
+    def set_noise_model(self, noise_model: Optional[Any], 
+                        noise_simulation_method: str = 'density_matrix'):
+        """
+        Set or update noise model for the circuit
+        
+        Args:
+            noise_model: NoiseModel instance, HardwareProfile, or None to disable
+            noise_simulation_method: 'density_matrix', 'stochastic', or 'approximate'
+        """
+        self.noise_model = noise_model
+        self.noise_simulation_method = noise_simulation_method
+        self.apply_noise = noise_model is not None
+        
+        # Update memory warning if needed
+        if self.apply_noise and self.num_qubits > 10 and noise_simulation_method == 'density_matrix':
+            memory_mb = (2**self.num_qubits)**2 * 16 / (1024**2)
+            warnings.warn(
+                f"Density matrix for {self.num_qubits} qubits requires ~{memory_mb:.1f}MB memory. "
+                f"Consider noise_simulation_method='stochastic' for circuits with >10 qubits.",
+                ResourceWarning,
+                stacklevel=2
+            )
     
     def _add_gate(self, name: str, matrix: np.ndarray, qubits: Union[int, List[int]], params: dict = None):
         """Add a gate to the circuit"""
@@ -166,11 +209,16 @@ class QuantumCircuit:
         
         Args:
             shots: Number of times to run the circuit
-            initial_state: Optional initial state (defaults to |0...0>)
+            initial_state: Optional initial state (defaults to |0...0⟩)
             
         Returns:
             Dictionary with measurement results and statistics
         """
+        # Route to noisy execution if noise model is enabled
+        if self.apply_noise:
+            return self._run_with_noise(shots, initial_state)
+        
+        # Standard noiseless execution
         results = []
         
         for _ in range(shots):
@@ -197,6 +245,76 @@ class QuantumCircuit:
             'counts': counts,
             'results': results,
             'shots': shots
+        }
+    
+    def _run_with_noise(self, shots: int, initial_state: Optional[QuantumState]) -> dict:
+        """
+        Execute circuit with noise simulation
+        
+        Args:
+            shots: Number of times to run the circuit
+            initial_state: Optional initial state
+            
+        Returns:
+            Dictionary with measurement results, statistics, and fidelity
+        """
+        from quantum_debugger.noise import QuantumState as NoisyQuantumState
+        
+        results = []
+        fidelities = []
+        
+        for _ in range(shots):
+            # Initialize with density matrix
+            if initial_state:
+                # Convert existing state to density matrix if needed
+                if hasattr(initial_state, 'density_matrix') and initial_state.density_matrix is not None:
+                    state = initial_state.copy()
+                else:
+                    state = NoisyQuantumState(self.num_qubits, 
+                                            state_vector=initial_state.state_vector, 
+                                            use_density_matrix=True)
+            else:
+                state = NoisyQuantumState(self.num_qubits, use_density_matrix=True)
+            
+            # Store reference state for fidelity calculation
+            reference_state = NoisyQuantumState(self.num_qubits, use_density_matrix=True)
+            for gate in self.gates:
+                reference_state.apply_gate(gate.matrix, gate.qubits)
+            
+            # Apply gates with noise
+            for gate in self.gates:
+                # Apply the gate
+                state.apply_gate(gate.matrix, gate.qubits)
+                
+                # Apply noise after the gate
+                if self.noise_model:
+                    self.noise_model.apply(state, qubits=gate.qubits)
+            
+            # Calculate fidelity
+            if hasattr(state, 'density_matrix') and state.density_matrix is not None:
+                # Fidelity = Tr(ρ_ideal * ρ_noisy)
+                fidelity = np.trace(reference_state.density_matrix @ state.density_matrix).real
+                fidelities.append(fidelity)
+            
+            # Perform measurements
+            classical_bits = [0] * self.num_classical
+            for qubit, classical_bit in self.measurements:
+                classical_bits[classical_bit] = state.measure(qubit)
+            
+            results.append(classical_bits)
+        
+        # Analyze results
+        counts = {}
+        for result in results:
+            key = ''.join(map(str, result))
+            counts[key] = counts.get(key, 0) + 1
+        
+        return {
+            'counts': counts,
+            'results': results,
+            'shots': shots,
+            'fidelity': np.mean(fidelities) if fidelities else 1.0,
+            'fidelity_std': np.std(fidelities) if fidelities else 0.0
         }
     
     def get_statevector(self, initial_state: Optional[QuantumState] = None) -> QuantumState:
