@@ -14,7 +14,8 @@ class QuantumCircuit:
     
     def __init__(self, num_qubits: int, num_classical: int = 0, 
                  noise_model: Optional[Any] = None,
-                 noise_simulation_method: str = 'density_matrix'):
+                 noise_simulation_method: str = 'density_matrix',
+                 backend: str = 'auto'):
         """
         Initialize a quantum circuit
         
@@ -23,12 +24,14 @@ class QuantumCircuit:
             num_classical: Number of classical bits for measurements
             noise_model: Optional noise model (NoiseModel or HardwareProfile)
             noise_simulation_method: 'density_matrix', 'stochastic', or 'approximate'
+            backend: Computational backend ('auto', 'numpy', 'numba', 'sparse')
         """
         self.num_qubits = num_qubits
         self.num_classical = num_classical if num_classical > 0 else num_qubits
         self.gates: List[Gate] = []
         self.measurements: List[tuple] = []
-        self._initial_state = QuantumState(num_qubits)
+        self.backend = backend
+        self._initial_state = QuantumState(num_qubits, backend=backend)
         
         # Noise configuration
         self.noise_model = noise_model
@@ -222,7 +225,7 @@ class QuantumCircuit:
         results = []
         
         for _ in range(shots):
-            state = initial_state.copy() if initial_state else QuantumState(self.num_qubits)
+            state = initial_state.copy() if initial_state else QuantumState(self.num_qubits, backend=self.backend)
             
             # Apply all gates
             for gate in self.gates:

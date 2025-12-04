@@ -207,8 +207,150 @@ RIGETTI_ASPEN_2025 = HardwareProfile(
 )
 
 
+# ============================================================================
+# AWS Braket Devices
+# ============================================================================
+
+IONQ_HARMONY_AWS = HardwareProfile(
+    name="IonQ Harmony (AWS Braket)",
+    version="2024.4",
+    date_updated="2024-12-01",
+    t1=10.0,    # 10 seconds (ion trap advantage!)
+    t2=1.0,     # 1 second
+    gate_times={
+        '1q': 10e-6,    # 10 microseconds
+        '2q': 200e-6    # 200 microseconds
+    },
+    gate_error_1q=0.0001,   # 0.01% (99.99% fidelity)
+    gate_error_2q=0.005,    # 0.5% (99.5% fidelity)
+    readout_error=0.01,     # 1.0%
+    source_url="https://aws.amazon.com/braket/quantum-computers/ionq/",
+    description="IonQ Harmony ion trap quantum computer on AWS Braket. "
+                "11 qubits with all-to-all connectivity. Industry-leading fidelities."
+)
+
+RIGETTI_ASPEN_M3_AWS = HardwareProfile(
+    name="Rigetti Aspen-M-3 (AWS Braket)",
+    version="2024.4",
+    date_updated="2024-12-01",
+    t1=50e-6,   # 50 microseconds
+    t2=35e-6,   # 35 microseconds
+    gate_times={
+        '1q': 40e-9,    # 40 nanoseconds
+        '2q': 200e-9    # 200 nanoseconds
+    },
+    gate_error_1q=0.0005,   # 0.05%
+    gate_error_2q=0.015,    # 1.5%
+    readout_error=0.03,     # 3.0%
+    source_url="https://aws.amazon.com/braket/quantum-computers/rigetti/",
+    description="Rigetti Aspen-M-3 superconducting processor on AWS Braket. "
+                "80 qubits in octagonal topology. Fast gate times."
+)
+
+
+# ============================================================================
+# Azure Quantum Devices
+# ============================================================================
+
+QUANTINUUM_H1_AZURE = HardwareProfile(
+    name="Quantinuum H1-1 (Azure Quantum)",
+    version="2024.4",
+    date_updated="2024-12-01",
+    t1=100.0,   # 100 seconds (best in class!)
+    t2=10.0,    # 10 seconds
+    gate_times={
+        '1q': 5e-6,     # 5 microseconds
+        '2q': 150e-6    # 150 microseconds
+    },
+    gate_error_1q=0.00005,  # 0.005% (99.995% fidelity!)
+    gate_error_2q=0.002,    # 0.2% (99.8% fidelity)
+    readout_error=0.001,    # 0.1% (99.9% readout)
+    source_url="https://azure.microsoft.com/en-us/products/quantum",
+    description="Quantinuum H1-1 trapped-ion system on Azure Quantum. "
+                "20 qubits with all-to-all connectivity. Industry-leading gate fidelities."
+)
+
+HONEYWELL_H2_AZURE = HardwareProfile(
+    name="Honeywell H2 (Azure Quantum)",
+    version="2024.3",
+    date_updated="2024-11-15",
+    t1=50.0,    # 50 seconds
+    t2=5.0,     # 5 seconds
+    gate_times={
+        '1q': 8e-6,     # 8 microseconds
+        '2q': 180e-6    # 180 microseconds
+    },
+    gate_error_1q=0.0001,   # 0.01%
+    gate_error_2q=0.003,    # 0.3%
+    readout_error=0.005,    # 0.5%
+    source_url="https://azure.microsoft.com/en-us/products/quantum",
+    description="Honeywell H2 trapped-ion quantum computer (legacy Quantinuum). "
+                "12 qubits with excellent coherence times and gate fidelities."
+)
+
+
+# ============================================================================
+# 2025 Hardware Updates
+# ============================================================================
+
+IBM_HERON_2025 = HardwareProfile(
+    name="IBM Heron (2025)",
+    version="2025.2",
+    date_updated="2025-02-01",
+    t1=250e-6,  # 250 microseconds (improved!)
+    t2=180e-6,  # 180 microseconds (improved!)
+    gate_times={
+        '1q': 30e-9,    # 30 nanoseconds
+        '2q': 150e-9    # 150 nanoseconds (faster!)
+    },
+    gate_error_1q=0.0001,   # 0.01% (much improved!)
+    gate_error_2q=0.004,    # 0.4% (5x better than Perth!)
+    readout_error=0.01,     # 1.0%
+    source_url="https://www.ibm.com/quantum/blog/quantum-roadmap-2025",
+    description="IBM Heron processor (2025). 133 qubits with tunable couplers. "
+                "Breakthrough improvements in two-qubit gate fidelities."
+)
+
+GOOGLE_WILLOW_2025 = HardwareProfile(
+    name="Google Willow (2025)",
+    version="2025.1",
+    date_updated="2025-01-15",
+    t1=100e-6,  # 100 microseconds (state-of-the-art!)
+    t2=80e-6,   # 80 microseconds
+    gate_times={
+        '1q': 25e-9,    # 25 nanoseconds
+        '2q': 120e-9    # 120 nanoseconds (improved!)
+    },
+    gate_error_1q=0.0001,   # 0.01%
+    gate_error_2q=0.0025,   # 0.25% (breakthrough!)
+    readout_error=0.015,    # 1.5%
+    source_url="https://quantumai.google/discover/our-research/publications",
+    description="Google Willow quantum chip (2025). 105 qubits. "
+                "Achieved below-threshold error correction. Revolutionary coherence times."
+)
+
+IONQ_FORTE_2025 = HardwareProfile(
+    name="IonQ Forte (2025)",
+    version="2025.1",
+    date_updated="2025-01-10",
+    t1=20.0,    # 20 seconds
+    t2=2.0,     # 2 seconds
+    gate_times={
+        '1q': 5e-6,     # 5 microseconds
+        '2q': 100e-6    # 100 microseconds (faster!)
+    },
+    gate_error_1q=0.00005,  # 0.005% (99.995%)
+    gate_error_2q=0.001,    # 0.1% (99.9%!)
+    readout_error=0.005,    # 0.5%
+    source_url="https://ionq.com/resources/ionq-forte-datasheet",
+    description="IonQ Forte next-generation trapped-ion system. 32 algorithmic qubits. "
+                "All-to-all connectivity. Record-breaking two-qubit gate fidelities."
+)
+
+
 # Convenience dictionary for easy access
 HARDWARE_PROFILES = {
+    # Existing 2025 profiles
     'ibm_perth': IBM_PERTH_2025,
     'ibm': IBM_PERTH_2025,  # Alias
     'google_sycamore': GOOGLE_SYCAMORE_2025,
@@ -217,6 +359,26 @@ HARDWARE_PROFILES = {
     'ionq': IONQ_ARIA_2025,  # Alias
     'rigetti_aspen': RIGETTI_ASPEN_2025,
     'rigetti': RIGETTI_ASPEN_2025,  # Alias
+    
+    # AWS Braket devices
+    'ionq_harmony_aws': IONQ_HARMONY_AWS,
+    'ionq_harmony': IONQ_HARMONY_AWS,
+    'rigetti_aspen_m3_aws': RIGETTI_ASPEN_M3_AWS,
+    'rigetti_aspen_m3': RIGETTI_ASPEN_M3_AWS,
+    
+    # Azure Quantum devices
+    'quantinuum_h1': QUANTINUUM_H1_AZURE,
+    'quantinuum': QUANTINUUM_H1_AZURE,  # Alias
+    'honeywell_h2': HONEYWELL_H2_AZURE,
+    'honeywell': HONEYWELL_H2_AZURE,
+    
+    # 2025 hardware updates
+    'ibm_heron': IBM_HERON_2025,
+    'ibm_heron_2025': IBM_HERON_2025,
+    'google_willow': GOOGLE_WILLOW_2025,
+    'google_willow_2025': GOOGLE_WILLOW_2025,
+    'ionq_forte': IONQ_FORTE_2025,
+    'ionq_forte_2025': IONQ_FORTE_2025,
 }
 
 

@@ -204,11 +204,18 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ## Roadmap
 
-- [x] Noise simulation (v0.3.0)
+**v0.4.0** (Q1 2025) - Advanced Features
+- [ ] Noise mitigation (zero-noise extrapolation, PEC)
+- [ ] GPU acceleration (CuPy backend)
 - [ ] Web-based debugger UI
+- [ ] More hardware profiles (AWS Braket, Azure Quantum)
+- [ ] Quantum ML utilities (VQE, QAOA helpers)
+
+**v0.5.0+** (Future)
 - [ ] Cirq integration
-- [ ] Hardware backend support
-- [ ] Quantum machine learning tools
+- [ ] Real hardware backend support
+- [ ] Advanced visualization dashboards
+- [ ] Quantum error correction tools
 
 ---
 

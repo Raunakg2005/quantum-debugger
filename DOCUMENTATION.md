@@ -1,6 +1,6 @@
 # QuantumDebugger Documentation
 
-**Version:** 0.3.0  
+**Version:** 0.4.0 (Phase 1-2 Complete)  
 **Repository:** [github.com/Raunakg2005/quantum-debugger](https://github.com/Raunakg2005/quantum-debugger)
 
 ---
@@ -118,6 +118,120 @@ composite = CompositeNoise([
 ```
 
 See [NOISE_TUTORIAL.md](NOISE_TUTORIAL.md) for complete documentation.
+
+---
+
+## Hardware Profiles
+
+**NEW in v0.4.0 Phase 3:** Realistic quantum hardware specifications from major providers
+
+### Available Profiles (11 total)
+
+**AWS Braket:**
+- IonQ Harmony - 11 qubits, 99.99% fidelity
+- Rigetti Aspen-M-3 - 80 qubits, fast gates
+
+**Azure Quantum:**
+- Quantinuum H1-1 - 20 qubits, 99.995% fidelity (best in class!)
+- Honeywell H2 - 12 qubits, excellent coherence
+
+**2025 Updates:**
+- IBM Heron - 133 qubits, 5x better gates
+- Google Willow - 105 qubits, breakthrough specs
+- IonQ Forte - 32 qubits, record 99.9% two-qubit fidelity
+
+**Original:**
+- IBM Perth, Google Sycamore, IonQ Aria, Rigetti Aspen
+
+### Basic Usage
+
+```python
+from quantum_debugger import QuantumCircuit
+from quantum_debugger.noise import IONQ_HARMONY_AWS, IBM_HERON_2025
+
+# Simulate on IonQ Harmony (AWS Braket)
+circuit = QuantumCircuit(3, noise_model=IONQ_HARMONY_AWS.noise_model)
+circuit.h(0)
+for i in range(2):
+    circuit.cnot(i, i+1)
+result = circuit.run(shots=1000)
+print(f"IonQ fidelity: {result['fidelity']:.4f}")
+
+# Compare with IBM Heron 2025
+circuit2 = QuantumCircuit(3, noise_model=IBM_HERON_2025.noise_model)
+# ... same gates ...
+result2 = circuit2.run(shots=1000)
+print(f"IBM fidelity: {result2['fidelity']:.4f}")
+```
+
+### Profile by Name
+
+```python
+from quantum_debugger.noise import get_hardware_profile
+
+profile = get_hardware_profile('quantinuum_h1')
+circuit = QuantumCircuit(2, noise_model=profile.noise_model)
+```
+
+See [HARDWARE_PROFILES.md](HARDWARE_PROFILES.md) for complete specifications.
+
+---
+
+## Zero-Noise Extrapolation (ZNE)
+
+**NEW in v0.4.0:** Mitigate noise errors using Zero-Noise Extrapolation.
+
+### Basic Usage
+
+```python
+from quantum_debugger import QuantumCircuit
+from quantum_debugger.noise import NoiseModel
+from quantum_debugger.mitigation import apply_zne
+
+# Create noisy circuit
+circuit = QuantumCircuit(2)
+circuit.h(0).cnot(0, 1)
+
+noise = NoiseModel()
+noise.add_depolarizing_error(0.01, [0, 1])
+
+# Apply ZNE
+mitigated_result = apply_zne(
+    circuit,
+    noise_model=noise,
+    scale_factors=[1, 2, 3],
+    extrapolation='richardson',
+    shots=1000
+)
+```
+
+### Extrapolation Methods
+
+- `'richardson'` - Richardson extrapolation (recommended)
+- `'linear'` - Linear extrapolation
+- `'exponential'` - Exponential fit
+- `'adaptive'` - Adapts to data quality
+- `'weighted'` - Weighted ensemble
+
+### Advanced: Observable Measurement
+
+```python
+def measure_energy(circuit):
+    result = circuit.run(shots=1000)
+    # Calculate observable expectation value
+    return expectation_value
+
+mitigated_energy = apply_zne(
+    circuit,
+    noise_model=noise,
+    scale_factors=[1, 2, 3, 5],
+    extrapolation='exponential',
+    shots=2000,
+    observable_fn=measure_energy
+)
+```
+
+See [ZNE_TUTORIAL.md](ZNE_TUTORIAL.md) for detailed examples.
 
 ---
 

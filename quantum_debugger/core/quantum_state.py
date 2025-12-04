@@ -10,7 +10,7 @@ import copy
 class QuantumState:
     """Represents a quantum state vector"""
     
-    def __init__(self, num_qubits: int, state_vector: Optional[np.ndarray] = None):
+    def __init__(self, num_qubits: int, state_vector: Optional[np.ndarray] = None, backend='auto'):
         """
         Initialize a quantum state
         
@@ -20,6 +20,10 @@ class QuantumState:
         """
         self.num_qubits = num_qubits
         self.dim = 2 ** num_qubits
+        
+        # Get computational backend
+        from quantum_debugger.backends import get_backend
+        self.backend = get_backend(backend)
         
         if state_vector is not None:
             if len(state_vector) != self.dim:
