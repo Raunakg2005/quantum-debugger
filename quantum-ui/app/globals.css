@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #000000;
+    color: white;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0, 217, 255, 0.03) 50px, rgba(0, 217, 255, 0.03) 51px),
+      repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 217, 255, 0.03) 50px, rgba(0, 217, 255, 0.03) 51px),
+      radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(0, 255, 65, 0.05) 0%, transparent 50%);
+  }
+}
+
+@layer components {
+
+  /* Glassmorphism Card */
+  .glass-card {
+    backdrop-filter: blur(12px);
+    background-color: rgba(0, 217, 255, 0.03);
+    @apply bg-black/40 backdrop-blur-md border rounded-lg;
+  }
+
+  /* Quantum Glow Effect */
+  .quantum-glow {
+    filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.8));
+  }
+
+  /* Animated Gradient Border */
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(135deg, #00D9FF, #00FF41, #FF6B35);
+    padding: 2px;
+    border-radius: 0.75rem;
+  }
+
+  .gradient-border-content {
+    background-color: #000000;
+    border-radius: 0.75rem;
+  }
+}
+
+@layer utilities {
+
+  /* Quantum Animations */
+  .animate-quantum-pulse {
+    animation: quantumPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes quantumPulse {
+
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+
+  /* Particle Effect */
+  .particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 240, 255, 1) 0%, rgba(0, 240, 255, 0.4) 50%, transparent 70%);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+    animation: float 6s ease-in-out infinite;
+  }
+}
