@@ -2,8 +2,8 @@
 
 # -- Project information -----------------------------------------------------
 project = 'QuantumDebugger'
-copyright = '2025, warlord9004'
-author = 'warlord9004'
+copyright = '2025, Raunak Kumar Gupta - K.J. Somaiya School of Engineering'
+author = 'Raunak Kumar Gupta'
 release = '0.4.0'
 
 # -- General configuration ---------------------------------------------------

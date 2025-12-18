@@ -373,6 +373,7 @@ MIT License - see [LICENSE](LICENSE) file.
 ---
 
 **PyPI:** https://pypi.org/project/quantum-debugger/  
-**Author:** warlord9004  
+**Author:** Raunak Kumar Gupta  
+**Institution:** K.J. Somaiya School of Engineering  
 **Version:** 0.4.0  
 **Python:** 3.9+
