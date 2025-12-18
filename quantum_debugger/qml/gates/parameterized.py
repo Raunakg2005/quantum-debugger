@@ -6,45 +6,56 @@ Gates with trainable parameters for variational quantum algorithms.
 """
 
 import numpy as np
-from typing import Optional, Callable
+from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 class ParameterizedGate:
-    """Base class for quantum gates with trainable parameters
+    """
+    Base class for parameterized quantum gates.
+    
+    A parameterized gate is a quantum gate whose operation depends on one or more
+    continuous parameters (e.g., rotation angles). These gates are the foundation
+    of variational quantum algorithms like VQE and QAOA.
     
     Attributes:
-        target (int): Target qubit index
-        parameter (float): Gate parameter (typically rotation angle in radians)
-        trainable (bool): Whether this parameter can be trained
-        gradient (Optional[float]): Computed gradient value
-        name (str): Gate name
+        target (int): Index of the qubit this gate acts on
+        parameter (float): The parameter value (e.g., rotation angle)
+        trainable (bool): Whether this parameter should be optimized during training
+        gradient (float): Stored gradient value for optimization
+        name (str): Name of the gate (e.g., "RX", "RY", "RZ")
     
-    Example:
-        >>> gate = RXGate(target=0, parameter=np.pi/4, trainable=True)
-        >>> matrix = gate.matrix()
-        >>> gate.parameter = np.pi/2  # Update parameter
+    Examples:
+        >>> from quantum_debugger.qml import RXGate
+        >>> import numpy as np
+        >>> 
+        >>> # Create a trainable RX gate
+        >>> rx = RXGate(target=0, parameter=np.pi/4, trainable=True)
+        >>> 
+        >>> # Get the unitary matrix
+        >>> U = rx.matrix()
+        >>> 
+        >>> # Update the parameter
+        >>> rx.parameter = np.pi/2
+        >>> 
+        >>> # Store gradient from optimizer
+        >>> rx.gradient = 0.123
     """
     
-    def __init__(
-        self,
-        target: int,
-        parameter: float = 0.0,
-        trainable: bool = True,
-        name: str = "Parameterized"
-    ):
-        """Initialize parameterized gate
+    def __init__(self, target: int, parameter: float, trainable: bool = True, name: str = "Param"):
+        """
+        Initialize a parameterized gate.
         
         Args:
-            target: Target qubit index (0-indexed)
-            parameter: Initial parameter value in radians
-            trainable: Whether parameter can be optimized
-            name: Gate name for debugging
-        
+            target: Qubit index (0-based)
+            parameter: Initial parameter value (typically an angle in radians)
+            trainable: If True, this parameter will be optimized during training
+            name: Gate name for debugging/logging
+            
         Raises:
-            ValueError: If target qubit index is negative
+            ValueError: If target is negative
         """
         if target < 0:
             raise ValueError(f"Target qubit index must be non-negative, got {target}")
@@ -52,50 +63,46 @@ class ParameterizedGate:
         self.target = target
         self.parameter = parameter
         self.trainable = trainable
-        self.gradient: Optional[float] = None
+        self.gradient = None
         self.name = name
         
-        logger.debug(f"Created {self.name} gate on qubit {target} with θ={parameter:.4f}")
+        logger.info(f"Created {name}(target={target}, θ={parameter:.4f}, trainable={trainable})")
     
     def matrix(self) -> np.ndarray:
-        """Return the unitary matrix for this gate
+        """
+        Return the unitary matrix for this gate.
         
         Returns:
-            2x2 unitary matrix
-        
-        Raises:
-            NotImplementedError: Must be implemented by subclass
+            2x2 complex numpy array representing the gate's unitary matrix
         """
-        raise NotImplementedError(f"{self.__class__.__name__} must implement matrix()")
+        raise NotImplementedError("Subclasses must implement matrix()")
     
     def __repr__(self) -> str:
         return f"{self.name}(target={self.target}, θ={self.parameter:.4f}, trainable={self.trainable})"
 
 
 class RXGate(ParameterizedGate):
-    """Rotation around X-axis: RX(θ)
+    """
+    Rotation gate around the X-axis.
     
-    Matrix:
-        RX(θ) = [[cos(θ/2),    -i*sin(θ/2)],
-                 [-i*sin(θ/2),  cos(θ/2)   ]]
+    The RX gate performs a rotation around the X-axis of the Bloch sphere.
     
-    Effect:
-        Rotates qubit state around X-axis of Bloch sphere
+    Matrix representation:
+        RX(θ) = cos(θ/2) * I - i*sin(θ/2) * X
+              = [[cos(θ/2),    -i*sin(θ/2)],
+                 [-i*sin(θ/2),  cos(θ/2)  ]]
     
-    Example:
-        >>> rx = RXGate(target=0, parameter=np.pi)  # X gate
-        >>> rx_half = RXGate(target=1, parameter=np.pi/2)
+    Examples:
+        >>> rx = RXGate(target=0, parameter=np.pi)
+        >>> U = rx.matrix()
+        >>> # RX(π) = -iX (Pauli X with phase)
     """
     
-    def __init__(self, target: int, parameter: float = 0.0, trainable: bool = True):
-        super().__init__(target, parameter, trainable, name="RX")
+    def __init__(self, target: int, parameter: float, trainable: bool = True):
+        super().__init__(target, parameter, trainable, "RX")
     
     def matrix(self) -> np.ndarray:
-        """Return RX(θ) matrix
-        
-        Returns:
-            2x2 complex unitary matrix
-        """
+        """Compute RX rotation matrix."""
         theta = self.parameter
         cos_half = np.cos(theta / 2)
         sin_half = np.sin(theta / 2)
@@ -107,28 +114,27 @@ class RXGate(ParameterizedGate):
 
 
 class RYGate(ParameterizedGate):
-    """Rotation around Y-axis: RY(θ)
+    """
+    Rotation gate around the Y-axis.
     
-    Matrix:
-        RY(θ) = [[cos(θ/2),  -sin(θ/2)],
+    The RY gate performs a rotation around the Y-axis of the Bloch sphere.
+    
+    Matrix representation:
+        RY(θ) = cos(θ/2) * I - i*sin(θ/2) * Y
+              = [[cos(θ/2),  -sin(θ/2)],
                  [sin(θ/2),   cos(θ/2)]]
     
-    Effect:
-        Rotates qubit state around Y-axis of Bloch sphere
-    
-    Example:
-        >>> ry = RYGate(target=0, parameter=np.pi/4)
+    Examples:
+        >>> ry = RYGate(target=0, parameter=np.pi/2)
+        >>> U = ry.matrix()
+        >>> # Creates superposition (|0⟩ + |1⟩)/√2
     """
     
-    def __init__(self, target: int, parameter: float = 0.0, trainable: bool = True):
-        super().__init__(target, parameter, trainable, name="RY")
+    def __init__(self, target: int, parameter: float, trainable: bool = True):
+        super().__init__(target, parameter, trainable, "RY")
     
     def matrix(self) -> np.ndarray:
-        """Return RY(θ) matrix
-        
-        Returns:
-            2x2 real unitary matrix
-        """
+        """Compute RY rotation matrix."""
         theta = self.parameter
         cos_half = np.cos(theta / 2)
         sin_half = np.sin(theta / 2)
@@ -140,29 +146,27 @@ class RYGate(ParameterizedGate):
 
 
 class RZGate(ParameterizedGate):
-    """Rotation around Z-axis: RZ(θ)
+    """
+    Rotation gate around the Z-axis.
     
-    Matrix:
-        RZ(θ) = [[e^(-iθ/2),  0        ],
-                 [0,          e^(iθ/2) ]]
+    The RZ gate performs a rotation around the Z-axis of the Bloch sphere.
+    This is a phase gate that adds relative phase between |0⟩ and |1⟩.
     
-    Effect:
-        Rotates qubit state around Z-axis of Bloch sphere (phase rotation)
+    Matrix representation:
+        RZ(θ) = [[e^(-iθ/2),    0      ],
+                 [   0,      e^(iθ/2) ]]
     
-    Example:
-        >>> rz = RZGate(target=0, parameter=np.pi)  # Z gate
-        >>> s_gate = RZGate(target=1, parameter=np.pi/2)  # S gate
+    Examples:
+        >>> rz = RZGate(target=0, parameter=np.pi/2)
+        >>> U = rz.matrix()
+        >>> # RZ(π/2) is the S gate
     """
     
-    def __init__(self, target: int, parameter: float = 0.0, trainable: bool = True):
-        super().__init__(target, parameter, trainable, name="RZ")
+    def __init__(self, target: int, parameter: float, trainable: bool = True):
+        super().__init__(target, parameter, trainable, "RZ")
     
     def matrix(self) -> np.ndarray:
-        """Return RZ(θ) matrix
-        
-        Returns:
-            2x2 complex diagonal unitary matrix
-        """
+        """Compute RZ rotation matrix."""
         theta = self.parameter
         
         return np.array([

@@ -23,12 +23,14 @@ class TestParameterizedGateBase:
     
     def test_negative_target_raises_error(self):
         """Test that negative target qubit raises ValueError"""
-        with pytest.raises(ValueError, match="non-negative"):
-            ParameterizedGate(target=-1, parameter=0.0)
+        # The base class should validate target
+        # We'll test with RXGate since ParameterizedGate is abstract
+        with pytest.raises(ValueError, match="Target qubit index must be non-negative"):
+            gate = RXGate(target=-1, parameter=0.5)
     
     def test_matrix_not_implemented(self):
         """Test that base class matrix() raises NotImplementedError"""
-        gate = ParameterizedGate(target=0)
+        gate = ParameterizedGate(target=0, parameter=0.5)
         with pytest.raises(NotImplementedError):
             gate.matrix()
     
