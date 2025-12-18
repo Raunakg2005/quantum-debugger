@@ -2,7 +2,7 @@
 
 # -- Project information -----------------------------------------------------
 project = 'QuantumDebugger'
-copyright = '2025, Raunak Kumar Gupta - K.J. Somaiya School of Engineering'
+copyright = '2025, Raunak Kumar Gupta, Supervised by Dr. Vaibhav Prakash Vasani - K.J. Somaiya School of Engineering'
 author = 'Raunak Kumar Gupta'
 release = '0.4.1'
 

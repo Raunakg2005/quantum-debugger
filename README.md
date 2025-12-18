@@ -372,6 +372,14 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
+## 🙏 Acknowledgments
+
+**Author:** Raunak Kumar Gupta  
+**Supervised by:** Dr. Vaibhav Prakash Vasani  
+**Institution:** K.J. Somaiya School of Engineering
+
+---
+
 **PyPI:** https://pypi.org/project/quantum-debugger/  
 **Author:** Raunak Kumar Gupta  
 **Institution:** K.J. Somaiya School of Engineering  
