@@ -1,0 +1,26 @@
+# Docker Compose for using shared MongoDB
+version: '3.8'
+
+services:
+  quantum-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quantum-ui
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_BASE_PATH=/quantum
+      # Replace with your shared MongoDB connection string
+      - MONGODB_URI=mongodb://your-shared-mongo-host:27017/quantum-circuits
+      - PORT=3000
+    networks:
+      - shared-network
+
+# Use external network if MongoDB is in another docker network
+networks:
+  shared-network:
+    external: true
+    name: your-existing-network

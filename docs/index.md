@@ -1,16 +1,25 @@
-# QuantumDebugger Documentation
+# Quantum Debugger Documentation
 
-Welcome to QuantumDebugger's documentation!
+**Version 0.4.0** - Interactive quantum circuit debugger with Quantum Machine Learning
 
-QuantumDebugger is an interactive debugger and profiler for quantum circuits with Qiskit integration.
+Welcome to the documentation for Quantum Debugger, a powerful Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
+
+## What's New in v0.4.0
+
+- **Quantum Machine Learning (QML)** - Complete QML module with VQE, QAOA
+- **Parameterized Gates** - RX, RY, RZ with gradient computation  
+- **Training Framework** - 4 classical optimizers (Adam, SGD, SPSA, RMSprop)
+- **316 Tests** - Comprehensive test coverage (100% passing)
 
 ## Features
 
 - 🐛 Step-through debugging
-- 🔍 State inspection
+- 🔍 State inspection  
 - 📊 Circuit profiling
 - 🔗 Qiskit integration
-- ✅ 88/88 tests passing
+- 🧠 Quantum Machine Learning (NEW!)
+- ⚗️ VQE for molecular chemistry (NEW!)
+- 🎯 QAOA for optimization (NEW!)
 
 ## Quick Start
 
@@ -20,7 +29,7 @@ QuantumDebugger is an interactive debugger and profiler for quantum circuits wit
 pip install quantum-debugger
 ```
 
-### Basic Usage
+### Basic Debugging
 
 ```python
 from quantum_debugger import QuantumCircuit, QuantumDebugger
@@ -36,6 +45,18 @@ debugger.step()
 print(debugger.get_current_state())
 ```
 
+### Quantum Machine Learning
+
+```python
+from quantum_debugger.qml import VQE, h2_hamiltonian, hardware_efficient_ansatz
+
+# VQE for H2 molecule
+H = h2_hamiltonian()
+vqe = VQE(H, hardware_efficient_ansatz, num_qubits=2)
+result = vqe.run(initial_params)
+print(f"Ground state: {result['ground_state_energy']:.6f} Hartree")
+```
+
 ## Contents
 
 ```{toctree}
@@ -43,15 +64,16 @@ print(debugger.get_current_state())
 :caption: User Guide
 
 quickstart
-api
 examples
 ```
 
 ```{toctree}
 :maxdepth: 2
-:caption: Reference
+:caption: API Reference  
 
 modules
+api
+qml_api
 ```
 
 ## Indices and tables

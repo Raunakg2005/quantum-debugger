@@ -4,7 +4,7 @@
 project = 'QuantumDebugger'
 copyright = '2025, warlord9004'
 author = 'warlord9004'
-release = '0.2.0'
+release = '0.4.0'
 
 # -- General configuration ---------------------------------------------------
 extensions = [
