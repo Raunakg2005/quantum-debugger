@@ -4,7 +4,7 @@
 project = 'QuantumDebugger'
 copyright = '2025, Raunak Kumar Gupta - K.J. Somaiya School of Engineering'
 author = 'Raunak Kumar Gupta'
-release = '0.4.0'
+release = '0.4.1'
 
 # -- General configuration ---------------------------------------------------
 extensions = [
