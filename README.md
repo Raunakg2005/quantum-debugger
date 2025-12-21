@@ -3,13 +3,13 @@
 **Interactive debugger, profiler, and quantum machine learning library for quantum circuits**
 
 [![PyPI version](https://badge.fury.io/py/quantum-debugger.svg)](https://pypi.org/project/quantum-debugger/)
-[![Tests](https://img.shields.io/badge/tests-316%2F316%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/tests-656%20passing-brightgreen)](./tests/FINAL_TEST_SUMMARY.md)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 
 A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and **quantum machine learning**. Now with VQE, QAOA, and parameterized quantum circuits!
 
-## ✨ What's New in v0.4.0
+## ✨ What's New in v0.4.2
 
 **Quantum Machine Learning Module** 🚀
 
@@ -30,7 +30,10 @@ print(f"Ground state energy: {result['ground_state_energy']:.6f} Hartree")
 - ✅ **QAOA** (Quantum optimization for MaxCut problems)
 - ✅ **Training Framework** (Adam, SGD, SPSA, RMSprop optimizers)
 - ✅ **Gradient Computation** (Parameter shift rule, finite differences)
-- ✅ **316 comprehensive tests** (100% passing)
+- ✅ **656 comprehensive tests** (all passing ✅)
+- ✅ **Complete pytest migration** (all legacy scripts converted)
+- ✅ **Hardware profiles** (AWS Braket, Azure Quantum, 2025 updates)
+- ✅ **Enhanced backends** (Advanced validation, GPU support)
 
 See full [QML Documentation](#quantum-machine-learning-v040) below.
 
@@ -44,7 +47,7 @@ See full [QML Documentation](#quantum-machine-learning-v040) below.
 - **Noise Simulation** - Realistic hardware noise models
 - **Qiskit Integration** - Import/export circuits from Qiskit
 
-### Quantum Machine Learning (NEW v0.4.0)
+### Quantum Machine Learning (v0.4.0+)
 - **Parameterized Circuits** - Trainable quantum gates
 - **VQE** - Molecular ground state finding
 - **QAOA** - Combinatorial optimization
@@ -309,14 +312,16 @@ See [test files](.) for details.
 ## 📖 Documentation
 
 - **Tutorials:**
-  - [Parameterized Gates Tutorial](tutorials/parameterized_gates_tutorial.md)
-  - [VQE Preparation Guide](tutorials/vqe_preparation.md)
-  - [QAOA Tutorial](tutorials/qaoa_tutorial.md)
+  - [Parameterized Gates Tutorial](./tutorials/parameterized_gates_tutorial.md)
+  - [VQE Preparation Guide](./tutorials/vqe_preparation.md)
+  - [QAOA Tutorial](./tutorials/qaoa_tutorial.md)
+  - [Noise Tutorial](./tutorials/noise_tutorial.md)
+  - [ZNE Tutorial](./tutorials/zne_tutorial.md)
 
 - **Examples:**
-  - [VQE H2 Molecule](examples/vqe_h2_example.py)
-  - [QAOA MaxCut](examples/qaoa_maxcut_example.py)
-  - [Performance Benchmarks](examples/benchmarks.py)
+  - [VQE H2 Molecule](./examples/vqe_h2_example.py)
+  - [QAOA MaxCut](./examples/qaoa_maxcut_example.py)
+  - [QML Basic Example](./examples/qml_basic_example.py)
 
 ## 📈 Version History
 
@@ -358,17 +363,61 @@ See [test files](.) for details.
 - [ ] Quantum error correction tools
 - [ ] Production deployment tools
 
+## 🧪 Testing
+
+**v0.4.2: 656 Comprehensive Tests** ✅
+
+### Test Suite Coverage
+- **Core Tests**: 441 tests (quantum operations, circuits, debugging)
+- **QML Tests**: 139 tests (VQE, QAOA, training, parameterized gates)
+- **Integration**: 76 tests (Cirq, Qiskit, backend validation)
+- **All test files converted to pytest format**
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run specific test suites
+pytest tests/unit/ -v          # Core unit tests
+pytest tests/cirq/ -v          # Cirq integration
+pytest tests/qiskit/ -v        # Qiskit integration
+pytest tests/qml/ -v           # QML tests
+
+# Run with coverage
+pytest tests/ --cov=quantum_debugger --cov-report=html
+
+# Run specific converted tests
+pytest tests/unit/test_backends_advanced.py -v
+pytest tests/unit/test_hardware_profiles_phase3.py -v
+```
+
+### Test Documentation
+- 📊 [Complete Test Summary](./tests/FINAL_TEST_SUMMARY.md) - Full breakdown of all 656 tests
+- 📁 [Test Structure](./tests/README.md) - Organization and conventions
+
+### Test Categories
+1. **Backend Tests** (59 tests) - NumPy, Sparse, GPU backends
+2. **Noise Tests** (64 tests) - Noise models, hardware profiles
+3. **Mitigation Tests** (28 tests) - ZNE, error mitigation
+4. **Hardware Profiles** (18 tests) - AWS Braket, Azure Quantum, 2025 updates
+5. **QML Tests** (139 tests) - VQE, QAOA, training framework
+6. **Integration Tests** (76 tests) - Cirq, Qiskit compatibility
+
 ## 🤝 Contributing
 
 Contributions welcome! Please ensure tests pass:
 
 ```bash
-pytest test_*.py -v
+pytest tests/ -v --tb=short
 ```
+
+See [Testing Section](#testing) for details.
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file.
+MIT License - see [LICENSE](./LICENSE) file.
 
 ---
 
@@ -383,5 +432,5 @@ MIT License - see [LICENSE](LICENSE) file.
 **PyPI:** https://pypi.org/project/quantum-debugger/  
 **Author:** Raunak Kumar Gupta  
 **Institution:** K.J. Somaiya School of Engineering  
-**Version:** 0.4.0  
+**Version:** 0.4.2  
 **Python:** 3.9+

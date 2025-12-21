@@ -1,9 +1,8 @@
 """
-Qiskit integration module for QuantumDebugger
-
-Provides bidirectional conversion between Qiskit and QuantumDebugger circuits.
+Integration modules for connecting with other quantum frameworks
 """
 
 from .qiskit_adapter import QiskitAdapter
+from .cirq_adapter import CirqAdapter
 
-__all__ = ['QiskitAdapter']
+__all__ = ['QiskitAdapter', 'CirqAdapter']

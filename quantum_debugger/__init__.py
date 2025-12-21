@@ -15,7 +15,7 @@ Features:
 Version: 0.4.0-dev
 """
 
-__version__ = "0.4.0-dev"
+__version__ = "0.4.2"
 __author__ = "warlord9004"
 __license__ = "MIT"
 

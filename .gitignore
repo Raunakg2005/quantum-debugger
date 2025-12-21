@@ -1,13 +1,11 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
+.Python
 
 # Distribution / packaging
-.Python
 build/
 develop-eggs/
 dist/
@@ -23,12 +21,13 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+quantum_debugger-*/
 
-# Virtual environments
-venv/
-venv_gpu/
-ENV/
-env/
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
 
 # IDEs
 .vscode/
@@ -41,10 +40,11 @@ env/
 .DS_Store
 Thumbs.db
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+# Virtual environments
+venv/
+venv_gpu/
+env/
+ENV/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -53,3 +53,7 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Documentation builds
+docs/_build/
+site/

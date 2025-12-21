@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="quantum-debugger",
-    version="0.4.1",
+    version="0.4.2",
     author="Raunak Kumar Gupta",
     author_email="raunak.gupta@somaiya.edu",
     description="Interactive quantum circuit debugger and Quantum Machine Learning library with VQE, QAOA, and parameterized gates",
