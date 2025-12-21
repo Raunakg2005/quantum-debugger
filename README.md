@@ -3,7 +3,7 @@
 **Interactive debugger, profiler, and quantum machine learning library for quantum circuits**
 
 [![PyPI version](https://badge.fury.io/py/quantum-debugger.svg)](https://pypi.org/project/quantum-debugger/)
-[![Tests](https://img.shields.io/badge/tests-656%20passing-brightgreen)](./tests/FINAL_TEST_SUMMARY.md)
+[![Tests](https://img.shields.io/badge/tests-656%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 
@@ -312,16 +312,16 @@ See [test files](.) for details.
 ## 📖 Documentation
 
 - **Tutorials:**
-  - [Parameterized Gates Tutorial](./tutorials/parameterized_gates_tutorial.md)
-  - [VQE Preparation Guide](./tutorials/vqe_preparation.md)
-  - [QAOA Tutorial](./tutorials/qaoa_tutorial.md)
-  - [Noise Tutorial](./tutorials/noise_tutorial.md)
-  - [ZNE Tutorial](./tutorials/zne_tutorial.md)
+  - [Parameterized Gates Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/parameterized_gates_tutorial.md)
+  - [VQE Preparation Guide](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/vqe_preparation.md)
+  - [QAOA Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/qaoa_tutorial.md)
+  - [Noise Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/noise_tutorial.md)
+  - [ZNE Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/zne_tutorial.md)
 
 - **Examples:**
-  - [VQE H2 Molecule](./examples/vqe_h2_example.py)
-  - [QAOA MaxCut](./examples/qaoa_maxcut_example.py)
-  - [QML Basic Example](./examples/qml_basic_example.py)
+  - [VQE H2 Molecule](https://github.com/Raunakg2005/quantum-debugger/blob/main/examples/vqe_h2_example.py)
+  - [QAOA MaxCut](https://github.com/Raunakg2005/quantum-debugger/blob/main/examples/qaoa_maxcut_example.py)
+  - [QML Basic Example](https://github.com/Raunakg2005/quantum-debugger/blob/main/examples/qml_basic_example.py)
 
 ## 📈 Version History
 
@@ -394,8 +394,8 @@ pytest tests/unit/test_hardware_profiles_phase3.py -v
 ```
 
 ### Test Documentation
-- 📊 [Complete Test Summary](./tests/FINAL_TEST_SUMMARY.md) - Full breakdown of all 656 tests
-- 📁 [Test Structure](./tests/README.md) - Organization and conventions
+- 📊 [Complete Test Summary](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md) - Full breakdown of all 656 tests
+- 📁 [Test Structure](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/README.md) - Organization and conventions
 
 ### Test Categories
 1. **Backend Tests** (59 tests) - NumPy, Sparse, GPU backends
@@ -417,7 +417,7 @@ See [Testing Section](#testing) for details.
 
 ## 📄 License
 
-MIT License - see [LICENSE](./LICENSE) file.
+MIT License - see [LICENSE](https://github.com/Raunakg2005/quantum-debugger/blob/main/LICENSE) file.
 
 ---
 
