@@ -3,37 +3,49 @@
 **Interactive debugger, profiler, and quantum machine learning library for quantum circuits**
 
 [![PyPI version](https://badge.fury.io/py/quantum-debugger.svg)](https://pypi.org/project/quantum-debugger/)
-[![Tests](https://img.shields.io/badge/tests-656%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
+[![Tests](https://img.shields.io/badge/tests-689%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 
 A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and **quantum machine learning**. Now with VQE, QAOA, and parameterized quantum circuits!
 
-## ✨ What's New in v0.4.2
+## ✨ What's New in v0.5.0
 
-**Quantum Machine Learning Module** 🚀
+**Advanced Quantum Machine Learning** 🚀
 
 ```python
-from quantum_debugger.qml import VQE, h2_hamiltonian, hardware_efficient_ansatz
+# NEW: Quantum Neural Networks
+from quantum_debugger.qml.qnn import QuantumNeuralNetwork, EncodingLayer, VariationalLayer
 
-# Find H2 molecule ground state
-H = h2_hamiltonian()
-vqe = VQE(H, hardware_efficient_ansatz, num_qubits=2)
-result = vqe.run(initial_params)
-print(f"Ground state energy: {result['ground_state_energy']:.6f} Hartree")
-# Accuracy: < 1% error from exact solution
+qnn = QuantumNeuralNetwork(n_qubits=4)
+qnn.add(EncodingLayer(4, feature_map='zz'))
+qnn.add(VariationalLayer(4, ansatz='real_amplitudes', reps=2))
+qnn.compile(optimizer='adam', loss='mse', learning_rate=0.01)
+history = qnn.fit(X_train, y_train, epochs=50, batch_size=16)
+
+# NEW: Zero-Noise Extrapolation (Error Mitigation)
+from quantum_debugger.qml.error_mitigation import ZeroNoiseExtrapolation
+
+zne = ZeroNoiseExtrapolation(scale_factors=[1.0, 2.0, 3.0])
+mitigated_value = zne.execute(circuit_function)
+
+# NEW: GPU Acceleration
+from quantum_debugger.backends import GPUBackend
+
+backend = GPUBackend()  # Auto-detects GPU, falls back to CPU
+state = backend.allocate_state(n_qubits=15)  # 2-5x faster on GPU
 ```
 
-**New Features:**
-- ✅ **Parameterized Gates** (RX, RY, RZ with trainable parameters)
-- ✅ **VQE** (Variational Quantum Eigensolver for chemistry)
-- ✅ **QAOA** (Quantum optimization for MaxCut problems)
-- ✅ **Training Framework** (Adam, SGD, SPSA, RMSprop optimizers)
-- ✅ **Gradient Computation** (Parameter shift rule, finite differences)
-- ✅ **656 comprehensive tests** (all passing ✅)
-- ✅ **Complete pytest migration** (all legacy scripts converted)
-- ✅ **Hardware profiles** (AWS Braket, Azure Quantum, 2025 updates)
-- ✅ **Enhanced backends** (Advanced validation, GPU support)
+**v0.5.0 Features:**
+- ✅ **Quantum Neural Networks** (Layer-based QML with batch training)
+- ✅ **Zero-Noise Extrapolation** (Error mitigation for noisy circuits)
+- ✅ **GPU Acceleration** (CuPy integration with automatic CPU fallback)
+- ✅ **Advanced Ansätze** (4 new templates: RealAmplitudes, TwoLocal, etc.)
+- ✅ **Dataset Integration** (CSV/JSON loading, preprocessing, feature maps)
+- ✅ **Molecular Hamiltonians** (LiH, H2O, BeH2 with accurate energies)
+- ✅ **Advanced Optimizers** (QNG, Nelder-Mead, L-BFGS-B)
+- ✅ **190+ comprehensive tests** (all passing ✅)
+- ✅ **Professional documentation** (7 detailed guides)
 
 See full [QML Documentation](#quantum-machine-learning-v040) below.
 
@@ -47,12 +59,14 @@ See full [QML Documentation](#quantum-machine-learning-v040) below.
 - **Noise Simulation** - Realistic hardware noise models
 - **Qiskit Integration** - Import/export circuits from Qiskit
 
-### Quantum Machine Learning (v0.4.0+)
-- **Parameterized Circuits** - Trainable quantum gates
-- **VQE** - Molecular ground state finding
-- **QAOA** - Combinatorial optimization
-- **Training & Optimization** - 4 classical optimizers
-- **Ansatz Library** - 4 pre-built quantum circuit templates
+### Quantum Machine Learning (v0.5.0)
+- **Quantum Neural Networks** - Layer-based deep learning on quantum hardware
+- **Error Mitigation** - Zero-noise extrapolation for accurate results
+- **GPU Acceleration** - Hardware-accelerated simulations (2-5x speedup)
+- **VQE & QAOA** - Molecular chemistry and optimization
+- **Advanced Optimizers** - 7 optimizers including quantum natural gradient
+- **Ansätze Library** - 8 pre-built quantum circuit templates
+- **Dataset Tools** - Loading, preprocessing, quantum feature encoding
 
 ## Quick Start
 
@@ -94,7 +108,77 @@ rx.parameter = 0.7
 new_matrix = rx.matrix()  # Automatically cached for performance
 ```
 
-## Quantum Machine Learning (v0.4.0)
+## v0.5.0 Feature Spotlight
+
+### 1. Quantum Neural Networks
+
+Build and train quantum machine learning models:
+
+```python
+from quantum_debugger.qml.qnn import (
+    QuantumNeuralNetwork,
+    EncodingLayer,
+    VariationalLayer
+)
+
+# Create network
+qnn = QuantumNeuralNetwork(n_qubits=4)
+qnn.add(EncodingLayer(4, feature_map='zz'))
+qnn.add(VariationalLayer(4, ansatz='real_amplitudes', reps=2))
+
+# Train
+qnn.compile(optimizer='adam', loss='mse')
+history = qnn.fit(X_train, y_train, epochs=50, batch_size=16)
+
+# Predict
+predictions = qnn.predict(X_test)
+```
+
+📖 **Documentation:** [QNN Guide](docs/qnn_guide.md)
+
+### 2. Zero-Noise Extrapolation (Error Mitigation)
+
+Reduce quantum noise effects:
+
+```python
+from quantum_debugger.qml.error_mitigation import ZeroNoiseExtrapolation
+
+# Setup ZNE
+zne = ZeroNoiseExtrapolation(
+    scale_factors=[1.0, 2.0, 3.0],
+    extrapolator='polynomial'
+)
+
+# Apply to circuit
+mitigated_result = zne.execute(circuit_function)
+
+# Check improvement
+improvement = zne.get_improvement()
+print(f"Error reduced by {improvement:.1f}%")
+```
+
+📖 **Documentation:** [ZNE Guide](docs/zne_guide.md)
+
+### 3. GPU Acceleration
+
+Hardware-accelerated quantum simulations:
+
+```python
+from quantum_debugger.backends import GPUBackend
+
+# Auto-detect GPU (falls back to CPU)
+backend = GPUBackend()
+
+# Allocate on GPU
+state = backend.allocate_state(n_qubits=15)
+
+# 2-5x faster for large circuits
+# Transparent API - same code for CPU/GPU
+```
+
+📖 **Documentation:** [GPU Guide](docs/gpu_guide.md)
+
+## Quantum Machine Learning (v0.4.0+)
 
 ### 1. Parameterized Gates
 

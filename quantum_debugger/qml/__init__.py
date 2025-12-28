@@ -1,31 +1,27 @@
 """
-Quantum Machine Learning Module
-================================
-
-Parameterized gates, variational algorithms, and quantum ML tools.
+Quantum Machine Learning (QML) Module
 """
 
-from .gates.parameterized import RXGate, RYGate, RZGate, ParameterizedGate
+# Core gates
+from .gates.parameterized import ParameterizedGate, RXGate, RYGate, RZGate
+
+# Algorithms
 from .algorithms.vqe import VQE
 from .algorithms.qaoa import QAOA
-from .hamiltonians.molecular import h2_hamiltonian, lih_hamiltonian
-from .ansatz import (
-    hardware_efficient_ansatz,
-    real_amplitudes_ansatz,
-    ucc_singlet_ansatz,
-    alternating_layered_ansatz,
-    num_parameters
-)
+
+# Hamiltonians
+from .hamiltonians.molecular import h2_hamiltonian
+
+# Note: Ansatz and Optimizers should be imported directly from their submodules
+# to avoid circular dependencies: 
+#   from quantum_debugger.qml.ansatz import real_amplitudes
+#   from quantum_debugger.qml.optimizers import AdamOptimizer
 
 __all__ = [
     # Gates
-    'RXGate', 'RYGate', 'RZGate', 'ParameterizedGate',
+    'ParameterizedGate', 'RXGate', 'RYGate', 'RZGate',
     # Algorithms
     'VQE', 'QAOA',
     # Hamiltonians
-    'h2_hamiltonian', 'lih_hamiltonian',
-    # Ansatz
-    'hardware_efficient_ansatz', 'real_amplitudes_ansatz',
-    'ucc_singlet_ansatz', 'alternating_layered_ansatz',
-    'num_parameters'
+    'h2_hamiltonian',
 ]

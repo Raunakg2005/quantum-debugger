@@ -123,3 +123,14 @@ if HAS_SPARSE:
 
 if HAS_CUPY:
     __all__.append('CuPyBackend')
+
+# Add GPU backend
+try:
+    from .gpu_backend import (
+        GPUBackend,
+        get_optimal_backend,
+        benchmark_backends
+    )
+    __all__.extend(['GPUBackend', 'get_optimal_backend', 'benchmark_backends'])
+except ImportError:
+    pass
