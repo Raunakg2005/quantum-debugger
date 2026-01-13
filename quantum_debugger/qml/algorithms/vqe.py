@@ -8,6 +8,7 @@ Find ground state energies of molecules using variational principles.
 import numpy as np
 from typing import Callable, Dict, List, Optional
 import logging
+import inspect
 
 logger = logging.getLogger(__name__)
 
@@ -18,35 +19,11 @@ class VQE:
     
     Finds the ground state energy of a Hamiltonian using a parameterized
     quantum circuit (ansatz) and classical optimization.
-    
-    Algorithm:
-        1. Prepare trial state |ψ(θ)⟩ using ansatz
-        2. Measure energy E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩
-        3. Classically optimize θ to minimize E(θ)
-        4. Repeat until convergence
-    
-    Attributes:
-        hamiltonian: System Hamiltonian matrix
-        ansatz_builder: Function that builds ansatz from parameters
-        num_qubits: Number of qubits
-        optimizer: Optimization method ('COBYLA', 'L-BFGS-B', etc.)
-        max_iterations: Maximum optimization iterations
-        history: List of (parameters, energy) from each iteration
-        
-    Examples:
-        >>> from quantum_debugger.qml import VQE
-        >>> from quantum_debugger.qml.hamiltonians import h2_hamiltonian
-        >>> from quantum_debugger.qml.ansatz import hardware_efficient_ansatz
-        >>> 
-        >>> H = h2_hamiltonian()
-        >>> vqe = VQE(hamiltonian=H, ansatz_builder=hardware_efficient_ansatz, num_qubits=2)
-        >>> result = vqe.run(initial_params=np.random.rand(4))
-        >>> print(f"Ground state energy: {result['ground_state_energy']:.6f} Hartree")
     """
     
     def __init__(
         self,
-        hamiltonian: np.ndarray,
+        hamiltonian,
         ansatz_builder: Callable,
         num_qubits: int,
         optimizer: str = 'COBYLA',
@@ -56,24 +33,41 @@ class VQE:
         Initialize VQE.
         
         Args:
-            hamiltonian: Hamiltonian matrix (2^n × 2^n)
-            ansatz_builder: Function(params, num_qubits) -> gates
+            hamiltonian: Hamiltonian matrix (2^n × 2^n) or tuple
+            ansatz_builder: Ansatz builder function
             num_qubits: Number of qubits
-            optimizer: Classical optimizer ('COBYLA', 'L-BFGS-B', 'SLSQP')
+            optimizer: Classical optimizer
             max_iterations: Maximum iterations for optimizer
         """
-        self.hamiltonian = hamiltonian
-        self.ansatz_builder = ansatz_builder
         self.num_qubits = num_qubits
+        
+        # Convert Hamiltonian to numpy array if needed
+        if isinstance(hamiltonian, (tuple, list)):
+            self.hamiltonian = np.array(hamiltonian)
+        else:
+            self.hamiltonian = hamiltonian
+        
+        # Handle ansatz builders that need to be called with num_qubits first
+        # (like hardware_efficient_ansatz)
+        sig = inspect.signature(ansatz_builder)
+        params = list(sig.parameters.keys())
+        
+        if len(params) >= 1 and params[0] in ['num_qubits', 'n_qubits']:
+            # This is a factory function, call it to get actual builder
+            self.ansatz_builder = ansatz_builder(num_qubits)
+        else:
+            # This is already the builder function
+            self.ansatz_builder = ansatz_builder
+        
         self.optimizer = optimizer
         self.max_iterations = max_iterations
         self.history = []
         
         # Validate Hamiltonian size
         expected_size = 2 ** num_qubits
-        if hamiltonian.shape != (expected_size, expected_size):
+        if self.hamiltonian.shape != (expected_size, expected_size):
             raise ValueError(
-                f"Hamiltonian size {hamiltonian.shape} doesn't match "
+                f"Hamiltonian size {self.hamiltonian.shape} doesn't match "
                 f"{num_qubits} qubits (expected {expected_size}×{expected_size})"
             )
         
@@ -81,21 +75,15 @@ class VQE:
     
     def cost_function(self, params: np.ndarray) -> float:
         """
-        Compute energy expectation value for given parameters.
+        Compute energy expectation value.
         
         E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩
-        
-        Args:
-            params: Circuit parameters
-            
-        Returns:
-            Energy expectation value (real number)
         """
         # Build circuit with ansatz
-        gates = self.ansatz_builder(params, self.num_qubits)
+        circuit = self.ansatz_builder(params)
         
-        # Simulate circuit to get statevector
-        statevector = self._simulate_circuit(gates)
+        # Get statevector from circuit
+        statevector = circuit.get_statevector().state_vector
         
         # Compute expectation value
         energy = np.real(statevector.conj().T @ self.hamiltonian @ statevector)
@@ -110,84 +98,15 @@ class VQE:
         
         return energy
     
-    def _simulate_circuit(self, gates: List) -> np.ndarray:
-        """
-        Simulate quantum circuit and return statevector.
-        
-        Args:
-            gates: List of parameterized gates
-            
-        Returns:
-            Statevector |ψ⟩
-        """
-        # Initialize state to |00...0⟩
-        state = np.zeros(2 ** self.num_qubits, dtype=complex)
-        state[0] = 1.0
-        
-        # Apply each gate
-        for gate in gates:
-            state = self._apply_gate(state, gate)
-        
-        return state
-    
-    def _apply_gate(self, state: np.ndarray, gate) -> np.ndarray:
-        """
-        Apply a single-qubit gate to the statevector.
-        
-        Args:
-            state: Current statevector
-            gate: Parameterized gate (RX, RY, RZ)
-            
-        Returns:
-            New statevector after applying gate
-        """
-        n = self.num_qubits
-        target = gate.target
-        U = gate.matrix()
-        
-        # Build full gate matrix for n qubits
-        # U_full = I ⊗ ... ⊗ U ⊗ ... ⊗ I
-        full_gate = np.eye(1, dtype=complex)
-        
-        for q in range(n):
-            if q == target:
-                full_gate = np.kron(full_gate, U)
-            else:
-                full_gate = np.kron(full_gate, np.eye(2, dtype=complex))
-        
-        # Apply gate
-        new_state = full_gate @ state
-        
-        return new_state
-    
     def run(self, initial_params: np.ndarray, method: Optional[str] = None) -> Dict:
-        """
-        Run VQE optimization.
-        
-        Args:
-            initial_params: Starting parameter values
-            method: Override optimizer method
-            
-        Returns:
-            Dictionary with results:
-            - 'optimal_params': Best parameters found
-            - 'ground_state_energy': Minimum energy
-            - 'iterations': Number of iterations
-            - 'history': Full optimization history
-            - 'success': Whether optimization converged
-        """
+        """Run VQE optimization."""
         from scipy.optimize import minimize
         
-        # Clear history
         self.history = []
-        
-        # Use provided method or default
         opt_method = method if method is not None else self.optimizer
         
         logger.info(f"Starting VQE optimization with {opt_method}")
-        logger.info(f"Initial parameters: {initial_params}")
         
-        # Run optimization
         result = minimize(
             fun=self.cost_function,
             x0=initial_params,
@@ -197,7 +116,6 @@ class VQE:
         
         logger.info(f"VQE completed: E = {result.fun:.6f}")
         
-        # Extract iteration count (different optimizers have different attributes)
         iterations = getattr(result, 'nit', getattr(result, 'nfev', len(self.history)))
         
         return {
@@ -210,11 +128,6 @@ class VQE:
         }
     
     def exact_ground_state(self) -> float:
-        """
-        Compute exact ground state energy by diagonalization.
-        
-        Returns:
-            Exact ground state energy
-        """
+        """Compute exact ground state energy by diagonalization."""
         eigenvalues = np.linalg.eigvalsh(self.hamiltonian)
         return eigenvalues[0]

@@ -46,6 +46,9 @@ venv_gpu/
 env/
 ENV/
 
+paper 1/
+paper 2/
+
 # Jupyter
 .ipynb_checkpoints/
 
