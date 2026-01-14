@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="quantum-debugger",
-    version="0.5.0",
+    version="0.6.0",
     author="Raunak Kumar Gupta",
     author_email="raunak.gupta@somaiya.edu",
-    description="Interactive quantum circuit debugger and Quantum Machine Learning library with VQE, QAOA, and parameterized gates",
+    description="Comprehensive quantum machine learning library with AutoML, GPU acceleration, advanced algorithms (QGANs, Quantum RL), transfer learning, and multi-framework support (Qiskit, PennyLane, Cirq, TensorFlow, PyTorch)",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Raunakg2005/quantum-debugger",
@@ -18,6 +18,7 @@ setup(
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
         "Topic :: Scientific/Engineering :: Physics",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Software Development :: Debuggers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
@@ -33,8 +34,30 @@ setup(
         "matplotlib>=3.5.0",
     ],
     extras_require={
-        "qiskit": ["qiskit>=2.0.0"],
+        # Framework integrations
+        "qiskit": ["qiskit>=1.0.0"],
+        "pennylane": ["pennylane>=0.30.0"],
         "cirq": ["cirq>=1.0.0"],
+        "tensorflow": ["tensorflow>=2.10.0"],
+        "pytorch": ["torch>=1.13.0"],
+        
+        # Hardware backends (require user API keys)
+        "ibm": ["qiskit-ibm-runtime>=0.15.0"],  # FREE tier available
+        "aws": ["amazon-braket-sdk>=1.50.0", "boto3>=1.28.0"],  # PAID service
+        
+        # All frameworks
+        "all": [
+            "qiskit>=1.0.0",
+            "pennylane>=0.30.0",
+            "cirq>=1.0.0",
+            "tensorflow>=2.10.0",
+            "torch>=1.13.0",
+            "scikit-learn>=1.0.0",
+            "qiskit-ibm-runtime>=0.15.0",
+            "amazon-braket-sdk>=1.50.0"
+        ],
+        
+        # Development
         "dev": [
             "pytest>=7.0.0",
             "pytest-cov>=3.0.0",

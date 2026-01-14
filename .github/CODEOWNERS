@@ -1,0 +1,17 @@
+* @Raunakg2005
+
+# Core library
+/quantum_debugger/ @Raunakg2005
+
+# QML modules
+/quantum_debugger/qml/ @Raunakg2005
+
+# Tests
+/tests/ @Raunakg2005
+
+# Documentation
+/docs/ @Raunakg2005
+*.md @Raunakg2005
+
+# CI/CD
+/.github/ @Raunakg2005

@@ -134,3 +134,28 @@ try:
     __all__.extend(['GPUBackend', 'get_optimal_backend', 'benchmark_backends'])
 except ImportError:
     pass
+
+# Add hardware backends (quantum computers)
+try:
+    from .ibm_backend import IBMQuantumBackend, IBM_AVAILABLE
+    from .aws_backend import AWSBraketBackend, AWS_AVAILABLE
+    from .base_backend import QuantumBackend
+    
+    __all__.extend(['IBMQuantumBackend', 'AWSBraketBackend', 'QuantumBackend'])
+    
+    def get_available_backends():
+        """Get list of available quantum backends."""
+        backends = []
+        if IBM_AVAILABLE:
+            backends.append('ibm')
+        if AWS_AVAILABLE:
+            backends.append('aws')
+        return backends
+    
+    __all__.append('get_available_backends')
+    
+except ImportError:
+    # Hardware backends not installed
+    def get_available_backends():
+        return []
+    __all__.append('get_available_backends')

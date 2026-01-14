@@ -18,16 +18,109 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 quantum_debugger-*/
 
-# Testing
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 .tox/
+.nox/
+.hypothesis/
+coverage.xml
+*.cover
+.cache
+nosetests.xml
+
+# Translations
+*.mo
+*.pot
+
+# Django/Flask
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+venv_gpu/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder
+.spyderproject
+.spyproject
+
+# Rope
+.ropeproject
+
+# mkdocs
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
 
 # IDEs
 .vscode/
@@ -35,28 +128,50 @@ htmlcov/
 *.swp
 *.swo
 *~
+*.code-workspace
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Virtual environments
-venv/
-venv_gpu/
-env/
-ENV/
-
+# Research Papers (PRIVATE - DO NOT COMMIT)
 paper 1/
 paper 2/
+papers/
+research/
+*.pdf
+*.tex.bak
 
-# Jupyter
-.ipynb_checkpoints/
+# Model checkpoints & data
+models/
+checkpoints/
+data/
+datasets/
+*.h5
+*.pkl
+*.pth
+*.weights
+*.ckpt
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+# Logs
+logs/
+*.log
 
-# Documentation builds
-docs/_build/
-site/
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# GitHub Actions cache
+.github_cache/

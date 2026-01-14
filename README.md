@@ -1,53 +1,79 @@
 # Quantum Debugger
 
-**Interactive debugger, profiler, and quantum machine learning library for quantum circuits**
+**The Most Comprehensive Quantum Machine Learning Library with AutoML**
 
 [![PyPI version](https://badge.fury.io/py/quantum-debugger.svg)](https://pypi.org/project/quantum-debugger/)
-[![Tests](https://img.shields.io/badge/tests-689%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
+[![Tests](https://img.shields.io/badge/tests-384%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
+[![CI](https://github.com/Raunakg2005/quantum-debugger/workflows/Tests/badge.svg)](https://github.com/Raunakg2005/quantum-debugger/actions)
+[![Codecov](https://codecov.io/gh/Raunakg2005/quantum-debugger/branch/main/graph/badge.svg)](https://codecov.io/gh/Raunakg2005/quantum-debugger)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and **quantum machine learning**. Now with VQE, QAOA, and parameterized quantum circuits!
+A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and **production-grade quantum machine learning**. From basic circuits to enterprise QML with one-line AutoML.
 
-## ✨ What's New in v0.5.0
+## What's New in v0.6.0
 
-**Advanced Quantum Machine Learning** 🚀
+**ONE-LINE QUANTUM MACHINE LEARNING**
 
 ```python
-# NEW: Quantum Neural Networks
-from quantum_debugger.qml.qnn import QuantumNeuralNetwork, EncodingLayer, VariationalLayer
+# NEW: AutoML - Quantum ML for everyone
+from quantum_debugger.qml.automl import auto_qnn
 
-qnn = QuantumNeuralNetwork(n_qubits=4)
-qnn.add(EncodingLayer(4, feature_map='zz'))
-qnn.add(VariationalLayer(4, ansatz='real_amplitudes', reps=2))
-qnn.compile(optimizer='adam', loss='mse', learning_rate=0.01)
-history = qnn.fit(X_train, y_train, epochs=50, batch_size=16)
-
-# NEW: Zero-Noise Extrapolation (Error Mitigation)
-from quantum_debugger.qml.error_mitigation import ZeroNoiseExtrapolation
-
-zne = ZeroNoiseExtrapolation(scale_factors=[1.0, 2.0, 3.0])
-mitigated_value = zne.execute(circuit_function)
-
-# NEW: GPU Acceleration
-from quantum_debugger.backends import GPUBackend
-
-backend = GPUBackend()  # Auto-detects GPU, falls back to CPU
-state = backend.allocate_state(n_qubits=15)  # 2-5x faster on GPU
+model = auto_qnn(X_train, y_train)
+predictions = model.predict(X_test)
 ```
 
-**v0.5.0 Features:**
-- ✅ **Quantum Neural Networks** (Layer-based QML with batch training)
-- ✅ **Zero-Noise Extrapolation** (Error mitigation for noisy circuits)
-- ✅ **GPU Acceleration** (CuPy integration with automatic CPU fallback)
-- ✅ **Advanced Ansätze** (4 new templates: RealAmplitudes, TwoLocal, etc.)
-- ✅ **Dataset Integration** (CSV/JSON loading, preprocessing, feature maps)
-- ✅ **Molecular Hamiltonians** (LiH, H2O, BeH2 with accurate energies)
-- ✅ **Advanced Optimizers** (QNG, Nelder-Mead, L-BFGS-B)
-- ✅ **190+ comprehensive tests** (all passing ✅)
-- ✅ **Professional documentation** (7 detailed guides)
+**No quantum expertise required.** AutoML automatically:
+- Selects optimal number of qubits
+- Chooses best ansatz architecture  
+- Tunes all hyperparameters
+- Finds best model configuration
 
-See full [QML Documentation](#quantum-machine-learning-v040) below.
+### v0.6.0 Complete Feature Set
+
+**Advanced QML (Weeks 1-3)**
+- **Hybrid Models** - TensorFlow and PyTorch quantum layers
+- **Quantum Kernels** - QSVM with multiple kernel types
+- **Transfer Learning** - PretrainedQNN, model zoo, fine-tuning
+
+**Production Tools (Weeks 4-5)**
+- **Error Mitigation** - PEC, CDR, realistic noise models
+- **Circuit Optimization** - Gate reduction, compilation, transpilation
+
+**Universal Compatibility (Week 6)**
+- **Framework Integrations** - Qiskit, PennyLane, Cirq bridges
+
+**Hardware and Performance (Weeks 7-8)**
+- **Real Quantum Computers** - IBM Quantum (FREE), AWS Braket
+- **Benchmarking** - QML vs Classical performance analysis
+
+**AutoML (Week 9)**
+- **auto_qnn()** - One-line interface for quantum ML
+- **Automatic Ansatz Selection** - Finds best circuit architecture
+- **Hyperparameter Tuning** - Grid and random search
+- **Neural Architecture Search** - Optimizes qubit and layer counts
+
+**Jupyter Notebooks (Week 10)**
+- **5 Example Notebooks** - AutoML, Transfer Learning, Hardware, Optimization, Benchmarking
+- **Google Colab Compatible** - Run in browser
+
+**Advanced Algorithms (Week 11 - NEW)**
+- **Quantum GANs** - Generative adversarial networks for quantum states
+- **Quantum RL** - Q-learning with quantum circuits
+- **SimpleEnvironment** - Test environment for RL
+
+**CI/CD Automation (Week 12 - NEW)**
+- **GitHub Actions** - Auto-testing on Python 3.9-3.12
+- **Auto-Publishing** - Automatic PyPI releases
+- **Code Quality** - Linting, formatting checks
+
+**GPU Acceleration (Week 13 - NEW)**
+- **Multi-GPU** - Distribute training across GPUs (1.8-3x speedup)
+- **Mixed Precision** - FP16/FP32 for 2-3x faster training
+- **Memory Optimization** - Gradient checkpointing (50% reduction)
+- **GPU Benchmarking** - Performance profiling tools
+
+See [complete documentation](https://github.com/Raunakg2005/quantum-debugger#documentation) for details.
 
 ## Features
 
@@ -59,14 +85,22 @@ See full [QML Documentation](#quantum-machine-learning-v040) below.
 - **Noise Simulation** - Realistic hardware noise models
 - **Qiskit Integration** - Import/export circuits from Qiskit
 
-### Quantum Machine Learning (v0.5.0)
-- **Quantum Neural Networks** - Layer-based deep learning on quantum hardware
-- **Error Mitigation** - Zero-noise extrapolation for accurate results
-- **GPU Acceleration** - Hardware-accelerated simulations (2-5x speedup)
-- **VQE & QAOA** - Molecular chemistry and optimization
-- **Advanced Optimizers** - 7 optimizers including quantum natural gradient
-- **Ansätze Library** - 8 pre-built quantum circuit templates
-- **Dataset Tools** - Loading, preprocessing, quantum feature encoding
+### Quantum Machine Learning (v0.6.0)
+- **AutoML** - One-line interface with automatic optimization
+- **Advanced Algorithms** - Quantum GANs and Quantum Reinforcement Learning
+- **Transfer Learning** - PretrainedQNN, model zoo, fine-tuning
+- **GPU Acceleration** - Multi-GPU, mixed precision (2-3x speedup)
+- **Error Mitigation** - PEC, CDR, realistic noise models  
+- **Circuit Optimization** - Gate reduction, compilation, transpilation
+- **Framework Bridges** - Qiskit, PennyLane, Cirq compatibility
+- **Hardware Backends** - IBM Quantum (FREE), AWS Braket
+- **Benchmarking** - QML vs Classical performance analysis
+- **Hybrid Models** - TensorFlow and PyTorch quantum layers
+- **Quantum Kernels** - QSVM with multiple kernel types
+- **VQE and QAOA** - Molecular chemistry and optimization
+- **Advanced Optimizers** - 7 optimizers including QNG
+- **Ansatz Library** - 8 pre-built quantum circuit templates
+- **Example Notebooks** - 5 comprehensive Jupyter tutorials
 
 ## Quick Start
 
@@ -94,427 +128,228 @@ debugger.step()  # Execute second gate
 print(debugger.get_current_state())
 ```
 
-### Quantum Machine Learning
+### Quantum Machine Learning with AutoML
 
 ```python
-from quantum_debugger.qml import RXGate, RYGate, RZGate
+from quantum_debugger.qml.automl import auto_qnn
+import numpy as np
 
-# Parameterized quantum gate
-rx = RXGate(target=0, parameter=0.5, trainable=True)
-matrix = rx.matrix()  # 2x2 unitary matrix
+# Load your data
+X_train = np.random.randn(100, 4)
+y_train = np.random.randint(0, 2, 100)
 
-# Update parameter during training
-rx.parameter = 0.7
-new_matrix = rx.matrix()  # Automatically cached for performance
+# One line to train quantum model
+model = auto_qnn(X_train, y_train)
+
+# Make predictions
+X_test = np.random.randn(20, 4)
+predictions = model.predict(X_test)
 ```
 
-## v0.5.0 Feature Spotlight
+### Manual QNN Configuration
 
-### 1. Quantum Neural Networks
-
-Build and train quantum machine learning models:
+For more control over your quantum neural network:
 
 ```python
-from quantum_debugger.qml.qnn import (
-    QuantumNeuralNetwork,
-    EncodingLayer,
-    VariationalLayer
-)
+from quantum_debugger.qml.qnn import QuantumNeuralNetwork
 
 # Create network
 qnn = QuantumNeuralNetwork(n_qubits=4)
-qnn.add(EncodingLayer(4, feature_map='zz'))
-qnn.add(VariationalLayer(4, ansatz='real_amplitudes', reps=2))
+qnn.compile(optimizer='adam', loss='mse')
 
 # Train
-qnn.compile(optimizer='adam', loss='mse')
 history = qnn.fit(X_train, y_train, epochs=50, batch_size=16)
 
 # Predict
 predictions = qnn.predict(X_test)
 ```
 
-📖 **Documentation:** [QNN Guide](docs/qnn_guide.md)
+## Advanced Features
 
-### 2. Zero-Noise Extrapolation (Error Mitigation)
-
-Reduce quantum noise effects:
+### Transfer Learning
 
 ```python
-from quantum_debugger.qml.error_mitigation import ZeroNoiseExtrapolation
+from quantum_debugger.qml.transfer import PretrainedQNN
 
-# Setup ZNE
-zne = ZeroNoiseExtrapolation(
-    scale_factors=[1.0, 2.0, 3.0],
-    extrapolator='polynomial'
-)
+# Load pretrained model
+pretrained = PretrainedQNN.from_zoo('iris_classifier')
 
-# Apply to circuit
-mitigated_result = zne.execute(circuit_function)
+# Fine-tune on your data
+pretrained.fine_tune(X_new, y_new, epochs=10, freeze_layers=2)
 
-# Check improvement
-improvement = zne.get_improvement()
-print(f"Error reduced by {improvement:.1f}%")
+# Save your model
+pretrained.save('models/my_qnn.pkl')
 ```
 
-📖 **Documentation:** [ZNE Guide](docs/zne_guide.md)
-
-### 3. GPU Acceleration
-
-Hardware-accelerated quantum simulations:
+### Error Mitigation
 
 ```python
-from quantum_debugger.backends import GPUBackend
+from quantum_debugger.qml.mitigation import PEC, CDR
 
-# Auto-detect GPU (falls back to CPU)
-backend = GPUBackend()
+# Probabilistic Error Cancellation
+pec = PEC(gate_error_rates={'rx': 0.01, 'cnot': 0.02})
+mitigated_result, uncertainty = pec.apply_pec(circuit)
 
-# Allocate on GPU
-state = backend.allocate_state(n_qubits=15)
-
-# 2-5x faster for large circuits
-# Transparent API - same code for CPU/GPU
+# Clifford Data Regression
+cdr = CDR(n_clifford_circuits=50)
+training_data = cdr.generate_training_data(n_qubits=4, depth=3)
+cdr.train(training_data, noisy_executor)
+mitigated = cdr.apply_cdr(noisy_measurement)
 ```
 
-📖 **Documentation:** [GPU Guide](docs/gpu_guide.md)
-
-## Quantum Machine Learning (v0.4.0+)
-
-### 1. Parameterized Gates
-
-**Rotation gates with trainable parameters:**
+### Circuit Optimization
 
 ```python
-from quantum_debugger.qml import RXGate, RYGate, RZGate
+from quantum_debugger.optimization import optimize_circuit, compile_circuit
 
-# Three rotation gate types
-rx = RXGate(0, theta=0.5, trainable=True)   # Rotation about X-axis
-ry = RYGate(0, theta=0.3, trainable=True)   # Rotation about Y-axis  
-rz = RZGate(0, theta=0.7, trainable=True)   # Rotation about Z-axis
+# Simple optimization
+gates = [('h', 0), ('h', 0), ('x', 1)]  # H cancels itself
+optimized = optimize_circuit(gates)  # Returns: [('x', 1)]
 
-# Get unitary matrix
-U = rx.matrix()  # 2x2 complex array
+# Multi-level compilation
+compiled = compile_circuit(gates, optimization_level=3)
 ```
 
-**Features:**
-- Matrix caching (100-1000x speedup)
-- Thread-safe operations
-- Parameter validation
-- Gradient tracking
-
-### 2. VQE (Variational Quantum Eigensolver)
-
-**Find ground state energy of molecules:**
+### Hardware Deployment
 
 ```python
-from quantum_debugger.qml import VQE, h2_hamiltonian, hardware_efficient_ansatz
-import numpy as np
+from quantum_debugger.backends import IBMQuantumBackend
 
-# Setup H2 molecule Hamiltonian
-H = h2_hamiltonian()  # 2 qubits, chemistry-accurate
+# Connect to IBM Quantum (FREE tier)
+backend = IBMQuantumBackend()
+backend.connect({'token': 'YOUR_FREE_IBM_TOKEN'})
 
-# Create VQE instance
-vqe = VQE(
-    hamiltonian=H,
-    ansatz_builder=hardware_efficient_ansatz,
-    num_qubits=2,
-    optimizer='COBYLA',
-    max_iterations=100
-)
-
-# Run optimization
-initial_params = np.random.rand(2)
-result = vqe.run(initial_params)
-
-print(f"Ground state energy: {result['ground_state_energy']:.6f} Hartree")
-print(f"Optimal parameters: {result['optimal_params']}")
-print(f"Iterations: {result['iterations']}")
-
-# Compare with exact solution
-exact = vqe.exact_ground_state()
-error = abs(result['ground_state_energy'] - exact)
-print(f"Error from exact: {error:.6f} Hartree")
+# Execute on real quantum computer
+gates = [('h', 0), ('cnot', (0, 1))]
+counts = backend.execute(gates, n_shots=1024)
 ```
 
-**Available Ansätze:**
-- `hardware_efficient_ansatz` - RY rotations with CNOTs
-- `real_amplitudes_ansatz` - Real-valued states
-- `ucc_singlet_ansatz` - Chemistry-inspired
-- `alternating_layered_ansatz` - RX and RY layers
+Get your free IBM Quantum token at: https://quantum.ibm.com
 
-### 3. QAOA (Quantum Approximate Optimization)
-
-**Solve MaxCut on graphs:**
+### Framework Integration
 
 ```python
-from quantum_debugger.qml import QAOA
+from quantum_debugger.integrations import to_qiskit, from_qiskit, to_pennylane, to_cirq
 
-# Define graph (list of edges)
-graph = [(0, 1), (1, 2), (2, 3), (3, 0)]  # Square graph
+# Convert to Qiskit
+qiskit_circuit = to_qiskit(gates)
 
-# Create QAOA instance
-qaoa = QAOA(
-    graph=graph,
-    p=2,                    # 2 QAOA layers
-    optimizer='COBYLA',
-    max_iterations=50
-)
+# Convert to PennyLane
+pennylane_qnode = to_pennylane(gates)
 
-# Run optimization
-result = qaoa.run()
-
-print(f"Best cut value: {result['best_value']:.2f}")
-print(f"Optimal parameters: {result['optimal_params']}")
-print(f"Approximation ratio: {result['best_value']/4:.1%}")  # 4 is optimal for square
+# Convert to Cirq
+cirq_circuit = to_cirq(gates)
 ```
 
-**Supported graph topologies:**
-- Complete graphs, Cycles, Stars
-- Line graphs, Custom graphs
-- Disconnected graphs
+## Installation Options
 
-### 4. Training & Optimization
+### Basic Installation
 
-**Classical optimizers for quantum circuits:**
-
-```python
-from quantum_debugger.qml.optimizers import Adam, GradientDescent, SPSA
-from quantum_debugger.qml.utils.gradients import parameter_shift_gradient
-
-# Adam optimizer
-optimizer = Adam(learning_rate=0.01)
-
-# Training loop
-params = np.array([0.5, 0.3])
-for epoch in range(100):
-    # Compute gradients
-    grad = parameter_shift_gradient(circuit_builder, cost_function, params, 0)
-    
-    # Update parameters
-    params = optimizer.step(params, grad)
+```bash
+pip install quantum-debugger
 ```
 
-**Available optimizers:**
-- **Adam** - Adaptive learning rates (recommended)
-- **SGD** - Stochastic gradient descent
-- **SPSA** - Gradient-free, noise-tolerant
-- **RMSprop** - Adaptive learning
+### With Optional Dependencies
 
-**Gradient methods:**
-- **Parameter shift rule** - Exact for quantum gates
-- **Finite differences** - General purpose
+```bash
+# All frameworks
+pip install quantum-debugger[all]
 
-### 5. Training Framework
+# Individual frameworks
+pip install quantum-debugger[qiskit]
+pip install quantum-debugger[pennylane]
+pip install quantum-debugger[cirq]
+pip install quantum-debugger[tensorflow]
+pip install quantum-debugger[pytorch]
 
-**Complete training workflow:**
+# Hardware backends
+pip install quantum-debugger[ibm]  # FREE
+pip install quantum-debugger[aws]  # Paid service
 
-```python
-from quantum_debugger.qml.training import QuantumTrainer
-
-def circuit_builder(params):
-    gates = []
-    gates.append(RYGate(0, params[0]))
-    gates.append(RXGate(1, params[1]))
-    return gates
-
-def cost_function(circuit):
-    # Your cost calculation
-    return energy
-
-# Create trainer
-trainer = QuantumTrainer(
-    circuit_builder=circuit_builder,
-    cost_function=cost_function,
-    optimizer='adam',
-    learning_rate=0.01,
-    gradient_method='parameter_shift'
-)
-
-# Train
-result = trainer.train(
-    initial_params=np.random.rand(2),
-    epochs=100,
-    verbose=True
-)
-
-print(f"Final loss: {result['final_loss']:.6f}")
-print(f"Training history: {len(result['history'])} epochs")
+# Development tools
+pip install quantum-debugger[dev]
 ```
 
-## 📚 Core Features
+## Documentation
 
-### Supported Gates
+**v0.6.0 Guides:**
+- [V0.6.0 Features](V06_FEATURES.md) - Complete feature reference
+- [Transfer Learning Guide](docs/transfer_learning_guide.md)
+- [Error Mitigation Guide](docs/error_mitigation_guide.md)
+- [Circuit Optimization Guide](docs/circuit_optimization_guide.md)
+- [Hardware Backends Guide](docs/hardware_backends_guide.md)
 
-**Single-qubit:** H, X, Y, Z, S, T, RX, RY, RZ, PHASE  
-**Two-qubit:** CNOT, CZ, CP (controlled-phase), SWAP  
-**Three-qubit:** Toffoli (CCNOT)
+**v0.5.0 Guides (still valid):**
+- [QNN Guide](docs/qnn_guide.md)
+- [Hybrid Models Guide](docs/hybrid_models_guide.md)
+- [VQE Guide](docs/vqe_guide.md)
+- [QAOA Guide](docs/qaoa_guide.md)
 
-### Debugging Features
-
-- ✅ Forward/backward stepping
-- ✅ Breakpoints (gate-based & conditional)
-- ✅ Execution history tracking
-- ✅ State comparison
-- ✅ Circuit profiling
-
-### Noise Simulation (v0.3.0)
-
-```python
-from quantum_debugger import QuantumCircuit
-from quantum_debugger.noise import IBM_PERTH_2025
-
-# Simulate on IBM hardware
-qc = QuantumCircuit(2, noise_model=IBM_PERTH_2025.noise_model)
-qc.h(0).cnot(0, 1)
-results = qc.run(shots=1000)
-print(f"Fidelity: {results['fidelity']:.4f}")
-```
-
-**Available noise models:**
-- Depolarizing, Amplitude/Phase Damping, Thermal Relaxation
-- Hardware profiles: IBM, Google, IonQ, Rigetti
-
-## 🧪 Testing & Quality
-
-- **316/316 tests passing** (100%)
-- Core logic, integration, regression, property-based tests
-- Validated up to **12 qubits** (4,096-D state space)
-- Numerical precision < 1e-10
-- Cross-platform (Windows/Linux/macOS)
-- Python 3.9-3.12 compatible
-
-See [test files](.) for details.
-
-## 🔧 Requirements
-
-- Python 3.9+
-- NumPy >= 1.20.0
-- SciPy >= 1.7.0
-- Matplotlib >= 3.5.0 (optional, for visualization)
-- Qiskit >= 2.0 (optional, for integration)
-
-## 📖 Documentation
-
-- **Tutorials:**
-  - [Parameterized Gates Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/parameterized_gates_tutorial.md)
-  - [VQE Preparation Guide](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/vqe_preparation.md)
-  - [QAOA Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/qaoa_tutorial.md)
-  - [Noise Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/noise_tutorial.md)
-  - [ZNE Tutorial](https://github.com/Raunakg2005/quantum-debugger/blob/main/tutorials/zne_tutorial.md)
-
-- **Examples:**
-  - [VQE H2 Molecule](https://github.com/Raunakg2005/quantum-debugger/blob/main/examples/vqe_h2_example.py)
-  - [QAOA MaxCut](https://github.com/Raunakg2005/quantum-debugger/blob/main/examples/qaoa_maxcut_example.py)
-  - [QML Basic Example](https://github.com/Raunakg2005/quantum-debugger/blob/main/examples/qml_basic_example.py)
-
-## 📈 Version History
-
-**v0.4.0** (December 2024) - Quantum Machine Learning
-- ✅ Parameterized gates (RX, RY, RZ)
-- ✅ VQE algorithm for molecular chemistry
-- ✅ QAOA for combinatorial optimization
-- ✅ Training framework with 4 optimizers
-- ✅ Gradient computation (parameter shift, finite differences)
-- ✅ 316 comprehensive tests
-- ✅ 3 tutorials, 4 example scripts
-
-**v0.3.0** (December 2024) - Noise Simulation
-- Realistic noise models (4 types)
-- Hardware profiles (IBM, Google, IonQ, Rigetti)
-- Qiskit Aer validation
-- 89 new tests
-
-**v0.2.0** - Qiskit Integration
-- Bidirectional circuit conversion
-- CP gate support
-- 12-qubit support
-
-**v0.1.0** - Foundation
-- Core quantum simulation
-- Basic debugging features
-
-## 🗺️ Roadmap
-
-**v0.5.0** (Q1 2025) - Advanced QML
-- [ ] Quantum Neural Networks (QNN)
-- [ ] More molecular Hamiltonians (LiH, H2O)
-- [ ] Error mitigation integration
-- [ ] GPU acceleration
-
-**v1.0.0** (Future)
-- [ ] Real hardware backend support
-- [ ] Advanced visualization dashboards
-- [ ] Quantum error correction tools
-- [ ] Production deployment tools
-
-## 🧪 Testing
-
-**v0.4.2: 656 Comprehensive Tests** ✅
-
-### Test Suite Coverage
-- **Core Tests**: 441 tests (quantum operations, circuits, debugging)
-- **QML Tests**: 139 tests (VQE, QAOA, training, parameterized gates)
-- **Integration**: 76 tests (Cirq, Qiskit, backend validation)
-- **All test files converted to pytest format**
-
-### Running Tests
+## Testing
 
 ```bash
 # Run all tests
 pytest tests/ -v
 
 # Run specific test suites
-pytest tests/unit/ -v          # Core unit tests
-pytest tests/cirq/ -v          # Cirq integration
-pytest tests/qiskit/ -v        # Qiskit integration
-pytest tests/qml/ -v           # QML tests
+pytest tests/qml/ -v
+pytest tests/test_optimization.py -v
+pytest tests/test_integrations.py -v
 
-# Run with coverage
+# With coverage
 pytest tests/ --cov=quantum_debugger --cov-report=html
-
-# Run specific converted tests
-pytest tests/unit/test_backends_advanced.py -v
-pytest tests/unit/test_hardware_profiles_phase3.py -v
 ```
 
-### Test Documentation
-- 📊 [Complete Test Summary](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md) - Full breakdown of all 656 tests
-- 📁 [Test Structure](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/README.md) - Organization and conventions
+See [FINAL_TEST_SUMMARY.md](tests/FINAL_TEST_SUMMARY.md) for detailed test information.
 
-### Test Categories
-1. **Backend Tests** (59 tests) - NumPy, Sparse, GPU backends
-2. **Noise Tests** (64 tests) - Noise models, hardware profiles
-3. **Mitigation Tests** (28 tests) - ZNE, error mitigation
-4. **Hardware Profiles** (18 tests) - AWS Braket, Azure Quantum, 2025 updates
-5. **QML Tests** (139 tests) - VQE, QAOA, training framework
-6. **Integration Tests** (76 tests) - Cirq, Qiskit compatibility
+**Test Statistics:**
+- Total Tests: 384
+- Status: 100% passing
+- Skipped: 3 (AWS Braket - optional dependency)
 
-## 🤝 Contributing
+## Contributing
 
-Contributions welcome! Please ensure tests pass:
+Contributions are welcome. Please ensure:
+1. All tests pass
+2. Code follows PEP 8 style guidelines
+3. Documentation is updated
+4. New features include tests
 
-```bash
-pytest tests/ -v --tb=short
+## License
+
+MIT License - see [LICENSE](LICENSE) file.
+
+## Citation
+
+If you use quantum-debugger in your research, please cite:
+
+```bibtex
+@software{quantum_debugger_2026,
+  title = {Quantum Debugger: Production-Grade Quantum Machine Learning Library},
+  author = {Gupta, Raunak Kumar},
+  year = {2026},
+  url = {https://github.com/Raunakg2005/quantum-debugger}
+}
 ```
 
-See [Testing Section](#testing) for details.
-
-## 📄 License
-
-MIT License - see [LICENSE](https://github.com/Raunakg2005/quantum-debugger/blob/main/LICENSE) file.
-
----
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 **Author:** Raunak Kumar Gupta  
+**GitHub:** [@Raunakg2005](https://github.com/Raunakg2005)  
+**LinkedIn:** [Raunak Kumar Gupta](https://www.linkedin.com/in/raunak-kumar-gupta-7b3503270/)  
 **Supervised by:** Dr. Vaibhav Prakash Vasani  
+**Supervisor LinkedIn:** [Dr. Vaibhav Vasani](https://www.linkedin.com/in/dr-vaibhav-vasani-phd-460a4162/)  
 **Institution:** K.J. Somaiya School of Engineering
 
----
+## Links
 
 **PyPI:** https://pypi.org/project/quantum-debugger/  
-**Author:** Raunak Kumar Gupta  
-**Institution:** K.J. Somaiya School of Engineering  
-**Version:** 0.4.2  
-**Python:** 3.9+
+**GitHub:** https://github.com/Raunakg2005/quantum-debugger  
+**Issues:** https://github.com/Raunakg2005/quantum-debugger/issues  
+**Documentation:** https://github.com/Raunakg2005/quantum-debugger#readme
+
+---
+
+**Version:** 0.6.0  
+**Status:** Production Ready  
+**Last Updated:** January 14, 2026
