@@ -32,6 +32,7 @@ setup(
         "numpy>=1.20.0",
         "scipy>=1.7.0",
         "matplotlib>=3.5.0",
+        "scikit-learn>=1.0.0",  # Required for QSVM
     ],
     extras_require={
         # Framework integrations
