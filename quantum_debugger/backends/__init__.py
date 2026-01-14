@@ -15,6 +15,7 @@ except ImportError:
 
 try:
     from .sparse_backend import SparseBackend
+
     HAS_SPARSE = True
 except ImportError:
     HAS_SPARSE = False
@@ -28,50 +29,48 @@ except ImportError:
 _backend_cache = {}
 
 
-def get_backend(name='auto'):
+def get_backend(name="auto"):
     """
     Get computational backend by name.
-    
+
     Args:
         name: Backend name ('auto', 'numpy', 'numba', 'sparse', 'cupy')
               'auto' selects best available backend
-    
+
     Returns:
         Backend instance
-        
+
     Example:
         >>> backend = get_backend('numba')
         >>> backend = get_backend()  # Auto-select
     """
     if name in _backend_cache:
         return _backend_cache[name]
-    
-    if name == 'auto':
+
+    if name == "auto":
         # Auto-select best available
         if HAS_NUMBA:
             backend = NumbaBackend()
         else:
             backend = NumPyBackend()
-    
-    elif name == 'numpy':
+
+    elif name == "numpy":
         backend = NumPyBackend()
-    
-    elif name == 'numba':
+
+    elif name == "numba":
         if not HAS_NUMBA:
             raise ImportError(
                 "Numba not available. Install with: pip install numba\n"
                 "Falling back to NumPy..."
             )
         backend = NumbaBackend()
-    
-    elif name == 'sparse':
+
+    elif name == "sparse":
         if not HAS_SPARSE:
-            raise ImportError(
-                "SciPy not available. Install with: pip install scipy"
-            )
+            raise ImportError("SciPy not available. Install with: pip install scipy")
         backend = SparseBackend()
-    
-    elif name == 'cupy' or name == 'gpu':
+
+    elif name == "cupy" or name == "gpu":
         if not HAS_CUPY:
             raise ImportError(
                 "CuPy not available. For GPU acceleration, install with:\n"
@@ -80,13 +79,13 @@ def get_backend(name='auto'):
                 "Check https://docs.cupy.dev/en/stable/install.html"
             )
         backend = CuPyBackend()
-    
+
     else:
         raise ValueError(
             f"Unknown backend '{name}'. "
             f"Available: 'auto', 'numpy', 'numba', 'sparse'"
         )
-    
+
     _backend_cache[name] = backend
     return backend
 
@@ -94,44 +93,41 @@ def get_backend(name='auto'):
 def list_available_backends():
     """
     List all available backends on this system.
-    
+
     Returns:
         dict: Backend name -> availability status
     """
     backends = {
-        'numpy': True,  # Always available
-        'numba': HAS_NUMBA,
-        'sparse': HAS_SPARSE,
-        'cupy': HAS_CUPY,
+        "numpy": True,  # Always available
+        "numba": HAS_NUMBA,
+        "sparse": HAS_SPARSE,
+        "cupy": HAS_CUPY,
     }
-    
+
     return backends
 
 
 __all__ = [
-    'Backend',
-    'NumPyBackend',
-    'get_backend',
-    'list_available_backends',
+    "Backend",
+    "NumPyBackend",
+    "get_backend",
+    "list_available_backends",
 ]
 
 if HAS_NUMBA:
-    __all__.append('NumbaBackend')
+    __all__.append("NumbaBackend")
 
 if HAS_SPARSE:
-    __all__.append('SparseBackend')
+    __all__.append("SparseBackend")
 
 if HAS_CUPY:
-    __all__.append('CuPyBackend')
+    __all__.append("CuPyBackend")
 
 # Add GPU backend
 try:
-    from .gpu_backend import (
-        GPUBackend,
-        get_optimal_backend,
-        benchmark_backends
-    )
-    __all__.extend(['GPUBackend', 'get_optimal_backend', 'benchmark_backends'])
+    from .gpu_backend import GPUBackend, get_optimal_backend, benchmark_backends
+
+    __all__.extend(["GPUBackend", "get_optimal_backend", "benchmark_backends"])
 except ImportError:
     pass
 
@@ -140,22 +136,23 @@ try:
     from .ibm_backend import IBMQuantumBackend, IBM_AVAILABLE
     from .aws_backend import AWSBraketBackend, AWS_AVAILABLE
     from .base_backend import QuantumBackend
-    
-    __all__.extend(['IBMQuantumBackend', 'AWSBraketBackend', 'QuantumBackend'])
-    
+
+    __all__.extend(["IBMQuantumBackend", "AWSBraketBackend", "QuantumBackend"])
+
     def get_available_backends():
         """Get list of available quantum backends."""
         backends = []
         if IBM_AVAILABLE:
-            backends.append('ibm')
+            backends.append("ibm")
         if AWS_AVAILABLE:
-            backends.append('aws')
+            backends.append("aws")
         return backends
-    
-    __all__.append('get_available_backends')
-    
+
+    __all__.append("get_available_backends")
+
 except ImportError:
     # Hardware backends not installed
     def get_available_backends():
         return []
-    __all__.append('get_available_backends')
+
+    __all__.append("get_available_backends")

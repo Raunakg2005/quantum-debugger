@@ -17,23 +17,21 @@ from .layers import (
     HybridLayer,
     ClassicalPreprocessor,
     QuantumMiddleLayer,
-    ClassicalPostprocessor
+    ClassicalPostprocessor,
 )
 
 __all__ = [
-    'HybridLayer',
-    'ClassicalPreprocessor',
-    'QuantumMiddleLayer',
-    'ClassicalPostprocessor'
+    "HybridLayer",
+    "ClassicalPreprocessor",
+    "QuantumMiddleLayer",
+    "ClassicalPostprocessor",
 ]
 
 # Optional TensorFlow integration
 try:
-    from .tensorflow_integration import (
-        QuantumKerasLayer,
-        create_hybrid_model
-    )
-    __all__.extend(['QuantumKerasLayer', 'create_hybrid_model'])
+    from .tensorflow_integration import QuantumKerasLayer, create_hybrid_model
+
+    __all__.extend(["QuantumKerasLayer", "create_hybrid_model"])
 except ImportError:
     pass
 
@@ -42,8 +40,9 @@ try:
     from .pytorch_integration import (
         QuantumTorchLayer,
         HybridQNN,
-        create_hybrid_pytorch_model
+        create_hybrid_pytorch_model,
     )
-    __all__.extend(['QuantumTorchLayer', 'HybridQNN', 'create_hybrid_pytorch_model'])
+
+    __all__.extend(["QuantumTorchLayer", "HybridQNN", "create_hybrid_pytorch_model"])
 except ImportError:
     pass

@@ -16,22 +16,22 @@ logger = logging.getLogger(__name__)
 class VQE:
     """
     Variational Quantum Eigensolver
-    
+
     Finds the ground state energy of a Hamiltonian using a parameterized
     quantum circuit (ansatz) and classical optimization.
     """
-    
+
     def __init__(
         self,
         hamiltonian,
         ansatz_builder: Callable,
         num_qubits: int,
-        optimizer: str = 'COBYLA',
-        max_iterations: int = 100
+        optimizer: str = "COBYLA",
+        max_iterations: int = 100,
     ):
         """
         Initialize VQE.
-        
+
         Args:
             hamiltonian: Hamiltonian matrix (2^n × 2^n) or tuple
             ansatz_builder: Ansatz builder function
@@ -40,93 +40,90 @@ class VQE:
             max_iterations: Maximum iterations for optimizer
         """
         self.num_qubits = num_qubits
-        
+
         # Convert Hamiltonian to numpy array if needed
         if isinstance(hamiltonian, (tuple, list)):
             self.hamiltonian = np.array(hamiltonian)
         else:
             self.hamiltonian = hamiltonian
-        
+
         # Handle ansatz builders that need to be called with num_qubits first
         # (like hardware_efficient_ansatz)
         sig = inspect.signature(ansatz_builder)
         params = list(sig.parameters.keys())
-        
-        if len(params) >= 1 and params[0] in ['num_qubits', 'n_qubits']:
+
+        if len(params) >= 1 and params[0] in ["num_qubits", "n_qubits"]:
             # This is a factory function, call it to get actual builder
             self.ansatz_builder = ansatz_builder(num_qubits)
         else:
             # This is already the builder function
             self.ansatz_builder = ansatz_builder
-        
+
         self.optimizer = optimizer
         self.max_iterations = max_iterations
         self.history = []
-        
+
         # Validate Hamiltonian size
-        expected_size = 2 ** num_qubits
+        expected_size = 2**num_qubits
         if self.hamiltonian.shape != (expected_size, expected_size):
             raise ValueError(
                 f"Hamiltonian size {self.hamiltonian.shape} doesn't match "
                 f"{num_qubits} qubits (expected {expected_size}×{expected_size})"
             )
-        
+
         logger.info(f"VQE initialized: {num_qubits} qubits, optimizer={optimizer}")
-    
+
     def cost_function(self, params: np.ndarray) -> float:
         """
         Compute energy expectation value.
-        
+
         E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩
         """
         # Build circuit with ansatz
         circuit = self.ansatz_builder(params)
-        
+
         # Get statevector from circuit
         statevector = circuit.get_statevector().state_vector
-        
+
         # Compute expectation value
         energy = np.real(statevector.conj().T @ self.hamiltonian @ statevector)
-        
+
         # Track history
-        self.history.append({
-            'params': params.copy(),
-            'energy': energy
-        })
-        
+        self.history.append({"params": params.copy(), "energy": energy})
+
         logger.debug(f"Iteration {len(self.history)}: E = {energy:.6f}")
-        
+
         return energy
-    
+
     def run(self, initial_params: np.ndarray, method: Optional[str] = None) -> Dict:
         """Run VQE optimization."""
         from scipy.optimize import minimize
-        
+
         self.history = []
         opt_method = method if method is not None else self.optimizer
-        
+
         logger.info(f"Starting VQE optimization with {opt_method}")
-        
+
         result = minimize(
             fun=self.cost_function,
             x0=initial_params,
             method=opt_method,
-            options={'maxiter': self.max_iterations}
+            options={"maxiter": self.max_iterations},
         )
-        
+
         logger.info(f"VQE completed: E = {result.fun:.6f}")
-        
-        iterations = getattr(result, 'nit', getattr(result, 'nfev', len(self.history)))
-        
+
+        iterations = getattr(result, "nit", getattr(result, "nfev", len(self.history)))
+
         return {
-            'optimal_params': result.x,
-            'ground_state_energy': result.fun,
-            'iterations': iterations,
-            'history': self.history,
-            'success': result.success,
-            'message': getattr(result, 'message', '')
+            "optimal_params": result.x,
+            "ground_state_energy": result.fun,
+            "iterations": iterations,
+            "history": self.history,
+            "success": result.success,
+            "message": getattr(result, "message", ""),
         }
-    
+
     def exact_ground_state(self) -> float:
         """Compute exact ground state energy by diagonalization."""
         eigenvalues = np.linalg.eigvalsh(self.hamiltonian)

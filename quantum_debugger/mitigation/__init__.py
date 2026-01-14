@@ -18,11 +18,11 @@ from .core.extrapolator import Extrapolator
 apply_zne = zero_noise_extrapolation
 
 __all__ = [
-    'zero_noise_extrapolation',
-    'apply_zne',  # Alias
-    'CircuitFolder',
-    'global_fold',
-    'local_fold',
-    'adaptive_fold',
-    'Extrapolator',
+    "zero_noise_extrapolation",
+    "apply_zne",  # Alias
+    "CircuitFolder",
+    "global_fold",
+    "local_fold",
+    "adaptive_fold",
+    "Extrapolator",
 ]

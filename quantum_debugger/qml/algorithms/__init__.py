@@ -9,10 +9,4 @@ from .qaoa import QAOA
 from .qgan import QuantumGAN
 from .qrl import QuantumQLearning, SimpleEnvironment
 
-__all__ = [
-    'VQE',
-    'QAOA',
-    'QuantumGAN',
-    'QuantumQLearning',
-    'SimpleEnvironment'
-]
+__all__ = ["VQE", "QAOA", "QuantumGAN", "QuantumQLearning", "SimpleEnvironment"]

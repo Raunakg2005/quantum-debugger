@@ -12,23 +12,23 @@ from .losses import (
     binary_crossentropy,
     categorical_crossentropy,
     hinge_loss,
-    get_loss_function
+    get_loss_function,
 )
 
 __all__ = [
     # Base classes
-    'QNNLayer',
-    'ParameterizedLayer',
+    "QNNLayer",
+    "ParameterizedLayer",
     # Layers
-    'EncodingLayer',
-    'VariationalLayer',
+    "EncodingLayer",
+    "VariationalLayer",
     # Network
-    'QuantumNeuralNetwork',
+    "QuantumNeuralNetwork",
     # Loss functions
-    'mean_squared_error',
-    'mean_absolute_error',
-    'binary_crossentropy',
-    'categorical_crossentropy',
-    'hinge_loss',
-    'get_loss_function',
+    "mean_squared_error",
+    "mean_absolute_error",
+    "binary_crossentropy",
+    "categorical_crossentropy",
+    "hinge_loss",
+    "get_loss_function",
 ]
