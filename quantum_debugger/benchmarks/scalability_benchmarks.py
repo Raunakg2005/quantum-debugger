@@ -6,7 +6,7 @@ Analyze how quantum algorithms scale with problem size.
 
 import time
 import numpy as np
-from typing import Dict, List, Callable
+from typing import Dict, List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -47,9 +47,9 @@ def scalability_analysis(
             model = QuantumNeuralNetwork(n_qubits=n_qubits)
             model.compile(optimizer="adam", loss="mse")
 
-            start_time = time.time()
+            start_time = time.perf_counter()
             model.fit(X, y, epochs=epochs, verbose=0)
-            elapsed_time = time.time() - start_time
+            elapsed_time = time.perf_counter() - start_time
 
             results[n_qubits] = {
                 "time": elapsed_time,
@@ -64,9 +64,9 @@ def scalability_analysis(
 
             model = QSVM(n_qubits=n_qubits)
 
-            start_time = time.time()
+            start_time = time.perf_counter()
             model.fit(X, y)
-            elapsed_time = time.time() - start_time
+            elapsed_time = time.perf_counter() - start_time
 
             results[n_qubits] = {
                 "time": elapsed_time,
@@ -80,8 +80,11 @@ def scalability_analysis(
             prev_q = qubits_list[i - 1]
             curr_q = qubits_list[i]
 
-            time_ratio = results[curr_q]["time"] / results[prev_q]["time"]
-            qubit_ratio = curr_q / prev_q
+            # Safeguard against very small times
+            prev_time = max(results[prev_q]["time"], 1e-6)
+            curr_time = results[curr_q]["time"]
+
+            time_ratio = curr_time / prev_time
 
             results[curr_q]["scaling_factor"] = time_ratio
             results[curr_q]["expected_exponential"] = 2 ** (curr_q - prev_q)

@@ -6,7 +6,7 @@ Falls back gracefully to CPU (NumPy) if GPU is not available.
 """
 
 import numpy as np
-from typing import Optional, Union
+from typing import Optional
 import warnings
 
 
@@ -40,7 +40,7 @@ class GPUBackend:
                 test_arr = cp.array([1.0])
                 _ = cp.asnumpy(test_arr)
                 self.use_gpu = True
-                self.xp = cp
+                self.xp = __import__("cupy")
             except Exception as cuda_err:
                 # CUDA runtime error - fall back to CPU
                 warnings.warn(
@@ -64,7 +64,7 @@ class GPUBackend:
                 self.device_name = f"GPU (CUDA Device {dev.id})"
                 mem_info = dev.mem_info
                 self.device_memory = mem_info[1] / (1024**3)  # Total memory in GB
-            except:
+            except Exception:
                 self.device_name = "GPU (CuPy)"
                 self.device_memory = None
 
@@ -77,7 +77,7 @@ class GPUBackend:
             self.device_name = "CPU"
             self.device_memory = None
 
-    def allocate_state(self, n_qubits: int) -> Union[np.ndarray, "cp.ndarray"]:
+    def allocate_state(self, n_qubits: int):
         """
         Allocate quantum state vector.
 
@@ -98,7 +98,7 @@ class GPUBackend:
             return self.cp.asarray(array)
         return array
 
-    def to_cpu(self, array: Union[np.ndarray, "cp.ndarray"]) -> np.ndarray:
+    def to_cpu(self, array) -> np.ndarray:
         """Move array to CPU"""
         if self.use_gpu and isinstance(array, self.cp.ndarray):
             return self.cp.asnumpy(array)
@@ -190,11 +190,6 @@ class GPUBackend:
 
     def _apply_general_gate(self, state, gate, qubits):
         """General multi-qubit gate application"""
-        n_qubits = int(self.xp.log2(len(state)))
-        dim = 2**n_qubits
-
-        # Create full unitary operator
-        full_unitary = self.xp.eye(dim, dtype=complex)
 
         # This is a simplified approach - for production, would use tensor contraction
         return self.dot(gate, state)

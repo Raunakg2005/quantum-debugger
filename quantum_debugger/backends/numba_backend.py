@@ -9,7 +9,7 @@ import numpy as np
 from .base import Backend
 
 try:
-    from numba import jit, njit, prange
+    from numba import njit
     import numba as nb
 
     HAS_NUMBA = True
@@ -55,8 +55,8 @@ if HAS_NUMBA:
         for i in range(m1):
             for j in range(n1):
                 for k in range(m2):
-                    for l in range(n2):
-                        result[i * m2 + k, j * n2 + l] = a[i, j] * b[k, l]
+                    for length in range(n2):
+                        result[i * m2 + k, j * n2 + length] = a[i, j] * b[k, length]
 
         return result
 

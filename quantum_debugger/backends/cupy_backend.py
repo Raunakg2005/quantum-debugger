@@ -51,8 +51,7 @@ class CuPyBackend(Backend):
         cp.cuda.Device(device_id).use()
         self.device_id = device_id
 
-        # Check memory
-        mempool = cp.get_default_memory_pool()
+        # Get total GPU memory
         self.total_memory = cp.cuda.Device().mem_info[1]  # Total GPU memory
 
     def zeros(self, shape, dtype=complex):

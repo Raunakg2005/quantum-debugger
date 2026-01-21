@@ -13,8 +13,7 @@ Usage:
 """
 
 import logging
-from typing import Dict, List, Optional
-import numpy as np
+from typing import Dict, List
 
 from .base_backend import QuantumBackend
 
@@ -23,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Check if Qiskit is available
 try:
     from qiskit_ibm_runtime import QiskitRuntimeService
-    from qiskit import QuantumCircuit, transpile
+    from qiskit import transpile
 
     IBM_AVAILABLE = True
 except ImportError:
@@ -102,7 +101,7 @@ class IBMQuantumBackend(QuantumBackend):
             raise RuntimeError(f"Failed to connect to IBM Quantum: {e}")
 
     def execute(
-        self, circuit_gates: List, n_shots: int = 1024, device: Optional[str] = None
+        self, circuit_gates: List, n_shots: int = 1024, device: str = None
     ) -> Dict[str, int]:
         """
         Execute circuit on IBM Quantum hardware.

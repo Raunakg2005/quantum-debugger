@@ -5,8 +5,7 @@ Abstract base class for quantum hardware backends.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any
-import numpy as np
+from typing import Dict, List
 
 
 class QuantumBackend(ABC):

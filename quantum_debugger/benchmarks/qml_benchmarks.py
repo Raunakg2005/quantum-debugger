@@ -6,7 +6,7 @@ Benchmark quantum machine learning algorithms and compare with classical counter
 
 import time
 import numpy as np
-from typing import Dict, List, Tuple, Optional
+from typing import Dict
 import logging
 
 logger = logging.getLogger(__name__)
@@ -43,14 +43,14 @@ def benchmark_qnn(
     y = np.random.randint(0, 2, dataset_size)
 
     # Benchmark training
-    start_time = time.time()
+    start_time = time.perf_counter()
     history = qnn.fit(X, y, epochs=epochs, verbose=0)
-    train_time = time.time() - start_time
+    train_time = time.perf_counter() - start_time
 
     # Benchmark inference
-    start_time = time.time()
+    start_time = time.perf_counter()
     predictions = qnn.predict(X)
-    inference_time = time.time() - start_time
+    inference_time = time.perf_counter() - start_time
 
     # Calculate accuracy
     pred_labels = (predictions > 0.5).astype(int).flatten()
@@ -98,14 +98,14 @@ def benchmark_qsvm(
     qsvm = QSVM(n_qubits=n_qubits, kernel_type=kernel_type)
 
     # Benchmark training
-    start_time = time.time()
+    start_time = time.perf_counter()
     qsvm.fit(X, y)
-    train_time = time.time() - start_time
+    train_time = time.perf_counter() - start_time
 
     # Benchmark inference
-    start_time = time.time()
+    start_time = time.perf_counter()
     predictions = qsvm.predict(X)
-    inference_time = time.time() - start_time
+    inference_time = time.perf_counter() - start_time
 
     accuracy = np.mean(predictions == y)
 
@@ -141,7 +141,6 @@ def compare_with_classical(
     """
     from quantum_debugger.qml.qnn import QuantumNeuralNetwork
     from sklearn.neural_network import MLPClassifier
-    from sklearn.svm import SVC
 
     # Generate data
     X = np.random.randn(dataset_size, n_qubits)
@@ -151,9 +150,9 @@ def compare_with_classical(
     qnn = QuantumNeuralNetwork(n_qubits=n_qubits)
     qnn.compile(optimizer="adam", loss="mse")
 
-    start = time.time()
+    start = time.perf_counter()
     qnn.fit(X, y, epochs=10, verbose=0)
-    qnn_train_time = time.time() - start
+    qnn_train_time = time.perf_counter() - start
 
     qnn_pred = (qnn.predict(X) > 0.5).astype(int).flatten()
     qnn_accuracy = np.mean(qnn_pred == y)
@@ -161,11 +160,10 @@ def compare_with_classical(
     # Benchmark Classical NN
     mlp = MLPClassifier(hidden_layer_sizes=(10, 10), max_iter=100, random_state=42)
 
-    start = time.time()
+    start = time.perf_counter()
     mlp.fit(X, y)
-    mlp_train_time = time.time() - start
+    mlp_train_time = time.perf_counter() - start
 
-    mlp_pred = mlp.predict(X)
     mlp_accuracy = mlp.score(X, y)
 
     # Calculate comparison metrics

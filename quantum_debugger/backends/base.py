@@ -12,7 +12,6 @@ Version: 0.4.0
 """
 
 from abc import ABC, abstractmethod
-import numpy as np
 
 
 class Backend(ABC):

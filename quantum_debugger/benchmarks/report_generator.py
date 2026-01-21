@@ -5,7 +5,7 @@ Generate comprehensive benchmark reports with visualizations.
 """
 
 import json
-from typing import Dict, Optional
+from typing import Dict
 from pathlib import Path
 import logging
 
@@ -31,8 +31,8 @@ def generate_benchmark_report(
         >>> report_path = generate_benchmark_report(results)
     """
     report = []
-    report.append("# Quantum Machine Learning Benchmark Report\n")
-    report.append(f"Generated: {pd.Timestamp.now()}\n" if "pandas" in globals() else "")
+    from datetime import datetime
+    report.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     report.append("---\n\n")
 
     # QML vs Classical comparison

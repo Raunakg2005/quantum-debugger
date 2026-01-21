@@ -29,7 +29,7 @@ def benchmark_optimization(circuit_gates: List, optimization_level: int = 2) -> 
         >>> print(f"Gate reduction: {results['reduction_percentage']:.1f}%")
         >>> print(f"Optimization time: {results['optimization_time']:.4f}s")
     """
-    from quantum_debugger.optimization import compile_circuit, GateOptimizer
+    from quantum_debugger.optimization import compile_circuit
 
     original_count = len(circuit_gates)
 
