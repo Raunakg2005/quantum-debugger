@@ -5,7 +5,7 @@ Automatically search for optimal quantum neural network architecture.
 """
 
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List
 import logging
 
 logger = logging.getLogger(__name__)

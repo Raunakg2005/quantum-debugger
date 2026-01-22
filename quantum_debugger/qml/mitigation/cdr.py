@@ -5,7 +5,7 @@ Measurement error mitigation using Clifford circuit training.
 """
 
 import numpy as np
-from typing import List, Tuple, Optional, Callable
+from typing import List, Tuple, Callable
 import logging
 
 logger = logging.getLogger(__name__)

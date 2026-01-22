@@ -6,7 +6,7 @@ Find ground state energies of molecules using variational principles.
 """
 
 import numpy as np
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, Optional
 import logging
 import inspect
 

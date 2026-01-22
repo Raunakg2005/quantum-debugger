@@ -5,7 +5,7 @@ Methods for optimizing feature maps based on kernel-target alignment.
 """
 
 import numpy as np
-from typing import Callable, Dict, Any
+from typing import Dict, Any
 from scipy.optimize import minimize
 
 from .quantum_kernel import QuantumKernel

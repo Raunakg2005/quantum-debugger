@@ -3,7 +3,7 @@ Base classes for hybrid classical-quantum layers
 """
 
 import numpy as np
-from typing import Callable, List, Optional, Tuple
+from typing import List
 from abc import ABC, abstractmethod
 
 

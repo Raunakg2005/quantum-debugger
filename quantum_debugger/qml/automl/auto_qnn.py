@@ -5,7 +5,7 @@ Simple interface: auto_qnn(X, y) automatically finds best model!
 """
 
 import numpy as np
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict
 import logging
 
 logger = logging.getLogger(__name__)

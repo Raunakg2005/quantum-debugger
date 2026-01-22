@@ -6,7 +6,7 @@ Methods for computing gradients of quantum circuits.
 """
 
 import numpy as np
-from typing import Callable, List
+from typing import Callable
 
 
 def parameter_shift_gradient(

@@ -5,10 +5,10 @@ Implements SVM with quantum kernels for classification.
 """
 
 import numpy as np
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from sklearn.svm import SVC
 
-from .quantum_kernel import QuantumKernel, FidelityKernel
+from .quantum_kernel import FidelityKernel
 
 
 class QuantumSVM:

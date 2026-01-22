@@ -5,7 +5,7 @@ Main QNN class for building and training quantum neural networks.
 """
 
 import numpy as np
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Tuple
 from .base import QNNLayer
 from .losses import get_loss_function
 from ...core.circuit import QuantumCircuit

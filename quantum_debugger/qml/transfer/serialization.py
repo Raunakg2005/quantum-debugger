@@ -8,7 +8,6 @@ import pickle
 import json
 import numpy as np
 from pathlib import Path
-from typing import Any, Union
 import logging
 
 logger = logging.getLogger(__name__)
@@ -90,7 +89,6 @@ def _load_pickle(path: Path):
 
 def _save_json(model, path: Path):
     """Save using JSON format (human-readable)."""
-    from .pretrained import PretrainedQNN
 
     # Convert to JSON-serializable format
     data = {

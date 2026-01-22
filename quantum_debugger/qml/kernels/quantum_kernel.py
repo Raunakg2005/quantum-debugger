@@ -6,7 +6,7 @@ between data points using quantum circuits.
 """
 
 import numpy as np
-from typing import List, Callable, Optional, Dict
+from typing import Optional
 from abc import ABC, abstractmethod
 
 

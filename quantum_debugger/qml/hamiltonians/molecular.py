@@ -5,7 +5,7 @@ Provides pre-computed Hamiltonians for common molecules used in VQE.
 """
 
 import numpy as np
-from typing import Optional, Dict, Tuple
+from typing import Dict, Tuple
 
 
 def h2_hamiltonian(bond_length: float = 0.735) -> Tuple[np.ndarray, float]:

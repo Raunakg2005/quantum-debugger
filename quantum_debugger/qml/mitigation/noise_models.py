@@ -6,7 +6,7 @@ amplitude damping (T1), and phase damping (T2).
 """
 
 import numpy as np
-from typing import Optional, List
+from typing import List
 import logging
 
 logger = logging.getLogger(__name__)

@@ -6,7 +6,6 @@ Gates with trainable parameters for variational quantum algorithms.
 """
 
 import numpy as np
-from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)

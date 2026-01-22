@@ -5,7 +5,7 @@ Q-Learning with quantum circuits for function approximation.
 """
 
 import numpy as np
-from typing import Optional, Tuple, Callable
+from typing import Tuple
 import logging
 
 logger = logging.getLogger(__name__)
@@ -180,7 +180,7 @@ class QuantumQLearning:
 
     def train(
         self,
-        env: "Environment",
+        env,  # type: SimpleEnvironment or similar with reset(), step()
         episodes: int = 100,
         max_steps: int = 200,
         epsilon_start: float = 1.0,

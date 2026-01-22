@@ -5,7 +5,7 @@ Encode classical data into quantum states through feature maps.
 """
 
 import numpy as np
-from typing import Callable, Optional
+from typing import Callable
 from ...core.circuit import QuantumCircuit
 
 

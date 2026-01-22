@@ -6,7 +6,7 @@ gate fidelities, and coherence times.
 """
 
 import numpy as np
-from typing import Dict, Tuple, Callable, Optional
+from typing import Dict, Tuple, Callable
 import logging
 
 logger = logging.getLogger(__name__)

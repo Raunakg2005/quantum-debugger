@@ -5,7 +5,7 @@ Quantum circuit-based generative models using adversarial training.
 """
 
 import numpy as np
-from typing import Optional, Dict, Tuple
+from typing import Dict
 import logging
 
 logger = logging.getLogger(__name__)

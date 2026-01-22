@@ -5,7 +5,7 @@ Provides foundational components for building quantum neural networks.
 """
 
 import numpy as np
-from typing import Optional, Callable, List
+from typing import Optional
 from abc import ABC, abstractmethod
 
 

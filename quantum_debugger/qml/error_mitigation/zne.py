@@ -6,7 +6,7 @@ at multiple scaled noise levels and extrapolating to zero noise.
 """
 
 import numpy as np
-from typing import List, Optional, Callable, Tuple
+from typing import List, Optional, Callable
 from scipy.optimize import curve_fit
 
 

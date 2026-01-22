@@ -5,7 +5,7 @@ Wraps trained QNN models for easy loading, inference, and fine-tuning.
 """
 
 import numpy as np
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional
 import logging
 
 logger = logging.getLogger(__name__)
