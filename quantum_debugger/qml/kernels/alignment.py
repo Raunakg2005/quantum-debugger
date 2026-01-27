@@ -25,8 +25,6 @@ def kernel_target_alignment(K: np.ndarray, y: np.ndarray) -> float:
     Returns:
         Alignment score (0 to 1, higher is better)
     """
-    n = len(y)
-
     # Create ideal kernel (label agreement)
     y_matrix = y.reshape(-1, 1) @ y.reshape(1, -1)
     Y = (y_matrix == y_matrix.T).astype(float)

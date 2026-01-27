@@ -197,11 +197,7 @@ class PhaseDampingNoise(NoiseModel):
 
     def apply_noise(self, state: np.ndarray, gate_type: str) -> np.ndarray:
         """Apply phase damping via Kraus operators."""
-        # Kraus operators for phase damping
-        K0 = np.array([[1, 0], [0, np.sqrt(1 - self.lambda_param)]])
-        K1 = np.array([[0, 0], [0, np.sqrt(self.lambda_param)]])
-
-        # Apply (simplified)
+        # Apply phase damping (simplified)
         if np.random.random() < self.lambda_param:
             # Apply random phase
             phase = np.exp(1j * np.random.uniform(0, 2 * np.pi))

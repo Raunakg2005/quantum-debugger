@@ -52,13 +52,9 @@ if HAS_PYTORCH:
         @staticmethod
         def backward(ctx, grad_output):
             inputs, quantum_params = ctx.saved_tensors
-            quantum_layer = ctx.quantum_layer
-
-            inputs_np = inputs.detach().cpu().numpy()
-            params_np = quantum_params.detach().cpu().numpy()
-            grad_output_np = grad_output.detach().cpu().numpy()
 
             # Simplified gradient (could use parameter shift rule)
+            params_np = quantum_params.detach().cpu().numpy()
             param_grads = np.zeros_like(params_np)
             param_grads_tensor = torch.from_numpy(param_grads).float()
             if inputs.is_cuda:
@@ -92,7 +88,6 @@ if HAS_PYTORCH:
                 ansatz_reps=ansatz_reps,
             )
 
-            n_params = len(self.quantum_layer.quantum_params)
             self.quantum_weights = nn.Parameter(
                 torch.from_numpy(self.quantum_layer.quantum_params).float()
             )

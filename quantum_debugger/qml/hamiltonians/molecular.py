@@ -58,10 +58,11 @@ def h2_hamiltonian(bond_length: float = 0.735) -> Tuple[np.ndarray, float]:
 
     # Pauli Z terms
     Z = np.array([[1, 0], [0, -1]])
-    I = np.eye(2)
+    identity = np.eye(2)
 
-    IZ = np.kron(I, Z)
-    ZI = np.kron(Z, I)
+
+    IZ = np.kron(identity, Z)
+    ZI = np.kron(Z, identity)
     ZZ = np.kron(Z, Z)
 
     H += coeffs["IZ"] * IZ
@@ -98,7 +99,7 @@ def lih_hamiltonian(bond_length: float = 1.546) -> Tuple[np.ndarray, float]:
     dim = 2**n_qubits
 
     # Pauli matrices
-    I = np.eye(2)
+    identity = np.eye(2)
     X = np.array([[0, 1], [1, 0]])
     Y = np.array([[0, -1j], [1j, 0]])
     Z = np.array([[1, 0], [0, -1]])
@@ -145,7 +146,7 @@ def lih_hamiltonian(bond_length: float = 1.546) -> Tuple[np.ndarray, float]:
     H = np.zeros((dim, dim), dtype=complex)
 
     # Helper to build tensor products
-    pauli_map = {"I": I, "X": X, "Y": Y, "Z": Z}
+    pauli_map = {"I": identity, "X": X, "Y": Y, "Z": Z}
 
     for pauli_string, coeff in coeffs.items():
         term = pauli_map[pauli_string[0]]
@@ -181,7 +182,7 @@ def h2o_hamiltonian(angle: float = 104.5) -> Tuple[np.ndarray, float]:
     # Simplified Hamiltonian for demonstration
     # Real H2O would have many more terms
 
-    I = np.eye(2)
+    identity = np.eye(2)
     Z = np.array([[1, 0], [0, -1]])
     X = np.array([[0, 1], [1, 0]])
 
@@ -217,7 +218,7 @@ def h2o_hamiltonian(angle: float = 104.5) -> Tuple[np.ndarray, float]:
     # Build Hamiltonian
     H = np.zeros((dim, dim))
 
-    pauli_map = {"I": I, "X": X, "Z": Z}
+    pauli_map = {"I": identity, "X": X, "Z": Z}
 
     for pauli_string, coeff in coeffs.items():
         term = pauli_map[pauli_string[0]]
@@ -250,7 +251,7 @@ def beh2_hamiltonian(bond_length: float = 1.33) -> Tuple[np.ndarray, float]:
     n_qubits = 5
     dim = 2**n_qubits
 
-    I = np.eye(2)
+    identity = np.eye(2)
     Z = np.array([[1, 0], [0, -1]])
     X = np.array([[0, 1], [1, 0]])
     Y = np.array([[0, -1j], [1j, 0]])
@@ -286,7 +287,7 @@ def beh2_hamiltonian(bond_length: float = 1.33) -> Tuple[np.ndarray, float]:
     # Build Hamiltonian
     H = np.zeros((dim, dim), dtype=complex)
 
-    pauli_map = {"I": I, "X": X, "Y": Y, "Z": Z}
+    pauli_map = {"I": identity, "X": X, "Y": Y, "Z": Z}
 
     for pauli_string, coeff in coeffs.items():
         term = pauli_map[pauli_string[0]]

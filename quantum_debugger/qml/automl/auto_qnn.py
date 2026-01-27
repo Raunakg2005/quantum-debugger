@@ -119,7 +119,6 @@ class AutoQNN:
         from quantum_debugger.qml.qnn import QuantumNeuralNetwork
 
         start_time = time.time()
-        time_per_trial = self.time_budget / self.n_trials
 
         # Search space
         search_configs = self._generate_search_space(X.shape[1])

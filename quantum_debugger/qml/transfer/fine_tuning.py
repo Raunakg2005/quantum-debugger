@@ -158,7 +158,7 @@ def compute_transfer_benefit(
     # Fine-tune pre-trained model
     logger.info("Fine-tuning pre-trained model...")
     start_time = time.time()
-    history_ft = fine_tune_model(
+    fine_tune_model(
         pretrained_model, X_train, y_train, epochs=fine_tune_epochs, verbose=False
     )
     fine_tune_time = time.time() - start_time
@@ -185,7 +185,7 @@ def compute_transfer_benefit(
         ),
     }
 
-    logger.info(f"Transfer Learning Benefit:")
+    logger.info("Transfer Learning Benefit:")
     logger.info(f"  Fine-tune accuracy: {fine_tune_acc:.4f}")
     logger.info(f"  Scratch accuracy: {scratch_acc:.4f}")
     logger.info(f"  Improvement: {results['improvement']:.4f}")

@@ -124,7 +124,7 @@ class ZeroNoiseExtrapolation:
                     p0=[values[-1], values[0] - values[-1], 1.0],
                 )
                 return exp_model(0, *popt)
-            except:
+            except Exception:
                 # Fallback to linear if exponential fit fails
                 coeffs = np.polyfit(scales, values, deg=1)
                 return coeffs[1]
