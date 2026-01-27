@@ -77,7 +77,6 @@ class DepolarizingNoise(NoiseModel):
 
         for qubit in qubits:
             # Pauli matrices
-            I = np.array([[1, 0], [0, 1]], dtype=complex)
             X = np.array([[0, 1], [1, 0]], dtype=complex)
             Y = np.array([[0, -1j], [1j, 0]], dtype=complex)
             Z = np.array([[1, 0], [0, -1]], dtype=complex)
@@ -99,7 +98,7 @@ class DepolarizingNoise(NoiseModel):
 
     def _build_single_qubit_operator(self, gate, target_qubit, num_qubits):
         """Build full operator for single qubit gate"""
-        I = np.eye(2, dtype=complex)
+        identity = np.eye(2, dtype=complex)
 
         # Build tensor product: I ⊗ I ⊗ ... ⊗ gate ⊗ ... ⊗ I
         result = np.array([[1.0]], dtype=complex)
@@ -107,7 +106,7 @@ class DepolarizingNoise(NoiseModel):
             if q == target_qubit:
                 result = np.kron(result, gate)
             else:
-                result = np.kron(result, I)
+                result = np.kron(result, identity)
 
         return result
 
@@ -189,13 +188,13 @@ class AmplitudeDamping(NoiseModel):
 
     def _build_single_qubit_operator(self, gate, target_qubit, num_qubits):
         """Build full operator for single qubit gate"""
-        I = np.eye(2, dtype=complex)
+        identity = np.eye(2, dtype=complex)
         result = np.array([[1.0]], dtype=complex)
         for q in range(num_qubits):
             if q == target_qubit:
                 result = np.kron(result, gate)
             else:
-                result = np.kron(result, I)
+                result = np.kron(result, identity)
         return result
 
     def __repr__(self):
@@ -255,13 +254,13 @@ class PhaseDamping(NoiseModel):
 
     def _build_single_qubit_operator(self, gate, target_qubit, num_qubits):
         """Build full operator for single qubit gate"""
-        I = np.eye(2, dtype=complex)
+        identity = np.eye(2, dtype=complex)
         result = np.array([[1.0]], dtype=complex)
         for q in range(num_qubits):
             if q == target_qubit:
                 result = np.kron(result, gate)
             else:
-                result = np.kron(result, I)
+                result = np.kron(result, identity)
         return result
 
     def __repr__(self):
@@ -286,7 +285,7 @@ class ThermalRelaxation(NoiseModel):
             gate_time: Duration of the gate operation (seconds)
         """
         if t2 > 2 * t1:
-            raise ValueError(f"T2 ({t2}) must be <= 2*T1 ({2*t1})")
+            raise ValueError(f"T2 ({t2}) must be <= 2 * T1 ({2 * t1})")
 
         self.t1 = t1
         self.t2 = t2

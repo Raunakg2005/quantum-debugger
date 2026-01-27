@@ -128,7 +128,7 @@ class AutoQNN:
                 logger.info(f"Time budget exceeded, stopping at trial {i}")
                 break
 
-            logger.info(f"Trial {i+1}/{self.n_trials}: {config}")
+            logger.info(f"Trial {i + 1}/{self.n_trials}: {config}")
 
             try:
                 # Create and train model

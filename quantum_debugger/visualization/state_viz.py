@@ -4,7 +4,6 @@ Quantum state visualization
 
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Optional
 from quantum_debugger.core.quantum_state import QuantumState
 
 
@@ -23,7 +22,6 @@ class StateVisualizer:
             show_phase: Whether to show phase information
             figsize: Figure size
         """
-        probabilities = state.get_probabilities()
         amplitudes = np.abs(state.state_vector)
         phases = np.angle(state.state_vector)
 

@@ -2,7 +2,7 @@
 Composite noise model for combining multiple noise sources
 """
 
-import numpy as np
+
 from typing import List, Optional
 from quantum_debugger.noise.noise_models import NoiseModel
 

@@ -5,11 +5,10 @@ Combines circuit folding with extrapolation to mitigate quantum noise.
 """
 
 import numpy as np
-from typing import Optional, List, Union, Dict, Tuple
-from copy import deepcopy
+from typing import Optional, Dict
 
 from .core.folder import global_fold, local_fold, adaptive_fold
-from .core.extrapolator import Extrapolator, bootstrap_estimate
+from .core.extrapolator import Extrapolator
 
 
 def zero_noise_extrapolation(
@@ -142,7 +141,7 @@ def zero_noise_extrapolation(
     unmitigated = expectation_values[0]  # Scale = 1.0
     improvement = abs(mitigated - unmitigated) / max(abs(unmitigated), 1e-10)
 
-    print(f"\nZNE Results:")
+    print("\nZNE Results:")
     print(f"  Unmitigated: {unmitigated:.4f}")
     print(f"  Mitigated:   {mitigated:.4f}")
     print(f"  Improvement: {improvement:.2%}")

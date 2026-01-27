@@ -6,7 +6,7 @@ This allows zero-noise extrapolation by running circuits at multiple noise level
 """
 
 import numpy as np
-from typing import List, Optional, Dict, Callable
+from typing import List, Optional, Dict
 
 
 class CircuitFolder:
@@ -106,7 +106,7 @@ class CircuitFolder:
         Returns:
             Inverted circuit (gates in reverse order, each inverted)
         """
-        from copy import deepcopy
+
 
         # Create new circuit with same parameters
         inv_circuit_gates = []

@@ -5,7 +5,7 @@ Use FP16 for speed, FP32 for stability in quantum neural networks.
 """
 
 import numpy as np
-from typing import Optional, Any
+from typing import Any
 import logging
 
 logger = logging.getLogger(__name__)
@@ -130,7 +130,7 @@ class MixedPrecisionTrainer:
         loss = np.mean((predictions - y_compute) ** 2)
 
         # Scale loss
-        scaled_loss = self.scale_loss(loss)
+        # Scale loss for backprop (loss * self.loss_scale)
 
         # Backward pass (simplified - in practice would use autograd)
         if hasattr(self.model, "_compute_gradients"):
@@ -208,7 +208,7 @@ class MixedPrecisionTrainer:
             # Log progress
             if verbose and (epoch + 1) % 10 == 0:
                 logger.info(
-                    f"Epoch {epoch+1}/{epochs}: Loss={avg_loss:.4f}, Scale={self.loss_scale:.1f}"
+                    f"Epoch {epoch + 1}/{epochs}: Loss={avg_loss:.4f}, Scale={self.loss_scale:.1f}"
                 )
 
         return history

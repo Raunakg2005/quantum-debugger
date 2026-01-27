@@ -186,7 +186,7 @@ class QuantumGAN:
 
             if (epoch + 1) % 10 == 0:
                 logger.info(
-                    f"Epoch {epoch+1}/{epochs}: G_loss={epoch_g_loss:.4f}, D_loss={epoch_d_loss:.4f}"
+                    f"Epoch {epoch + 1}/{epochs}: G_loss={epoch_g_loss:.4f}, D_loss={epoch_d_loss:.4f}"
                 )
 
     def generate(self, n_samples: int) -> np.ndarray:

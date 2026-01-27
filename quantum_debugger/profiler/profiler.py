@@ -124,27 +124,27 @@ class CircuitProfiler:
         print("=" * 70)
 
         # Basic metrics
-        print(f"\n📊 BASIC METRICS")
+        print("\n📊 BASIC METRICS")
         print(f"   Number of Qubits: {self.metrics.num_qubits}")
         print(f"   Total Gates: {self.metrics.total_gates}")
         print(f"   Circuit Depth: {self.metrics.depth}")
         print(f"   Parallelism Factor: {self.metrics.parallelism:.2f}")
 
         # Gate breakdown
-        print(f"\n🔧 GATE BREAKDOWN")
+        print("\n🔧 GATE BREAKDOWN")
         print(f"   Single-Qubit Gates: {self.metrics.single_qubit_gates}")
         print(f"   Two-Qubit Gates: {self.metrics.two_qubit_gates}")
         if self.metrics.three_qubit_gates > 0:
             print(f"   Three-Qubit Gates: {self.metrics.three_qubit_gates}")
 
-        print(f"\n   Gate Type Counts:")
+        print("\n   Gate Type Counts:")
         for gate_name, count in sorted(
             self.metrics.gate_counts.items(), key=lambda x: x[1], reverse=True
         ):
             print(f"      {gate_name}: {count}")
 
         # Special metrics
-        print(f"\n⚡ SPECIAL METRICS")
+        print("\n⚡ SPECIAL METRICS")
         print(f"   CNOT Count: {self.metrics.cnot_count}")
         print(f"   T-Gate Count: {self.metrics.t_count}")
         print(f"   Critical Path Length: {len(self.metrics.critical_path)} gates")
@@ -153,20 +153,20 @@ class CircuitProfiler:
         exec_time = self.metrics.estimate_execution_time()
         error_rate = self.metrics.estimate_error_rate()
 
-        print(f"\n⏱️  PERFORMANCE ESTIMATES")
+        print("\n⏱️  PERFORMANCE ESTIMATES")
         print(f"   Estimated Execution Time: {exec_time:.2f} μs")
-        print(f"   Estimated Error Rate: {error_rate*100:.4f}%")
-        print(f"   Estimated Fidelity: {(1-error_rate)*100:.4f}%")
+        print(f"   Estimated Error Rate: {error_rate * 100:.4f}%")
+        print(f"   Estimated Fidelity: {(1 - error_rate) * 100:.4f}%")
 
         # Optimization suggestions
         suggestions = self.get_optimization_suggestions()
-        print(f"\n💡 OPTIMIZATION SUGGESTIONS")
+        print("\n💡 OPTIMIZATION SUGGESTIONS")
         for suggestion in suggestions:
             print(f"   {suggestion}")
 
         # Comparison with ideal
         comparison = self.compare_with_ideal()
-        print(f"\n📈 COMPARISON WITH IDEAL")
+        print("\n📈 COMPARISON WITH IDEAL")
         print(f"   Actual Depth: {comparison['actual_depth']}")
         print(f"   Theoretical Minimum: {comparison['ideal_depth']}")
         print(f"   Depth Overhead: {comparison['depth_overhead']:.2f}x")

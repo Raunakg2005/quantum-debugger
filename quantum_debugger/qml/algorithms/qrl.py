@@ -232,7 +232,7 @@ class QuantumQLearning:
             if (episode + 1) % 10 == 0:
                 avg_reward = np.mean(self.training_history["rewards"][-10:])
                 logger.info(
-                    f"Episode {episode+1}/{episodes}: Avg Reward={avg_reward:.2f}, Epsilon={epsilon:.3f}"
+                    f"Episode {episode + 1}/{episodes}: Avg Reward={avg_reward:.2f}, Epsilon={epsilon:.3f}"
                 )
 
     def get_training_history(self) -> dict:

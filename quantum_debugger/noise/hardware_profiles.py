@@ -5,13 +5,8 @@ Profiles are versioned and based on published specifications from real quantum h
 Parameters are updated regularly to reflect improvements in quantum computing technology.
 """
 
-import numpy as np
 from typing import Dict, Optional
-from quantum_debugger.noise.noise_models import (
-    ThermalRelaxation,
-    DepolarizingNoise,
-    NoiseModel,
-)
+from quantum_debugger.noise.noise_models import DepolarizingNoise
 
 
 class HardwareProfile:
@@ -97,29 +92,29 @@ class HardwareProfile:
             Multi-line string with hardware specifications
         """
         info_str = f"""
-{'='*60}
+{'=' * 60}
 {self.name} Hardware Profile
-{'='*60}
+{'=' * 60}
 Version:           {self.version}
 Last Updated:      {self.date_updated}
 Source:            {self.source_url or 'N/A'}
 
 Coherence Times:
-  T1 (relaxation):    {self.t1*1e6:.1f} μs
-  T2 (dephasing):     {self.t2*1e6:.1f} μs
+  T1 (relaxation):    {self.t1 * 1e6:.1f} μs
+  T2 (dephasing):     {self.t2 * 1e6:.1f} μs
 
 Gate Times:
-  Single-qubit:       {self.gate_times['1q']*1e9:.0f} ns
-  Two-qubit:          {self.gate_times['2q']*1e9:.0f} ns
+  Single-qubit:       {self.gate_times['1q'] * 1e9:.0f} ns
+  Two-qubit:          {self.gate_times['2q'] * 1e9:.0f} ns
 
 Error Rates:
-  Single-qubit gate:  {self.gate_error_1q*100:.3f}%
-  Two-qubit gate:     {self.gate_error_2q*100:.3f}%
-  Readout:            {self.readout_error*100:.2f}%
+  Single-qubit gate:  {self.gate_error_1q * 100:.3f}%
+  Two-qubit gate:     {self.gate_error_2q * 100:.3f}%
+  Readout:            {self.readout_error * 100:.2f}%
 
 Description:
   {self.description or 'No description available'}
-{'='*60}
+{'=' * 60}
 """
         return info_str
 

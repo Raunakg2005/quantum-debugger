@@ -71,16 +71,16 @@ class QuantumState(_QuantumState):
 
         # Start with identity
         full_dim = 2**self.num_qubits
-        full_matrix = np.eye(full_dim, dtype=complex)
+
 
         # Build full matrix using Kronecker products
-        I = np.eye(2, dtype=complex)
+        identity = np.eye(2, dtype=complex)
         result = np.array([[1.0]], dtype=complex)
 
         for qubit_idx in range(self.num_qubits):
             if qubit_idx in target_qubits:
                 # Find position in target_qubits list
-                pos = target_qubits.index(qubit_idx)
+                target_qubits.index(qubit_idx)
                 # Extract corresponding 2x2 block from gate
                 if num_gate_qubits == 1:
                     result = np.kron(result, gate_matrix)
@@ -92,7 +92,7 @@ class QuantumState(_QuantumState):
                     elif qubit_idx in target_qubits[1:]:
                         continue
             else:
-                result = np.kron(result, I)
+                result = np.kron(result, identity)
 
         return (
             result

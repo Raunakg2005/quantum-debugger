@@ -212,12 +212,12 @@ class StateInspector:
         if summary["is_entangled"] is not None:
             print(f"Entangled: {summary['is_entangled']}")
 
-        print(f"\nMeasurement Statistics:")
+        print("\nMeasurement Statistics:")
         stats = StateInspector.get_measurement_stats(state)
         for basis_state, prob in list(stats.items())[:5]:
-            print(f"  |{basis_state}>: {prob:.4f} ({prob*100:.2f}%)")
+            print(f"  |{basis_state}>: {prob:.4f} ({prob * 100:.2f}%)")
 
-        print(f"\nPer-Qubit Probabilities:")
+        print("\nPer-Qubit Probabilities:")
         for q in range(state.num_qubits):
             prob_0, prob_1 = StateInspector.get_qubit_probabilities(state, q)
             print(f"  Qubit {q}: |0>={prob_0:.4f}, |1>={prob_1:.4f}")

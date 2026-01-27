@@ -176,13 +176,13 @@ class QuantumDebugger:
 
     def visualize(self):
         """Print visualization of current state"""
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Gate {self.current_gate_index}/{len(self.circuit.gates)}")
         if self.current_gate_index < len(self.circuit.gates):
             print(f"Next gate: {self.circuit.gates[self.current_gate_index]}")
         else:
             print("Circuit execution complete")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         self.inspector.print_state_info(self.current_state)
 
@@ -220,9 +220,9 @@ class QuantumDebugger:
 
     def print_status(self):
         """Print current debugging status"""
-        print(f"\n{'='*60}")
-        print(f"DEBUGGER STATUS")
-        print(f"{'='*60}")
+        print(f"\n{'=' * 60}")
+        print("DEBUGGER STATUS")
+        print(f"{'=' * 60}")
         print(
             f"Circuit: {self.circuit.num_qubits} qubits, {len(self.circuit.gates)} gates"
         )
@@ -241,7 +241,7 @@ class QuantumDebugger:
             print(f"  {status} {bp}")
 
         print(f"\nExecution history: {len(self.execution_history)} states saved")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
     def __repr__(self):
         return (

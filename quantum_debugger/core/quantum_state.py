@@ -95,12 +95,9 @@ class QuantumState:
         Returns:
             Full gate matrix for entire system
         """
-        num_gate_qubits = len(target_qubits)
-
         # Build list of operators for each qubit
         # For target qubits, we'll later insert the actual gate
         # For non-target qubits, use identity
-        I = np.eye(2, dtype=complex)
 
         # Sort target qubits to understand their positions
         target_set = set(target_qubits)

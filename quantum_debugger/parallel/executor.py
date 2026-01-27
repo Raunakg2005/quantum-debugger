@@ -5,9 +5,9 @@ Enables multi-core parallel execution of shots for faster simulation.
 """
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
-from typing import Dict, List, Optional, Callable
+from typing import Dict, List, Optional
 import os
-import multiprocessing as mp
+
 
 
 class ParallelExecutor:

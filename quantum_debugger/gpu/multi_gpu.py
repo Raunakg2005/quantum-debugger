@@ -228,7 +228,7 @@ class DataParallelQNN(DistributedQNN):
             # Log progress
             if (epoch + 1) % 10 == 0:
                 avg_loss = epoch_loss / max(n_batches, 1)
-                logger.info(f"Epoch {epoch+1}/{epochs}: Loss={avg_loss:.4f}")
+                logger.info(f"Epoch {epoch + 1}/{epochs}: Loss={avg_loss:.4f}")
 
         return self
 

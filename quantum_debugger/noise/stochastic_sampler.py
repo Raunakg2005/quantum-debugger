@@ -92,14 +92,14 @@ class StochasticNoiseSampler:
         """Expand operator to full system (simplified version)"""
         # For single-qubit operators
         if operator.shape[0] == 2:
-            I = np.eye(2, dtype=complex)
+            identity = np.eye(2, dtype=complex)
             result = np.array([[1.0]], dtype=complex)
 
             for qubit_idx in range(num_qubits):
                 if qubit_idx in target_qubits:
                     result = np.kron(result, operator)
                 else:
-                    result = np.kron(result, I)
+                    result = np.kron(result, identity)
 
             return result
         else:

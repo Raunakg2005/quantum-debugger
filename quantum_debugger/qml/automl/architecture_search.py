@@ -66,7 +66,7 @@ class QuantumNAS:
         architectures = self._generate_architectures(X.shape[1])
 
         for i, arch in enumerate(architectures[: self.search_budget]):
-            logger.info(f"Testing architecture {i+1}/{self.search_budget}: {arch}")
+            logger.info(f"Testing architecture {i + 1}/{self.search_budget}: {arch}")
 
             try:
                 # Build model with this architecture

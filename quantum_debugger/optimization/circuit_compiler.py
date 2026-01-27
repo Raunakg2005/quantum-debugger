@@ -4,7 +4,7 @@ Circuit Compiler
 Multi-level circuit optimization and compilation for quantum circuits.
 """
 
-import numpy as np
+
 from typing import Dict, List, Optional, Callable
 import logging
 

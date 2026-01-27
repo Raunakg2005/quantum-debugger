@@ -232,7 +232,7 @@ class QuantumNeuralNetwork:
 
             # Print progress
             if verbose and epoch % max(1, epochs // 10) == 0:
-                msg = f"Epoch {epoch+1}/{epochs} - loss: {train_loss:.4f}"
+                msg = f"Epoch {epoch + 1}/{epochs} - loss: {train_loss:.4f}"
                 if validation_data is not None:
                     msg += f" - val_loss: {val_loss:.4f}"
                 print(msg)

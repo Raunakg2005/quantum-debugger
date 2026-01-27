@@ -115,7 +115,7 @@ class Transpiler:
 
         for gate in gates:
             if isinstance(gate, tuple) and len(gate) >= 2:
-                gate_name = gate[0]
+
                 qubits = gate[1]
 
                 # Check if 2-qubit gate

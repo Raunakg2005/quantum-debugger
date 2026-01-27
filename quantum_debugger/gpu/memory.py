@@ -4,8 +4,8 @@ GPU Memory Optimization
 Memory management utilities for efficient GPU usage.
 """
 
-import numpy as np
-from typing import Optional, Dict, Any
+
+from typing import Dict, Any
 import logging
 
 logger = logging.getLogger(__name__)

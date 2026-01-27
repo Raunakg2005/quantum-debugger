@@ -7,7 +7,7 @@ to the zero-noise limit.
 
 import numpy as np
 from scipy.optimize import curve_fit
-from typing import List, Tuple, Optional
+from typing import Tuple
 
 
 class Extrapolator:
@@ -160,7 +160,7 @@ class Extrapolator:
         try:
             exp_result, _ = Extrapolator.exponential(noise_levels, expectation_values)
             methods["exponential"] = lambda: exp_result
-        except:
+        except Exception:
             pass
 
         best_method = None
@@ -196,7 +196,7 @@ class Extrapolator:
                     best_method = method_name
                     best_value = zero_noise_val
 
-            except Exception as e:
+            except Exception:
                 # Skip methods that fail
                 continue
 

@@ -4,7 +4,7 @@ Bloch sphere visualization for single-qubit states
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
 from quantum_debugger.core.quantum_state import QuantumState
 
 

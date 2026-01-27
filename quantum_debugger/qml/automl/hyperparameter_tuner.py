@@ -74,7 +74,7 @@ class HyperparameterTuner:
         configs = self._generate_configs()
 
         for i, config in enumerate(configs[: self.n_trials]):
-            logger.info(f"Trial {i+1}/{self.n_trials}: {config}")
+            logger.info(f"Trial {i + 1}/{self.n_trials}: {config}")
 
             try:
                 # Create model
