@@ -60,7 +60,6 @@ def h2_hamiltonian(bond_length: float = 0.735) -> Tuple[np.ndarray, float]:
     Z = np.array([[1, 0], [0, -1]])
     identity = np.eye(2)
 
-
     IZ = np.kron(identity, Z)
     ZI = np.kron(Z, identity)
     ZZ = np.kron(Z, Z)

@@ -4,7 +4,6 @@ Qiskit Bridge
 Convert between quantum-debugger and Qiskit circuit formats.
 """
 
-
 from typing import List, Tuple, Optional
 import logging
 

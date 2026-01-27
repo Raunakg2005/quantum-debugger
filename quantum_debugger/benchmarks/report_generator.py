@@ -32,6 +32,7 @@ def generate_benchmark_report(
     """
     report = []
     from datetime import datetime
+
     report.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     report.append("---\n\n")
 
