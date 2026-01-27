@@ -26,7 +26,6 @@ except ImportError:
 
 from .layers import QuantumMiddleLayer
 
-
 if HAS_PYTORCH:
 
     class QuantumFunction(Function):

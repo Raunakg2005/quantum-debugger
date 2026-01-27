@@ -62,7 +62,6 @@ except ImportError:
 
 from .layers import QuantumMiddleLayer
 
-
 if HAS_TENSORFLOW:
 
     class QuantumKerasLayer(keras.layers.Layer):
