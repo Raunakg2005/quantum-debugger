@@ -5,7 +5,7 @@ Convert between quantum-debugger and Cirq (Google) formats.
 """
 
 import numpy as np
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 import logging
 
 logger = logging.getLogger(__name__)

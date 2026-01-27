@@ -6,12 +6,9 @@ This module provides bidirectional conversion:
 - Export QuantumDebugger circuit → Qiskit QuantumCircuit
 """
 
-import numpy as np
-from typing import Optional, List, Tuple
 
 try:
     from qiskit import QuantumCircuit as QiskitCircuit
-    from qiskit.circuit import Instruction
 
     QISKIT_AVAILABLE = True
 except ImportError:

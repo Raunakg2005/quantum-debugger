@@ -7,7 +7,7 @@ This module provides bidirectional conversion:
 """
 
 import numpy as np
-from typing import Optional, List, Tuple
+from typing import Optional, List
 
 try:
     import cirq
@@ -212,7 +212,6 @@ class CirqAdapter:
                 )
             elif gate_name == "rx" and "theta" in params:
                 # Convert radians to Cirq exponent
-                exponent = params["theta"] / np.pi
                 cirq_circuit.append(cirq.Rx(rads=params["theta"])(gate_qubits[0]))
             elif gate_name == "ry" and "theta" in params:
                 cirq_circuit.append(cirq.Ry(rads=params["theta"])(gate_qubits[0]))

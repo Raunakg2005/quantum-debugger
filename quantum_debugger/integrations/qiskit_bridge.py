@@ -4,7 +4,7 @@ Qiskit Bridge
 Convert between quantum-debugger and Qiskit circuit formats.
 """
 
-import numpy as np
+
 from typing import List, Tuple, Optional
 import logging
 
@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 # Check if Qiskit is available
 try:
     from qiskit import QuantumCircuit
-    from qiskit.circuit import Gate, Instruction
 
     QISKIT_AVAILABLE = True
 except ImportError:
