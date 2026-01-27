@@ -9,7 +9,6 @@ from typing import Dict, List, Optional
 import os
 
 
-
 class ParallelExecutor:
     """
     Execute quantum circuits in parallel across multiple cores.

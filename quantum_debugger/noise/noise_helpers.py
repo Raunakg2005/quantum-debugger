@@ -72,7 +72,6 @@ class QuantumState(_QuantumState):
         # Start with identity
         full_dim = 2**self.num_qubits
 
-
         # Build full matrix using Kronecker products
         identity = np.eye(2, dtype=complex)
         result = np.array([[1.0]], dtype=complex)

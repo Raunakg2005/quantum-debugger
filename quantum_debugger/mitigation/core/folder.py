@@ -107,7 +107,6 @@ class CircuitFolder:
             Inverted circuit (gates in reverse order, each inverted)
         """
 
-
         # Create new circuit with same parameters
         inv_circuit_gates = []
 
