@@ -57,7 +57,9 @@ def run_docstring_tests():
     return total_failures == 0
 
 
-@pytest.mark.xfail(reason="Docstring examples have minor output/variable issues", strict=False)
+@pytest.mark.xfail(
+    reason="Docstring examples have minor output/variable issues", strict=False
+)
 def test_all_docstrings():
     """Pytest wrapper for docstring tests"""
     success = run_docstring_tests()

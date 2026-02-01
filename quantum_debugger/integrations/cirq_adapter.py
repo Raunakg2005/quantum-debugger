@@ -56,8 +56,13 @@ class CirqAdapter:
 
         # Check standard gates
         simple_gates = {
-            "H": "h", "X": "x", "Y": "y", "Z": "z",
-            "S": "s", "T": "t", "CZ": "cz"
+            "H": "h",
+            "X": "x",
+            "Y": "y",
+            "Z": "z",
+            "S": "s",
+            "T": "t",
+            "CZ": "cz",
         }
 
         if gate_str in simple_gates:

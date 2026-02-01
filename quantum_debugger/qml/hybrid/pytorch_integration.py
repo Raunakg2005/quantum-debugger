@@ -99,7 +99,9 @@ if HAS_PYTORCH:
 
             return outputs
 
-    def _build_classical_layers(input_dim: int, output_dim: int, hidden_dims: List[int], dropout_rate: float):
+    def _build_classical_layers(
+        input_dim: int, output_dim: int, hidden_dims: List[int], dropout_rate: float
+    ):
         """Build sequential classical neural network layers."""
         layers = []
         prev_dim = input_dim

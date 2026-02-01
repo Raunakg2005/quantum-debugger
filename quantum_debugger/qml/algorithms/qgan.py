@@ -140,7 +140,7 @@ class QuantumGAN:
 
             for batch_idx in range(0, n_samples, batch_size):
                 batch_real = real_data[
-                    batch_idx:min(batch_idx + batch_size, n_samples)
+                    batch_idx : min(batch_idx + batch_size, n_samples)
                 ]
 
                 # Train discriminator

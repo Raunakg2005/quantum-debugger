@@ -92,7 +92,9 @@ def _detect_num_qubits(gates: List[Tuple]) -> int:
     return max_qubit + 1
 
 
-def _add_single_qubit_gate(qc: "QuantumCircuit", gate_name: str, qubit: int, params: List):
+def _add_single_qubit_gate(
+    qc: "QuantumCircuit", gate_name: str, qubit: int, params: List
+):
     """Add single qubit gate to Qiskit circuit."""
     gate_map = {
         "h": lambda: qc.h(qubit),

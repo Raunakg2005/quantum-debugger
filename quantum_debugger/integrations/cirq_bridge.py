@@ -110,7 +110,9 @@ def _detect_num_qubits_cirq(gates: List[Tuple]) -> int:
     return max_qubit + 1
 
 
-def _add_single_qubit_gate_cirq(circuit: "cirq.Circuit", gate_name: str, qubit, params: List):
+def _add_single_qubit_gate_cirq(
+    circuit: "cirq.Circuit", gate_name: str, qubit, params: List
+):
     """Add single qubit gate to Cirq circuit."""
     gate_map = {
         "h": lambda: cirq.H(qubit),

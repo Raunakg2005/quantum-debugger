@@ -63,7 +63,7 @@ class Adam:
         self.epsilon = epsilon
         self.m = None  # First moment estimate
         self.v = None  # Second moment estimate
-        self.t = 0     # Time step
+        self.t = 0  # Time step
 
     def step(self, params: np.ndarray, gradients: np.ndarray) -> np.ndarray:
         """
@@ -86,13 +86,13 @@ class Adam:
         self.m = self.beta1 * self.m + (1 - self.beta1) * gradients
 
         # Update biased second raw moment estimate
-        self.v = self.beta2 * self.v + (1 - self.beta2) * (gradients ** 2)
+        self.v = self.beta2 * self.v + (1 - self.beta2) * (gradients**2)
 
         # Compute bias-corrected first moment estimate
-        m_hat = self.m / (1 - self.beta1 ** self.t)
+        m_hat = self.m / (1 - self.beta1**self.t)
 
         # Compute bias-corrected second raw moment estimate
-        v_hat = self.v / (1 - self.beta2 ** self.t)
+        v_hat = self.v / (1 - self.beta2**self.t)
 
         # Update parameters
         return params - self.learning_rate * m_hat / (np.sqrt(v_hat) + self.epsilon)

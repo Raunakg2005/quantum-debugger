@@ -10,10 +10,9 @@ from quantum_debugger.backends import (
     benchmark_backends,
 )
 
-
-
 try:
     import cupy
+
     CUPY_AVAILABLE = True
 except ImportError:
     CUPY_AVAILABLE = False
