@@ -2,6 +2,9 @@
 Optimizers module for quantum machine learning
 """
 
+# Basic optimizers
+from .basics import Adam, GradientDescent
+
 # Advanced optimizers
 from .advanced import (
     QuantumNaturalGradient,
@@ -13,6 +16,9 @@ from .advanced import (
 )
 
 __all__ = [
+    # Basic optimizers
+    "Adam",
+    "GradientDescent",
     # Advanced optimizers
     "QuantumNaturalGradient",
     "NelderMeadOptimizer",

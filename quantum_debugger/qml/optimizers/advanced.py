@@ -7,6 +7,7 @@ Provides sophisticated optimization algorithms beyond basic gradient descent.
 import numpy as np
 from typing import Callable, Optional, Dict, Any
 from scipy.optimize import minimize
+from .basics import Adam, GradientDescent
 
 
 class QuantumNaturalGradient:
@@ -301,6 +302,10 @@ def get_optimizer(name: str, **kwargs):
         >>> result = opt.minimize(cost_fn, initial_params)
     """
     optimizers = {
+        "adam": Adam,
+        "gd": GradientDescent,
+        "gradient-descent": GradientDescent,
+        "sgd": GradientDescent,
         "qng": QuantumNaturalGradient,
         "quantum-natural-gradient": QuantumNaturalGradient,
         "nelder-mead": NelderMeadOptimizer,

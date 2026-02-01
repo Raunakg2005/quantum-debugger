@@ -97,6 +97,50 @@ def from_cirq(cirq_circuit) -> List[Tuple]:
     return gates
 
 
+def _detect_num_qubits_cirq(gates: List[Tuple]) -> int:
+    """Auto-detect number of qubits from gate list for Cirq."""
+    max_qubit = 0
+    for gate in gates:
+        if isinstance(gate, tuple) and len(gate) >= 2:
+            qubits = gate[1]
+            if isinstance(qubits, int):
+                max_qubit = max(max_qubit, qubits)
+            elif isinstance(qubits, (tuple, list)):
+                max_qubit = max(max_qubit, max(qubits))
+    return max_qubit + 1
+
+
+def _add_single_qubit_gate_cirq(circuit: "cirq.Circuit", gate_name: str, qubit, params: List):
+    """Add single qubit gate to Cirq circuit."""
+    gate_map = {
+        "h": lambda: cirq.H(qubit),
+        "x": lambda: cirq.X(qubit),
+        "y": lambda: cirq.Y(qubit),
+        "z": lambda: cirq.Z(qubit),
+        "s": lambda: cirq.S(qubit),
+        "t": lambda: cirq.T(qubit),
+    }
+
+    if gate_name in gate_map:
+        circuit.append(gate_map[gate_name]())
+    elif gate_name == "rx" and params:
+        circuit.append(cirq.rx(params[0])(qubit))
+    elif gate_name == "ry" and params:
+        circuit.append(cirq.ry(params[0])(qubit))
+    elif gate_name == "rz" and params:
+        circuit.append(cirq.rz(params[0])(qubit))
+
+
+def _add_two_qubit_gate_cirq(circuit: "cirq.Circuit", gate_name: str, q1, q2):
+    """Add two qubit gate to Cirq circuit."""
+    if gate_name in ["cnot", "cx"]:
+        circuit.append(cirq.CNOT(q1, q2))
+    elif gate_name == "cz":
+        circuit.append(cirq.CZ(q1, q2))
+    elif gate_name == "swap":
+        circuit.append(cirq.SWAP(q1, q2))
+
+
 def to_cirq(gates: List[Tuple]) -> "cirq.Circuit":
     """
     Convert quantum-debugger format to Cirq circuit.
@@ -115,18 +159,9 @@ def to_cirq(gates: List[Tuple]) -> "cirq.Circuit":
     if not CIRQ_AVAILABLE:
         raise ImportError("Cirq not installed. Install with: pip install cirq")
 
-    # Determine number of qubits
-    max_qubit = 0
-    for gate in gates:
-        if isinstance(gate, tuple) and len(gate) >= 2:
-            qubits = gate[1]
-            if isinstance(qubits, int):
-                max_qubit = max(max_qubit, qubits)
-            elif isinstance(qubits, (tuple, list)):
-                max_qubit = max(max_qubit, max(qubits))
-
-    # Create qubits
-    qubits = cirq.LineQubit.range(max_qubit + 1)
+    # Determine number of qubits and create qubits
+    num_qubits = _detect_num_qubits_cirq(gates)
+    qubits = cirq.LineQubit.range(num_qubits)
     circuit = cirq.Circuit()
 
     for gate in gates:
@@ -140,38 +175,14 @@ def to_cirq(gates: List[Tuple]) -> "cirq.Circuit":
             qubit_idx = gate[1]
             q = qubits[qubit_idx]
             params = gate[2:] if len(gate) > 2 else []
-
-            if gate_name == "h":
-                circuit.append(cirq.H(q))
-            elif gate_name == "x":
-                circuit.append(cirq.X(q))
-            elif gate_name == "y":
-                circuit.append(cirq.Y(q))
-            elif gate_name == "z":
-                circuit.append(cirq.Z(q))
-            elif gate_name == "s":
-                circuit.append(cirq.S(q))
-            elif gate_name == "t":
-                circuit.append(cirq.T(q))
-            elif gate_name == "rx" and params:
-                circuit.append(cirq.rx(params[0])(q))
-            elif gate_name == "ry" and params:
-                circuit.append(cirq.ry(params[0])(q))
-            elif gate_name == "rz" and params:
-                circuit.append(cirq.rz(params[0])(q))
+            _add_single_qubit_gate_cirq(circuit, gate_name, q, params)
 
         # Two qubit gates
         elif len(gate) >= 2 and isinstance(gate[1], (tuple, list)):
             qubit_indices = gate[1]
             if len(qubit_indices) == 2:
                 q1, q2 = qubits[qubit_indices[0]], qubits[qubit_indices[1]]
-
-                if gate_name in ["cnot", "cx"]:
-                    circuit.append(cirq.CNOT(q1, q2))
-                elif gate_name == "cz":
-                    circuit.append(cirq.CZ(q1, q2))
-                elif gate_name == "swap":
-                    circuit.append(cirq.SWAP(q1, q2))
+                _add_two_qubit_gate_cirq(circuit, gate_name, q1, q2)
 
     logger.info(f"Created Cirq circuit: {len(qubits)} qubits, {len(circuit)} moments")
 

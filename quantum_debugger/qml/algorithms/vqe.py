@@ -33,7 +33,7 @@ class VQE:
         Initialize VQE.
 
         Args:
-            hamiltonian: Hamiltonian matrix (2^n × 2^n) or tuple
+            hamiltonian: Hamiltonian matrix (2^n × 2^n) or tuple (matrix, offset)
             ansatz_builder: Ansatz builder function
             num_qubits: Number of qubits
             optimizer: Classical optimizer
@@ -43,7 +43,9 @@ class VQE:
 
         # Convert Hamiltonian to numpy array if needed
         if isinstance(hamiltonian, (tuple, list)):
-            self.hamiltonian = np.array(hamiltonian)
+            # If tuple/list, extract just the matrix (first element)
+            # Some hamiltonians return (matrix, energy_offset)
+            self.hamiltonian = np.array(hamiltonian[0])
         else:
             self.hamiltonian = hamiltonian
 
@@ -58,6 +60,21 @@ class VQE:
         else:
             # This is already the builder function
             self.ansatz_builder = ansatz_builder
+
+        # Detect whether the builder expects `num_qubits` as an argument
+        try:
+            builder_sig = inspect.signature(self.ansatz_builder)
+            builder_params = list(builder_sig.parameters.keys())
+        except (TypeError, ValueError):
+            builder_params = []
+
+        # If the builder has a parameter named 'num_qubits' or 'n_qubits',
+        # or if it expects at least two positional args, call it with
+        # (params, num_qubits) in `cost_function`.
+        self._builder_accepts_num_qubits = (
+            any(p in ["num_qubits", "n_qubits"] for p in builder_params)
+            or len(builder_params) >= 2
+        )
 
         self.optimizer = optimizer
         self.max_iterations = max_iterations
@@ -80,7 +97,21 @@ class VQE:
         E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩
         """
         # Build circuit with ansatz
-        circuit = self.ansatz_builder(params)
+        if self._builder_accepts_num_qubits:
+            result = self.ansatz_builder(params, self.num_qubits)
+        else:
+            result = self.ansatz_builder(params)
+
+        # If ansatz returns a list of gates, build circuit manually
+        if isinstance(result, list):
+            from ...core.circuit import QuantumCircuit
+
+            circuit = QuantumCircuit(self.num_qubits)
+            for gate in result:
+                # Apply parameterized gate using its matrix
+                circuit._add_gate(gate.name, gate.matrix(), gate.target)
+        else:
+            circuit = result
 
         # Get statevector from circuit
         statevector = circuit.get_statevector().state_vector

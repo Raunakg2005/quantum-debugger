@@ -49,10 +49,10 @@ def zz_feature_map(n_qubits: int, reps: int = 2) -> Callable:
             # Entanglement layer - ZZ interactions
             for i in range(n_qubits - 1):
                 # ZZ(φ) = exp(-i φ Z⊗Z / 2) implemented with CNOTs and RZ
-                phi = (np.pi - data[i]) * (np.pi - data[i+1])
-                circuit.cnot(i, i+1)
-                circuit.rz(phi, i+1)
-                circuit.cnot(i, i+1)
+                phi = (np.pi - data[i]) * (np.pi - data[i + 1])
+                circuit.cnot(i, i + 1)
+                circuit.rz(phi, i + 1)
+                circuit.cnot(i, i + 1)
 
         return circuit
 
@@ -105,10 +105,10 @@ def pauli_feature_map(n_qubits: int,
                 for i in range(n_qubits):
                     circuit.rz(data[i], i)
                 for i in range(n_qubits - 1):
-                    phi = data[i] * data[i+1]
-                    circuit.cnot(i, i+1)
-                    circuit.rz(phi, i+1)
-                    circuit.cnot(i, i+1)
+                    phi = data[i] * data[i + 1]
+                    circuit.cnot(i, i + 1)
+                    circuit.rz(phi, i + 1)
+                    circuit.cnot(i, i + 1)
 
             else:
                 raise ValueError(f"Unsupported Pauli string: {paulis}")

@@ -93,6 +93,50 @@ def from_pennylane(pennylane_tape) -> List[Tuple]:
     return gates
 
 
+def _detect_num_wires(gates: List[Tuple]) -> int:
+    """Auto-detect number of wires from gate list for PennyLane."""
+    max_wire = 0
+    for gate in gates:
+        if isinstance(gate, tuple) and len(gate) >= 2:
+            wires = gate[1]
+            if isinstance(wires, int):
+                max_wire = max(max_wire, wires)
+            elif isinstance(wires, (tuple, list)):
+                max_wire = max(max_wire, max(wires))
+    return max_wire + 1
+
+
+def _add_single_qubit_gate_pennylane(gate_name: str, wire: int, params: List):
+    """Add single qubit gate to PennyLane circuit."""
+    gate_map = {
+        "h": lambda: qml.Hadamard(wires=wire),
+        "x": lambda: qml.PauliX(wires=wire),
+        "y": lambda: qml.PauliY(wires=wire),
+        "z": lambda: qml.PauliZ(wires=wire),
+        "s": lambda: qml.S(wires=wire),
+        "t": lambda: qml.T(wires=wire),
+    }
+
+    if gate_name in gate_map:
+        gate_map[gate_name]()
+    elif gate_name == "rx" and params:
+        qml.RX(params[0], wires=wire)
+    elif gate_name == "ry" and params:
+        qml.RY(params[0], wires=wire)
+    elif gate_name == "rz" and params:
+        qml.RZ(params[0], wires=wire)
+
+
+def _add_two_qubit_gate_pennylane(gate_name: str, wires_tuple):
+    """Add two qubit gate to PennyLane circuit."""
+    if gate_name in ["cnot", "cx"]:
+        qml.CNOT(wires=list(wires_tuple))
+    elif gate_name == "cz":
+        qml.CZ(wires=list(wires_tuple))
+    elif gate_name == "swap":
+        qml.SWAP(wires=list(wires_tuple))
+
+
 def to_pennylane(gates: List[Tuple], device_name: str = "default.qubit") -> "qml.QNode":
     """
     Convert quantum-debugger format to PennyLane QNode.
@@ -114,17 +158,8 @@ def to_pennylane(gates: List[Tuple], device_name: str = "default.qubit") -> "qml
             "PennyLane not installed. Install with: pip install pennylane"
         )
 
-    # Determine number of wires
-    max_wire = 0
-    for gate in gates:
-        if isinstance(gate, tuple) and len(gate) >= 2:
-            wires = gate[1]
-            if isinstance(wires, int):
-                max_wire = max(max_wire, wires)
-            elif isinstance(wires, (tuple, list)):
-                max_wire = max(max_wire, max(wires))
-
-    n_wires = max_wire + 1
+    # Determine number of wires and create device
+    n_wires = _detect_num_wires(gates)
     dev = qml.device(device_name, wires=n_wires)
 
     def circuit():
@@ -138,36 +173,12 @@ def to_pennylane(gates: List[Tuple], device_name: str = "default.qubit") -> "qml
             if len(gate) >= 2 and isinstance(gate[1], int):
                 wire = gate[1]
                 params = gate[2:] if len(gate) > 2 else []
-
-                if gate_name == "h":
-                    qml.Hadamard(wires=wire)
-                elif gate_name == "x":
-                    qml.PauliX(wires=wire)
-                elif gate_name == "y":
-                    qml.PauliY(wires=wire)
-                elif gate_name == "z":
-                    qml.PauliZ(wires=wire)
-                elif gate_name == "rx" and params:
-                    qml.RX(params[0], wires=wire)
-                elif gate_name == "ry" and params:
-                    qml.RY(params[0], wires=wire)
-                elif gate_name == "rz" and params:
-                    qml.RZ(params[0], wires=wire)
-                elif gate_name == "s":
-                    qml.S(wires=wire)
-                elif gate_name == "t":
-                    qml.T(wires=wire)
+                _add_single_qubit_gate_pennylane(gate_name, wire, params)
 
             # Two qubit gates
             elif len(gate) >= 2 and isinstance(gate[1], (tuple, list)):
                 wires_tuple = gate[1]
-
-                if gate_name in ["cnot", "cx"]:
-                    qml.CNOT(wires=list(wires_tuple))
-                elif gate_name == "cz":
-                    qml.CZ(wires=list(wires_tuple))
-                elif gate_name == "swap":
-                    qml.SWAP(wires=list(wires_tuple))
+                _add_two_qubit_gate_pennylane(gate_name, wires_tuple)
 
         # Return measurement (default: Z on first qubit)
         return qml.expval(qml.PauliZ(0))

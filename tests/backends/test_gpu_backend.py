@@ -11,6 +11,15 @@ from quantum_debugger.backends import (
 )
 
 
+
+try:
+    import cupy
+    CUPY_AVAILABLE = True
+except ImportError:
+    CUPY_AVAILABLE = False
+
+
+@pytest.mark.skipif(not CUPY_AVAILABLE, reason="CuPy not installed")
 class TestGPUBackend:
     """Test GPU backend functionality"""
 

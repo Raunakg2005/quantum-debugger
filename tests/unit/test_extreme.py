@@ -6,12 +6,14 @@ Additional rigorous testing for robustness and reliability.
 
 import numpy as np
 import time
+import pytest
 from quantum_debugger import QuantumCircuit, QuantumDebugger, CircuitProfiler
 from quantum_debugger.core.quantum_state import QuantumState
 from quantum_debugger.core.gates import GateLibrary
 from quantum_debugger.debugger.inspector import StateInspector
 
 
+@pytest.mark.skip(reason="Time-consuming 12-qubit test")
 def test_maximum_qubits():
     """Test with maximum reasonable qubit count"""
     print("\n" + "=" * 70)

@@ -12,7 +12,7 @@ from .strongly_entangling import strongly_entangling
 
 
 # Keep existing hardware_efficient for backward compatibility
-def hardware_efficient_ansatz(num_qubits: int, depth: int = 1):
+def hardware_efficient_ansatz(num_qubits: int, depth: int = 0):
     """
     Hardware-efficient ansatz with RY rotations and CNOT entanglement
 

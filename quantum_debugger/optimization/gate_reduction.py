@@ -205,7 +205,7 @@ class GateOptimizer:
             # Check 3-gate patterns
             if i + 2 < len(gates):
                 pattern = tuple(
-                    g[0] if isinstance(g, tuple) else g for g in gates[i : i + 3]
+                    g[0] if isinstance(g, tuple) else g for g in gates[i:i + 3]
                 )
 
                 if pattern in self.pattern_rules:

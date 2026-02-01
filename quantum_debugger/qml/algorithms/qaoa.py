@@ -78,8 +78,8 @@ class QAOA:
             Negative cost value (for minimization)
         """
         # Split parameters
-        gamma = params[: self.p]
-        beta = params[self.p :]
+        gamma = params[:self.p]
+        beta = params[self.p:]
 
         # Build QAOA circuit
         from ..gates import RXGate, RZGate

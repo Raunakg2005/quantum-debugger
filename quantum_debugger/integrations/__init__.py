@@ -12,8 +12,13 @@ All integrations are optional - quantum-debugger works standalone.
 from .qiskit_bridge import from_qiskit, to_qiskit, QISKIT_AVAILABLE
 from .pennylane_bridge import from_pennylane, to_pennylane, PENNYLANE_AVAILABLE
 from .cirq_bridge import from_cirq, to_cirq, CIRQ_AVAILABLE
+from .cirq_adapter import CirqAdapter
+from .qiskit_adapter import QiskitAdapter
 
 __all__ = [
+    # Adapters
+    "CirqAdapter",
+    "QiskitAdapter",
     # Qiskit
     "from_qiskit",
     "to_qiskit",

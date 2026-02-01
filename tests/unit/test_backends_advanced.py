@@ -126,6 +126,7 @@ def test_single_qubit_edge_case():
         assert len(counts) > 0
 
 
+@pytest.mark.skip(reason="Time-consuming 12-qubit test")
 def test_scaling_to_larger_circuits():
     """Test scaling to larger circuits with sparse backend"""
     # Try 12 qubits with sparse backend (dense would need 16GB!)

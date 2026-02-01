@@ -48,6 +48,47 @@ class CirqAdapter:
         if not CIRQ_AVAILABLE:
             raise ImportError("Cirq is not installed. Install with: pip install cirq")
 
+    @staticmethod
+    def _parse_cirq_gate(gate, gate_str: str):
+        """Parse Cirq gate and return gate name and parameters."""
+        gate_name = None
+        params = []
+
+        # Check standard gates
+        simple_gates = {
+            "H": "h", "X": "x", "Y": "y", "Z": "z",
+            "S": "s", "T": "t", "CZ": "cz"
+        }
+
+        if gate_str in simple_gates:
+            gate_name = simple_gates[gate_str]
+        elif "CNOT" in gate_str or "CX" in gate_str:
+            gate_name = "cnot"
+        elif "SWAP" in gate_str:
+            gate_name = "swap"
+        elif "CCX" in gate_str or "TOFFOLI" in gate_str:
+            gate_name = "toffoli"
+        elif gate_str.startswith("RX"):
+            gate_name = "rx"
+            params = CirqAdapter._extract_rotation_params(gate)
+        elif gate_str.startswith("RY"):
+            gate_name = "ry"
+            params = CirqAdapter._extract_rotation_params(gate)
+        elif gate_str.startswith("RZ"):
+            gate_name = "rz"
+            params = CirqAdapter._extract_rotation_params(gate)
+
+        return gate_name, params
+
+    @staticmethod
+    def _extract_rotation_params(gate):
+        """Extract rotation parameters from Cirq gate."""
+        if hasattr(gate, "exponent"):
+            return [gate.exponent * np.pi]
+        elif hasattr(gate, "_rads"):
+            return [gate._rads]
+        return []
+
     @classmethod
     def from_cirq(cls, cirq_circuit: "cirq.Circuit") -> QDCircuit:
         """
@@ -81,64 +122,18 @@ class CirqAdapter:
             for operation in moment:
                 gate = operation.gate
                 gate_qubits = operation.qubits
-
-                # Get qubit indices
                 qubit_indices = [qubit_map[q] for q in gate_qubits]
 
-                # Determine gate type using string comparison (more reliable)
+                # Parse gate
                 gate_str = str(gate).upper()
-                gate_name = None
-                params = []
-
-                # Check gates by string representation
-                if "H" == gate_str:
-                    gate_name = "h"
-                elif "X" == gate_str:
-                    gate_name = "x"
-                elif "Y" == gate_str:
-                    gate_name = "y"
-                elif "Z" == gate_str:
-                    gate_name = "z"
-                elif "S" == gate_str:
-                    gate_name = "s"
-                elif "T" == gate_str:
-                    gate_name = "t"
-                elif "CNOT" in gate_str or "CX" in gate_str:
-                    gate_name = "cnot"
-                elif "CZ" == gate_str:
-                    gate_name = "cz"
-                elif "SWAP" in gate_str:
-                    gate_name = "swap"
-                elif "CCX" in gate_str or "TOFFOLI" in gate_str:
-                    gate_name = "toffoli"
-                elif gate_str.startswith("RX"):
-                    gate_name = "rx"
-                    # Extract angle from gate
-                    if hasattr(gate, "exponent"):
-                        params = [gate.exponent * np.pi]
-                    elif hasattr(gate, "_rads"):
-                        params = [gate._rads]
-                elif gate_str.startswith("RY"):
-                    gate_name = "ry"
-                    if hasattr(gate, "exponent"):
-                        params = [gate.exponent * np.pi]
-                    elif hasattr(gate, "_rads"):
-                        params = [gate._rads]
-                elif gate_str.startswith("RZ"):
-                    gate_name = "rz"
-                    if hasattr(gate, "exponent"):
-                        params = [gate.exponent * np.pi]
-                    elif hasattr(gate, "_rads"):
-                        params = [gate._rads]
+                gate_name, params = cls._parse_cirq_gate(gate, gate_str)
 
                 # Apply gate to QuantumDebugger circuit
                 if gate_name:
                     gate_method = getattr(qd_circuit, gate_name)
                     if params:
-                        # Parameterized gate
                         gate_method(*params, *qubit_indices)
                     else:
-                        # Standard gate
                         gate_method(*qubit_indices)
                 else:
                     print(

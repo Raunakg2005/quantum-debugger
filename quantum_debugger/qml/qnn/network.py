@@ -94,7 +94,7 @@ class QuantumNeuralNetwork:
         for layer in self.layers:
             if layer.num_parameters > 0:
                 # Variational layer with parameters
-                layer_params = params[param_idx : param_idx + layer.num_parameters]
+                layer_params = params[param_idx:param_idx + layer.num_parameters]
                 layer_circuit = layer.build_circuit(params=layer_params)
                 param_idx += layer.num_parameters
             else:
@@ -207,8 +207,8 @@ class QuantumNeuralNetwork:
 
             # Mini-batch training
             for i in range(0, n_samples, batch_size):
-                batch_X = X_shuffled[i : i + batch_size]
-                batch_y = y_shuffled[i : i + batch_size]
+                batch_X = X_shuffled[i:i + batch_size]
+                batch_y = y_shuffled[i:i + batch_size]
 
                 # Compute loss
                 loss = self.compute_loss(params, batch_X, batch_y)

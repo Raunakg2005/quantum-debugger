@@ -19,8 +19,8 @@ from quantum_debugger.qml import (
     VQE,
     QAOA,
     h2_hamiltonian,
-    hardware_efficient_ansatz,
 )
+from quantum_debugger.qml.ansatz import hardware_efficient_ansatz
 from quantum_debugger.qml.optimizers import Adam, GradientDescent
 from quantum_debugger.qml.training import QuantumTrainer
 
@@ -30,7 +30,7 @@ class TestVQEIntegration:
 
     def test_vqe_with_custom_ansatz(self):
         """Test VQE with a custom ansatz builder"""
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
 
         def custom_ansatz(params, num_qubits):
             """Custom 3-layer ansatz"""
@@ -54,7 +54,7 @@ class TestVQEIntegration:
 
     def test_vqe_with_different_optimizers(self):
         """Test VQE works with all optimizer types"""
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
 
         optimizers = ["COBYLA", "SLSQP", "Powell"]
 
@@ -76,7 +76,7 @@ class TestVQEIntegration:
 
     def test_vqe_convergence_tracking(self):
         """Test VQE properly tracks convergence"""
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
         vqe = VQE(H, hardware_efficient_ansatz, num_qubits=2, max_iterations=30)
 
         result = vqe.run(np.array([0.5, 0.8]))
@@ -132,7 +132,7 @@ class TestGatesWithAlgorithms:
 
     def test_gates_in_vqe_circuit(self):
         """Test gates work correctly within VQE"""
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
 
         def test_ansatz(params, num_qubits):
             """Ansatz with all gate types"""
@@ -170,12 +170,13 @@ class TestEndToEndWorkflows:
     def test_complete_vqe_workflow(self):
         """Test full VQE workflow from setup to result"""
         # 1. Define problem
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
         exact_energy = np.linalg.eigvalsh(H)[0]
 
         # 2. Choose ansatz
         def my_ansatz(params, num_qubits):
-            return hardware_efficient_ansatz(params, num_qubits, depth=2)
+            builder = hardware_efficient_ansatz(num_qubits, depth=1)
+            return builder(params)
 
         # 3. Setup VQE
         vqe = VQE(
@@ -235,7 +236,7 @@ class TestStressTests:
 
     def test_vqe_many_iterations(self):
         """Test VQE with many iterations"""
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
         vqe = VQE(H, hardware_efficient_ansatz, num_qubits=2, max_iterations=100)
 
         result = vqe.run(np.array([0.5, 0.5]))
@@ -263,14 +264,15 @@ class TestStressTests:
 
     def test_deep_ansatz(self):
         """Test VQE with deep ansatz"""
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
 
         def deep_ansatz(params, num_qubits):
-            return hardware_efficient_ansatz(params, num_qubits, depth=5)
+            builder = hardware_efficient_ansatz(num_qubits, depth=4)
+            return builder(params)
 
         vqe = VQE(H, deep_ansatz, num_qubits=2, max_iterations=30)
 
-        # 5 layers, 2 qubits = 10 params
+        # 4 layers, 2 qubits + final layer = 10 params
         result = vqe.run(np.random.rand(10))
 
         # Should handle deep circuit
@@ -282,7 +284,7 @@ class TestErrorHandling:
 
     def test_vqe_wrong_param_count(self):
         """Test VQE handles wrong parameter count gracefully"""
-        H = h2_hamiltonian()
+        H, _ = h2_hamiltonian()
         vqe = VQE(H, hardware_efficient_ansatz, num_qubits=2)
 
         # Wrong number of params (need 2, give 3)

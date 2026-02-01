@@ -99,6 +99,23 @@ if HAS_PYTORCH:
 
             return outputs
 
+    def _build_classical_layers(input_dim: int, output_dim: int, hidden_dims: List[int], dropout_rate: float):
+        """Build sequential classical neural network layers."""
+        layers = []
+        prev_dim = input_dim
+
+        for hidden_dim in hidden_dims:
+            layers.append(nn.Linear(prev_dim, hidden_dim))
+            layers.append(nn.ReLU())
+            if dropout_rate > 0:
+                layers.append(nn.Dropout(dropout_rate))
+            prev_dim = hidden_dim
+
+        if prev_dim != output_dim:
+            layers.append(nn.Linear(prev_dim, output_dim))
+
+        return layers, prev_dim
+
     class HybridQNN(nn.Module):
         """Complete hybrid quantum-classical neural network"""
 
@@ -122,19 +139,9 @@ if HAS_PYTORCH:
             classical_hidden_post = classical_hidden_post or []
 
             # Classical preprocessing
-            pre_layers = []
-            prev_dim = input_dim
-
-            for hidden_dim in classical_hidden_pre:
-                pre_layers.append(nn.Linear(prev_dim, hidden_dim))
-                pre_layers.append(nn.ReLU())
-                if dropout_rate > 0:
-                    pre_layers.append(nn.Dropout(dropout_rate))
-                prev_dim = hidden_dim
-
-            if prev_dim != n_qubits:
-                pre_layers.append(nn.Linear(prev_dim, n_qubits))
-
+            pre_layers, _ = _build_classical_layers(
+                input_dim, n_qubits, classical_hidden_pre, dropout_rate
+            )
             self.classical_pre = (
                 nn.Sequential(*pre_layers) if pre_layers else nn.Identity()
             )
@@ -145,17 +152,11 @@ if HAS_PYTORCH:
             )
 
             # Classical postprocessing
-            post_layers = []
-            prev_dim = n_qubits
-
-            for hidden_dim in classical_hidden_post:
-                post_layers.append(nn.Linear(prev_dim, hidden_dim))
-                post_layers.append(nn.ReLU())
-                if dropout_rate > 0:
-                    post_layers.append(nn.Dropout(dropout_rate))
-                prev_dim = hidden_dim
-
-            post_layers.append(nn.Linear(prev_dim, output_dim))
+            post_layers, prev_dim = _build_classical_layers(
+                n_qubits, output_dim, classical_hidden_post, dropout_rate
+            )
+            if prev_dim != output_dim:
+                post_layers.append(nn.Linear(prev_dim, output_dim))
             self.classical_post = nn.Sequential(*post_layers)
 
         def forward(self, x):

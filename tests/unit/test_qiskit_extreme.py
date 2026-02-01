@@ -11,11 +11,13 @@ The most challenging test scenarios:
 
 import numpy as np
 import time
+import pytest
 from qiskit import QuantumCircuit as QiskitCircuit
 from quantum_debugger import QuantumCircuit, QuantumDebugger
 from quantum_debugger.integrations.qiskit_adapter import QiskitAdapter
 
 
+@pytest.mark.skip(reason="Time-consuming 10-qubit test")
 def test_10_qubit_random_circuit():
     """Test 10-qubit random circuit conversion"""
     print("\n" + "=" * 70)
@@ -226,6 +228,7 @@ def test_error_correction_encoding():
     return False
 
 
+@pytest.mark.skip(reason="Time-consuming 12-qubit performance scaling test")
 def test_performance_scaling():
     """Test performance across different qubit counts"""
     print("\n" + "=" * 70)

@@ -5,7 +5,7 @@ Combines circuit folding with extrapolation to mitigate quantum noise.
 """
 
 import numpy as np
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from .core.folder import global_fold, local_fold, adaptive_fold
 from .core.extrapolator import Extrapolator
