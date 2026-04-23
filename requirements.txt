@@ -8,7 +8,7 @@ cirq>=1.0.0     # For Cirq integration
 
 # Development dependencies
 pytest>=8.4.2
-pytest-cov>=3.0.0
+pytest-cov>=7.1.0
 black>=25.11.0
 flake8>=4.0.0
 sphinx>=7.4.7
