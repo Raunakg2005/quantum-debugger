@@ -7,7 +7,7 @@ qiskit>=0.39.0  # For Qiskit integration
 cirq>=1.0.0     # For Cirq integration
 
 # Development dependencies
-pytest>=7.0.0
+pytest>=8.4.2
 pytest-cov>=3.0.0
 black>=22.0.0
 flake8>=4.0.0
