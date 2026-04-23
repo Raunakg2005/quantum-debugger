@@ -3,7 +3,7 @@ matplotlib>=3.9.4
 scipy>=1.7.0
 
 # Optional dependencies for advanced features
-qiskit>=0.39.0  # For Qiskit integration
+qiskit>=2.2.3  # For Qiskit integration
 cirq>=1.0.0     # For Cirq integration
 
 # Development dependencies
