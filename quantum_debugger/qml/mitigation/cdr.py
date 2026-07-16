@@ -102,16 +102,30 @@ class CDR:
 
     def _clifford_simulate(self, circuit_gates: List, n_qubits: int) -> np.ndarray:
         """
-        Efficiently simulate Clifford circuit.
+        Simulate a Clifford circuit exactly and return its ideal output
+        probability distribution.
 
-        Uses stabilizer formalism for efficient classical simulation.
+        Clifford circuits (H, S, CNOT) are exactly reproducible on the
+        state-vector simulator, so the "ideal" training labels are the true
+        outcome probabilities -- not the random values the previous placeholder
+        returned. (For large qubit counts a stabilizer tableau would be more
+        efficient, but state-vector simulation is exact for the sizes used here.)
         """
-        # Simplified: return random computational basis state
-        # In full implementation, would use stabilizer tableau
-        n_states = 2**n_qubits
-        probabilities = np.random.dirichlet(np.ones(n_states))
+        from ...core.circuit import QuantumCircuit
 
-        return probabilities
+        circuit = QuantumCircuit(n_qubits)
+        for gate in circuit_gates:
+            name = gate[0]
+            if name == "H":
+                circuit.h(gate[1])
+            elif name == "S":
+                circuit.s(gate[1])
+            elif name == "CNOT":
+                circuit.cnot(gate[1], gate[2])
+            else:
+                raise ValueError(f"Non-Clifford gate in training circuit: {name}")
+
+        return circuit.get_statevector().get_probabilities()
 
     def train(
         self, training_data: List[Tuple[List, np.ndarray]], noisy_executor: Callable

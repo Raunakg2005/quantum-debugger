@@ -11,13 +11,20 @@ Features:
 - Zero-noise extrapolation (v0.4.0)
 - Qiskit integration
 - Hardware profile support
-
-Version: 0.4.0-dev
 """
 
-__version__ = "0.4.2"
-__author__ = "warlord9004"
+__version__ = "0.6.1"
+__author__ = "Raunak Kumar Gupta"
 __license__ = "MIT"
+
+# Make pip-installed CUDA runtime DLLs discoverable (Windows) as early as
+# possible, before anything imports CuPy, so the GPU backend works out of the box.
+try:
+    from .backends._cuda_dll import ensure_cuda_dlls
+
+    ensure_cuda_dlls()
+except Exception:
+    pass
 
 from .core.circuit import QuantumCircuit
 from .core.quantum_state import QuantumState
@@ -56,7 +63,7 @@ try:
     from .integrations import QiskitAdapter
 
     __all_integrations__ = ["QiskitAdapter"]
-except ImportError:
+except Exception:  # optional integrations must never break the base import
     __all_integrations__ = []
 
 __all__ = [

@@ -115,21 +115,29 @@ class MultiGPUManager:
 
 
 class DistributedQNN:
-    """Base class for distributed QNN."""
+    """
+    Base class for distributed QNN.
+
+    The default behaviour genuinely trains the wrapped QNN (single-device). True
+    multi-device distribution requires a GPU backend (CuPy + multiple GPUs); when
+    that is unavailable, training falls back to one device and produces the same
+    trained model rather than raising or silently doing nothing.
+    """
 
     def __init__(self, qnn: Any, gpu_ids: List[int]):
         """Initialize distributed QNN."""
         self.qnn = qnn
         self.gpu_ids = gpu_ids
-        self.n_gpus = len(gpu_ids)
+        self.n_gpus = max(1, len(gpu_ids))
 
     def fit(self, X: np.ndarray, y: np.ndarray, **kwargs):
-        """Training method to be implemented by subclasses."""
-        raise NotImplementedError
+        """Train the wrapped QNN (single-device fallback)."""
+        self.qnn.fit(X, y, **kwargs)
+        return self
 
     def predict(self, X: np.ndarray) -> np.ndarray:
-        """Prediction method to be implemented by subclasses."""
-        raise NotImplementedError
+        """Predict with the wrapped QNN."""
+        return self.qnn.predict(X)
 
 
 class DataParallelQNN(DistributedQNN):
@@ -142,21 +150,6 @@ class DataParallelQNN(DistributedQNN):
     def __init__(self, qnn: Any, gpu_ids: List[int]):
         """Initialize data parallel QNN."""
         super().__init__(qnn, gpu_ids)
-        self._replicas = self._create_replicas()
-
-    def _create_replicas(self) -> List[Any]:
-        """Create QNN replica on each GPU."""
-        replicas = []
-        for gpu_id in self.gpu_ids:
-            # Create replica with same architecture
-            replica = type(self.qnn)(
-                n_qubits=self.qnn.n_qubits, n_layers=getattr(self.qnn, "n_layers", 1)
-            )
-            # Copy weights from original
-            if hasattr(self.qnn, "_parameters"):
-                replica._parameters = self.qnn._parameters.copy()
-            replicas.append(replica)
-        return replicas
 
     def fit(
         self,
@@ -169,87 +162,68 @@ class DataParallelQNN(DistributedQNN):
         """
         Train with data parallelism.
 
+        Each mini-batch is split into ``n_gpus`` shards; a gradient is computed
+        per shard and the shard gradients are averaged before the optimizer step
+        -- exactly the data-parallel algorithm. On a single device the shards run
+        sequentially (no wall-clock speedup), but the result is a genuinely
+        trained model; with a real multi-GPU backend the shards would run
+        concurrently. This uses the wrapped QNN's real gradient and optimizer,
+        unlike the previous version which called methods that do not exist on the
+        QNN and therefore trained nothing.
+
         Args:
             X: Training data
             y: Training labels
             epochs: Number of epochs
-            batch_size: Total batch size (split across GPUs)
-            **kwargs: Additional training arguments
+            batch_size: Total batch size (split across shards)
         """
+        qnn = self.qnn
+        if not getattr(qnn, "compiled", False):
+            qnn.compile()
+
+        params = qnn._initialize_all_parameters()
+        optimizer = qnn._make_optimizer()
         n_samples = len(X)
-        batch_size_per_gpu = batch_size // self.n_gpus
 
         for epoch in range(epochs):
-            epoch_loss = 0
-            n_batches = 0
-
-            # Shuffle data
             indices = np.random.permutation(n_samples)
             X_shuffled = X[indices]
             y_shuffled = y[indices]
+            epoch_loss = 0.0
+            n_batches = 0
 
-            # Process batches
             for i in range(0, n_samples, batch_size):
-                batch_end = min(i + batch_size, n_samples)
-                X_batch = X_shuffled[i:batch_end]
-                y_batch = y_shuffled[i:batch_end]
+                bx = X_shuffled[i : i + batch_size]
+                by = y_shuffled[i : i + batch_size]
+                if len(bx) == 0:
+                    continue
 
-                # Split batch across GPUs
-                batch_losses = []
-                batch_gradients = []
+                # Data-parallel: shard the batch, average per-shard gradients.
+                shard_x = np.array_split(bx, self.n_gpus)
+                shard_y = np.array_split(by, self.n_gpus)
+                shard_grads = []
+                for sx, sy in zip(shard_x, shard_y):
+                    if len(sx) == 0:
+                        continue
+                    shard_grads.append(qnn._compute_gradient(params, sx, sy))
 
-                for gpu_idx, replica in enumerate(self._replicas):
-                    start_idx = gpu_idx * batch_size_per_gpu
-                    end_idx = min(start_idx + batch_size_per_gpu, len(X_batch))
-
-                    if start_idx < end_idx:
-                        X_split = X_batch[start_idx:end_idx]
-                        y_split = y_batch[start_idx:end_idx]
-
-                        # Forward pass on GPU
-                        loss = replica._compute_loss(X_split, y_split)
-                        batch_losses.append(loss)
-
-                        # Compute gradients (simplified)
-                        if hasattr(replica, "_compute_gradients"):
-                            grads = replica._compute_gradients(X_split, y_split)
-                            batch_gradients.append(grads)
-
-                # Average losses
-                if batch_losses:
-                    epoch_loss += np.mean(batch_losses)
+                if shard_grads:
+                    avg_grad = np.mean(shard_grads, axis=0)
+                    params = optimizer.step(params, avg_grad)
+                    epoch_loss += qnn.compute_loss(params, bx, by)
                     n_batches += 1
 
-                    # Aggregate and apply gradients
-                    if batch_gradients:
-                        avg_gradients = np.mean(batch_gradients, axis=0)
-                        self._apply_gradients(avg_gradients)
-
-            # Log progress
             if (epoch + 1) % 10 == 0:
-                avg_loss = epoch_loss / max(n_batches, 1)
-                logger.info(f"Epoch {epoch + 1}/{epochs}: Loss={avg_loss:.4f}")
+                logger.info(
+                    f"Epoch {epoch + 1}/{epochs}: Loss={epoch_loss / max(n_batches, 1):.4f}"
+                )
 
+        qnn._parameters = params
         return self
 
-    def _apply_gradients(self, gradients: np.ndarray):
-        """Apply averaged gradients to all replicas."""
-        learning_rate = 0.01
-        for replica in self._replicas:
-            if hasattr(replica, "_parameters"):
-                replica._parameters -= learning_rate * gradients
-
     def predict(self, X: np.ndarray) -> np.ndarray:
-        """
-        Predict using first replica (all have same weights).
-
-        Args:
-            X: Input data
-
-        Returns:
-            Predictions
-        """
-        return self._replicas[0].predict(X)
+        """Predict with the trained QNN."""
+        return self.qnn.predict(X)
 
 
 class ModelParallelQNN(DistributedQNN):

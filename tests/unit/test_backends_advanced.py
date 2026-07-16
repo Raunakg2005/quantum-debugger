@@ -40,8 +40,8 @@ def test_complex_number_precision():
     for backend_name in backends:
         circuit = QuantumCircuit(2, backend=backend_name)
         circuit.h(0)
-        circuit.rx(0, np.pi / 4)  # Rotation gate
-        circuit.ry(1, np.pi / 3)
+        circuit.rx(np.pi / 4, 0)  # Rotation gate: rx(theta, qubit)
+        circuit.ry(np.pi / 3, 1)
 
         result = circuit.run(shots=1000)
         assert "counts" in result

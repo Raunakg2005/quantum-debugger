@@ -10,7 +10,7 @@ try:
     from qiskit import QuantumCircuit as QiskitCircuit
 
     QISKIT_AVAILABLE = True
-except ImportError:
+except Exception:  # not just ImportError: a broken/incompatible install must not break our import
     QISKIT_AVAILABLE = False
     QiskitCircuit = None
 

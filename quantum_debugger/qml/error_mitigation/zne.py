@@ -201,22 +201,52 @@ class ZeroNoiseExtrapolation:
 
 def scale_circuit_noise(circuit, scale_factor: float):
     """
-    Scale the noise in a quantum circuit.
+    Scale the noise in a quantum circuit by unitary folding.
 
-    Implementation note: This is a placeholder. Actual noise scaling
-    would require modifying the noise model or using unitary folding.
+    Global unitary folding maps U -> U (U^dag U)^n, and partial folding of the
+    last ``k`` gates handles non-integer factors, so the logical operation is
+    unchanged while the gate count (and hence the noise) grows by roughly
+    ``scale_factor``. This is the standard, exact ZNE noise-scaling technique --
+    the previous version returned the circuit unchanged.
 
     Args:
-        circuit: Quantum circuit
+        circuit: QuantumCircuit whose ``.gates`` are foldable
         scale_factor: Noise scaling factor (>= 1.0)
 
     Returns:
-        Circuit with scaled noise
+        A new QuantumCircuit implementing the same unitary with ~scale_factor x gates
     """
-    # For now, return the original circuit
-    # In practice, this would insert identity operations (G G†)
-    # or scale noise parameters in the noise model
-    return circuit
+    from ...core.circuit import QuantumCircuit
+    from ...mitigation.core.folder import CircuitFolder
+
+    gates = list(circuit.gates)
+    depth = len(gates)
+
+    folded = QuantumCircuit(circuit.num_qubits)
+    folded.gates = list(gates)
+    if depth == 0 or scale_factor <= 1.0:
+        return folded
+
+    # scale_factor = 1 + 2 * (number of full folds) + (partial fold fraction)
+    pairs = (scale_factor - 1.0) / 2.0
+    full_folds = int(np.floor(pairs))
+    frac = pairs - full_folds
+
+    def extend_with_fold(subset):
+        # Append inverse(subset) then subset -> identity, doubling those gates.
+        folded.gates.extend(
+            CircuitFolder.get_inverse_gate(g) for g in reversed(subset)
+        )
+        folded.gates.extend(subset)
+
+    for _ in range(full_folds):
+        extend_with_fold(gates)
+
+    k = int(round(frac * depth))
+    if k > 0:
+        extend_with_fold(gates[depth - k :])
+
+    return folded
 
 
 def richardson_extrapolation(

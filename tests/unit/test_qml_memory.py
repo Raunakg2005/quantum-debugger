@@ -31,21 +31,28 @@ class TestMemoryUsage:
         gc.collect()
 
     def test_memory_leak_detection(self):
-        """Test for memory leaks in repeated operations"""
-        initial_objects = len(gc.get_objects())
+        """Test that repeatedly created gates are actually freed (no leak)."""
+        n_iter = 1000
 
-        # Create and destroy gates repeatedly
-        for _ in range(1000):
+        def live_gate_count():
+            # Count only RXGate instances, so the check is immune to unrelated
+            # process churn (CuPy streams, TF/Jac caches, other threads) that made
+            # a whole-process `len(gc.get_objects())` delta flaky in the full suite.
+            return sum(1 for o in gc.get_objects() if type(o) is RXGate)
+
+        gc.collect()
+        before = live_gate_count()
+
+        for _ in range(n_iter):
             gate = RXGate(target=0, parameter=np.random.rand())
             _ = gate.matrix()
             del gate
 
         gc.collect()
-        final_objects = len(gc.get_objects())
+        leaked = live_gate_count() - before
 
-        # Should not have significant object growth
-        # Allow some margin for Python internals
-        assert final_objects - initial_objects < 100
+        # If gates leaked, ~n_iter instances would survive; none should.
+        assert leaked < 10
 
     def test_matrix_memory_reuse(self):
         """Test that matrices don't accumulate in memory"""

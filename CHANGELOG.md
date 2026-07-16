@@ -5,6 +5,84 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-07-16
+
+Release-hardening pass focused on correctness, performance, and robustness. No
+breaking API changes.
+
+### Added
+- **GPU state-vector simulation**: `QuantumCircuit.get_statevector(use_gpu=True,
+  precision='single'|'double')` runs the entire circuit on the GPU (CuPy) — the
+  state lives on the device across all gates with a single transfer back.
+  Verified identical to CPU in double precision; measured ~6x (double) and
+  50-75x (single) vs CPU at 20-22 qubits on an RTX 5060.
+- **Automatic Windows CUDA DLL discovery** so the GPU backend works out of the
+  box with the `cupy-cuda12x` + `nvidia-*-cu12` pip wheel setup.
+
+### Fixed
+- **Import robustness**: a broken or version-incompatible optional dependency
+  (e.g. PennyLane against a mismatched JAX) no longer crashes
+  `import quantum_debugger`. Optional-integration guards now degrade gracefully
+  to `<FRAMEWORK>_AVAILABLE = False` instead of only catching `ImportError`.
+- **QNN training**: `QuantumNeuralNetwork.fit` now uses the compiled optimizer
+  (Adam / SGD) instead of a hardcoded `params -= 0.01 * gradient` that ignored
+  `compile(...)`. Training now actually converges.
+- **QNN readout**: the network output is now a proper Pauli-Z expectation
+  `<Z_0>` over the full distribution, rather than `P(|0...0>) - P(|1...1>)`
+  which discarded almost all amplitudes for >2 qubits.
+- **AutoML**: `AutoQNN` now selects models on a held-out validation split (was
+  scoring on the training data — leakage) and refits the winning configuration
+  on all data.
+- **QAOA**: the cost layer now applies genuine two-qubit ZZ interactions
+  (CNOT·RZ·CNOT) instead of single-qubit RZ rotations, so the ansatz can
+  entangle and reach the true MaxCut optima.
+- **Hybrid (PyTorch)**: fixed a shape-mismatch crash in `HybridQNN` caused by a
+  duplicated output projection, and replaced the all-zero backward pass with
+  finite-difference gradients so the quantum layer (and any preceding classical
+  layers) actually train.
+- Corrected two test bugs exposed once the suite became collectable
+  (a swapped-argument `rx` call and a sign error in a QAOA convergence check).
+- **Windows CUDA DLL discovery**: with the common `cupy-cuda12x` + `nvidia-*-cu12`
+  wheel setup, the CUDA DLLs live under `site-packages/nvidia/*/bin` and are not
+  on the Windows DLL search path, so CuPy failed to load `nvrtc`/`cublas`. The
+  backend now adds those directories to `PATH` and the DLL search list before
+  importing CuPy, so the GPU backend works out of the box (verified on an
+  RTX 5060 / sm_120).
+
+### Reworked — placeholder features are now genuinely quantum
+Several advertised features previously returned classical surrogates, random
+values, or zero gradients. They are now real implementations, each verified:
+- **Quantum fidelity kernel / QSVM**: `FidelityKernel` computes
+  `|<phi(x1)|phi(x2)>|^2` by simulating the real feature-map circuits (was a
+  classical RBF). Gram matrix verified symmetric, unit-diagonal, PSD.
+  `ProjectedKernel` is now the real reduced-density-matrix kernel.
+- **Hybrid quantum layer** (`QuantumMiddleLayer`): forward is now a real
+  encoding + variational circuit measured in Z (was `cos(x + params)`), with
+  exact parameter-shift gradients wired into the PyTorch and TensorFlow layers
+  (were all-zero gradients). Gradients verified against finite differences.
+- **Quantum GAN**: real variational generator circuit and a trainable
+  discriminator with exact BCE gradients (was a global-phase no-op generator and
+  a random discriminator). Generator demonstrably learns a target distribution.
+- **Quantum RL**: real parameterized-circuit Q-function with parameter-shift TD
+  updates (was `tanh` of a dot product). Agent learns the gridworld to optimum.
+- **Error mitigation**: genuine PEC (quasi-probability Monte Carlo that recovers
+  the ideal expectation), CDR (exact Clifford simulation + regression), Quantum
+  Natural Gradient (true Fubini-Study metric, matches analytic values), and ZNE
+  noise scaling by real unitary folding (preserves the logical unitary).
+- **GPU module**: `DistributedQNN`/`DataParallelQNN` now genuinely train via real
+  data-parallel gradient averaging (base class no longer raises
+  `NotImplementedError`); mixed-precision `train_step` uses a real gradient (was
+  random). Multi-GPU wall-clock speedup still requires GPU hardware.
+
+### Changed
+- **Core simulator performance**: `QuantumState.apply_gate` now applies gates by
+  tensor contraction (O(2**n) per gate) instead of materializing the full
+  2**n x 2**n operator (O(4**n)). Results are numerically identical (verified
+  against the previous implementation over thousands of random configurations);
+  16-qubit circuits that were previously infeasible now run in tens of ms.
+- Reconciled version metadata: `__version__` is the single source of truth and
+  `setup.py` reads it (previously `0.4.2` in the package vs `0.6.0` in setup).
+
 ## [0.4.2] - 2025-12-22
 
 ### Added

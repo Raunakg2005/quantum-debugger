@@ -13,7 +13,7 @@ try:
     import numba as nb
 
     HAS_NUMBA = True
-except ImportError:
+except Exception:  # not just ImportError: a broken/incompatible install must not break our import
     HAS_NUMBA = False
 
     # Create dummy decorators for when Numba is not available

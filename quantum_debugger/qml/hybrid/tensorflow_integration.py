@@ -13,7 +13,7 @@ try:
     from tensorflow import keras
 
     HAS_TENSORFLOW = True
-except ImportError:
+except Exception:  # not just ImportError: a broken/incompatible install must not break our import
     HAS_TENSORFLOW = False
 
     # Create complete dummy classes when TensorFlow not available
@@ -120,11 +120,40 @@ if HAS_TENSORFLOW:
             super().build(input_shape)
 
         def call(self, inputs, training=None):
-            """Forward pass through quantum layer"""
-            inputs_np = inputs.numpy() if hasattr(inputs, "numpy") else inputs
-            self.quantum_layer.quantum_params = self.quantum_weights.numpy()
-            outputs_np = self.quantum_layer.forward(inputs_np)
-            outputs = tf.convert_to_tensor(outputs_np, dtype=tf.float32)
+            """
+            Forward pass with a real custom gradient.
+
+            Wraps the quantum layer in ``tf.custom_gradient`` so Keras can train
+            through it: the backward pass returns exact parameter-shift gradients
+            w.r.t. both the inputs and the quantum weights (the previous version
+            dropped straight to numpy, so no gradient reached the weights).
+
+            Runs eagerly (the quantum simulation is numpy); use
+            ``model.compile(..., run_eagerly=True)`` when training inside Keras.
+            """
+            quantum_layer = self.quantum_layer
+
+            @tf.custom_gradient
+            def quantum_op(x, weights):
+                x_np = x.numpy() if hasattr(x, "numpy") else np.asarray(x)
+                w_np = weights.numpy() if hasattr(weights, "numpy") else np.asarray(weights)
+                quantum_layer.quantum_params = w_np
+                out_np = quantum_layer.forward(x_np)
+
+                def grad(dy):
+                    dy_np = dy.numpy() if hasattr(dy, "numpy") else np.asarray(dy)
+                    quantum_layer.quantum_params = w_np
+                    param_grads, input_grads = quantum_layer.parameter_shift_gradients(
+                        x_np, dy_np
+                    )
+                    return (
+                        tf.convert_to_tensor(input_grads, dtype=tf.float32),
+                        tf.convert_to_tensor(param_grads, dtype=tf.float32),
+                    )
+
+                return tf.convert_to_tensor(out_np, dtype=tf.float32), grad
+
+            outputs = quantum_op(inputs, self.quantum_weights)
 
             if outputs.shape[-1] != self.output_dim:
                 outputs = outputs[:, : self.output_dim]

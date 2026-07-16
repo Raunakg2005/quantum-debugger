@@ -177,16 +177,130 @@ class PEC:
         self, circuit_function: Callable, params: np.ndarray
     ) -> Tuple[float, float]:
         """
-        Sample one circuit variant and execute.
+        Execute the user circuit once.
+
+        Note: this opaque-callable path cannot inject per-gate Pauli recovery
+        operations (it has no access to the circuit's gate structure), so it
+        simply executes the circuit. For genuine quasi-probability error
+        cancellation use :meth:`mitigate_expectation`, which samples recovery
+        Paulis from the exact inverse of the depolarizing channel.
+        """
+        result = circuit_function(params)
+        weight = 1.0
+        return result, weight
+
+    # ------------------------------------------------------------------
+    # Genuine quasi-probability PEC (density-matrix, verifiable)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _single_qubit_inverse_coeffs(p: float) -> Tuple[np.ndarray, float]:
+        """
+        Quasi-probability coefficients of the inverse single-qubit depolarizing
+        channel over the Paulis [I, X, Y, Z].
+
+        For D_p(rho) = (1-p) rho + (p/3)(X rho X + Y rho Y + Z rho Z), the
+        inverse is D_p^{-1}(rho) = a rho + b (X rho X + Y rho Y + Z rho Z) with
+        a - b = 1/lambda and a + 3b = 1, where lambda = 1 - 4p/3. gamma is the
+        one-norm (the per-qubit sampling overhead).
+        """
+        lam = 1.0 - 4.0 * p / 3.0
+        inv = 1.0 / lam
+        b = (1.0 - inv) / 4.0
+        a = inv + b
+        coeffs = np.array([a, b, b, b])
+        gamma = float(np.sum(np.abs(coeffs)))
+        return coeffs, gamma
+
+    @staticmethod
+    def _pauli(idx: int) -> np.ndarray:
+        return [
+            np.eye(2, dtype=complex),
+            np.array([[0, 1], [1, 0]], dtype=complex),
+            np.array([[0, -1j], [1j, 0]], dtype=complex),
+            np.array([[1, 0], [0, -1]], dtype=complex),
+        ][idx]
+
+    @classmethod
+    def _op_on(cls, pauli_idx: int, qubit: int, n_qubits: int) -> np.ndarray:
+        op = np.array([[1.0 + 0j]])
+        for i in range(n_qubits):
+            op = np.kron(op, cls._pauli(pauli_idx) if i == qubit else np.eye(2, dtype=complex))
+        return op
+
+    @classmethod
+    def _apply_depolarizing_all(cls, rho: np.ndarray, p: float, n_qubits: int) -> np.ndarray:
+        """Independent single-qubit depolarizing on every qubit."""
+        for q in range(n_qubits):
+            acc = (1.0 - p) * rho
+            for idx in (1, 2, 3):
+                P = cls._op_on(idx, q, n_qubits)
+                acc = acc + (p / 3.0) * (P @ rho @ P.conj().T)
+            rho = acc
+        return rho
+
+    def mitigate_expectation(
+        self,
+        ideal_statevector: np.ndarray,
+        observable: np.ndarray,
+        noise_rate: float,
+        n_samples: int = 2000,
+        seed: int = 0,
+    ) -> Dict[str, float]:
+        """
+        Genuine probabilistic error cancellation for independent single-qubit
+        depolarizing noise, via quasi-probability Monte Carlo.
+
+        A recovery Pauli is sampled on each qubit from |coeff|/gamma of the
+        inverse channel; applying it to the noisy state and weighting by
+        gamma**n_qubits * sign gives an unbiased estimator of the ideal
+        expectation value: E[estimate] = Tr(O D^{-1}(rho_noisy)) = Tr(O rho_ideal).
+
+        Args:
+            ideal_statevector: The ideal output state |psi>
+            observable: Hermitian observable O (2**n x 2**n) in the same basis
+            noise_rate: Depolarizing probability p applied per qubit
+            n_samples: Number of quasi-probability samples
+            seed: RNG seed
 
         Returns:
-            (result, quasi_probability_weight)
+            dict with 'ideal', 'noisy', 'mitigated', 'uncertainty', 'gamma'
         """
-        # For now, simplified version - execute with nominal circuit
-        result = circuit_function(params)
-        weight = 1.0  # Would be quasi-probability in full implementation
+        psi = np.asarray(ideal_statevector, dtype=complex).ravel()
+        dim = psi.shape[0]
+        n = int(round(np.log2(dim)))
+        observable = np.asarray(observable, dtype=complex)
 
-        return result, weight
+        rho_ideal = np.outer(psi, psi.conj())
+        ideal_exp = float(np.real(np.trace(observable @ rho_ideal)))
+
+        rho_noisy = self._apply_depolarizing_all(rho_ideal, noise_rate, n)
+        noisy_exp = float(np.real(np.trace(observable @ rho_noisy)))
+
+        coeffs, gamma = self._single_qubit_inverse_coeffs(noise_rate)
+        probs = np.abs(coeffs) / gamma
+        signs = np.sign(coeffs)
+        rng = np.random.default_rng(seed)
+
+        estimates = np.empty(n_samples)
+        for s in range(n_samples):
+            op = np.array([[1.0 + 0j]])
+            total_sign = 1.0
+            for q in range(n):
+                idx = rng.choice(4, p=probs)
+                total_sign *= signs[idx]
+                op = np.kron(op, self._pauli(idx))
+            recovered = op @ rho_noisy @ op.conj().T
+            val = np.real(np.trace(observable @ recovered))
+            estimates[s] = (gamma**n) * total_sign * val
+
+        return {
+            "ideal": ideal_exp,
+            "noisy": noisy_exp,
+            "mitigated": float(estimates.mean()),
+            "uncertainty": float(estimates.std() / np.sqrt(n_samples)),
+            "gamma": gamma,
+        }
 
     def get_mitigation_overhead(self) -> Dict[str, float]:
         """

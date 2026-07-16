@@ -135,18 +135,24 @@ class QuantumNeuralNetwork:
 
     def _compute_expectation(self, state: np.ndarray) -> float:
         """
-        Compute expectation value from quantum state.
+        Compute the Pauli-Z expectation value on the readout qubit (qubit 0).
+
+        ``<Z_0> = sum_i (1 - 2*bit0(i)) * |amplitude_i|^2`` lies in [-1, 1] and
+        depends on the full probability distribution, unlike the previous
+        ``P(|0...0>) - P(|1...1>)`` readout which ignored every amplitude except
+        the all-zeros and all-ones basis states.
 
         Args:
             state: Quantum state vector
 
         Returns:
-            Expectation value
+            Expectation value in [-1, 1]
         """
-        # Simple measurement: probability of |0...0⟩ - probability of |1...1⟩
-        prob_zero = np.abs(state[0]) ** 2
-        prob_one = np.abs(state[-1]) ** 2
-        return prob_zero - prob_one
+        probs = np.abs(state) ** 2
+        # qubit 0 is the least-significant bit of the basis-state index
+        indices = np.arange(state.shape[0])
+        z_eigenvalues = 1.0 - 2.0 * (indices & 1)
+        return float(np.dot(probs, z_eigenvalues))
 
     def compute_loss(self, params: np.ndarray, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -192,6 +198,10 @@ class QuantumNeuralNetwork:
         # Initialize parameters
         params = self._initialize_all_parameters()
 
+        # Build a fresh optimizer instance so state (e.g. Adam moments) resets
+        # each time fit() is called and updates actually honor the compiled config.
+        optimizer = self._make_optimizer()
+
         n_samples = len(X)
         if batch_size is None:
             batch_size = n_samples
@@ -214,11 +224,11 @@ class QuantumNeuralNetwork:
                 loss = self.compute_loss(params, batch_X, batch_y)
                 epoch_losses.append(loss)
 
-                # Compute gradient (finite differences for now)
+                # Compute gradient (finite differences)
                 gradient = self._compute_gradient(params, batch_X, batch_y)
 
-                # Update parameters the optimizer (placeholder - needs proper integration)
-                params = params - 0.01 * gradient
+                # Update parameters with the compiled optimizer
+                params = optimizer.step(params, gradient)
 
             # Average loss for epoch
             train_loss = np.mean(epoch_losses)
@@ -257,6 +267,26 @@ class QuantumNeuralNetwork:
 
         return self.forward(self._parameters, X)
 
+    def _make_optimizer(self):
+        """
+        Build a gradient-based optimizer instance from the compiled config.
+
+        Uses the step-based optimizers (they expose ``step(params, gradients)``).
+        Unknown / non-gradient optimizer names fall back to Adam so training
+        always proceeds rather than silently using a hardcoded rule.
+        """
+        from ..optimizers.basics import Adam, GradientDescent
+
+        name = str(getattr(self, "optimizer_name", "adam")).lower().replace("_", "-")
+        lr = getattr(self, "learning_rate", 0.01)
+
+        if name in ("sgd", "gd", "gradient-descent", "gradientdescent"):
+            return GradientDescent(learning_rate=lr)
+        if name == "adam":
+            return Adam(learning_rate=lr)
+        # rmsprop/spsa/lbfgs/etc. are not step-based here: default to Adam.
+        return Adam(learning_rate=lr)
+
     def _initialize_all_parameters(self, method: str = "random") -> np.ndarray:
         """
         Initialize all network parameters.
@@ -293,14 +323,16 @@ class QuantumNeuralNetwork:
         """
         gradient = np.zeros_like(params)
 
+        # Baseline loss is the same for every parameter: compute it once instead
+        # of re-evaluating the full forward pass inside the loop.
+        loss_current = self.compute_loss(params, X, y)
+
         for i in range(len(params)):
             # Forward difference
             params_plus = params.copy()
             params_plus[i] += epsilon
 
             loss_plus = self.compute_loss(params_plus, X, y)
-            loss_current = self.compute_loss(params, X, y)
-
             gradient[i] = (loss_plus - loss_current) / epsilon
 
         return gradient

@@ -81,27 +81,8 @@ class QAOA:
         gamma = params[: self.p]
         beta = params[self.p :]
 
-        # Build QAOA circuit
-        from ..gates import RXGate, RZGate
-
-        gates = []
-
-        # Initial state: |++++...⟩ (Hadamard on all - not parameterized)
-
-        for layer in range(self.p):
-            # Cost layer: RZ gates
-            for i, j in self.graph:
-                gates.append(RZGate(i, gamma[layer], trainable=True))
-                gates.append(RZGate(j, gamma[layer], trainable=True))
-
-            # Mixing layer: RX gates
-            for q in range(self.num_qubits):
-                gates.append(RXGate(q, 2 * beta[layer], trainable=True))
-
-        # Simulate circuit
-        statevector = self._simulate_qaoa(gates)
-
-        # Evaluate MaxCut
+        # Simulate the QAOA ansatz and evaluate the expected cut
+        statevector = self._simulate_qaoa(gamma, beta)
         cost = self._evaluate_maxcut(statevector)
 
         self.history.append({"params": params.copy(), "cost": cost})
@@ -109,50 +90,55 @@ class QAOA:
         # Return negative for minimization
         return -cost
 
-    def _simulate_qaoa(self, gates: List) -> np.ndarray:
-        """Simulate QAOA circuit starting from |++++...⟩"""
-        # Start with superposition state |++++...⟩
-        state = np.ones(2**self.num_qubits, dtype=complex) / np.sqrt(2**self.num_qubits)
+    def _simulate_qaoa(self, gamma: np.ndarray, beta: np.ndarray) -> np.ndarray:
+        """
+        Simulate the QAOA circuit on the shared state-vector simulator.
 
-        # Apply gates (simplified - same as VQE)
-        for gate in gates:
-            state = self._apply_gate(state, gate)
+        Cost layer applies a genuine two-qubit ZZ interaction per edge
+        (CNOT · RZ · CNOT), which entangles the qubits — the previous version
+        used only single-qubit RZ rotations, so the state stayed a product state
+        and could not represent correlated MaxCut solutions. Node ``i`` maps to
+        qubit ``i`` consistently here and in the cut evaluation below.
+        """
+        from ...core.quantum_state import QuantumState
+        from ...core.gates import GateLibrary
 
-        return state
+        qs = QuantumState(self.num_qubits)
 
-    def _apply_gate(self, state: np.ndarray, gate) -> np.ndarray:
-        """Apply single-qubit gate (same as VQE)"""
-        n = self.num_qubits
-        target = gate.target
-        U = gate.matrix()
+        # Initial state |++...+>: Hadamard on every qubit
+        for q in range(self.num_qubits):
+            qs.apply_gate(GateLibrary.H, [q])
 
-        # Build full gate
-        full_gate = np.eye(1, dtype=complex)
-        for q in range(n):
-            if q == target:
-                full_gate = np.kron(full_gate, U)
-            else:
-                full_gate = np.kron(full_gate, np.eye(2, dtype=complex))
+        for layer in range(self.p):
+            # Cost layer: exp(i γ Z_i Z_j) on each edge via CNOT–RZ–CNOT
+            for i, j in self.graph:
+                qs.apply_gate(GateLibrary.CNOT, [i, j])
+                qs.apply_gate(GateLibrary.RZ(2 * gamma[layer]), [j])
+                qs.apply_gate(GateLibrary.CNOT, [i, j])
 
-        return full_gate @ state
+            # Mixing layer: RX(2β) on every qubit
+            for q in range(self.num_qubits):
+                qs.apply_gate(GateLibrary.RX(2 * beta[layer]), [q])
+
+        return qs.state_vector
 
     def _evaluate_maxcut(self, statevector: np.ndarray) -> float:
-        """Evaluate MaxCut cost from statevector"""
+        """Expected MaxCut value under the measured probability distribution."""
         probabilities = np.abs(statevector) ** 2
 
         cost = 0.0
-        for bitstring_int, prob in enumerate(probabilities):
-            bitstring = format(bitstring_int, f"0{self.num_qubits}b")
-            cut_value = self._count_cut_edges(bitstring)
-            cost += prob * cut_value
+        for state_int, prob in enumerate(probabilities):
+            if prob < 1e-12:
+                continue
+            cost += prob * self._count_cut_edges(state_int)
 
         return cost
 
-    def _count_cut_edges(self, bitstring: str) -> int:
-        """Count edges in the cut"""
+    def _count_cut_edges(self, state_int: int) -> int:
+        """Count cut edges for a basis state (node i is bit i of state_int)."""
         count = 0
         for i, j in self.graph:
-            if bitstring[i] != bitstring[j]:
+            if ((state_int >> i) & 1) != ((state_int >> j) & 1):
                 count += 1
         return count
 

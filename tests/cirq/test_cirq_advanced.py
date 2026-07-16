@@ -4,6 +4,8 @@ Advanced tests for Cirq integration - challenging cases
 
 import pytest
 import numpy as np
+
+pytest.importorskip("cirq")  # skip this module if Cirq is not installed
 import cirq
 from quantum_debugger import QuantumCircuit
 from quantum_debugger.integrations import CirqAdapter

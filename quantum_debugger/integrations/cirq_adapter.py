@@ -13,7 +13,7 @@ try:
     import cirq
 
     CIRQ_AVAILABLE = True
-except ImportError:
+except Exception:  # not just ImportError: a broken/incompatible install must not break our import
     CIRQ_AVAILABLE = False
     cirq = None
 

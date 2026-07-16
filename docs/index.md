@@ -1,25 +1,31 @@
 # Quantum Debugger Documentation
 
-**Version 0.4.0** - Interactive quantum circuit debugger with Quantum Machine Learning
+**Version 0.6.1** - Interactive quantum circuit debugger with Quantum Machine Learning
 
-Welcome to the documentation for Quantum Debugger, a powerful Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
+Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
 
-## What's New in v0.4.0
+## What's New in v0.6.1
 
-- **Quantum Machine Learning (QML)** - Complete QML module with VQE, QAOA
-- **Parameterized Gates** - RX, RY, RZ with gradient computation  
-- **Training Framework** - 4 classical optimizers (Adam, SGD, SPSA, RMSprop)
-- **316 Tests** - Comprehensive test coverage (100% passing)
+- **Faster simulator** - gate application is O(2ⁿ) per gate (was O(4ⁿ)), plus
+  optional **GPU state-vector simulation** (`get_statevector(use_gpu=True)`).
+- **Genuinely quantum QML** - the quantum kernel/QSVM, hybrid PyTorch/TensorFlow
+  layers, Quantum GAN, Quantum RL, and error mitigation (PEC, CDR, QNG, ZNE) are
+  now real circuit-based implementations with real gradients (each verified).
+- **Robust imports** - a broken optional dependency no longer breaks
+  `import quantum_debugger`.
+
+See the [CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CHANGELOG.md) for the full list.
 
 ## Features
 
 - 🐛 Step-through debugging
-- 🔍 State inspection  
+- 🔍 State inspection
 - 📊 Circuit profiling
-- 🔗 Qiskit integration
-- 🧠 Quantum Machine Learning (NEW!)
-- ⚗️ VQE for molecular chemistry (NEW!)
-- 🎯 QAOA for optimization (NEW!)
+- 🚀 GPU-accelerated state-vector simulation (CuPy)
+- 🔗 Qiskit / PennyLane / Cirq integration
+- 🧠 Quantum Machine Learning (QNN, AutoML, quantum kernels, hybrid models)
+- ⚗️ VQE for molecular chemistry
+- 🎯 QAOA for optimization
 
 ## Quick Start
 
@@ -55,6 +61,23 @@ H = h2_hamiltonian()
 vqe = VQE(H, hardware_efficient_ansatz, num_qubits=2)
 result = vqe.run(initial_params)
 print(f"Ground state: {result['ground_state_energy']:.6f} Hartree")
+```
+
+### GPU-Accelerated Simulation
+
+```python
+from quantum_debugger import QuantumCircuit
+
+qc = QuantumCircuit(20)
+for q in range(20):
+    qc.h(q)
+for q in range(19):
+    qc.cnot(q, q + 1)
+
+# Run the whole circuit on the GPU (requires CuPy + a CUDA GPU).
+# precision='single' (complex64) is dramatically faster on consumer GPUs;
+# 'double' (complex128, default) is bit-identical to the CPU result.
+state = qc.get_statevector(use_gpu=True, precision="single")
 ```
 
 ## Contents

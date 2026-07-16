@@ -5,6 +5,23 @@ Shared pytest configuration and fixtures for all tests
 import pytest
 import numpy as np
 
+# Make pip-installed CUDA DLLs discoverable and initialize CuPy BEFORE any test
+# file imports torch. conftest runs before collection, so this happens first.
+# Rationale: (1) a failed early cupy import is cached by CuPy for the whole
+# process; (2) importing torch first can shadow CuPy's nvrtc so its JIT targets
+# the wrong GPU arch (NO_BINARY_FOR_GPU). Warming up CuPy here locks in the
+# correct nvrtc path so the GPU tests pass regardless of later torch imports.
+try:
+    from quantum_debugger.backends._cuda_dll import ensure_cuda_dlls
+
+    ensure_cuda_dlls()
+    import cupy as _cp
+
+    _ = int((_cp.arange(8) ** 2).sum())
+    _cp.cuda.Stream.null.synchronize()
+except Exception:
+    pass
+
 
 @pytest.fixture
 def random_seed():

@@ -7,12 +7,17 @@ Requires NVIDIA GPU and CuPy installation.
 
 import numpy as np
 from .base import Backend
+from ._cuda_dll import ensure_cuda_dlls
+
+# Make pip-installed CUDA runtime DLLs discoverable before importing CuPy
+# (needed on Windows for the cupy-cuda12x + nvidia-*-cu12 wheel setup).
+ensure_cuda_dlls()
 
 try:
     import cupy as cp
 
     HAS_CUPY = True
-except ImportError:
+except Exception:  # not just ImportError: a broken/incompatible install must not break our import
     HAS_CUPY = False
 
 

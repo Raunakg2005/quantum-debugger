@@ -120,6 +120,14 @@ class AutoQNN:
 
         start_time = time.time()
 
+        X = np.asarray(X)
+        y = np.asarray(y)
+
+        # Hold out a validation set so model selection does not peek at the data
+        # each candidate was trained on (avoids the previous train-on-X / score-on-X
+        # leakage that made best_score_ an over-optimistic training accuracy).
+        X_train, y_train, X_val, y_val = self._train_val_split(X, y)
+
         # Search space
         search_configs = self._generate_search_space(X.shape[1])
 
@@ -140,17 +148,15 @@ class AutoQNN:
                 )
 
                 history = model.fit(
-                    X,
-                    y,
+                    X_train,
+                    y_train,
                     epochs=config.get("epochs", 20),
                     batch_size=config.get("batch_size"),
                     verbose=0,
                 )
 
-                # Evaluate
-                predictions = model.predict(X)
-                pred_labels = (predictions > 0.5).astype(int).flatten()
-                score = np.mean(pred_labels == y)
+                # Evaluate on the held-out validation set (no leakage)
+                score = self._score_model(model, X_val, y_val)
 
                 # Track
                 self.search_history_.append(
@@ -172,9 +178,53 @@ class AutoQNN:
                 logger.warning(f"  ❌ Trial failed: {e}")
                 continue
 
+        # Refit the winning configuration on ALL data so the returned model
+        # benefits from every sample, while selection above stayed honest.
+        if self.best_config_ is not None:
+            try:
+                final_model = QuantumNeuralNetwork(
+                    n_qubits=self.best_config_["n_qubits"]
+                )
+                final_model.compile(
+                    optimizer=self.best_config_.get("optimizer", "adam"),
+                    loss=self.best_config_.get("loss", "mse"),
+                    learning_rate=self.best_config_.get("learning_rate", 0.01),
+                )
+                final_model.fit(
+                    X,
+                    y,
+                    epochs=self.best_config_.get("epochs", 20),
+                    batch_size=self.best_config_.get("batch_size"),
+                    verbose=0,
+                )
+                self.best_model_ = final_model
+            except Exception as e:  # keep the split-trained model as a fallback
+                logger.warning(f"Refit on full data failed, keeping split model: {e}")
+
         logger.info(f"Search complete! Best config: {self.best_config_}")
 
         return self
+
+    def _train_val_split(self, X, y, val_fraction: float = 0.25):
+        """
+        Shuffle and split into train / validation sets.
+
+        Falls back to using the full data for both when there are too few
+        samples to hold any out.
+        """
+        n = len(X)
+        if n < 4:
+            return X, y, X, y
+        idx = np.random.permutation(n)
+        n_val = max(1, int(round(n * val_fraction)))
+        val_idx, train_idx = idx[:n_val], idx[n_val:]
+        return X[train_idx], y[train_idx], X[val_idx], y[val_idx]
+
+    def _score_model(self, model, X, y) -> float:
+        """Accuracy of a trained model on (X, y)."""
+        predictions = model.predict(X)
+        pred_labels = (predictions > 0.5).astype(int).flatten()
+        return float(np.mean(pred_labels == y))
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Predict using best model."""

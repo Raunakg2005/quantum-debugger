@@ -14,7 +14,7 @@ try:
     from qiskit import QuantumCircuit
 
     QISKIT_AVAILABLE = True
-except ImportError:
+except Exception:  # not just ImportError: a broken/incompatible install must not break our import
     QISKIT_AVAILABLE = False
     logger.debug("Qiskit not available - install with: pip install qiskit")
 

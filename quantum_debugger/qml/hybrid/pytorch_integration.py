@@ -12,7 +12,7 @@ try:
     from torch.autograd import Function
 
     HAS_PYTORCH = True
-except ImportError:
+except Exception:  # not just ImportError: a broken/incompatible install must not break our import
     HAS_PYTORCH = False
 
     # Dummy classes when PyTorch not available
@@ -51,15 +51,27 @@ if HAS_PYTORCH:
         @staticmethod
         def backward(ctx, grad_output):
             inputs, quantum_params = ctx.saved_tensors
+            quantum_layer = ctx.quantum_layer
 
-            # Simplified gradient (could use parameter shift rule)
+            inputs_np = inputs.detach().cpu().numpy()
             params_np = quantum_params.detach().cpu().numpy()
-            param_grads = np.zeros_like(params_np)
+            grad_np = grad_output.detach().cpu().numpy()
+
+            # Exact gradients via the parameter-shift rule (was an all-zero grad,
+            # which left the quantum weights frozen). This also returns the input
+            # gradient so gradients flow to any preceding classical layers.
+            quantum_layer.quantum_params = params_np
+            param_grads, input_grads = quantum_layer.parameter_shift_gradients(
+                inputs_np, grad_np
+            )
+
             param_grads_tensor = torch.from_numpy(param_grads).float()
+            input_grads_tensor = torch.from_numpy(input_grads).float()
             if inputs.is_cuda:
                 param_grads_tensor = param_grads_tensor.cuda()
+                input_grads_tensor = input_grads_tensor.cuda()
 
-            return None, param_grads_tensor, None
+            return input_grads_tensor, param_grads_tensor, None
 
     class QuantumTorchLayer(nn.Module):
         """PyTorch-compatible quantum layer"""
@@ -153,12 +165,13 @@ if HAS_PYTORCH:
                 n_qubits=n_qubits, ansatz_type=quantum_ansatz, ansatz_reps=quantum_reps
             )
 
-            # Classical postprocessing
-            post_layers, prev_dim = _build_classical_layers(
+            # Classical postprocessing. _build_classical_layers already appends a
+            # final projection to output_dim, so do NOT add another one here (the
+            # previous code did, producing Sequential(Linear(h, out), Linear(h, out))
+            # and a shape-mismatch crash in forward).
+            post_layers, _ = _build_classical_layers(
                 n_qubits, output_dim, classical_hidden_post, dropout_rate
             )
-            if prev_dim != output_dim:
-                post_layers.append(nn.Linear(prev_dim, output_dim))
             self.classical_post = nn.Sequential(*post_layers)
 
         def forward(self, x):

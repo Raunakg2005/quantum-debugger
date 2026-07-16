@@ -75,6 +75,34 @@ class QuantumQLearning:
         angles = np.arctan(state_norm)
         return angles
 
+    def _q_value(self, state: np.ndarray, action: int, params: np.ndarray) -> float:
+        """
+        Evaluate Q(state, action) with an explicit parameter vector.
+
+        Builds and simulates a real circuit: the state is angle-encoded, a
+        per-action variational ansatz (RY rotations + CNOT entanglers) is
+        applied, and Q is read out as the Pauli-Z expectation of qubit 0.
+        """
+        from ...core.circuit import QuantumCircuit
+
+        angles = self._encode_state(state)
+        circuit = QuantumCircuit(self.n_qubits)
+        for q in range(self.n_qubits):
+            circuit.ry(float(angles[q % len(angles)]), q)  # ry(theta, qubit)
+
+        p = action * self.n_layers * self.n_qubits
+        for _ in range(self.n_layers):
+            for q in range(self.n_qubits):
+                circuit.ry(float(params[p]), q)
+                p += 1
+            for q in range(self.n_qubits - 1):
+                circuit.cnot(q, q + 1)
+
+        state_vector = circuit.get_statevector().state_vector
+        probs = np.abs(state_vector) ** 2
+        indices = np.arange(state_vector.shape[0])
+        return float(np.dot(probs, 1.0 - 2.0 * (indices & 1)))  # <Z_0> in [-1, 1]
+
     def _q_circuit(self, state: np.ndarray, action: int) -> float:
         """
         Quantum circuit computing Q(state, action).
@@ -84,27 +112,29 @@ class QuantumQLearning:
             action: Action index
 
         Returns:
-            Q-value estimate
+            Q-value estimate in [-1, 1]
         """
-        # Simplified Q-value computation
-        # Encode state and action into parameters
-        state_norm = state / (np.linalg.norm(state) + 1e-8)
+        return self._q_value(state, action, self.params)
 
-        # Get parameters for this action
-        start_idx = action * self.n_layers * self.n_qubits
-        end_idx = start_idx + self.n_layers * self.n_qubits
-        action_params = self.params[start_idx:end_idx]
-
-        # Compute Q-value as dot product of state encoding and parameters
-        # This is a simplified linear approximation
-        q_value = 0.0
-        for i in range(min(len(state_norm), len(action_params))):
-            q_value += state_norm[i] * action_params[i]
-
-        # Add small nonlinearity
-        q_value = np.tanh(q_value)
-
-        return float(q_value)
+    def _q_gradient(self, state: np.ndarray, action: int) -> np.ndarray:
+        """
+        Exact gradient of Q(state, action) w.r.t. the action's parameters via
+        the parameter-shift rule (each parameter enters through an RY gate).
+        """
+        block = action * self.n_layers * self.n_qubits
+        n_block = self.n_layers * self.n_qubits
+        shift = np.pi / 2
+        grad = np.zeros(n_block)
+        for k in range(n_block):
+            p_plus = self.params.copy()
+            p_plus[block + k] += shift
+            p_minus = self.params.copy()
+            p_minus[block + k] -= shift
+            grad[k] = 0.5 * (
+                self._q_value(state, action, p_plus)
+                - self._q_value(state, action, p_minus)
+            )
+        return grad
 
     def get_q_values(self, state: np.ndarray) -> np.ndarray:
         """
@@ -169,14 +199,15 @@ class QuantumQLearning:
         # TD error
         td_error = q_target - q_current
 
-        # Update parameters (simplified gradient descent)
-        # In practice, would use parameter-shift rule
+        # Semi-gradient Q-learning update: theta_a += lr * td_error * dQ/dtheta_a,
+        # with dQ/dtheta_a computed by the parameter-shift rule (was a constant
+        # nudge that ignored the actual gradient).
         start_idx = action * self.n_layers * self.n_qubits
         end_idx = start_idx + self.n_layers * self.n_qubits
+        grad = self._q_gradient(state, action)
+        self.params[start_idx:end_idx] += self.learning_rate * td_error * grad
 
-        self.params[start_idx:end_idx] += self.learning_rate * td_error * 0.01
-
-        return td_error
+        return float(td_error)
 
     def train(
         self,

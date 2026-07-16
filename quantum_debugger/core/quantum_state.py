@@ -7,6 +7,40 @@ from typing import List, Tuple, Optional
 import copy
 
 
+def apply_gate_tensor(xp, state_vector, gate_matrix, target_qubits, num_qubits):
+    """
+    Apply a k-qubit gate to a state vector by tensor contraction.
+
+    Backend-agnostic: ``xp`` may be ``numpy`` or ``cupy`` (or any array module
+    with ``asarray``/``tensordot``/``transpose``/``reshape``), so the exact same,
+    verified O(2**n) algorithm runs on CPU or GPU. Does not normalize.
+
+    Gate qubit ``j`` acts on ``target_qubits[j]``; the state's tensor axis ``a``
+    corresponds to qubit ``num_qubits - 1 - a`` (little-endian).
+    """
+    dim = 2**num_qubits
+    targets = list(target_qubits)
+    gate_matrix = xp.asarray(gate_matrix, dtype=state_vector.dtype)
+    k = int(round(np.log2(gate_matrix.shape[0])))
+    n = num_qubits
+
+    if k == n and targets == list(range(n)):
+        return gate_matrix @ state_vector
+
+    g = gate_matrix.reshape([2] * (2 * k))
+    psi = state_vector.reshape([2] * n)
+    in_axes = [2 * k - 1 - j for j in range(k)]
+    state_axes = [n - 1 - targets[j] for j in range(k)]
+    res = xp.tensordot(g, psi, axes=(in_axes, state_axes))
+
+    out_qubits_front = [targets[k - 1 - a] for a in range(k)]
+    remaining_qubits = [n - 1 - ax for ax in range(n) if ax not in state_axes]
+    current_axis_qubit = out_qubits_front + remaining_qubits
+    perm = [current_axis_qubit.index(n - 1 - a) for a in range(n)]
+
+    return xp.transpose(res, perm).reshape(dim)
+
+
 class QuantumState:
     """Represents a quantum state vector"""
 
@@ -52,17 +86,21 @@ class QuantumState:
 
     def apply_gate(self, gate_matrix: np.ndarray, target_qubits: List[int]):
         """
-        Apply a quantum gate to specific qubits
+        Apply a quantum gate to specific qubits.
+
+        Uses tensor contraction, applying the k-qubit gate directly to the
+        relevant axes of the state tensor. This is O(2**n) per gate instead of
+        the O(4**n) cost of materializing the full 2**n x 2**n operator, so it is
+        dramatically faster and more memory efficient for multi-qubit circuits.
 
         Args:
-            gate_matrix: Unitary matrix of the gate
-            target_qubits: List of qubit indices to apply gate to
+            gate_matrix: Unitary matrix of the gate (2**k x 2**k for k qubits)
+            target_qubits: List of qubit indices to apply gate to. Gate qubit j
+                acts on ``target_qubits[j]`` (matches the previous convention).
         """
-        # Build full gate matrix for entire system
-        full_matrix = self._build_full_gate_matrix(gate_matrix, target_qubits)
-
-        # Apply gate
-        self.state_vector = full_matrix @ self.state_vector
+        self.state_vector = apply_gate_tensor(
+            np, self.state_vector, gate_matrix, target_qubits, self.num_qubits
+        )
         self._normalize()
 
     def _build_full_gate_matrix(

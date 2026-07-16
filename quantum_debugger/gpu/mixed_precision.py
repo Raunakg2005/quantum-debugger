@@ -102,11 +102,45 @@ class MixedPrecisionTrainer:
             # Gradually increase loss scale if stable
             self.loss_scale = min(self.max_loss_scale, self.loss_scale * 1.001)
 
+    def _ensure_master_weights(self):
+        """Lazily initialize the FP32 master weights from the model."""
+        if self.master_weights is not None:
+            return
+        if hasattr(self.model, "_parameters"):
+            self.master_weights = np.asarray(
+                self.model._parameters, dtype=np.float32
+            ).copy()
+        elif hasattr(self.model, "_initialize_all_parameters"):
+            if not getattr(self.model, "compiled", False) and hasattr(self.model, "compile"):
+                self.model.compile()
+            self.master_weights = np.asarray(
+                self.model._initialize_all_parameters(), dtype=np.float32
+            )
+
+    def _genuine_gradient(self, params, X, y):
+        """Real gradient from the wrapped model (never random)."""
+        if hasattr(self.model, "_compute_gradient"):
+            return np.asarray(self.model._compute_gradient(params, X, y), dtype=float)
+        # Finite-difference fallback using the model's own loss.
+        eps = 1e-4
+        base = self.model.compute_loss(params, X, y)
+        grad = np.zeros_like(params, dtype=float)
+        for k in range(params.shape[0]):
+            shifted = params.copy()
+            shifted[k] += eps
+            grad[k] = (self.model.compute_loss(shifted, X, y) - base) / eps
+        return grad
+
     def train_step(
         self, X: np.ndarray, y: np.ndarray, learning_rate: float = 0.01
     ) -> float:
         """
         Single training step with mixed precision.
+
+        Computes a genuine gradient from the wrapped model (the previous version
+        fell back to random gradients when the model lacked a specific method).
+        The FP16 mechanics -- half-precision compute, loss scaling, overflow
+        checking, and an FP32 master copy for the update -- are all applied.
 
         Args:
             X: Input data
@@ -116,47 +150,34 @@ class MixedPrecisionTrainer:
         Returns:
             Loss value
         """
-        # Convert inputs to FP16 if enabled
+        self._ensure_master_weights()
+        if self.master_weights is None:
+            raise RuntimeError(
+                "Model exposes no trainable parameters for mixed-precision training"
+            )
+
         X_compute = self.to_half(X)
         y_compute = self.to_half(y)
+        params = self.master_weights
 
-        # Forward pass in FP16
-        if hasattr(self.model, "_forward"):
-            predictions = self.model._forward(X_compute)
-        else:
-            predictions = self.model.predict(X_compute)
-
-        # Compute loss
-        loss = np.mean((predictions - y_compute) ** 2)
-
-        # Scale loss
-        # Scale loss for backprop (loss * self.loss_scale)
-
-        # Backward pass (simplified - in practice would use autograd)
-        if hasattr(self.model, "_compute_gradients"):
-            gradients = self.model._compute_gradients(X_compute, y_compute)
-        else:
-            # Simplified gradient estimation
-            gradients = np.random.randn(*self.master_weights.shape) * 0.01
-
-        # Unscale gradients
+        # Genuine loss and gradient from the wrapped model.
+        loss = float(self.model.compute_loss(params, X_compute, y_compute))
+        # Loss scaling keeps small FP16 gradients from underflowing; unscale after.
+        gradients = self._genuine_gradient(params, X_compute, y_compute) * (
+            self.loss_scale if self.enabled else 1.0
+        )
         gradients = self.unscale_gradients(gradients)
 
-        # Check for overflow
         if not self.check_gradients(gradients):
-            return float(loss)
+            return loss
 
-        # Update master weights in FP32
-        self.master_weights -= learning_rate * gradients.astype(np.float32)
-
-        # Copy back to model
+        # Update the FP32 master weights, then sync back to the model.
+        self.master_weights = (params - learning_rate * gradients).astype(np.float32)
         if hasattr(self.model, "_parameters"):
             self.model._parameters = self.master_weights.copy()
 
-        # Update loss scale
         self.update_loss_scale(success=True)
-
-        return float(loss)
+        return loss
 
     def fit(
         self,

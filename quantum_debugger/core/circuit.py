@@ -359,23 +359,72 @@ class QuantumCircuit:
         }
 
     def get_statevector(
-        self, initial_state: Optional[QuantumState] = None
+        self,
+        initial_state: Optional[QuantumState] = None,
+        use_gpu: bool = False,
+        precision: str = "double",
     ) -> QuantumState:
         """
-        Get final state vector without measurements
+        Get final state vector without measurements.
 
         Args:
             initial_state: Optional initial state
+            use_gpu: Run the whole circuit on the GPU (CuPy). The state lives on
+                the GPU for every gate and is transferred back to the CPU once at
+                the end. Falls back to CPU if CuPy is unavailable.
+            precision: 'double' (complex128, default, exact) or 'single'
+                (complex64 -- much faster on consumer GPUs, at reduced precision).
 
         Returns:
-            Final quantum state
+            Final quantum state (always CPU/NumPy-backed)
         """
+        if use_gpu:
+            gpu_state = self._get_statevector_gpu(initial_state, precision)
+            if gpu_state is not None:
+                return gpu_state
+
         state = initial_state.copy() if initial_state else QuantumState(self.num_qubits)
 
         for gate in self.gates:
             state.apply_gate(gate.matrix, gate.qubits)
 
         return state
+
+    def _get_statevector_gpu(
+        self, initial_state: Optional[QuantumState], precision: str
+    ) -> Optional[QuantumState]:
+        """
+        Simulate the circuit on the GPU. Returns None if CuPy is unavailable so
+        the caller can fall back to CPU.
+        """
+        try:
+            from ..backends._cuda_dll import ensure_cuda_dlls
+
+            ensure_cuda_dlls()
+            import cupy as cp
+        except Exception:
+            return None
+
+        from .quantum_state import apply_gate_tensor
+
+        dtype = cp.complex64 if precision == "single" else cp.complex128
+        dim = 2**self.num_qubits
+
+        if initial_state is not None:
+            state = cp.asarray(initial_state.state_vector, dtype=dtype)
+        else:
+            state = cp.zeros(dim, dtype=dtype)
+            state[0] = 1.0
+
+        for gate in self.gates:
+            state = apply_gate_tensor(cp, state, gate.matrix, gate.qubits, self.num_qubits)
+
+        norm = cp.linalg.norm(state)
+        if float(norm) > 0:
+            state = state / norm
+
+        # Single device-to-host transfer; return a normal CPU-backed state.
+        return QuantumState(self.num_qubits, state_vector=cp.asnumpy(state))
 
     # Visualization helpers
     def draw(self, output: str = "text") -> str:

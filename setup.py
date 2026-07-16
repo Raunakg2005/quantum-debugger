@@ -1,11 +1,25 @@
+import re
+from pathlib import Path
+
 from setuptools import setup, find_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+
+def _read_version():
+    """Single source of truth: parse __version__ from the package __init__."""
+    init = Path(__file__).parent / "quantum_debugger" / "__init__.py"
+    text = init.read_text(encoding="utf-8")
+    match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', text, re.M)
+    if not match:
+        raise RuntimeError("Unable to find __version__ in quantum_debugger/__init__.py")
+    return match.group(1)
+
+
 setup(
     name="quantum-debugger",
-    version="0.6.0",
+    version=_read_version(),
     author="Raunak Kumar Gupta",
     author_email="raunak.gupta@somaiya.edu",
     description="Comprehensive quantum machine learning library with AutoML, GPU acceleration, advanced algorithms (QGANs, Quantum RL), transfer learning, and multi-framework support (Qiskit, PennyLane, Cirq, TensorFlow, PyTorch)",

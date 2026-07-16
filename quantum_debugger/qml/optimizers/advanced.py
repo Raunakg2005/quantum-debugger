@@ -33,39 +33,70 @@ class QuantumNaturalGradient:
         self.history = []
 
     def compute_metric_tensor(
-        self, circuit_fn: Callable, params: np.ndarray, shift: float = np.pi / 2
+        self, circuit_fn: Callable, params: np.ndarray, shift: float = 1e-4
     ) -> np.ndarray:
         """
-        Compute the quantum Fisher information metric tensor.
+        Compute the Fubini-Study metric tensor (quantum geometric tensor, real part).
 
-        Uses parameter shift rule to estimate the metric.
+        g_ij = Re[<d_i psi | d_j psi> - <d_i psi | psi><psi | d_j psi>]
+
+        where |psi(theta)> = circuit_fn(theta) must return the state vector. The
+        derivative states are obtained by central finite differences. When
+        circuit_fn does not return a usable state vector (e.g. returns None), the
+        metric cannot be computed and we fall back to the identity (equivalent to
+        plain gradient descent) rather than returning a fabricated value.
 
         Args:
-            circuit_fn: Function that builds circuit from parameters
+            circuit_fn: Function mapping parameters -> state vector (np.ndarray)
             params: Current parameters
-            shift: Parameter shift for finite difference
+            shift: Finite-difference step for the derivative states
 
         Returns:
-            Metric tensor (Fubini-Study metric)
+            Metric tensor (n x n), symmetric positive semidefinite (+ epsilon I)
         """
         n = len(params)
-        metric = np.zeros((n, n))
 
-        # Diagonal elements (easier to compute)
+        def state_at(p):
+            if circuit_fn is None:
+                return None
+            try:
+                out = circuit_fn(np.asarray(p, dtype=float))
+            except Exception:
+                return None
+            if out is None:
+                return None
+            vec = np.asarray(out, dtype=complex).ravel()
+            return vec if vec.size >= 2 else None
+
+        psi = state_at(params)
+        if psi is None:
+            # No state vector available -> identity metric (plain gradient descent).
+            return np.eye(n) + self.epsilon * np.eye(n)
+
+        # Derivative states via central finite differences.
+        dpsi = []
         for i in range(n):
-            params_plus = params.copy()
-            params_minus = params.copy()
-            params_plus[i] += shift
-            params_minus[i] -= shift
+            p_plus = np.array(params, dtype=float)
+            p_plus[i] += shift
+            p_minus = np.array(params, dtype=float)
+            p_minus[i] -= shift
+            s_plus = state_at(p_plus)
+            s_minus = state_at(p_minus)
+            if s_plus is None or s_minus is None:
+                return np.eye(n) + self.epsilon * np.eye(n)
+            dpsi.append((s_plus - s_minus) / (2 * shift))
 
-            # Overlap between shifted states
-            # In practice, this would require state vector access
-            # For now, use simplified approximation
-            metric[i, i] = 1.0  # Placeholder
+        # <psi | d_i psi>
+        overlaps = np.array([np.vdot(psi, d) for d in dpsi])
 
-        # Off-diagonal elements (cross terms)
-        # Simplified version - full QNG requires expensive calculations
+        metric = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                term = np.vdot(dpsi[i], dpsi[j]) - np.conj(overlaps[i]) * overlaps[j]
+                metric[i, j] = np.real(term)
 
+        # Symmetrize (guards against finite-difference asymmetry) and regularize.
+        metric = 0.5 * (metric + metric.T)
         return metric + self.epsilon * np.eye(n)
 
     def step(

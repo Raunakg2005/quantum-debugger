@@ -84,7 +84,12 @@ def test_auto_backend_selection():
     backend_name = circuit._initial_state.backend.name
     available = list_available_backends()
 
-    # Check that some backend was selected and is available
+    # Check that some backend was selected and is available.
     assert backend_name is not None
-    # Backend name might be capitalized (NumPy) or lowercase (numpy)
-    assert any(backend_name.lower() == k.lower() for k in available.keys())
+    # The display name (e.g. "Numba (JIT)", "GPU (CuPy)") contains the registry
+    # key (e.g. "numba", "cupy"); match on containment rather than exact equality.
+    name = backend_name.lower()
+    aliases = {"cupy": ("cupy", "gpu")}
+    assert any(
+        any(tok in name for tok in aliases.get(k, (k,))) for k in available.keys()
+    )

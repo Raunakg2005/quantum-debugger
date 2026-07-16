@@ -196,45 +196,146 @@ class QuantumMiddleLayer(HybridLayer):
         else:
             return classical_data
 
+    def _apply_ansatz(self, circuit, params):
+        """Apply the variational ansatz consuming exactly len(params) angles."""
+        p = 0
+        n = self.n_qubits
+        if self.ansatz_type == "real_amplitudes":
+            for _ in range(self.ansatz_reps):
+                for q in range(n):
+                    circuit.ry(params[p], q)
+                    p += 1
+                for q in range(n - 1):
+                    circuit.cnot(q, q + 1)
+            for q in range(n):  # final rotation layer -> n*(reps+1) params
+                circuit.ry(params[p], q)
+                p += 1
+        elif self.ansatz_type == "strongly_entangling":
+            for _ in range(self.ansatz_reps):
+                for q in range(n):
+                    circuit.rx(params[p], q)
+                    circuit.ry(params[p + 1], q)
+                    circuit.rz(params[p + 2], q)
+                    p += 3
+                for q in range(n):
+                    circuit.cnot(q, (q + 1) % n)
+        else:
+            for _ in range(self.ansatz_reps):
+                for q in range(n):
+                    circuit.ry(params[p], q)
+                    p += 1
+                for q in range(n - 1):
+                    circuit.cnot(q, q + 1)
+        return circuit
+
+    def _build_circuit(self, x, params):
+        """Encode x, apply the ansatz, return the circuit for |psi(x, params)>."""
+        from ...core.circuit import QuantumCircuit
+
+        circuit = QuantumCircuit(self.n_qubits)
+        encoded = self.encode_data(np.asarray(x, dtype=float)[: self.n_qubits])
+        for q in range(self.n_qubits):
+            circuit.ry(float(encoded[q]), q)  # ry(theta, qubit)
+        return self._apply_ansatz(circuit, params)
+
+    def _z_expectations(self, state_vector):
+        """Pauli-Z expectation on each qubit from a state vector."""
+        probs = np.abs(state_vector) ** 2
+        indices = np.arange(state_vector.shape[0])
+        return np.array(
+            [np.dot(probs, 1.0 - 2.0 * ((indices >> q) & 1)) for q in range(self.n_qubits)]
+        )
+
+    def _forward_single(self, x, params):
+        """Simulate one sample through the real circuit and measure <Z> per qubit."""
+        state = self._build_circuit(x, params).get_statevector().state_vector
+        return self._z_expectations(state)
+
     def forward(self, inputs):
         """
-        Forward pass through quantum layer
+        Forward pass through the quantum layer.
+
+        Genuinely simulates, for each sample, a circuit of angle-encoding
+        rotations followed by the variational ansatz on the state-vector
+        simulator, and returns the Pauli-Z expectation of every qubit. (The
+        previous version returned ``cos(x + params)`` -- a classical surrogate
+        that ignored the ansatz and all but the first n_qubits parameters.)
 
         Args:
             inputs: Classical features (batch_size, n_qubits)
 
         Returns:
-            Quantum measurement outcomes (batch_size, n_qubits)
+            Quantum <Z> expectations (batch_size, n_qubits), each in [-1, 1]
         """
-        batch_size = inputs.shape[0]
-        outputs = np.zeros((batch_size, self.n_qubits))
+        inputs = np.asarray(inputs)
+        outputs = np.zeros((inputs.shape[0], self.n_qubits))
+        for i, sample in enumerate(inputs):
+            outputs[i] = self._forward_single(sample[: self.n_qubits], self.quantum_params)
+        return outputs
+
+    def parameter_shift_gradients(self, inputs, grad_output):
+        """
+        Exact gradients of the layer via the parameter-shift rule.
+
+        Every trainable angle (both the variational parameters and the
+        angle-encoding of the inputs) enters through a Pauli rotation
+        exp(-i theta P / 2), so d<O>/d theta = (1/2)[<O>(theta + pi/2) -
+        <O>(theta - pi/2)] is exact.
+
+        Args:
+            inputs: Batch of inputs (batch_size, n_qubits)
+            grad_output: Upstream gradient (batch_size, n_qubits)
+
+        Returns:
+            (param_grads (n_params,), input_grads (batch_size, n_qubits))
+        """
+        inputs = np.asarray(inputs, dtype=float)
+        grad_output = np.asarray(grad_output, dtype=float)
+        shift = np.pi / 2
+        params = self.quantum_params
+        param_grads = np.zeros_like(params)
+        input_grads = np.zeros_like(inputs)
 
         for i, sample in enumerate(inputs):
-            # Encode data
-            encoded = self.encode_data(sample[: self.n_qubits])
+            x = sample[: self.n_qubits]
+            upstream = grad_output[i]
 
-            # Simulate quantum circuit (simplified)
-            # In practice, this would use the actual quantum simulator
-            # For now, apply simple transformation
-            processed = np.cos(encoded + self.quantum_params[: self.n_qubits])
+            for k in range(params.shape[0]):
+                p_plus = params.copy()
+                p_plus[k] += shift
+                p_minus = params.copy()
+                p_minus[k] -= shift
+                deriv = 0.5 * (
+                    self._forward_single(x, p_plus) - self._forward_single(x, p_minus)
+                )
+                param_grads[k] += np.dot(upstream, deriv)
 
-            outputs[i] = processed
+            for j in range(self.n_qubits):
+                x_plus = x.copy()
+                x_plus[j] += shift
+                x_minus = x.copy()
+                x_minus[j] -= shift
+                deriv = 0.5 * (
+                    self._forward_single(x_plus, params)
+                    - self._forward_single(x_minus, params)
+                )
+                input_grads[i, j] = np.dot(upstream, deriv)
 
-        return outputs
+        return param_grads, input_grads
 
     def backward(self, grad_output):
         """
-        Backward pass using parameter shift rule
-
-        Args:
-            grad_output: Gradient from next layer
-
-        Returns:
-            Gradient for previous layer
+        Backward pass (parameter-shift). Requires the inputs from the forward
+        pass; prefer :meth:`parameter_shift_gradients` which takes them
+        explicitly. Kept for the HybridLayer API.
         """
-        # Parameter shift rule for quantum gradients
-        # Simplified implementation
-        return grad_output
+        if not hasattr(self, "_last_inputs"):
+            return grad_output
+        param_grads, input_grads = self.parameter_shift_gradients(
+            self._last_inputs, grad_output
+        )
+        self._param_grads = param_grads
+        return input_grads
 
 
 class ClassicalPostprocessor(HybridLayer):

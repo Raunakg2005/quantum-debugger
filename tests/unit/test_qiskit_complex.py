@@ -9,6 +9,9 @@ Tests advanced features including:
 """
 
 import numpy as np
+import pytest
+
+pytest.importorskip("qiskit")  # skip this module if Qiskit is not installed
 from qiskit import QuantumCircuit as QiskitCircuit
 from quantum_debugger import QuantumCircuit, QuantumDebugger
 from quantum_debugger.integrations.qiskit_adapter import QiskitAdapter

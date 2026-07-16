@@ -9,7 +9,22 @@
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and **production-grade quantum machine learning**. From basic circuits to enterprise QML with one-line AutoML.
+A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and quantum machine learning. From basic circuits to QML with one-line AutoML.
+
+## What's New in v0.6.1
+
+Correctness, performance, and "make the advertised features real" release:
+- **Faster core** - gate application is now O(2ⁿ) per gate (was O(4ⁿ)); optional
+  **GPU state-vector simulation** (`get_statevector(use_gpu=True)`, up to ~50-75x
+  at 20+ qubits in single precision).
+- **Genuinely quantum QML** - the quantum kernel/QSVM, hybrid PyTorch/TF layers,
+  Quantum GAN, Quantum RL, and error mitigation (PEC, CDR, QNG, ZNE) are now real
+  circuit-based implementations with real gradients, each verified — not the
+  classical/placeholder stand-ins they were before.
+- **Robust imports** - a broken optional dependency no longer breaks
+  `import quantum_debugger`.
+
+See [CHANGELOG.md](CHANGELOG.md) for the full list.
 
 ## What's New in v0.6.0
 
@@ -67,11 +82,16 @@ predictions = model.predict(X_test)
 - **Auto-Publishing** - Automatic PyPI releases
 - **Code Quality** - Linting, formatting checks
 
-**GPU Acceleration (Week 13 - NEW)**
-- **Multi-GPU** - Distribute training across GPUs (1.8-3x speedup)
-- **Mixed Precision** - FP16/FP32 for 2-3x faster training
-- **Memory Optimization** - Gradient checkpointing (50% reduction)
-- **GPU Benchmarking** - Performance profiling tools
+**GPU Acceleration (v0.6.1)**
+- **GPU state-vector simulation** - `circuit.get_statevector(use_gpu=True)` runs
+  the whole circuit on the GPU (CuPy). Measured on an RTX 5060 vs CPU: ~6x in
+  double precision, and 50-75x in single precision (`precision='single'`) at
+  20-22 qubits, where the CPU becomes the bottleneck.
+- **Distributed / mixed-precision training** - real data-parallel gradient
+  averaging and mixed-precision steps. (Multi-GPU wall-clock speedup requires
+  multiple physical GPUs; on one device these run correctly but sequentially.)
+- **Windows-friendly** - auto-discovers pip-installed CUDA runtime wheels
+  (`nvidia-*-cu12`) so the GPU backend works without a manual CUDA toolkit setup.
 
 See [complete documentation](https://github.com/Raunakg2005/quantum-debugger#documentation) for details.
 
@@ -302,10 +322,10 @@ pytest tests/ --cov=quantum_debugger --cov-report=html
 
 See [FINAL_TEST_SUMMARY.md](tests/FINAL_TEST_SUMMARY.md) for detailed test information.
 
-**Test Statistics:**
-- Total Tests: 384
-- Status: 100% passing
-- Skipped: 3 (AWS Braket - optional dependency)
+**Test Statistics (v0.6.1):**
+- ~980 tests passing (`pytest tests/ -m "not aws"`)
+- GPU-hardware tests require a working CUDA + CuPy install; they skip otherwise
+- A few tests are performance/timing based and may vary by machine
 
 ## Contributing
 
@@ -350,6 +370,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.6.0  
-**Status:** Production Ready  
-**Last Updated:** January 14, 2026
+**Version:** 0.6.1  
+**Last Updated:** July 2026

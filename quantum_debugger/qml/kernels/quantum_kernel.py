@@ -23,6 +23,42 @@ class QuantumKernel(ABC):
         self.n_qubits = n_qubits
         self.reps = reps
         self._kernel_cache = {}
+        self._state_cache = {}
+
+    def _build_feature_circuit(self, x: np.ndarray):
+        """
+        Build the feature-map circuit U(x) that prepares |phi(x)> = U(x)|0>.
+
+        Uses the real feature-map circuits from qml.data.feature_maps rather than
+        any analytic approximation.
+        """
+        from ..data.feature_maps import get_feature_map
+
+        x = np.asarray(x, dtype=float).ravel()
+        # Match the feature vector to the qubit count (pad / truncate).
+        if x.shape[0] < self.n_qubits:
+            x = np.concatenate([x, np.zeros(self.n_qubits - x.shape[0])])
+        else:
+            x = x[: self.n_qubits]
+
+        if self.feature_map in ("zz", "pauli"):
+            fm = get_feature_map(self.feature_map, self.n_qubits, reps=self.reps)
+        else:  # angle encoding (no reps argument)
+            fm = get_feature_map("angle", self.n_qubits)
+        return fm(x)
+
+    def _feature_qstate(self, x: np.ndarray):
+        """Simulate U(x)|0> and return the resulting QuantumState (cached by x)."""
+        key = tuple(np.asarray(x, dtype=float).ravel()[: self.n_qubits])
+        cached = self._state_cache.get(key)
+        if cached is None:
+            cached = self._build_feature_circuit(x).get_statevector()
+            self._state_cache[key] = cached
+        return cached
+
+    def _feature_state(self, x: np.ndarray) -> np.ndarray:
+        """State vector for |phi(x)>."""
+        return self._feature_qstate(x).state_vector
 
     @abstractmethod
     def compute_kernel_element(self, x1: np.ndarray, x2: np.ndarray) -> float:
@@ -78,8 +114,9 @@ class QuantumKernel(ABC):
         return K
 
     def clear_cache(self):
-        """Clear kernel cache"""
+        """Clear kernel and feature-state caches"""
         self._kernel_cache = {}
+        self._state_cache = {}
 
     def encode_data(self, x: np.ndarray) -> np.ndarray:
         """
@@ -121,30 +158,23 @@ class FidelityKernel(QuantumKernel):
 
     def compute_kernel_element(self, x1: np.ndarray, x2: np.ndarray) -> float:
         """
-        Compute fidelity-based kernel element
+        Compute the fidelity kernel element by simulating the feature-map circuits.
+
+        K(x1, x2) = |<phi(x1)|phi(x2)>|^2, where |phi(x)> = U(x)|0> is produced by
+        the real feature-map circuit. This Gram matrix is symmetric and positive
+        semdefinite (Schur product theorem), so it is a valid kernel.
 
         Args:
             x1: First data point
             x2: Second data point
 
         Returns:
-            Kernel value (state fidelity)
+            Kernel value (state fidelity) in [0, 1]
         """
-        # Encode data
-        params1 = self.encode_data(x1)
-        params2 = self.encode_data(x2)
-
-        # Simplified fidelity calculation
-        # In practice, would simulate quantum circuits
-        # For now, use analytic approximation
-
-        # Compute state overlap approximation
-        overlap = np.exp(-np.linalg.norm(params1 - params2) ** 2 / (2 * self.n_qubits))
-
-        # Fidelity is |overlap|^2
-        fidelity = overlap**2
-
-        return fidelity
+        state1 = self._feature_state(x1)
+        state2 = self._feature_state(x2)
+        overlap = np.vdot(state1, state2)
+        return float(np.abs(overlap) ** 2)
 
 
 class ProjectedKernel(QuantumKernel):
@@ -162,30 +192,38 @@ class ProjectedKernel(QuantumKernel):
         n_qubits: int = 4,
         reps: int = 2,
         measurement_basis: str = "z",
+        gamma: float = 1.0,
     ):
         super().__init__(feature_map, n_qubits, reps)
         self.measurement_basis = measurement_basis
+        self.gamma = gamma
 
     def compute_kernel_element(self, x1: np.ndarray, x2: np.ndarray) -> float:
         """
-        Compute projected kernel element
+        Projected quantum kernel (Huang et al. 2021).
+
+        K(x1, x2) = exp(-gamma * sum_q ||rho_q(x1) - rho_q(x2)||_F^2), where
+        rho_q(x) is the single-qubit reduced density matrix of |phi(x)> on qubit
+        q, obtained by partial trace of the simulated feature state. Using Bloch
+        vectors r_q, ||rho_q(x1) - rho_q(x2)||_F^2 = 0.5 * ||r_q(x1) - r_q(x2)||^2.
 
         Args:
             x1: First data point
             x2: Second data point
 
         Returns:
-            Kernel value (projected overlap)
+            Kernel value in (0, 1]
         """
-        params1 = self.encode_data(x1)
-        params2 = self.encode_data(x2)
+        state1 = self._feature_qstate(x1)
+        state2 = self._feature_qstate(x2)
 
-        # Simplified projection kernel
-        # Average of Pauli-Z measurements
-        diff = params1 - params2
-        kernel_val = np.mean(np.cos(diff))
+        distance = 0.0
+        for qubit in range(self.n_qubits):
+            r1 = np.array(state1.bloch_vector(qubit))
+            r2 = np.array(state2.bloch_vector(qubit))
+            distance += 0.5 * np.sum((r1 - r2) ** 2)
 
-        return kernel_val
+        return float(np.exp(-self.gamma * distance))
 
 
 def compute_gram_matrix(X: np.ndarray, kernel: QuantumKernel) -> np.ndarray:

@@ -2,9 +2,16 @@
 
 # -- Project information -----------------------------------------------------
 project = 'QuantumDebugger'
-copyright = '2025, Raunak Kumar Gupta, Supervised by Dr. Vaibhav Prakash Vasani - K.J. Somaiya School of Engineering'
+copyright = '2025-2026, Raunak Kumar Gupta, Supervised by Dr. Vaibhav Prakash Vasani - K.J. Somaiya School of Engineering'
 author = 'Raunak Kumar Gupta'
-release = '0.4.1'
+
+# Single source of truth: read the version from the installed package (Read the
+# Docs pip-installs the package, so this stays in sync automatically).
+try:
+    from quantum_debugger import __version__ as release
+except Exception:
+    release = '0.6.1'
+version = release
 
 # -- General configuration ---------------------------------------------------
 extensions = [

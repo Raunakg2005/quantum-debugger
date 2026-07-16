@@ -24,7 +24,9 @@ jobs:
       
       - name: Run tests
         run: |
-          pytest tests/ -v
+          # Optional-dependency tests (qiskit/cirq/torch/tf/cupy) skip themselves
+          # when the dependency is absent; AWS Braket tests are excluded here.
+          pytest tests/ -v -m "not aws"
       
       - name: Build package
         run: python -m build
