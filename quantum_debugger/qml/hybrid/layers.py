@@ -243,7 +243,10 @@ class QuantumMiddleLayer(HybridLayer):
         probs = np.abs(state_vector) ** 2
         indices = np.arange(state_vector.shape[0])
         return np.array(
-            [np.dot(probs, 1.0 - 2.0 * ((indices >> q) & 1)) for q in range(self.n_qubits)]
+            [
+                np.dot(probs, 1.0 - 2.0 * ((indices >> q) & 1))
+                for q in range(self.n_qubits)
+            ]
         )
 
     def _forward_single(self, x, params):
@@ -270,7 +273,9 @@ class QuantumMiddleLayer(HybridLayer):
         inputs = np.asarray(inputs)
         outputs = np.zeros((inputs.shape[0], self.n_qubits))
         for i, sample in enumerate(inputs):
-            outputs[i] = self._forward_single(sample[: self.n_qubits], self.quantum_params)
+            outputs[i] = self._forward_single(
+                sample[: self.n_qubits], self.quantum_params
+            )
         return outputs
 
     def parameter_shift_gradients(self, inputs, grad_output):

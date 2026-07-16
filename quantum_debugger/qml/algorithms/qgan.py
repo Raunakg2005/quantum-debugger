@@ -58,7 +58,9 @@ class QuantumGAN:
         self.training_history = {"generator_loss": [], "discriminator_loss": []}
 
     def _n_features(self) -> int:
-        return self.n_qubits if self.discriminator_type == "quantum" else 2**self.n_qubits
+        return (
+            self.n_qubits if self.discriminator_type == "quantum" else 2**self.n_qubits
+        )
 
     def _generator_circuit(self, noise: np.ndarray) -> np.ndarray:
         """
@@ -105,7 +107,10 @@ class QuantumGAN:
             # Per-qubit Pauli-Z expectation values.
             indices = np.arange(state.shape[0])
             return np.array(
-                [np.dot(probs, 1.0 - 2.0 * ((indices >> q) & 1)) for q in range(self.n_qubits)]
+                [
+                    np.dot(probs, 1.0 - 2.0 * ((indices >> q) & 1))
+                    for q in range(self.n_qubits)
+                ]
             )
         return probs
 
@@ -126,9 +131,7 @@ class QuantumGAN:
         return 1.0 / (1.0 + np.exp(-z))
 
     def _discriminator_loss(self, d_real: np.ndarray, d_fake: np.ndarray) -> float:
-        return float(
-            -np.mean(np.log(d_real + 1e-8) + np.log(1.0 - d_fake + 1e-8))
-        )
+        return float(-np.mean(np.log(d_real + 1e-8) + np.log(1.0 - d_fake + 1e-8)))
 
     def _generator_loss(self, d_fake: np.ndarray) -> float:
         return float(-np.mean(np.log(d_fake + 1e-8)))

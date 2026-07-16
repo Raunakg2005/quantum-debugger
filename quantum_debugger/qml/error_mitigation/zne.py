@@ -234,9 +234,7 @@ def scale_circuit_noise(circuit, scale_factor: float):
 
     def extend_with_fold(subset):
         # Append inverse(subset) then subset -> identity, doubling those gates.
-        folded.gates.extend(
-            CircuitFolder.get_inverse_gate(g) for g in reversed(subset)
-        )
+        folded.gates.extend(CircuitFolder.get_inverse_gate(g) for g in reversed(subset))
         folded.gates.extend(subset)
 
     for _ in range(full_folds):

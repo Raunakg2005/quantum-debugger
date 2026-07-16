@@ -417,7 +417,9 @@ class QuantumCircuit:
             state[0] = 1.0
 
         for gate in self.gates:
-            state = apply_gate_tensor(cp, state, gate.matrix, gate.qubits, self.num_qubits)
+            state = apply_gate_tensor(
+                cp, state, gate.matrix, gate.qubits, self.num_qubits
+            )
 
         norm = cp.linalg.norm(state)
         if float(norm) > 0:

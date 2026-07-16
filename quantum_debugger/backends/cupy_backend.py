@@ -17,7 +17,9 @@ try:
     import cupy as cp
 
     HAS_CUPY = True
-except Exception:  # not just ImportError: a broken/incompatible install must not break our import
+except (
+    Exception
+):  # not just ImportError: a broken/incompatible install must not break our import
     HAS_CUPY = False
 
 

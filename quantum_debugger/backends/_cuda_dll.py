@@ -41,7 +41,9 @@ def ensure_cuda_dlls() -> None:
         pass
     # Derive the site-packages root from this file's location as a fallback
     # (…/site-packages/quantum_debugger/backends/_cuda_dll.py).
-    roots.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+    roots.append(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    )
 
     bin_dirs = set()
     for root in roots:

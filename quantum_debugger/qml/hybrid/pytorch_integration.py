@@ -12,7 +12,9 @@ try:
     from torch.autograd import Function
 
     HAS_PYTORCH = True
-except Exception:  # not just ImportError: a broken/incompatible install must not break our import
+except (
+    Exception
+):  # not just ImportError: a broken/incompatible install must not break our import
     HAS_PYTORCH = False
 
     # Dummy classes when PyTorch not available

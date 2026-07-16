@@ -14,7 +14,9 @@ try:
     import pennylane as qml
 
     PENNYLANE_AVAILABLE = True
-except Exception:  # not just ImportError: a broken/incompatible install must not break our import
+except (
+    Exception
+):  # not just ImportError: a broken/incompatible install must not break our import
     PENNYLANE_AVAILABLE = False
     logger.debug("PennyLane not available - install with: pip install pennylane")
 

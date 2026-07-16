@@ -111,7 +111,9 @@ class MixedPrecisionTrainer:
                 self.model._parameters, dtype=np.float32
             ).copy()
         elif hasattr(self.model, "_initialize_all_parameters"):
-            if not getattr(self.model, "compiled", False) and hasattr(self.model, "compile"):
+            if not getattr(self.model, "compiled", False) and hasattr(
+                self.model, "compile"
+            ):
                 self.model.compile()
             self.master_weights = np.asarray(
                 self.model._initialize_all_parameters(), dtype=np.float32

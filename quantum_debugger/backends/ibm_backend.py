@@ -25,7 +25,9 @@ try:
     from qiskit import transpile
 
     IBM_AVAILABLE = True
-except Exception:  # not just ImportError: a broken/incompatible install must not break our import
+except (
+    Exception
+):  # not just ImportError: a broken/incompatible install must not break our import
     IBM_AVAILABLE = False
     logger.debug(
         "IBM Quantum not available. Install with: pip install qiskit-ibm-runtime"

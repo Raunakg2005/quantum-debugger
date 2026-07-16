@@ -225,11 +225,15 @@ class PEC:
     def _op_on(cls, pauli_idx: int, qubit: int, n_qubits: int) -> np.ndarray:
         op = np.array([[1.0 + 0j]])
         for i in range(n_qubits):
-            op = np.kron(op, cls._pauli(pauli_idx) if i == qubit else np.eye(2, dtype=complex))
+            op = np.kron(
+                op, cls._pauli(pauli_idx) if i == qubit else np.eye(2, dtype=complex)
+            )
         return op
 
     @classmethod
-    def _apply_depolarizing_all(cls, rho: np.ndarray, p: float, n_qubits: int) -> np.ndarray:
+    def _apply_depolarizing_all(
+        cls, rho: np.ndarray, p: float, n_qubits: int
+    ) -> np.ndarray:
         """Independent single-qubit depolarizing on every qubit."""
         for q in range(n_qubits):
             acc = (1.0 - p) * rho

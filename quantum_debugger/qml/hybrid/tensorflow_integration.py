@@ -13,7 +13,9 @@ try:
     from tensorflow import keras
 
     HAS_TENSORFLOW = True
-except Exception:  # not just ImportError: a broken/incompatible install must not break our import
+except (
+    Exception
+):  # not just ImportError: a broken/incompatible install must not break our import
     HAS_TENSORFLOW = False
 
     # Create complete dummy classes when TensorFlow not available
@@ -136,7 +138,11 @@ if HAS_TENSORFLOW:
             @tf.custom_gradient
             def quantum_op(x, weights):
                 x_np = x.numpy() if hasattr(x, "numpy") else np.asarray(x)
-                w_np = weights.numpy() if hasattr(weights, "numpy") else np.asarray(weights)
+                w_np = (
+                    weights.numpy()
+                    if hasattr(weights, "numpy")
+                    else np.asarray(weights)
+                )
                 quantum_layer.quantum_params = w_np
                 out_np = quantum_layer.forward(x_np)
 

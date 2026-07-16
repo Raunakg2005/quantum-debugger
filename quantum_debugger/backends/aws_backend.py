@@ -28,7 +28,9 @@ try:
     from braket.circuits import Circuit as BraketCircuit
 
     AWS_AVAILABLE = True
-except Exception:  # not just ImportError: a broken/incompatible install must not break our import
+except (
+    Exception
+):  # not just ImportError: a broken/incompatible install must not break our import
     AWS_AVAILABLE = False
     BraketCircuit = None
     logger.debug(
