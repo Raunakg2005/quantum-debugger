@@ -59,7 +59,7 @@ def test_qft_circuit():
     print(f"  Circuit depth: {metrics.depth}")
 
     print("✅ QFT circuit test PASSED")
-    return True
+    return
 
 
 def test_vqe_ansatz():
@@ -108,7 +108,7 @@ def test_vqe_ansatz():
         print(f"  - {suggestion[:60]}...")
 
     print("✅ VQE ansatz test PASSED")
-    return True
+    return
 
 
 def test_ghz_state():
@@ -144,7 +144,7 @@ def test_ghz_state():
         print("  ✓ Correct GHZ state structure (2 basis states)")
 
     print("✅ GHZ state test PASSED")
-    return True
+    return
 
 
 def test_incorrect_bell_state():
@@ -201,7 +201,7 @@ def test_incorrect_bell_state():
         print("  Got: Separable superposition (missing CNOT)")
 
     print("✅ Bug detection test PASSED")
-    return True
+    return
 
 
 def test_wrong_qubit_order():
@@ -243,7 +243,7 @@ def test_wrong_qubit_order():
         print("  Qubit order matters - implementation differs from expected")
 
     print("✅ Qubit order detection test PASSED")
-    return True
+    return
 
 
 def test_missing_gate():
@@ -298,7 +298,7 @@ def test_missing_gate():
         print("  Incomplete circuit has fewer gates than expected")
 
     print("✅ Missing gate detection test PASSED")
-    return True
+    return
 
 
 def test_performance_on_large_circuit():
@@ -342,7 +342,7 @@ def test_performance_on_large_circuit():
         print("\n  ✓ GOOD PERFORMANCE on large circuit!")
 
     print("✅ Performance test PASSED")
-    return True
+    return
 
 
 def main():

@@ -42,10 +42,10 @@ def test_numerical_stability():
         print("  ✓ Normalization preserved")
     else:
         print(f"  ❌ Norm drift: {abs(norm - 1.0)}")
-        return False
+        assert False
 
     print("✅ Numerical stability test PASSED")
-    return True
+    return
 
 
 def test_commutation_relations():
@@ -104,7 +104,7 @@ def test_commutation_relations():
         print("  ✓ RZ and Z commute correctly")
 
     print("✅ Commutation relations test PASSED")
-    return True
+    return
 
 
 def test_entanglement_witnesses():
@@ -132,7 +132,7 @@ def test_entanglement_witnesses():
             print(f"  ✓ |{name}⟩ correctly identified as entangled")
         else:
             print(f"  ❌ |{name}⟩ not detected as entangled")
-            return False
+            assert False
 
     # Test W state (partial entanglement)
     print("\n✓ Testing W state |001⟩ + |010⟩ + |100⟩...")
@@ -148,7 +148,7 @@ def test_entanglement_witnesses():
         print("  ⚠️  Partial entanglement not detected (expected for simple check)")
 
     print("✅ Entanglement witnesses test PASSED")
-    return True
+    return
 
 
 def test_gate_decompositions():
@@ -194,7 +194,7 @@ def test_gate_decompositions():
         print("  ✓ Toffoli works correctly")
 
     print("✅ Gate decompositions test PASSED")
-    return True
+    return
 
 
 def test_quantum_fourier_transform_properties():
@@ -236,10 +236,10 @@ def test_quantum_fourier_transform_properties():
         print("  ✓ QFT preserves normalization")
     else:
         print(f"  ❌ QFT normalization error")
-        return False
+        assert False
 
     print("✅ QFT properties test PASSED")
-    return True
+    return
 
 
 def test_state_preparation_methods():
@@ -266,7 +266,7 @@ def test_state_preparation_methods():
         print(f"  ✓ All states have probability {expected_prob:.4f}")
     else:
         print("  ❌ Probabilities not equal")
-        return False
+        assert False
 
     # Computational basis state
     print("\n✓ Testing computational basis state |101⟩...")
@@ -285,10 +285,10 @@ def test_state_preparation_methods():
         print(f"  ✓ State |101⟩ prepared correctly")
     else:
         print(f"  ❌ Wrong state prepared")
-        return False
+        assert False
 
     print("✅ State preparation test PASSED")
-    return True
+    return
 
 
 def test_measurement_basis_change():
@@ -327,7 +327,7 @@ def test_measurement_basis_change():
         print("  ✓ Definite outcome in X-basis")
 
     print("✅ Measurement basis test PASSED")
-    return True
+    return
 
 
 def test_gate_fidelity_benchmarks():
@@ -357,10 +357,10 @@ def test_gate_fidelity_benchmarks():
             print(f"  ✓ {name}")
         else:
             print(f"  ❌ {name} failed: P(0)={prob_0}")
-            return False
+            assert False
 
     print("✅ Gate fidelity benchmarks test PASSED")
-    return True
+    return
 
 
 def test_controlled_gate_variants():
@@ -407,7 +407,7 @@ def test_controlled_gate_variants():
         print("  ✓ CNOT is not symmetric (as expected)")
 
     print("✅ Controlled gate variants test PASSED")
-    return True
+    return
 
 
 def test_circuit_optimization_effectiveness():
@@ -453,7 +453,7 @@ def test_circuit_optimization_effectiveness():
         print("  ✓ Redundant gates cancel correctly")
 
     print("✅ Optimization effectiveness test PASSED")
-    return True
+    return
 
 
 def main():

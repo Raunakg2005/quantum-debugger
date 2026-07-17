@@ -175,3 +175,5 @@ temp/
 
 # GitHub Actions cache
 .github_cache/
+# Separate C++ project (its own repo)
+QFlow/

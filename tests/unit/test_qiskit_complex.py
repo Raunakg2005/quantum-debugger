@@ -69,10 +69,10 @@ def test_grover_algorithm():
 
     if max_idx == 5:  # |101⟩ in little-endian
         print("✅ Grover's algorithm works! Found marked state")
-        return True
+        return
     else:
         print("⚠️  Different result")
-        return False
+        assert False
 
 
 def test_qft_with_debugging():
@@ -123,8 +123,8 @@ def test_qft_with_debugging():
 
     if abs(np.linalg.norm(final_state.state_vector) - 1.0) < 1e-10:
         print("✅ QFT maintains unitarity!")
-        return True
-    return False
+        return
+    assert False
 
 
 def test_parameterized_vqe():
@@ -169,8 +169,8 @@ def test_parameterized_vqe():
 
     if len(qc_back.data) == len(qc.data):
         print("\n✅ Roundtrip conversion preserves structure!")
-        return True
-    return False
+        return
+    assert False
 
 
 def test_algorithm_comparison():
@@ -220,8 +220,8 @@ def test_algorithm_comparison():
 
     if fidelity > 0.99999:
         print("\n✅ Perfect agreement between Qiskit and QuantumDebugger!")
-        return True
-    return False
+        return
+    assert False
 
 
 def main():

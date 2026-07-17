@@ -42,12 +42,12 @@ def test_maximum_qubits():
 
         print("\n  ✓ Successfully handled 12-qubit circuit")
         print("✅ Maximum qubit test PASSED")
-        return True
+        return
 
     except Exception as e:
         print(f"  ⚠️  Expected limitation at {n_qubits} qubits: {e}")
         print("✅ Test PASSED (graceful handling)")
-        return True
+        return
 
 
 def test_repeated_measurements():
@@ -85,7 +85,7 @@ def test_repeated_measurements():
             print(f"  ⚠️  Distribution slightly off (ratio: {ratio:.3f})")
 
     print("✅ Repeated measurements test PASSED")
-    return True
+    return
 
 
 def test_identity_cancellation():
@@ -112,10 +112,10 @@ def test_identity_cancellation():
         print("  ✓ CORRECT: X-X = Identity (back to |0>)")
     else:
         print(f"  ❌ ERROR: Expected P(0)=1.0, got {prob_0}")
-        return False
+        assert False
 
     print("✅ Gate cancellation test PASSED")
-    return True
+    return
 
 
 def test_phase_kickback():
@@ -146,7 +146,7 @@ def test_phase_kickback():
 
     print("\n  ✓ Phase kickback circuit executed")
     print("✅ Phase kickback test PASSED")
-    return True
+    return
 
 
 def test_superposition_collapse():
@@ -184,7 +184,7 @@ def test_superposition_collapse():
         print(f"  ⚠️  Distribution outside expected range")
 
     print("✅ Collapse test PASSED")
-    return True
+    return
 
 
 def test_commuting_gates():
@@ -215,7 +215,7 @@ def test_commuting_gates():
         print("  ✓ CORRECT: H and Z don't commute (different states)")
     else:
         print("  ❌ ERROR: States should be different")
-        return False
+        assert False
 
     # X and Z anti-commute
     qc3 = QuantumCircuit(1)
@@ -234,7 +234,7 @@ def test_commuting_gates():
     print(f"  Fidelity: {comparison2['fidelity']:.6f}")
 
     print("✅ Commutation test PASSED")
-    return True
+    return
 
 
 def test_bernstein_vazirani():
@@ -278,7 +278,7 @@ def test_bernstein_vazirani():
     print(f"  CNOT count: {metrics.cnot_count}")
 
     print("✅ Bernstein-Vazirani test PASSED")
-    return True
+    return
 
 
 def test_parametric_gates():
@@ -304,11 +304,11 @@ def test_parametric_gates():
         total = prob_0 + prob_1
         if abs(total - 1.0) > 1e-10:
             print(f"    ❌ Normalization error: {total}")
-            return False
+            assert False
 
     print("\n  ✓ All angles normalized correctly")
     print("✅ Parametric gate test PASSED")
-    return True
+    return
 
 
 def test_circuit_composition():
@@ -348,7 +348,7 @@ def test_circuit_composition():
         print(f"  |{state}>: {prob:.4f}")
 
     print("✅ Circuit composition test PASSED")
-    return True
+    return
 
 
 def test_error_propagation():
@@ -384,7 +384,7 @@ def test_error_propagation():
 
     print("\n  ✓ Error propagation analyzed")
     print("✅ Error propagation test PASSED")
-    return True
+    return
 
 
 def test_debugger_state_consistency():
@@ -432,7 +432,7 @@ def test_debugger_state_consistency():
         print("  ✓ All states consistent across runs")
 
     print("✅ State consistency test PASSED")
-    return True
+    return
 
 
 def test_profiler_optimization_quality():
@@ -467,7 +467,7 @@ def test_profiler_optimization_quality():
         print("\n  ⚠️  Did not identify consecutive gate issue")
 
     print("✅ Optimization quality test PASSED")
-    return True
+    return
 
 
 def main():

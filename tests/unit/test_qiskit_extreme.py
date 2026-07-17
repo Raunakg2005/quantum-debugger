@@ -70,8 +70,8 @@ def test_10_qubit_random_circuit():
 
     if abs(np.linalg.norm(state.state_vector) - 1.0) < 1e-10:
         print("\n✅ 10-qubit circuit executed successfully!")
-        return True
-    return False
+        return
+    assert False
 
 
 def test_quantum_phase_estimation():
@@ -124,7 +124,7 @@ def test_quantum_phase_estimation():
     print(f"   State entropy: {state.entropy():.4f}")
 
     print("\n✅ Quantum Phase Estimation executed!")
-    return True
+    return
 
 
 def test_variational_quantum_eigensolver_ansatz():
@@ -190,7 +190,7 @@ def test_variational_quantum_eigensolver_ansatz():
     print(f"   Entangled: {final_state.is_entangled()}")
 
     print("\n✅ Multi-layer VQE ansatz works!")
-    return True
+    return
 
 
 def test_error_correction_encoding():
@@ -226,8 +226,8 @@ def test_error_correction_encoding():
 
     if state.is_entangled():
         print("\n✅ Error correction encoding creates entanglement!")
-        return True
-    return False
+        return
+    assert False
 
 
 @pytest.mark.skip(reason="Time-consuming 12-qubit performance scaling test")
@@ -277,7 +277,7 @@ def test_performance_scaling():
     print(f"   12-qubit execution: {results[4]['exec_time']:.2f}ms")
 
     print("\n✅ Performance scales reasonably!")
-    return True
+    return
 
 
 def test_roundtrip_large_circuit():
@@ -317,12 +317,12 @@ def test_roundtrip_large_circuit():
     # Verify gate count preserved
     if len(qc_original.data) == len(qc_roundtrip.data):
         print("\n✅ Large circuit roundtrip preserves all gates!")
-        return True
+        return
     else:
         print(
             f"\n⚠️  Gate count mismatch: {len(qc_original.data)} vs {len(qc_roundtrip.data)}"
         )
-        return False
+        assert False
 
 
 def main():

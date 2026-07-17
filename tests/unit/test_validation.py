@@ -35,7 +35,7 @@ def test_qasm_compatibility():
         print("\n  ✓ Valid circuit representation")
 
     print("✅ QASM compatibility test PASSED")
-    return True
+    return
 
 
 def test_swap_gate():
@@ -65,10 +65,10 @@ def test_swap_gate():
         print("\n  ✓ SWAP correctly exchanged qubits (|01⟩ → |10⟩)")
     else:
         print("  ❌ SWAP failed")
-        return False
+        assert False
 
     print("✅ SWAP gate test PASSED")
-    return True
+    return
 
 
 def test_three_qubit_gates():
@@ -96,7 +96,7 @@ def test_three_qubit_gates():
         print(f"  ✓ |110⟩ → |111⟩")
     else:
         print(f"  ❌ |110⟩ failed, got {stats1}")
-        return False
+        assert False
 
     # Case 2: |111⟩ should flip to |110⟩
     qc2 = QuantumCircuit(3)
@@ -113,7 +113,7 @@ def test_three_qubit_gates():
         print(f"  ✓ |111⟩ → |110⟩")
     else:
         print(f"  ❌ |111⟩ failed, got {stats2}")
-        return False
+        assert False
 
     # Case 3: |010⟩ should stay |010⟩ (only one control is 1)
     qc3 = QuantumCircuit(3)
@@ -127,10 +127,10 @@ def test_three_qubit_gates():
         print(f"  ✓ |010⟩ → |010⟩ (no flip)")
     else:
         print(f"  ❌ |010⟩ failed")
-        return False
+        assert False
 
     print("\n✅ Toffoli gate test PASSED")
-    return True
+    return
 
 
 def test_hadamard_properties():
@@ -152,7 +152,7 @@ def test_hadamard_properties():
         print("  ✓ CORRECT: Double Hadamard returns to |0⟩")
     else:
         print(f"  ❌ Failed: P(0) = {prob_0}")
-        return False
+        assert False
 
     # Property 2: Creates equal superposition
     qc2 = QuantumCircuit(1)
@@ -166,10 +166,10 @@ def test_hadamard_properties():
         print("  ✓ CORRECT: H creates |+⟩ = (|0⟩+|1⟩)/√2")
     else:
         print(f"  ❌ Failed: P(0)={p0}, P(1)={p1}")
-        return False
+        assert False
 
     print("✅ Hadamard properties test PASSED")
-    return True
+    return
 
 
 def test_pauli_algebra():
@@ -212,7 +212,7 @@ def test_pauli_algebra():
         print("  ✓ CORRECT: X² = I")
 
     print("✅ Pauli algebra test PASSED")
-    return True
+    return
 
 
 def test_entanglement_measures():
@@ -242,7 +242,7 @@ def test_entanglement_measures():
         print("  ✓ Correctly identified as entangled")
     else:
         print("  ❌ Failed to detect entanglement")
-        return False
+        assert False
 
     # Product of superpositions (separable but looks entangled)
     qc_prod = QuantumCircuit(2)
@@ -255,7 +255,7 @@ def test_entanglement_measures():
         print("  ✓ Correctly identified as separable")
 
     print("✅ Entanglement measures test PASSED")
-    return True
+    return
 
 
 def test_schmidt_decomposition():
@@ -282,7 +282,7 @@ def test_schmidt_decomposition():
         print("  ✓ Correct entropy for maximally entangled state")
 
     print("✅ Schmidt decomposition test PASSED")
-    return True
+    return
 
 
 def test_controlled_operations():
@@ -314,7 +314,7 @@ def test_controlled_operations():
         print("  ✓ CZ is symmetric: CZ(0,1) = CZ(1,0)")
 
     print("✅ Controlled operations test PASSED")
-    return True
+    return
 
 
 def test_circuit_depth_optimization():
@@ -354,7 +354,7 @@ def test_circuit_depth_optimization():
             print("\n  ✓ Parallel circuit has better depth utilization")
 
     print("✅ Depth optimization test PASSED")
-    return True
+    return
 
 
 def test_unitary_verification():
@@ -390,7 +390,7 @@ def test_unitary_verification():
         print("\n  ✓ All gates are unitary")
 
     print("✅ Unitary verification test PASSED")
-    return True
+    return
 
 
 def main():

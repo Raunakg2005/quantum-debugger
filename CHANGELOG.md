@@ -5,6 +5,24 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (0.7.0.dev)
+
+Theme: performance & scale, plus test-suite integrity.
+
+### Changed
+- **`QuantumCircuit.run()` simulates once and samples all shots** from the
+  resulting distribution, instead of re-simulating the whole circuit for every
+  shot (was O(shots x gates), now O(gates + shots)). Statistically identical for
+  independent projective Z-measurements; 20k shots on a 10-qubit circuit now
+  runs in ~50 ms. `run()` also accepts `use_gpu` / `precision`.
+
+### Fixed
+- **Test integrity**: ~116 legacy tests across 10 files signalled pass/fail via
+  `return True/False`, which pytest ignores -- so they passed vacuously. Converted
+  to real `assert`s (all still pass, confirming the checks genuinely hold) and
+  removed the `PytestReturnNotNoneWarning`s.
+- Registered the `aws` pytest marker (`pytest.ini`) so `-m "not aws"` is clean.
+
 ## [0.6.1] - 2026-07-16
 
 Release-hardening pass focused on correctness, performance, and robustness. No

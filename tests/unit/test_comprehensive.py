@@ -42,10 +42,10 @@ def test_single_qubit_gates():
             print(f"  ✓ {name} gate: normalized correctly")
         else:
             print(f"  ❌ {name} gate: normalization failed ({norm})")
-            return False
+            assert False
 
     print("✅ All single-qubit gates test PASSED")
-    return True
+    return
 
 
 def test_quantum_teleportation():
@@ -81,7 +81,7 @@ def test_quantum_teleportation():
     print(f"  Non-zero amplitudes: {state_info['nonzero_amplitudes']}")
 
     print("✅ Teleportation circuit test PASSED")
-    return True
+    return
 
 
 def test_empty_circuit():
@@ -106,7 +106,7 @@ def test_empty_circuit():
         print("  ✓ Correct: State is |00>")
     else:
         print("  ❌ Expected |00> state")
-        return False
+        assert False
 
     # Profile empty circuit
     profiler = CircuitProfiler(qc)
@@ -116,10 +116,10 @@ def test_empty_circuit():
         print("  ✓ Correct metrics for empty circuit")
     else:
         print("  ❌ Metrics incorrect")
-        return False
+        assert False
 
     print("✅ Empty circuit test PASSED")
-    return True
+    return
 
 
 def test_very_deep_circuit():
@@ -154,7 +154,7 @@ def test_very_deep_circuit():
         print(f"  ⚠️  Depth mismatch: got {metrics.depth}, expected 200")
 
     print("✅ Deep circuit test PASSED")
-    return True
+    return
 
 
 def test_wrong_rotation_angle():
@@ -195,10 +195,10 @@ def test_wrong_rotation_angle():
         print(f"  Fidelity: {comparison['fidelity']:.4f}")
     else:
         print("  ❌ Failed to detect angle difference")
-        return False
+        assert False
 
     print("✅ Rotation angle detection test PASSED")
-    return True
+    return
 
 
 def test_deutsch_algorithm():
@@ -260,7 +260,7 @@ def test_deutsch_algorithm():
         print(f"    |{state}>: {prob:.4f}")
 
     print("✅ Deutsch algorithm test PASSED")
-    return True
+    return
 
 
 def test_incorrect_gate_sequence():
@@ -304,7 +304,7 @@ def test_incorrect_gate_sequence():
         print("  ⚠️  States are similar despite wrong order")
 
     print("✅ Gate sequence detection test PASSED")
-    return True
+    return
 
 
 def test_measurement_basis():
@@ -338,7 +338,7 @@ def test_measurement_basis():
         print(f"    |{outcome}>: {count} ({count/10:.1f}%)")
 
     print("✅ Measurement basis test PASSED")
-    return True
+    return
 
 
 def test_conditional_breakpoint():
@@ -377,7 +377,7 @@ def test_conditional_breakpoint():
         print("  ⚠️  Breakpoint not triggered")
 
     print("✅ Conditional breakpoint test PASSED")
-    return True
+    return
 
 
 def test_state_fidelity_tracking():
@@ -419,10 +419,10 @@ def test_state_fidelity_tracking():
         print("\n  ✓ Reached target state with high fidelity")
     else:
         print(f"  ❌ Final fidelity too low: {final_fidelity}")
-        return False
+        assert False
 
     print("✅ Fidelity tracking test PASSED")
-    return True
+    return
 
 
 def main():

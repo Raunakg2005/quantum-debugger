@@ -66,7 +66,7 @@ def test_all_two_qubit_gate_combinations():
     print("  ✓ |11⟩ → |10⟩")
 
     print("✅ All two-qubit combinations test PASSED")
-    return True
+    return
 
 
 def test_circuit_composition_and_inverse():
@@ -95,10 +95,10 @@ def test_circuit_composition_and_inverse():
         print(f"  ✓ Returned to |00⟩ (probability: {prob_00:.6f})")
     else:
         print(f"  ❌ Did not return to initial state")
-        return False
+        assert False
 
     print("✅ Circuit inverse test PASSED")
-    return True
+    return
 
 
 def test_random_circuit_unitarity():
@@ -129,7 +129,7 @@ def test_random_circuit_unitarity():
         print("  ✓ State properly normalized")
     else:
         print(f"  ❌ Normalization error: {abs(norm - 1.0)}")
-        return False
+        assert False
 
     # Check probability sums to 1
     probs = state.get_probabilities()
@@ -141,10 +141,10 @@ def test_random_circuit_unitarity():
         print("  ✓ Probabilities sum to 1")
     else:
         print(f"  ❌ Probability sum error")
-        return False
+        assert False
 
     print("✅ Random circuit unitarity test PASSED")
-    return True
+    return
 
 
 def test_measurement_statistics():
@@ -174,7 +174,7 @@ def test_measurement_statistics():
             print(f"  ⚠️  Unusual distribution for |{state}⟩")
 
     print("✅ Measurement statistics test PASSED")
-    return True
+    return
 
 
 def test_phase_gates():
@@ -203,7 +203,7 @@ def test_phase_gates():
         print("  ✓ CORRECT: S² = Z")
     else:
         print("  ❌ S² ≠ Z")
-        return False
+        assert False
 
     # T gate squared is S
     qc3 = QuantumCircuit(1)
@@ -225,10 +225,10 @@ def test_phase_gates():
         print("  ✓ CORRECT: T² = S")
     else:
         print("  ❌ T² ≠ S")
-        return False
+        assert False
 
     print("✅ Phase gates test PASSED")
-    return True
+    return
 
 
 def test_rotation_gates_full_circle():
@@ -262,10 +262,10 @@ def test_rotation_gates_full_circle():
         print("  ✓ Probabilities match (2π rotation = identity up to phase)")
     else:
         print("  ❌ Probabilities don't match")
-        return False
+        assert False
 
     print("✅ Full rotation test PASSED")
-    return True
+    return
 
 
 def test_debugger_execution_history():
@@ -298,7 +298,7 @@ def test_debugger_execution_history():
         print("  ✓ Correct history length")
     else:
         print(f"  ❌ Expected 5 history entries, got {history_length}")
-        return False
+        assert False
 
     # Test stepping back
     debugger.step_back()
@@ -308,10 +308,10 @@ def test_debugger_execution_history():
         print("  ✓ Step back works correctly")
     else:
         print(f"  ❌ Step back failed")
-        return False
+        assert False
 
     print("✅ Execution history test PASSED")
-    return True
+    return
 
 
 def test_profiler_optimization_detection():
@@ -348,7 +348,7 @@ def test_profiler_optimization_detection():
         print("  ⚠️  No suggestions found")
 
     print("✅ Profiler optimization test PASSED")
-    return True
+    return
 
 
 def test_state_fidelity_properties():
@@ -372,7 +372,7 @@ def test_state_fidelity_properties():
         print("  ✓ Fidelity with self is 1")
     else:
         print(f"  ❌ Self-fidelity error")
-        return False
+        assert False
 
     # Fidelity is symmetric
     qc2 = QuantumCircuit(2)
@@ -391,10 +391,10 @@ def test_state_fidelity_properties():
         print("  ✓ Fidelity is symmetric")
     else:
         print("  ❌ Fidelity not symmetric")
-        return False
+        assert False
 
     print("✅ Fidelity properties test PASSED")
-    return True
+    return
 
 
 def test_large_state_space():
@@ -427,10 +427,10 @@ def test_large_state_space():
         print("  ✓ Correctly handled large state space")
     else:
         print("  ❌ Metrics incorrect")
-        return False
+        assert False
 
     print("✅ Large state space test PASSED")
-    return True
+    return
 
 
 def main():

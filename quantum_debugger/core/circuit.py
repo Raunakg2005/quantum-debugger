@@ -233,13 +233,27 @@ class QuantumCircuit:
         return sum(1 for g in self.gates if g.name == gate_name)
 
     # Execution
-    def run(self, shots: int = 1, initial_state: Optional[QuantumState] = None) -> dict:
+    def run(
+        self,
+        shots: int = 1,
+        initial_state: Optional[QuantumState] = None,
+        use_gpu: bool = False,
+        precision: str = "double",
+    ) -> dict:
         """
-        Execute the circuit
+        Execute the circuit.
+
+        The statevector is computed once and all shots are sampled from the
+        resulting distribution. This is equivalent, for independent projective
+        Z-measurements, to collapsing the state per shot, but costs O(gates +
+        shots) instead of the previous O(shots x gates) (which re-simulated the
+        whole circuit for every shot).
 
         Args:
-            shots: Number of times to run the circuit
-            initial_state: Optional initial state (defaults to |0...0⟩)
+            shots: Number of measurement samples
+            initial_state: Optional initial state (defaults to |0...0>)
+            use_gpu: Simulate the circuit on the GPU (see get_statevector)
+            precision: 'double' (complex128) or 'single' (complex64) for the GPU path
 
         Returns:
             Dictionary with measurement results and statistics
@@ -248,32 +262,28 @@ class QuantumCircuit:
         if self.apply_noise:
             return self._run_with_noise(shots, initial_state)
 
-        # Standard noiseless execution
+        # Simulate once, then sample every shot from the final distribution.
+        final_state = self.get_statevector(
+            initial_state, use_gpu=use_gpu, precision=precision
+        )
+        probabilities = final_state.get_probabilities()
+        total = probabilities.sum()
+        if total > 0:
+            probabilities = probabilities / total
+
+        sampled = np.random.choice(len(probabilities), size=shots, p=probabilities)
+
         results = []
-
-        for _ in range(shots):
-            state = (
-                initial_state.copy()
-                if initial_state
-                else QuantumState(self.num_qubits, backend=self.backend)
-            )
-
-            # Apply all gates
-            for gate in self.gates:
-                state.apply_gate(gate.matrix, gate.qubits)
-
-            # Perform measurements
+        counts = {}
+        for outcome in sampled:
+            outcome = int(outcome)
             classical_bits = [0] * self.num_classical
             for qubit, classical_bit in self.measurements:
-                classical_bits[classical_bit] = state.measure(qubit)
+                classical_bits[classical_bit] = (outcome >> qubit) & 1
 
-            results.append(classical_bits)
-
-        # Analyze results
-        counts = {}
-        for result in results:
-            key = "".join(map(str, result))
+            key = "".join(map(str, classical_bits))
             counts[key] = counts.get(key, 0) + 1
+            results.append(classical_bits)
 
         return {"counts": counts, "results": results, "shots": shots}
 

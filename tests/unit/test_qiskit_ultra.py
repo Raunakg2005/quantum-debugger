@@ -59,8 +59,8 @@ def test_shors_period_finding():
 
     if abs(np.linalg.norm(state.state_vector) - 1.0) < 1e-10:
         print("\n✅ Shor's subroutine maintains unitarity!")
-        return True
-    return False
+        return
+    assert False
 
 
 def test_ghz_state_5_qubits():
@@ -99,8 +99,8 @@ def test_ghz_state_5_qubits():
         expected_indices
     ):
         print("\n✅ Perfect 5-qubit GHZ state created!")
-        return True
-    return False
+        return
+    assert False
 
 
 def test_nested_controlled_operations():
@@ -145,7 +145,7 @@ def test_nested_controlled_operations():
     print(f"   Final entropy: {final_state.entropy():.4f}")
 
     print("\n✅ Nested controls executed successfully!")
-    return True
+    return
 
 
 def test_parameterized_ansatz_variations():
@@ -190,7 +190,7 @@ def test_parameterized_ansatz_variations():
     print(f"   Fidelity range: {min(fidelities):.6f} to {max(fidelities):.6f}")
 
     print("\n✅ Parameterized circuits work across parameter space!")
-    return True
+    return
 
 
 def test_circuit_composition():
@@ -228,7 +228,7 @@ def test_circuit_composition():
     print(f"   Entangled: {state.is_entangled()}")
 
     print("\n✅ Circuit composition works!")
-    return True
+    return
 
 
 def main():
