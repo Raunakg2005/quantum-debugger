@@ -8,6 +8,16 @@ from .gates.parameterized import ParameterizedGate, RXGate, RYGate, RZGate
 # Algorithms
 from .algorithms.vqe import VQE
 from .algorithms.qaoa import QAOA
+from .algorithms.policy_gradient import QuantumPolicyGradient
+from .algorithms.dqn import QuantumDQN
+
+# Advanced QML (data re-uploading + ansatz analysis)
+from .advanced import (
+    DataReuploadingClassifier,
+    expressibility,
+    entangling_capability,
+    gradient_variance,
+)
 
 # Hamiltonians
 from .hamiltonians.molecular import h2_hamiltonian
@@ -26,6 +36,13 @@ __all__ = [
     # Algorithms
     "VQE",
     "QAOA",
+    "QuantumPolicyGradient",
+    "QuantumDQN",
+    # Advanced QML
+    "DataReuploadingClassifier",
+    "expressibility",
+    "entangling_capability",
+    "gradient_variance",
     # Hamiltonians
     "h2_hamiltonian",
 ]

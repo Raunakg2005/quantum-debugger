@@ -8,5 +8,15 @@ from .vqe import VQE
 from .qaoa import QAOA
 from .qgan import QuantumGAN
 from .qrl import QuantumQLearning, SimpleEnvironment
+from .policy_gradient import QuantumPolicyGradient
+from .dqn import QuantumDQN
 
-__all__ = ["VQE", "QAOA", "QuantumGAN", "QuantumQLearning", "SimpleEnvironment"]
+__all__ = [
+    "VQE",
+    "QAOA",
+    "QuantumGAN",
+    "QuantumQLearning",
+    "SimpleEnvironment",
+    "QuantumPolicyGradient",
+    "QuantumDQN",
+]

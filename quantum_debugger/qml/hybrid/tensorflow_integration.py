@@ -134,32 +134,31 @@ if HAS_TENSORFLOW:
             ``model.compile(..., run_eagerly=True)`` when training inside Keras.
             """
             quantum_layer = self.quantum_layer
+            weights_var = self.quantum_weights
 
             @tf.custom_gradient
-            def quantum_op(x, weights):
+            def quantum_op(x):
                 x_np = x.numpy() if hasattr(x, "numpy") else np.asarray(x)
-                w_np = (
-                    weights.numpy()
-                    if hasattr(weights, "numpy")
-                    else np.asarray(weights)
-                )
+                w_np = weights_var.numpy()
                 quantum_layer.quantum_params = w_np
                 out_np = quantum_layer.forward(x_np)
 
-                def grad(dy):
+                # tf.custom_gradient requires the grad fn to accept `variables`
+                # when the forward uses tf.Variables, and to return gradients for
+                # the inputs and for those variables separately.
+                def grad(dy, variables=None):
                     dy_np = dy.numpy() if hasattr(dy, "numpy") else np.asarray(dy)
                     quantum_layer.quantum_params = w_np
                     param_grads, input_grads = quantum_layer.parameter_shift_gradients(
                         x_np, dy_np
                     )
-                    return (
-                        tf.convert_to_tensor(input_grads, dtype=tf.float32),
-                        tf.convert_to_tensor(param_grads, dtype=tf.float32),
-                    )
+                    grad_x = tf.convert_to_tensor(input_grads, dtype=tf.float32)
+                    grad_vars = [tf.convert_to_tensor(param_grads, dtype=tf.float32)]
+                    return grad_x, grad_vars
 
                 return tf.convert_to_tensor(out_np, dtype=tf.float32), grad
 
-            outputs = quantum_op(inputs, self.quantum_weights)
+            outputs = quantum_op(inputs)
 
             if outputs.shape[-1] != self.output_dim:
                 outputs = outputs[:, : self.output_dim]

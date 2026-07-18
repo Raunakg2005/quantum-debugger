@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] (0.7.0.dev)
 
-Theme: performance & scale, plus test-suite integrity.
+Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
+
+### Added
+- **Quantum Policy Gradient (REINFORCE)** — a policy-based QRL agent with a PQC
+  policy (state encoding + variational ansatz + softmax over per-action <Z>
+  readouts), trained with exact parameter-shift policy gradients. Learns the
+  gridworld to the optimal policy. (`qml.algorithms.QuantumPolicyGradient`)
+- **Quantum DQN** — value-based QRL with an experience-replay buffer and a
+  periodically-synced target network on top of the PQC Q-function; converges
+  faster/more stably than plain Q-learning. (`qml.algorithms.QuantumDQN`)
+- **Data-reuploading classifier** — re-encodes inputs between variational layers
+  (Perez-Salinas et al.) for higher expressivity; learns nonlinearly-separable
+  data (concentric circles ~0.9 acc) that single-encoding circuits cannot.
+  (`qml.advanced.DataReuploadingClassifier`)
+- **Ansatz analysis toolkit** — `expressibility` (KL to the Haar fidelity
+  distribution, Sim et al.), `entangling_capability` (Meyer-Wallach Q), and
+  `gradient_variance` (barren-plateau probe, McClean et al.), each validated
+  against the expected theoretical behavior. (`qml.advanced`)
 
 ### Changed
 - **`QuantumCircuit.run()` simulates once and samples all shots** from the
