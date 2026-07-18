@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Quantum algorithms library** (`quantum_debugger.algorithms`) — textbook
+  algorithms as first-class, tested functions: **QFT / inverse QFT** (matches the
+  analytic DFT), **Grover search** (finds marked states at ~94% in the optimal
+  number of iterations), **Quantum Phase Estimation** (exact phase readout),
+  **Bernstein-Vazirani** (recovers the hidden string in one query), and
+  **Deutsch-Jozsa** (constant vs balanced). All genuinely gate-based.
+- **Quantum Autoencoder** (`qml.advanced.QuantumAutoencoder`) — compresses
+  n qubits into fewer by training the trash qubits toward |0> with parameter-
+  shift gradients (trash fidelity ~0.45 -> ~1.0 on compressible data).
+- **Quantum Convolutional Neural Network** (`qml.advanced.QCNN`) — convolution +
+  pooling layers that halve the qubits toward a single readout; learns separable
+  data to 100%.
 - **Quantum Policy Gradient (REINFORCE)** — a policy-based QRL agent with a PQC
   policy (state encoding + variational ansatz + softmax over per-action <Z>
   readouts), trained with exact parameter-shift policy gradients. Learns the

@@ -5,11 +5,15 @@ import pytest
 
 from quantum_debugger.qml.advanced import (
     DataReuploadingClassifier,
+    QuantumAutoencoder,
+    QCNN,
     expressibility,
     entangling_capability,
     gradient_variance,
     n_params,
 )
+from quantum_debugger.core.circuit import QuantumCircuit
+from quantum_debugger.core.quantum_state import QuantumState
 
 
 class TestDataReuploadingClassifier:
@@ -76,6 +80,81 @@ class TestAnsatzAnalysis:
         var_large = gradient_variance(6, 6, n_samples=100)
         assert var_small > 0
         assert var_large < var_small
+
+
+class TestQuantumAutoencoder:
+    def test_initialization(self):
+        ae = QuantumAutoencoder(n_qubits=3, n_trash=1, n_layers=3)
+        assert ae.trash_qubits == [2]
+        assert ae.params.shape[0] == 3 * 3
+
+    def test_rejects_too_many_trash(self):
+        with pytest.raises(ValueError):
+            QuantumAutoencoder(n_qubits=2, n_trash=2)
+
+    def test_compresses_compressible_data(self):
+        """Trash qubit should be reset to |0> for compressible inputs."""
+        np.random.seed(1)
+        n = 3
+        sp = np.random.uniform(0, 2 * np.pi, 2 * n)
+
+        def scramble(sv):
+            qc = QuantumCircuit(n)
+            p = 0
+            for _ in range(2):
+                for q in range(n):
+                    qc.ry(float(sp[p]), q)
+                    p += 1
+                for q in range(n - 1):
+                    qc.cnot(q, q + 1)
+            return qc.get_statevector(
+                initial_state=QuantumState(n, state_vector=sv)
+            ).state_vector
+
+        inputs = []
+        for _ in range(10):
+            qc = QuantumCircuit(n)
+            qc.ry(np.random.uniform(0, 2 * np.pi), 0)
+            qc.ry(np.random.uniform(0, 2 * np.pi), 1)
+            inputs.append(scramble(qc.get_statevector().state_vector))
+        inputs = np.array(inputs)
+
+        ae = QuantumAutoencoder(n_qubits=3, n_trash=1, n_layers=4, learning_rate=0.1)
+        before = ae.trash_fidelity(inputs)
+        ae.fit(inputs, epochs=60)
+        after = ae.trash_fidelity(inputs)
+        assert after > before
+        assert after > 0.9
+
+
+class TestQCNN:
+    def test_structure_is_power_of_two(self):
+        with pytest.raises(ValueError):
+            QCNN(n_qubits=3)
+
+    def test_reduces_to_single_readout(self):
+        clf = QCNN(n_qubits=4)
+        assert isinstance(clf.readout, int)
+        assert clf.params.shape[0] == 2 * len(clf.blocks)
+
+    def test_predict_shapes(self):
+        clf = QCNN(n_qubits=4)
+        X = np.random.rand(5, 4)
+        assert clf.predict(X).shape == (5,)
+        assert np.all((clf.predict_proba(X) >= 0) & (clf.predict_proba(X) <= 1))
+
+    def test_learns_separable_blobs(self):
+        pytest.importorskip("sklearn")
+        from sklearn.datasets import make_blobs
+
+        np.random.seed(0)
+        X, y = make_blobs(
+            n_samples=50, centers=2, n_features=4, cluster_std=1.2, random_state=0
+        )
+        X = (X - X.min(0)) / (X.max(0) - X.min(0)) * np.pi
+        clf = QCNN(n_qubits=4, learning_rate=0.1)
+        clf.fit(X, y, epochs=40)
+        assert clf.score(X, y) > 0.75
 
 
 if __name__ == "__main__":

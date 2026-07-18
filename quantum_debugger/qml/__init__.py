@@ -11,9 +11,11 @@ from .algorithms.qaoa import QAOA
 from .algorithms.policy_gradient import QuantumPolicyGradient
 from .algorithms.dqn import QuantumDQN
 
-# Advanced QML (data re-uploading + ansatz analysis)
+# Advanced QML (data re-uploading, autoencoder, QCNN, ansatz analysis)
 from .advanced import (
     DataReuploadingClassifier,
+    QuantumAutoencoder,
+    QCNN,
     expressibility,
     entangling_capability,
     gradient_variance,
@@ -40,6 +42,8 @@ __all__ = [
     "QuantumDQN",
     # Advanced QML
     "DataReuploadingClassifier",
+    "QuantumAutoencoder",
+    "QCNN",
     "expressibility",
     "entangling_capability",
     "gradient_variance",
