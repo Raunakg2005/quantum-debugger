@@ -15,6 +15,8 @@ from quantum_debugger.algorithms import (
     deutsch_jozsa,
     constant_oracle,
     balanced_oracle,
+    quantum_walk,
+    quantum_counting,
 )
 
 
@@ -92,6 +94,29 @@ class TestDeutschJozsa:
 
     def test_balanced(self):
         assert deutsch_jozsa(balanced_oracle(3), n=3) == "balanced"
+
+
+class TestQuantumWalk:
+    def test_distribution_is_valid(self):
+        r = quantum_walk(n_position_qubits=4, steps=5)
+        assert np.isclose(r["distribution"].sum(), 1.0)
+        assert r["distribution"].shape == (16,)
+
+    def test_ballistic_spread(self):
+        # Ballistic: std ~ steps, so doubling steps ~doubles std (ratio near 2,
+        # vs a classical diffusive walk where the ratio is ~sqrt(2)=1.41).
+        s8 = quantum_walk(5, 8)["std"]
+        s16 = quantum_walk(5, 16)["std"]
+        assert s16 / s8 > 1.7
+        assert s16 > np.sqrt(16)  # far broader than a classical random walk
+
+
+class TestQuantumCounting:
+    @pytest.mark.parametrize("marked", [[3], [1, 5, 9], [0, 2, 4, 6, 8, 10]])
+    def test_estimates_count(self, marked):
+        result = quantum_counting(n_qubits=4, marked=marked, n_counting=5)
+        assert result["true_count"] == len(marked)
+        assert abs(result["estimated_count"] - len(marked)) < 1.5
 
 
 if __name__ == "__main__":

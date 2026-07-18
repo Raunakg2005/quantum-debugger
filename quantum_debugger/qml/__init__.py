@@ -7,6 +7,7 @@ from .gates.parameterized import ParameterizedGate, RXGate, RYGate, RZGate
 
 # Algorithms
 from .algorithms.vqe import VQE
+from .algorithms.vqd import VQD
 from .algorithms.qaoa import QAOA
 from .algorithms.policy_gradient import QuantumPolicyGradient
 from .algorithms.dqn import QuantumDQN
@@ -37,6 +38,7 @@ __all__ = [
     "RZGate",
     # Algorithms
     "VQE",
+    "VQD",
     "QAOA",
     "QuantumPolicyGradient",
     "QuantumDQN",

@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **VQD (Variational Quantum Deflation)** (`qml.algorithms.VQD`) — finds excited
+  states, not just the ground state, by penalizing overlap with previously found
+  eigenstates. Recovers exact ground + excited energies on test Hamiltonians.
+- **Quantum walk** (`algorithms.quantum_walk`) — discrete-time coined walk on a
+  cycle; spreads ballistically (std ~ steps) vs a classical walk's sqrt(steps).
+- **Quantum counting** (`algorithms.quantum_counting`) — estimates the number of
+  marked states via QPE on the Grover iterate.
 - **Quantum algorithms library** (`quantum_debugger.algorithms`) — textbook
   algorithms as first-class, tested functions: **QFT / inverse QFT** (matches the
   analytic DFT), **Grover search** (finds marked states at ~94% in the optimal

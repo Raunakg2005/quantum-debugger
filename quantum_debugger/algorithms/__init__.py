@@ -16,6 +16,8 @@ from .oracles import (
     constant_oracle,
     balanced_oracle,
 )
+from .quantum_walk import quantum_walk
+from .quantum_counting import quantum_counting
 
 __all__ = [
     # QFT
@@ -37,4 +39,7 @@ __all__ = [
     "deutsch_jozsa_circuit",
     "constant_oracle",
     "balanced_oracle",
+    # Walk & counting
+    "quantum_walk",
+    "quantum_counting",
 ]
