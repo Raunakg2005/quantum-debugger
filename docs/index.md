@@ -123,6 +123,7 @@ examples
 :maxdepth: 2
 :caption: Algorithms & Advanced QML
 
+algorithms_overview
 quantum_algorithms_guide
 advanced_qml_guide
 quantum_rl_guide
