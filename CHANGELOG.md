@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Entangled state preparation** (`algorithms.ghz_state`, `algorithms.w_state`,
+  `algorithms.graph_state`) — genuine gate-based circuits for the canonical
+  entangled states: GHZ (H + CNOT chain), W (single excitation spread evenly by a
+  cascade of Givens rotations), and graph/cluster states (H on all, CZ per edge).
+  Verified exactly by amplitudes / stabilizers (W fidelity 1.0 up to 6 qubits).
 - **QAOA MaxCut solver** (`algorithms.solve_maxcut`, `algorithms.brute_force_maxcut`)
   — an application-level wrapper that returns an actual MaxCut solution (node
   partition, cut value, brute-force optimum, approximation ratio) with random

@@ -179,6 +179,22 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Entangled State Preparation
+
+Genuine gate-based circuits for the canonical multi-qubit entangled states.
+
+```python
+from quantum_debugger.algorithms import ghz_state, w_state, graph_state
+
+ghz_state(4)              # (|0000> + |1111>) / sqrt(2)
+w_state(4)                # (|1000> + |0100> + |0010> + |0001>) / 2
+graph_state([(0,1),(1,2)], 3)   # cluster/graph state (H on all, CZ per edge)
+```
+
+`ghz_state` uses a Hadamard + CNOT chain; `w_state` distributes a single
+excitation evenly with a cascade of Givens rotations; `graph_state` is the MBQC
+resource state whose stabilizers are `X_i prod_{j~i} Z_j`.
+
 ## QAOA MaxCut Solver
 
 An application-level solver that returns an actual MaxCut *solution* -- the node
