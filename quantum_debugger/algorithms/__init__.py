@@ -1,8 +1,22 @@
 """
 Quantum Algorithms Library
 
-Textbook quantum algorithms implemented on the state-vector simulator:
-QFT, Quantum Phase Estimation, Grover search, Bernstein-Vazirani, Deutsch-Jozsa.
+Genuine, gate-based quantum algorithms on the state-vector simulator, each verified
+against its known outcome. Includes:
+
+  * Textbook algorithms -- QFT, Grover, Quantum Phase Estimation (+ iterative),
+    Bernstein-Vazirani, Deutsch-Jozsa, quantum walk, quantum counting, amplitude
+    estimation/amplification, HHL, swap test.
+  * Shor's period finding & factoring; Simon's algorithm.
+  * Quantum error correction (bit-flip, phase-flip, 9-qubit Shor code).
+  * Hamiltonian simulation (Trotter-Suzuki) and a variational ground-state solver.
+  * Gate decomposition (ZYZ, ABC, two-qubit KAK) and randomized benchmarking.
+  * Quantum arithmetic (Draper adder), QAOA MaxCut and Grover SAT solvers.
+  * Entangled state preparation (GHZ / W / graph), teleportation, superdense coding.
+  * Foundations -- Bell/CHSH test, GHZ quantum metrology, BB84 key distribution.
+
+See also ``quantum_debugger.stabilizer`` for the Clifford tableau simulator and
+``quantum_debugger.tomography`` for state tomography.
 """
 
 from .qft import qft, apply_qft, apply_inverse_qft, qft_matrix
@@ -64,6 +78,7 @@ from .vqe_solver import (
     tfim_hamiltonian,
     heisenberg_hamiltonian,
 )
+from .sat_solver import grover_solve
 
 __all__ = [
     # QFT
@@ -146,4 +161,6 @@ __all__ = [
     "variational_ground_state",
     "tfim_hamiltonian",
     "heisenberg_hamiltonian",
+    # Grover SAT solver
+    "grover_solve",
 ]

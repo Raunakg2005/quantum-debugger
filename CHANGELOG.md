@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Grover-based constraint / SAT solver** (`algorithms.grover_solve`) — finds an
+  input satisfying an arbitrary boolean predicate via Grover search over the marked
+  set, returning a verified satisfying assignment, the solution count, and the
+  success probability.
 - **Variational ground-state solver (VQE)** (`algorithms.variational_ground_state`,
   `algorithms.tfim_hamiltonian`, `algorithms.heisenberg_hamiltonian`) — a
   self-contained hardware-efficient VQE (layered RY + CNOT ansatz, restarts) for any

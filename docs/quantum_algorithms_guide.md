@@ -179,6 +179,25 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Grover-Based Constraint / SAT Solver
+
+Use Grover's search to find an input satisfying an arbitrary boolean predicate. The
+predicate defines the marked set; Grover amplifies it and returns the most likely
+satisfying assignment (verified classically).
+
+```python
+from quantum_debugger.algorithms import grover_solve
+
+# Find the unique x with x == 5 on 3 bits.
+r = grover_solve(lambda x: x == 5, n_qubits=3)
+r["solution"]               # 5
+r["bits"]                   # [1, 0, 1]  (qubit 0 = LSB)
+r["success_probability"]    # > 0.9
+
+# Any constraint works, e.g. "exactly two bits set".
+grover_solve(lambda x: bin(x).count("1") == 2, n_qubits=4)["satisfies"]   # True
+```
+
 ## Variational Ground-State Solver (VQE)
 
 A self-contained hardware-efficient VQE for any Pauli-sum Hamiltonian. A layered
