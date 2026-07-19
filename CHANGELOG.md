@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Randomized benchmarking** (`algorithms.randomized_benchmarking`,
+  `algorithms.single_qubit_clifford_group`) — SPAM-independent estimate of the
+  average error per single-qubit Clifford. Random Clifford sequences plus the
+  exact recovery gate, a per-gate depolarizing channel, and an `A p^m + B` decay
+  fit. Recovers `p ≈ 1 - lambda` and average error `≈ lambda/2`; zero noise gives
+  survival 1.0, confirming the Clifford-inverse logic. Enumerates the full
+  24-element single-qubit Clifford group.
 - **Clifford / stabilizer simulator** (`quantum_debugger.stabilizer.StabilizerSimulator`)
   — a second simulation engine using the Aaronson-Gottesman CHP tableau
   (`O(n)`/gate, `O(n^2)`/measurement) instead of a `2^n` state vector. Supports

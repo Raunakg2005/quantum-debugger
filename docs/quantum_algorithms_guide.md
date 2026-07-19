@@ -179,6 +179,28 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Randomized Benchmarking
+
+Estimate the average error per Clifford gate independently of state-prep and
+measurement (SPAM) errors. Random Clifford sequences are applied, then the single
+recovery Clifford that inverts the whole sequence; without noise the qubit returns
+to `|0>` exactly. Under a per-gate depolarizing channel of strength `lambda`, the
+survival probability decays as `S(m) = A p^m + B` with `p ≈ 1 - lambda`, and the
+average gate error is `(1 - p)/2`.
+
+```python
+from quantum_debugger.algorithms import randomized_benchmarking
+
+r = randomized_benchmarking(depolarizing=0.03, shots=80)
+r["p"]              # ~0.97   (= 1 - lambda)
+r["average_error"]  # ~0.015  (= lambda / 2)
+r["survival"]       # decaying survival probability per sequence length
+```
+
+`single_qubit_clifford_group()` returns the 24 single-qubit Clifford unitaries.
+With `depolarizing=0`, every sequence survives with probability 1.0, confirming the
+recovery-Clifford inversion is exact.
+
 ## Gate Decomposition / Synthesis
 
 Break arbitrary unitaries into elementary rotations and CNOTs. Every routine is

@@ -44,6 +44,10 @@ from .decomposition import (
     kak_decompose,
     canonical_coordinates,
 )
+from .randomized_benchmarking import (
+    randomized_benchmarking,
+    single_qubit_clifford_group,
+)
 
 __all__ = [
     # QFT
@@ -96,4 +100,7 @@ __all__ = [
     "abc_decomposition",
     "kak_decompose",
     "canonical_coordinates",
+    # Randomized benchmarking
+    "randomized_benchmarking",
+    "single_qubit_clifford_group",
 ]
