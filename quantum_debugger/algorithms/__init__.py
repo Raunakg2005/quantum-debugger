@@ -48,6 +48,7 @@ from .randomized_benchmarking import (
     randomized_benchmarking,
     single_qubit_clifford_group,
 )
+from .arithmetic import qft_add, quantum_adder
 
 __all__ = [
     # QFT
@@ -103,4 +104,7 @@ __all__ = [
     # Randomized benchmarking
     "randomized_benchmarking",
     "single_qubit_clifford_group",
+    # Quantum arithmetic
+    "qft_add",
+    "quantum_adder",
 ]

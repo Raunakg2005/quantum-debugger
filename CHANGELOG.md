@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Quantum arithmetic (Draper QFT adder)** (`algorithms.qft_add`,
+  `algorithms.quantum_adder`) — carry-free addition in the Fourier basis: add a
+  classical constant into a register, or add two quantum registers
+  (`|a>|b> -> |a+b>|b>`). Computes `(a+b) mod 2^n` exactly for every input pair.
 - **Randomized benchmarking** (`algorithms.randomized_benchmarking`,
   `algorithms.single_qubit_clifford_group`) — SPAM-independent estimate of the
   average error per single-qubit Clifford. Random Clifford sequences plus the

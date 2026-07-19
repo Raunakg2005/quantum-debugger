@@ -179,6 +179,20 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Quantum Arithmetic (Draper QFT Adder)
+
+Add numbers directly in the Fourier basis -- QFT the register, apply phase
+rotations proportional to the addend, then inverse QFT. No carry ancillas.
+
+```python
+from quantum_debugger.algorithms import qft_add, quantum_adder
+
+qft_add(13, 7, n_bits=4)         # 4   -- (13 + 7) mod 16, constant addend
+quantum_adder(9, 6, n_bits=4)    # 15  -- adds two quantum registers |a>|b> -> |a+b>|b>
+```
+
+Both compute `(a + b) mod 2**n_bits` and are exact for every input pair.
+
 ## Randomized Benchmarking
 
 Estimate the average error per Clifford gate independently of state-prep and
