@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Simon's algorithm** (`algorithms.simon`, `algorithms.simon_oracle`) — recovers
+  the hidden XOR mask of a 2-to-1 function with O(n) quantum queries (exponential
+  speedup). Runs the H-oracle-H circuit, collects `y . s = 0` constraints, and
+  solves the GF(2) null space. Recovers every planted secret for n up to 4.
 - **Entangled state preparation** (`algorithms.ghz_state`, `algorithms.w_state`,
   `algorithms.graph_state`) — genuine gate-based circuits for the canonical
   entangled states: GHZ (H + CNOT chain), W (single excitation spread evenly by a

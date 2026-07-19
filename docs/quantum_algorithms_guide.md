@@ -179,6 +179,22 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Simon's Algorithm
+
+Recover the hidden XOR mask `s` of a 2-to-1 function (`f(x) = f(y)` iff
+`y = x XOR s`) with O(n) quantum queries -- an exponential speedup over the
+classical O(2^(n/2)). Each circuit run yields a `y` with `y . s = 0 (mod 2)`;
+collecting `n-1` independent constraints and solving the GF(2) null space gives `s`.
+
+```python
+from quantum_debugger.algorithms import simon
+
+simon(s=5, n=3)["secret"]         # 5   -- recovers the planted mask
+
+# Or supply your own 2-to-1 function:
+simon(n=3, f=lambda x: min(x, x ^ 3))["secret"]   # 3
+```
+
 ## Entangled State Preparation
 
 Genuine gate-based circuits for the canonical multi-qubit entangled states.

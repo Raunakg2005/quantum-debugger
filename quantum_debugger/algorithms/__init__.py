@@ -51,6 +51,7 @@ from .randomized_benchmarking import (
 from .arithmetic import qft_add, quantum_adder
 from .maxcut import solve_maxcut, brute_force_maxcut
 from .state_preparation import ghz_state, w_state, graph_state
+from .simon import simon, simon_oracle
 
 __all__ = [
     # QFT
@@ -116,4 +117,7 @@ __all__ = [
     "ghz_state",
     "w_state",
     "graph_state",
+    # Simon's algorithm
+    "simon",
+    "simon_oracle",
 ]
