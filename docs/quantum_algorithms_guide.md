@@ -412,6 +412,18 @@ quantum_adder(9, 6, n_bits=4)    # 15  -- adds two quantum registers |a>|b> -> |
 
 Both compute `(a + b) mod 2**n_bits` and are exact for every input pair.
 
+Subtraction and comparison reuse the same Fourier-basis machinery:
+
+```python
+from quantum_debugger.algorithms import qft_subtract, quantum_compare
+
+qft_subtract(5, 8, n_bits=4)       # 13   -- (5 - 8) mod 16
+quantum_compare(9, 3, n_bits=4)    # {"a_geq_b": True, "a_lt_b": False, ...}
+```
+
+`quantum_compare` computes `(a - b)` with an extra sign bit; the sign bit is 0 iff
+`a >= b`. Both are exact for every input pair.
+
 ## Randomized Benchmarking
 
 Estimate the average error per Clifford gate independently of state-prep and

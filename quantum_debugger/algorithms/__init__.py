@@ -62,7 +62,7 @@ from .randomized_benchmarking import (
     randomized_benchmarking,
     single_qubit_clifford_group,
 )
-from .arithmetic import qft_add, quantum_adder
+from .arithmetic import qft_add, quantum_adder, qft_subtract, quantum_compare
 from .maxcut import solve_maxcut, brute_force_maxcut
 from .state_preparation import ghz_state, w_state, graph_state
 from .simon import simon, simon_oracle
@@ -141,6 +141,8 @@ __all__ = [
     # Quantum arithmetic
     "qft_add",
     "quantum_adder",
+    "qft_subtract",
+    "quantum_compare",
     # QAOA MaxCut solver
     "solve_maxcut",
     "brute_force_maxcut",

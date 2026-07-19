@@ -59,6 +59,29 @@ def qft_add(a: int, b: int, n_bits: int) -> int:
     return int(np.argmax(np.abs(state.state_vector) ** 2))
 
 
+def qft_subtract(a: int, b: int, n_bits: int) -> int:
+    """
+    Subtract a classical constant ``b`` from ``a`` in the Fourier basis.
+
+    Returns ``(a - b) mod 2**n_bits`` (adding the two's complement of ``b``).
+    """
+    return qft_add(a, (-b) % (2**n_bits), n_bits)
+
+
+def quantum_compare(a: int, b: int, n_bits: int) -> dict:
+    """
+    Compare ``a`` and ``b`` (each in ``0..2**n_bits - 1``) with a QFT subtractor.
+
+    Computes ``(a - b) mod 2**(n_bits + 1)``; the sign bit (bit ``n_bits``) is 0
+    iff ``a >= b``.
+
+    Returns dict with 'a_geq_b', 'a_lt_b', and 'difference' (the raw result).
+    """
+    diff = qft_subtract(a, b, n_bits + 1)
+    sign = (diff >> n_bits) & 1
+    return {"a_geq_b": sign == 0, "a_lt_b": sign == 1, "difference": diff}
+
+
 def quantum_adder(a: int, b: int, n_bits: int) -> int:
     """
     Add two quantum registers with the Draper adder: ``|a>|b> -> |(a+b) mod 2^n>|b>``.

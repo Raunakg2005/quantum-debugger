@@ -64,10 +64,12 @@ Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
   partition, cut value, brute-force optimum, approximation ratio) with random
   restarts, not just an expected cost. Reaches the optimal cut on standard test
   graphs (square, triangle, K4, path).
-- **Quantum arithmetic (Draper QFT adder)** (`algorithms.qft_add`,
-  `algorithms.quantum_adder`) — carry-free addition in the Fourier basis: add a
+- **Quantum arithmetic (Draper QFT adder + subtractor + comparator)**
+  (`algorithms.qft_add`, `algorithms.quantum_adder`, `algorithms.qft_subtract`,
+  `algorithms.quantum_compare`) — carry-free addition in the Fourier basis: add a
   classical constant into a register, or add two quantum registers
-  (`|a>|b> -> |a+b>|b>`). Computes `(a+b) mod 2^n` exactly for every input pair.
+  (`|a>|b> -> |a+b>|b>`); subtract a constant; and compare two numbers via the
+  subtractor's sign bit. All exact for every input pair.
 - **Randomized benchmarking** (`algorithms.randomized_benchmarking`,
   `algorithms.single_qubit_clifford_group`) — SPAM-independent estimate of the
   average error per single-qubit Clifford. Random Clifford sequences plus the
