@@ -92,10 +92,53 @@ examples
 
 ```{toctree}
 :maxdepth: 2
-:caption: API Reference  
+:caption: Algorithms & Advanced QML
+
+quantum_algorithms_guide
+advanced_qml_guide
+quantum_rl_guide
+advanced_algorithms_guide
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Quantum Machine Learning
+
+qnn_guide
+hybrid_models_guide
+quantum_kernels_guide
+ansatz_guide
+optimizers_guide
+dataset_guide
+hamiltonians_guide
+transfer_learning_guide
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Error Mitigation & Noise
+
+error_mitigation_guide
+zne_guide
+hardware_profiles
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Hardware & Performance
+
+gpu_guide
+hardware_backends_guide
+circuit_optimization_guide
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: API Reference
 
 modules
 api
+api_reference
 qml_api
 ```
 
