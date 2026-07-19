@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **QAOA MaxCut solver** (`algorithms.solve_maxcut`, `algorithms.brute_force_maxcut`)
+  — an application-level wrapper that returns an actual MaxCut solution (node
+  partition, cut value, brute-force optimum, approximation ratio) with random
+  restarts, not just an expected cost. Reaches the optimal cut on standard test
+  graphs (square, triangle, K4, path).
 - **Quantum arithmetic (Draper QFT adder)** (`algorithms.qft_add`,
   `algorithms.quantum_adder`) — carry-free addition in the Fourier basis: add a
   classical constant into a register, or add two quantum registers

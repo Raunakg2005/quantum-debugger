@@ -179,6 +179,25 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## QAOA MaxCut Solver
+
+An application-level solver that returns an actual MaxCut *solution* -- the node
+partition, its cut value, the brute-force optimum, and the approximation ratio --
+rather than just an expected cost. Random restarts make it robust.
+
+```python
+from quantum_debugger.algorithms import solve_maxcut
+
+graph = [(0, 1), (1, 2), (2, 3), (3, 0)]     # 4-cycle
+r = solve_maxcut(graph, p=3, restarts=6)
+r["partition"]             # e.g. [1, 0, 1, 0]  -- the two node sets
+r["cut_value"]             # 4
+r["optimal_cut"]           # 4  (brute-force optimum)
+r["approximation_ratio"]   # 1.0
+```
+
+`brute_force_maxcut(graph, n)` gives the exact optimum for small graphs.
+
 ## Quantum Arithmetic (Draper QFT Adder)
 
 Add numbers directly in the Fourier basis -- QFT the register, apply phase

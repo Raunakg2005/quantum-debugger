@@ -49,6 +49,7 @@ from .randomized_benchmarking import (
     single_qubit_clifford_group,
 )
 from .arithmetic import qft_add, quantum_adder
+from .maxcut import solve_maxcut, brute_force_maxcut
 
 __all__ = [
     # QFT
@@ -107,4 +108,7 @@ __all__ = [
     # Quantum arithmetic
     "qft_add",
     "quantum_adder",
+    # QAOA MaxCut solver
+    "solve_maxcut",
+    "brute_force_maxcut",
 ]
