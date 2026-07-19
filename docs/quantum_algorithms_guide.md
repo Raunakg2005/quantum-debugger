@@ -179,6 +179,27 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Multi-Controlled-X Synthesis
+
+Decompose Toffoli (CCX) and general n-controlled-X gates into the elementary
+`H / T / T-dagger / CNOT` set. The n-control MCX uses a ladder of Toffolis with
+`n_controls - 1` clean ancillas (returned to `|0>`).
+
+```python
+from quantum_debugger.algorithms import toffoli_gates, mcx_gates, apply_gates
+from quantum_debugger.core.quantum_state import QuantumState
+
+# Toffoli on qubits (control 0, control 1, target 2) as H/T/CNOT.
+gates = toffoli_gates(0, 1, 2)
+
+# 4-controlled X: controls 0-3, target 4, ancillas 5-7.
+gates = mcx_gates(controls=[0, 1, 2, 3], target=4, ancillas=[5, 6, 7])
+apply_gates(QuantumState(8), gates)   # flips qubit 4 iff qubits 0-3 are all 1
+```
+
+Both decompositions are exact (verified against the ideal CCX / MCX action for
+every control input, with ancillas restored to `|0>`).
+
 ## Grover-Based Constraint / SAT Solver
 
 Use Grover's search to find an input satisfying an arbitrary boolean predicate. The

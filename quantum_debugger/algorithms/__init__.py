@@ -79,6 +79,7 @@ from .vqe_solver import (
     heisenberg_hamiltonian,
 )
 from .sat_solver import grover_solve
+from .multicontrol import toffoli_gates, mcx_gates, apply_gates
 
 __all__ = [
     # QFT
@@ -163,4 +164,8 @@ __all__ = [
     "heisenberg_hamiltonian",
     # Grover SAT solver
     "grover_solve",
+    # Multi-controlled-X synthesis
+    "toffoli_gates",
+    "mcx_gates",
+    "apply_gates",
 ]

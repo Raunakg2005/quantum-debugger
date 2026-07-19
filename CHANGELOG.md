@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Multi-controlled-X synthesis** (`algorithms.toffoli_gates`, `algorithms.mcx_gates`)
+  — decompose Toffoli (CCX) and general n-controlled-X gates into the elementary
+  H/T/T-dagger/CNOT set; the n-control MCX uses a clean-ancilla Toffoli ladder.
+  Verified exactly against the ideal CCX/MCX action with ancillas restored to |0>.
 - **Grover-based constraint / SAT solver** (`algorithms.grover_solve`) — finds an
   input satisfying an arbitrary boolean predicate via Grover search over the marked
   set, returning a verified satisfying assignment, the solution count, and the
