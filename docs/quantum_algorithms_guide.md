@@ -138,6 +138,47 @@ result["fidelity"]        # ~1.0 vs the classical A^-1 b
 result["solution"]        # normalized |x>
 ```
 
+## Quantum Teleportation
+
+Move an unknown single-qubit state from one qubit to another using a shared Bell
+pair and two classical bits (the X/Z feedforward corrections).
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import teleport
+
+psi = np.array([0.6, 0.8], dtype=complex)
+result = teleport(psi)
+result["fidelity"]      # ~1.0  (qubit 2 now holds psi)
+result["measurement"]   # the two Bell-measurement bits
+```
+
+## Superdense Coding
+
+The dual of teleportation: send two classical bits by transmitting a single
+qubit (half of a pre-shared Bell pair).
+
+```python
+from quantum_debugger.algorithms import superdense_coding
+
+superdense_coding((1, 0))["decoded"]   # (1, 0) -- both bits recovered
+```
+
+## Shor's Algorithm -- Period Finding & Factoring
+
+Quantum phase estimation on the modular-multiplication unitary
+`U|y> = |a*y mod N>` recovers the period `r` of `a^x mod N` via a
+continued-fraction expansion of the measured phase. With `r`, classical
+post-processing (`gcd(a^{r/2} +/- 1, N)`) yields a nontrivial factor of `N`.
+
+```python
+from quantum_debugger.algorithms import period_finding, shor_factor
+
+period_finding(7, 15)["period"]        # 4   (7^4 = 1 mod 15)
+shor_factor(15, a=7)["factors"]        # (3, 5)
+shor_factor(21, a=2)["factors"]        # (3, 7)
+```
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated

@@ -29,6 +29,8 @@ from .amplitude_amplification import (
 )
 from .hhl import hhl
 from .swap_test import swap_test
+from .protocols import teleport, superdense_coding
+from .shor import period_finding, shor_factor
 
 __all__ = [
     # QFT
@@ -61,4 +63,10 @@ __all__ = [
     "hhl",
     # Overlap / fidelity
     "swap_test",
+    # Protocols
+    "teleport",
+    "superdense_coding",
+    # Shor
+    "period_finding",
+    "shor_factor",
 ]
