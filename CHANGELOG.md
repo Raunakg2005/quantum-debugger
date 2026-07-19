@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Clifford / stabilizer simulator** (`quantum_debugger.stabilizer.StabilizerSimulator`)
+  — a second simulation engine using the Aaronson-Gottesman CHP tableau
+  (`O(n)`/gate, `O(n^2)`/measurement) instead of a `2^n` state vector. Supports
+  H/S/X/Y/Z/CNOT/CZ + computational-basis measurement with correct random and
+  deterministic outcomes, and exposes the live stabilizer generators. Runs
+  hundred-qubit Clifford circuits (e.g. a 200-qubit GHZ) instantly; verified
+  against the state-vector simulator (every stabilizer is a +1 eigenstate).
 - **Gate decomposition / synthesis** (`algorithms.zyz_decompose`,
   `algorithms.abc_decomposition`, `algorithms.kak_decompose`,
   `algorithms.canonical_coordinates`) — single-qubit ZYZ Euler decomposition,

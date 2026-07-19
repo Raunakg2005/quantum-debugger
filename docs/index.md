@@ -98,6 +98,7 @@ quantum_algorithms_guide
 advanced_qml_guide
 quantum_rl_guide
 advanced_algorithms_guide
+stabilizer_guide
 ```
 
 ```{toctree}
