@@ -179,6 +179,28 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Hamiltonian Simulation (Trotter-Suzuki)
+
+Simulate time evolution `exp(-i H t)|psi>` for a Hamiltonian written as a sum of
+weighted Pauli strings, using genuine 1- and 2-qubit gates (basis change +
+CNOT-ladder + RZ per term). Higher Trotter order and more steps reduce the error;
+the result is checked against the exact matrix exponential.
+
+```python
+from quantum_debugger.algorithms import trotter_evolve
+
+# Transverse-field Ising model on 3 qubits.
+H = [(1.0, "ZZI"), (1.0, "IZZ"), (0.5, "XII"), (0.5, "IXI"), (0.5, "IIX")]
+
+trotter_evolve(H, time=1.0, steps=4,  order=1)["fidelity"]   # ~0.98
+trotter_evolve(H, time=1.0, steps=4,  order=2)["fidelity"]   # ~0.9999 (order 2 wins)
+trotter_evolve(H, time=1.0, steps=50, order=2)["fidelity"]   # ~1.0
+```
+
+`pauli_string[q]` (one of `I/X/Y/Z`) acts on qubit `q`. `trotter_circuit(...)`
+returns the raw gate list, and `hamiltonian_matrix(terms, n)` builds the dense
+operator if you want to inspect it.
+
 ## Quantum Error Correction
 
 Genuine, gate-based stabilizer codes. A logical qubit is encoded across several

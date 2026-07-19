@@ -32,6 +32,12 @@ from .swap_test import swap_test
 from .protocols import teleport, superdense_coding
 from .shor import period_finding, shor_factor
 from .error_correction import bit_flip_code, phase_flip_code, shor_code
+from .hamiltonian_simulation import (
+    trotter_evolve,
+    trotter_circuit,
+    hamiltonian_matrix,
+    pauli_term_matrix,
+)
 
 __all__ = [
     # QFT
@@ -74,4 +80,9 @@ __all__ = [
     "bit_flip_code",
     "phase_flip_code",
     "shor_code",
+    # Hamiltonian simulation
+    "trotter_evolve",
+    "trotter_circuit",
+    "hamiltonian_matrix",
+    "pauli_term_matrix",
 ]

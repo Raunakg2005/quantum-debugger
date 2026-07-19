@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Hamiltonian simulation (Trotter-Suzuki)** (`algorithms.trotter_evolve`,
+  `algorithms.trotter_circuit`, `algorithms.hamiltonian_matrix`) — simulate
+  `exp(-i H t)` for a Hamiltonian given as weighted Pauli strings, using genuine
+  1- and 2-qubit gates (basis-change + CNOT-ladder + RZ per term). First- and
+  second-order product formulas; second order converges faster (O(dt^2)), and
+  single-term evolution is exact. Verified against the exact matrix exponential.
 - **Quantum error correction** (`algorithms.bit_flip_code`,
   `algorithms.phase_flip_code`, `algorithms.shor_code`) — genuine gate-based
   stabilizer codes: encode a logical qubit, inject a Pauli error, extract the
