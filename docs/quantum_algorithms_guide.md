@@ -179,6 +179,24 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Bell / CHSH Inequality Test
+
+Demonstrate quantum nonlocality: a shared Bell pair measured along cleverly chosen
+angles violates the classical CHSH bound `|S| <= 2`, reaching Tsirelson's quantum
+bound `2 sqrt(2) ~ 2.828`.
+
+```python
+from quantum_debugger.algorithms import chsh_value
+
+r = chsh_value()               # default optimal angles
+r["S"]                         # 2.828  (= 2 sqrt(2), Tsirelson bound)
+r["classical_bound"]           # 2.0
+r["violates_classical"]        # True
+```
+
+Each party measures `M(theta) = cos(theta) Z + sin(theta) X`; the correlator for
+`|Phi+>` is `E(a,b) = cos(a-b)`, and `S = E(a,b) + E(a,b') + E(a',b) - E(a',b')`.
+
 ## Quantum Metrology (Heisenberg-Limited Sensing)
 
 A GHZ probe accumulates phase N times faster than independent qubits, so its

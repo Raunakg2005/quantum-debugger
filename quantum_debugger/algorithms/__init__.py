@@ -57,6 +57,7 @@ from .metrology import (
     parity_signal,
     quantum_fisher_information,
 )
+from .bell_test import chsh_value, correlator, bell_state
 
 __all__ = [
     # QFT
@@ -129,4 +130,8 @@ __all__ = [
     "phase_sensitivity",
     "parity_signal",
     "quantum_fisher_information",
+    # Bell / CHSH test
+    "chsh_value",
+    "correlator",
+    "bell_state",
 ]

@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Bell / CHSH inequality test** (`algorithms.chsh_value`, `algorithms.correlator`,
+  `algorithms.bell_state`) — demonstrates quantum nonlocality: a Bell pair measured
+  along optimal angles gives a CHSH value `S = 2 sqrt(2)`, exactly Tsirelson's bound,
+  violating the classical limit `|S| <= 2`. Correlator matches `cos(a-b)`.
 - **Quantum metrology** (`algorithms.phase_sensitivity`, `algorithms.parity_signal`,
   `algorithms.quantum_fisher_information`) — Heisenberg-limited phase sensing: a GHZ
   probe reaches quantum Fisher information `N^2` (phase uncertainty `1/N`) versus
