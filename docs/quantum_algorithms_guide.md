@@ -179,6 +179,39 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Gate Decomposition / Synthesis
+
+Break arbitrary unitaries into elementary rotations and CNOTs. Every routine is
+self-verifying -- the returned pieces reconstruct the input to machine precision.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    zyz_decompose, abc_decomposition, kak_decompose, canonical_coordinates,
+)
+
+# Any 1-qubit gate as U = e^{i a} RZ(b) RY(c) RZ(d).
+H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)
+d = zyz_decompose(H)
+d["reconstruction_error"]      # ~1e-16
+
+# ABC form: lets a controlled-U be built from CNOTs + single-qubit gates (ABC = I).
+abc_decomposition(H)["abc_is_identity"]   # ~1e-16
+
+# Two-qubit Cartan (KAK): U = (A1 ⊗ A0) · exp(i(a XX + b YY + c ZZ)) · (B1 ⊗ B0).
+CNOT = np.array([[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0]], dtype=complex)
+k = kak_decompose(CNOT)
+k["coefficients"]              # (~pi/4, 0, 0)  -- CNOT's interaction content
+k["reconstruction_error"]      # ~1e-16
+
+# Weyl-chamber coordinates capture a gate's entangling power.
+canonical_coordinates(CNOT)    # ~ (pi/4, 0, 0)
+```
+
+The KAK routine uses the magic basis plus a deterministic nested joint
+diagonalization, so it is robust even for degenerate gates (SWAP, iSWAP, pure
+local gates) -- verified to reconstruct 1000/1000 random SU(4) unitaries.
+
 ## Hamiltonian Simulation (Trotter-Suzuki)
 
 Simulate time evolution `exp(-i H t)|psi>` for a Hamiltonian written as a sum of

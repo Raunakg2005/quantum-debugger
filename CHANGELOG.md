@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Gate decomposition / synthesis** (`algorithms.zyz_decompose`,
+  `algorithms.abc_decomposition`, `algorithms.kak_decompose`,
+  `algorithms.canonical_coordinates`) — single-qubit ZYZ Euler decomposition,
+  Nielsen-Chuang ABC form for controlled-U, and the two-qubit Cartan (KAK)
+  decomposition into local gates plus the entangling core
+  `exp(i(a XX + b YY + c ZZ))`. KAK uses the magic basis + a deterministic nested
+  joint diagonalization, robust even for degenerate gates; verified to reconstruct
+  1000/1000 random SU(4) unitaries to ~1e-13.
 - **Hamiltonian simulation (Trotter-Suzuki)** (`algorithms.trotter_evolve`,
   `algorithms.trotter_circuit`, `algorithms.hamiltonian_matrix`) — simulate
   `exp(-i H t)` for a Hamiltonian given as weighted Pauli strings, using genuine

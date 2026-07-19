@@ -38,6 +38,12 @@ from .hamiltonian_simulation import (
     hamiltonian_matrix,
     pauli_term_matrix,
 )
+from .decomposition import (
+    zyz_decompose,
+    abc_decomposition,
+    kak_decompose,
+    canonical_coordinates,
+)
 
 __all__ = [
     # QFT
@@ -85,4 +91,9 @@ __all__ = [
     "trotter_circuit",
     "hamiltonian_matrix",
     "pauli_term_matrix",
+    # Gate decomposition
+    "zyz_decompose",
+    "abc_decomposition",
+    "kak_decompose",
+    "canonical_coordinates",
 ]
