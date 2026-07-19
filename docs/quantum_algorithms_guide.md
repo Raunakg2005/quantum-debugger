@@ -351,6 +351,19 @@ g["classical_win_probability"]   # 0.75
 g["beats_classical"]             # True
 ```
 
+For three qubits the **GHZ (Mermin) test** gives an all-or-nothing violation: the
+Mermin operator `M = XXX - XYY - YXY - YYX` has expectation 4 on the GHZ state, but
+any local hidden-variable model is bounded by 2.
+
+```python
+from quantum_debugger.algorithms import mermin_ghz_test
+
+m = mermin_ghz_test()
+m["quantum_value"]      # 4.0
+m["classical_bound"]    # 2.0  (brute-forced over +/-1 assignments)
+m["violation_ratio"]    # 2.0
+```
+
 ## Quantum Metrology (Heisenberg-Limited Sensing)
 
 A GHZ probe accumulates phase N times faster than independent qubits, so its

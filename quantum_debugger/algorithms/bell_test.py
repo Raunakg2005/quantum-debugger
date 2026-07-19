@@ -12,6 +12,8 @@ CHSH combination ``S = E(a,b) + E(a,b') + E(a',b) - E(a',b')`` is maximized at
 ``2 sqrt(2)`` (angles a=0, a'=pi/2, b=pi/4, b'=-pi/4).
 """
 
+from itertools import product
+
 import numpy as np
 
 from ..core.quantum_state import QuantumState
@@ -19,6 +21,7 @@ from ..core.gates import GateLibrary
 
 _Z = GateLibrary.Z
 _X = GateLibrary.X
+_Y = GateLibrary.Y
 
 
 def bell_state() -> np.ndarray:
@@ -114,4 +117,45 @@ def chsh_game(
         "classical_win_probability": 0.75,
         "tsirelson_win_probability": float(np.cos(np.pi / 8) ** 2),
         "beats_classical": quantum_win > 0.75 + 1e-9,
+    }
+
+
+def _pauli_string_op(s: str) -> np.ndarray:
+    """Dense operator for a Pauli string over X/Y/Z/I (qubit 0 = first char)."""
+    table = {"X": _X, "Y": _Y, "Z": _Z, "I": np.eye(2, dtype=complex)}
+    mat = np.array([[1.0]], dtype=complex)
+    for c in reversed(s):
+        mat = np.kron(mat, table[c])
+    return mat
+
+
+def mermin_ghz_test() -> dict:
+    """
+    The 3-qubit GHZ (Mermin) test of multipartite nonlocality.
+
+    For the GHZ state ``(|000> + |111>)/sqrt(2)`` the Mermin operator
+    ``M = XXX - XYY - YXY - YYX`` has expectation 4, while any local
+    hidden-variable model is bounded by 2 -- an all-or-nothing (deterministic)
+    violation, stronger than CHSH.
+
+    Returns dict with 'quantum_value' (4), 'classical_bound' (2),
+    'violation_ratio', and 'violates_classical'.
+    """
+    ghz = np.zeros(8, dtype=complex)
+    ghz[0] = ghz[7] = 1 / np.sqrt(2)
+    strings = [("XXX", 1), ("XYY", -1), ("YXY", -1), ("YYX", -1)]
+    M = sum(c * _pauli_string_op(s) for s, c in strings)
+    quantum = float(np.real(np.vdot(ghz, M @ ghz)))
+
+    # Classical LHV bound: brute force over x_j, y_j in {-1, +1}.
+    best = 0.0
+    for x0, x1, x2, y0, y1, y2 in product([-1, 1], repeat=6):
+        val = x0 * x1 * x2 - x0 * y1 * y2 - y0 * x1 * y2 - y0 * y1 * x2
+        best = max(best, abs(val))
+
+    return {
+        "quantum_value": quantum,
+        "classical_bound": float(best),
+        "violation_ratio": quantum / best,
+        "violates_classical": quantum > best + 1e-9,
     }

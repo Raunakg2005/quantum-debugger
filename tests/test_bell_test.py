@@ -3,7 +3,13 @@
 import numpy as np
 import pytest
 
-from quantum_debugger.algorithms import chsh_value, correlator, bell_state, chsh_game
+from quantum_debugger.algorithms import (
+    chsh_value,
+    correlator,
+    bell_state,
+    chsh_game,
+    mermin_ghz_test,
+)
 
 
 class TestBellState:
@@ -46,6 +52,15 @@ class TestCHSHGame:
         assert r["quantum_win_probability"] > 0.75
         assert r["beats_classical"]
         assert r["classical_win_probability"] == 0.75
+
+
+class TestMerminGHZ:
+    def test_all_or_nothing_violation(self):
+        r = mermin_ghz_test()
+        assert np.isclose(r["quantum_value"], 4.0)
+        assert np.isclose(r["classical_bound"], 2.0)
+        assert np.isclose(r["violation_ratio"], 2.0)
+        assert r["violates_classical"]
 
 
 if __name__ == "__main__":
