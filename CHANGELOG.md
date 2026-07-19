@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **BB84 quantum key distribution** (`algorithms.bb84`) — the first quantum
+  cryptography protocol, with genuine per-qubit preparation and measurement.
+  Without an eavesdropper the sifted keys match exactly (QBER 0); an
+  intercept-resend eavesdropper injects a ~25% error rate that trips the security
+  threshold. Security emerges from real measurement back-action.
 - **Bell / CHSH inequality test** (`algorithms.chsh_value`, `algorithms.correlator`,
   `algorithms.bell_state`) — demonstrates quantum nonlocality: a Bell pair measured
   along optimal angles gives a CHSH value `S = 2 sqrt(2)`, exactly Tsirelson's bound,

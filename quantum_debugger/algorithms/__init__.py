@@ -58,6 +58,7 @@ from .metrology import (
     quantum_fisher_information,
 )
 from .bell_test import chsh_value, correlator, bell_state
+from .bb84 import bb84
 
 __all__ = [
     # QFT
@@ -134,4 +135,6 @@ __all__ = [
     "chsh_value",
     "correlator",
     "bell_state",
+    # BB84 QKD
+    "bb84",
 ]

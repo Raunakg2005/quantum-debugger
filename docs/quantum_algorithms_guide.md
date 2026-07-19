@@ -179,6 +179,28 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## BB84 Quantum Key Distribution
+
+The first quantum cryptography protocol. Alice encodes random bits in random bases
+(Z or X); Bob measures in his own random bases; where the bases agree, the bits
+agree -- a shared secret key. An eavesdropper who measures in the wrong basis
+disturbs the qubits and injects a detectable ~25% error rate.
+
+```python
+from quantum_debugger.algorithms import bb84
+
+clean = bb84(n_bits=128, eavesdropper=False)
+clean["qber"]        # 0.0  -- sifted keys match exactly
+clean["secure"]      # True
+
+tapped = bb84(n_bits=256, eavesdropper=True)
+tapped["qber"]       # ~0.25  -- intercept-resend is detected
+tapped["secure"]     # False
+```
+
+Every qubit is genuinely prepared and measured on the simulator, so the security
+guarantee comes from real measurement back-action.
+
 ## Bell / CHSH Inequality Test
 
 Demonstrate quantum nonlocality: a shared Bell pair measured along cleverly chosen
