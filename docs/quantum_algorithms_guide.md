@@ -179,6 +179,31 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Variational Ground-State Solver (VQE)
+
+A self-contained hardware-efficient VQE for any Pauli-sum Hamiltonian. A layered
+`RY + CNOT` ansatz is optimized to minimize the energy; the result is checked
+against the exact ground energy (smallest eigenvalue).
+
+```python
+from quantum_debugger.algorithms import (
+    variational_ground_state, tfim_hamiltonian, heisenberg_hamiltonian,
+)
+
+# Transverse-field Ising model on 3 spins.
+r = variational_ground_state(tfim_hamiltonian(3, field=1.0), layers=3)
+r["energy"]         # VQE estimate
+r["exact_energy"]   # exact ground energy (matches to ~1e-8)
+r["error"]
+
+# Isotropic Heisenberg chain.
+variational_ground_state(heisenberg_hamiltonian(3))["error"]   # ~1e-9
+```
+
+The Hamiltonian uses the same `(coeff, pauli_string)` format as the Trotter module,
+so you can pass any spin Hamiltonian. The VQE energy is a variational upper bound on
+the true ground energy.
+
 ## BB84 Quantum Key Distribution
 
 The first quantum cryptography protocol. Alice encodes random bits in random bases

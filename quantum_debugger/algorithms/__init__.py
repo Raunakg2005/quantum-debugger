@@ -59,6 +59,11 @@ from .metrology import (
 )
 from .bell_test import chsh_value, correlator, bell_state
 from .bb84 import bb84
+from .vqe_solver import (
+    variational_ground_state,
+    tfim_hamiltonian,
+    heisenberg_hamiltonian,
+)
 
 __all__ = [
     # QFT
@@ -137,4 +142,8 @@ __all__ = [
     "bell_state",
     # BB84 QKD
     "bb84",
+    # Variational ground-state solver
+    "variational_ground_state",
+    "tfim_hamiltonian",
+    "heisenberg_hamiltonian",
 ]
