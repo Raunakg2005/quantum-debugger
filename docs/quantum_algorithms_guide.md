@@ -460,6 +460,17 @@ quantum_compare(9, 3, n_bits=4)    # {"a_geq_b": True, "a_lt_b": False, ...}
 `quantum_compare` computes `(a - b)` with an extra sign bit; the sign bit is 0 iff
 `a >= b`. Both are exact for every input pair.
 
+A **ripple-carry adder** (Cuccaro) offers the complementary carry-propagation
+approach -- only CNOT and Toffoli gates, and it returns the *exact* sum with the
+carry-out (no modular wrap):
+
+```python
+from quantum_debugger.algorithms import ripple_carry_add
+
+ripple_carry_add(9, 7, n_bits=4)     # 16   -- exact 5-bit sum with carry-out
+ripple_carry_add(15, 15, n_bits=4)   # 30
+```
+
 ## Randomized Benchmarking
 
 Estimate the average error per Clifford gate independently of state-prep and

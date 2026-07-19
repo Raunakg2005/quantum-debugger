@@ -1,21 +1,25 @@
 """
-Quantum Arithmetic -- Draper QFT Adder
+Quantum Arithmetic
 
-Add numbers directly in the Fourier basis (Draper, 2000). To compute ``a + b`` one
-QFTs the ``a`` register, applies phase rotations proportional to ``b``, then inverse
-QFTs -- no carry ancillas required. Two variants:
+Two complementary approaches to addition, plus subtraction and comparison:
 
-  * ``qft_add(a, b, n)``       -- add a classical constant ``b`` into ``|a>``
-  * ``quantum_adder(a, b, n)`` -- add two quantum registers, ``|a>|b> -> |a+b>|b>``
+  * Fourier basis (Draper, 2000): ``qft_add`` / ``quantum_adder`` -- QFT the
+    register, apply phase rotations, inverse QFT. No carry ancillas.
+  * Ripple-carry (Cuccaro, 2004): ``ripple_carry_add`` -- MAJ/UMA gates propagate a
+    carry, giving the exact sum (with carry-out) using only CNOT/Toffoli.
 
-Both compute ``(a + b) mod 2**n`` and are exact for every input pair.
+All routines are exact for every input pair.
 """
 
 import numpy as np
 
 from ..core.quantum_state import QuantumState
 from ..core.circuit import QuantumCircuit
+from ..core.gates import GateLibrary
 from .qft import apply_qft, apply_inverse_qft
+
+_CNOT = GateLibrary.CNOT
+_TOFFOLI = GateLibrary.TOFFOLI
 
 
 def _phase(angle):
@@ -80,6 +84,59 @@ def quantum_compare(a: int, b: int, n_bits: int) -> dict:
     diff = qft_subtract(a, b, n_bits + 1)
     sign = (diff >> n_bits) & 1
     return {"a_geq_b": sign == 0, "a_lt_b": sign == 1, "difference": diff}
+
+
+def _maj(state, c, b, a):
+    """Cuccaro MAJ gate: compute the majority (carry) into qubit a."""
+    state.apply_gate(_CNOT, [a, b])
+    state.apply_gate(_CNOT, [a, c])
+    state.apply_gate(_TOFFOLI, [c, b, a])
+
+
+def _uma(state, c, b, a):
+    """Cuccaro UMA gate: un-majority and add (inverse of MAJ plus the sum bit)."""
+    state.apply_gate(_TOFFOLI, [c, b, a])
+    state.apply_gate(_CNOT, [a, c])
+    state.apply_gate(_CNOT, [c, b])
+
+
+def ripple_carry_add(a: int, b: int, n_bits: int) -> int:
+    """
+    Cuccaro ripple-carry adder: compute the exact sum ``a + b`` (with carry-out).
+
+    Uses a carry ancilla and a carry-out qubit; only CNOT and Toffoli gates. The
+    ``b`` register accumulates the sum while ``a`` is restored. Returns the full
+    ``(n_bits + 1)``-bit integer ``a + b`` (no modular wrap).
+    """
+    total = 2 * n_bits + 2
+    c = 0
+    a_q = [1 + i for i in range(n_bits)]
+    b_q = [1 + n_bits + i for i in range(n_bits)]
+    z = 1 + 2 * n_bits
+
+    state = QuantumState(total)
+    index = 0
+    for i in range(n_bits):
+        if (a >> i) & 1:
+            index |= 1 << a_q[i]
+        if (b >> i) & 1:
+            index |= 1 << b_q[i]
+    sv = np.zeros(2**total, dtype=complex)
+    sv[index] = 1.0
+    state.state_vector = sv
+
+    _maj(state, c, b_q[0], a_q[0])
+    for i in range(1, n_bits):
+        _maj(state, a_q[i - 1], b_q[i], a_q[i])
+    state.apply_gate(_CNOT, [a_q[n_bits - 1], z])
+    for i in range(n_bits - 1, 0, -1):
+        _uma(state, a_q[i - 1], b_q[i], a_q[i])
+    _uma(state, c, b_q[0], a_q[0])
+
+    out = int(np.argmax(np.abs(state.state_vector) ** 2))
+    result = sum(((out >> b_q[i]) & 1) << i for i in range(n_bits))
+    result |= ((out >> z) & 1) << n_bits
+    return result
 
 
 def quantum_adder(a: int, b: int, n_bits: int) -> int:
