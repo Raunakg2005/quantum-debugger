@@ -5,8 +5,14 @@ Enables multi-core parallel execution of shots for faster simulation.
 """
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+from concurrent.futures.process import BrokenProcessPool
 from typing import Dict, List, Optional
 import os
+
+
+def _run_circuit_worker(circuit, shots: int) -> Dict:
+    """Module-level worker for process-pool execution (picklable under spawn)."""
+    return circuit.run(shots=shots)
 
 
 class ParallelExecutor:
@@ -63,24 +69,33 @@ class ParallelExecutor:
     def _run_with_processes(
         self, circuit, shot_distribution: List[int], progress: bool
     ) -> Dict:
-        """Execute with ProcessPoolExecutor"""
-        results = []
+        """
+        Execute with ProcessPoolExecutor.
 
-        with ProcessPoolExecutor(max_workers=self.n_workers) as executor:
-            # Submit all jobs
-            futures = []
-            for shots_i in shot_distribution:
-                if shots_i > 0:
-                    future = executor.submit(self._run_circuit_worker, circuit, shots_i)
-                    futures.append(future)
+        Spawning worker processes is unreliable in some environments -- notably
+        Windows ``spawn`` re-importing a heavy dependency chain (torch/cupy/CUDA)
+        can crash the worker with ``BrokenProcessPool``. In that case we fall back
+        to the thread pool, which produces identical merged results.
+        """
+        try:
+            results = []
+            with ProcessPoolExecutor(max_workers=self.n_workers) as executor:
+                futures = []
+                for shots_i in shot_distribution:
+                    if shots_i > 0:
+                        futures.append(
+                            executor.submit(_run_circuit_worker, circuit, shots_i)
+                        )
 
-            # Collect results
-            if progress:
-                results = self._collect_with_progress(futures)
-            else:
-                results = [future.result() for future in futures]
+                if progress:
+                    results = self._collect_with_progress(futures)
+                else:
+                    results = [future.result() for future in futures]
 
-        return self._merge_results(results)
+            return self._merge_results(results)
+        except (BrokenProcessPool, OSError, EOFError):
+            # Worker processes could not be spawned/run; fall back to threads.
+            return self._run_with_threads(circuit, shot_distribution, progress)
 
     def _run_with_threads(
         self, circuit, shot_distribution: List[int], progress: bool
@@ -106,8 +121,8 @@ class ParallelExecutor:
 
     @staticmethod
     def _run_circuit_worker(circuit, shots: int) -> Dict:
-        """Worker function for process pool execution"""
-        return circuit.run(shots=shots)
+        """Worker function for process pool execution (delegates to module-level)."""
+        return _run_circuit_worker(circuit, shots)
 
     def _collect_with_progress(self, futures) -> List[Dict]:
         """Collect results with progress bar"""
