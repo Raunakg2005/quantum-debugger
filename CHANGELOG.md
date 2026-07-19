@@ -26,10 +26,12 @@ Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
   threshold oracle and BBHT-randomized iteration counts (which avoid the
   over-rotation stall when many states are marked). Reliably finds the global
   minimum, verified against brute force.
-- **Multi-controlled-X synthesis** (`algorithms.toffoli_gates`, `algorithms.mcx_gates`)
-  — decompose Toffoli (CCX) and general n-controlled-X gates into the elementary
+- **Multi-controlled gate synthesis** (`algorithms.toffoli_gates`,
+  `algorithms.fredkin_gates`, `algorithms.mcx_gates`) — decompose Toffoli (CCX),
+  Fredkin (controlled-SWAP), and general n-controlled-X gates into the elementary
   H/T/T-dagger/CNOT set; the n-control MCX uses a clean-ancilla Toffoli ladder.
-  Verified exactly against the ideal CCX/MCX action with ancillas restored to |0>.
+  Verified exactly against the ideal CCX/CSWAP/MCX action with ancillas restored
+  to |0>.
 - **Grover-based constraint / SAT solver** (`algorithms.grover_solve`) — finds an
   input satisfying an arbitrary boolean predicate via Grover search over the marked
   set, returning a verified satisfying assignment, the solution count, and the

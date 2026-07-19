@@ -249,8 +249,11 @@ gates = mcx_gates(controls=[0, 1, 2, 3], target=4, ancillas=[5, 6, 7])
 apply_gates(QuantumState(8), gates)   # flips qubit 4 iff qubits 0-3 are all 1
 ```
 
-Both decompositions are exact (verified against the ideal CCX / MCX action for
-every control input, with ancillas restored to `|0>`).
+`fredkin_gates(control, a, b)` decomposes the controlled-SWAP (swap `a`, `b` iff
+`control` is 1) into a Toffoli sandwiched by two CNOTs.
+
+All decompositions are exact (verified against the ideal CCX / CSWAP / MCX action
+for every control input, with ancillas restored to `|0>`).
 
 ## Grover-Based Constraint / SAT Solver
 

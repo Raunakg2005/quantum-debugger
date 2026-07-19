@@ -45,6 +45,16 @@ def toffoli_gates(a: int, b: int, c: int) -> list:
     ]
 
 
+def fredkin_gates(control: int, a: int, b: int) -> list:
+    """
+    Decompose the Fredkin gate CSWAP(control; a, b) -- swap ``a`` and ``b`` iff
+    ``control`` is 1 -- into a Toffoli sandwiched by two CNOTs.
+
+    Returns a list of (gate_matrix, [qubits]) operations.
+    """
+    return [(_CNOT, [b, a])] + toffoli_gates(control, a, b) + [(_CNOT, [b, a])]
+
+
 def mcx_gates(controls: list, target: int, ancillas: list) -> list:
     """
     Decompose an n-controlled-X into Toffolis via a clean-ancilla ladder.

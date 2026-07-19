@@ -3,7 +3,12 @@
 import numpy as np
 import pytest
 
-from quantum_debugger.algorithms import toffoli_gates, mcx_gates, apply_gates
+from quantum_debugger.algorithms import (
+    toffoli_gates,
+    fredkin_gates,
+    mcx_gates,
+    apply_gates,
+)
 from quantum_debugger.core.quantum_state import QuantumState
 
 
@@ -27,6 +32,18 @@ class TestToffoli:
         expected = sum(b << q for q, b in enumerate(bits))
         assert out == expected
         assert prob > 0.999  # exact, no phase leakage
+
+
+class TestFredkin:
+    @pytest.mark.parametrize("x", range(8))
+    def test_controlled_swap(self, x):
+        out, prob = _run(3, x, fredkin_gates(0, 1, 2))
+        bits = [(x >> q) & 1 for q in range(3)]
+        if bits[0] == 1:  # swap qubits 1 and 2 when control is set
+            bits[1], bits[2] = bits[2], bits[1]
+        expected = sum(b << q for q, b in enumerate(bits))
+        assert out == expected
+        assert prob > 0.999
 
 
 class TestMCX:
