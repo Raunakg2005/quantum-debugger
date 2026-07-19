@@ -6,6 +6,7 @@ import pytest
 from quantum_debugger.algorithms import (
     teleport,
     superdense_coding,
+    entanglement_swap,
     period_finding,
     shor_factor,
 )
@@ -31,6 +32,14 @@ class TestSuperdenseCoding:
         result = superdense_coding(bits)
         assert result["decoded"] == bits
         assert result["success"]
+
+
+class TestEntanglementSwap:
+    @pytest.mark.parametrize("seed", range(8))
+    def test_outer_qubits_become_bell_pair(self, seed):
+        result = entanglement_swap(seed=seed)
+        assert result["fidelity"] > 0.999
+        assert result["measurement"][0] in (0, 1)
 
 
 class TestShor:

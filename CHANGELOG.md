@@ -95,10 +95,13 @@ Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
   quantum period finding via QPE on the modular-multiplication unitary
   `U|y> = |a*y mod N>`, with continued-fraction recovery of the period. Genuinely
   factors composites: 15 -> (3, 5) via period r=4, 21 -> (3, 7) via r=6.
-- **Quantum teleportation & superdense coding** (`algorithms.teleport`,
-  `algorithms.superdense_coding`) — teleport an arbitrary single-qubit state with
-  fidelity ~1.0 using a Bell pair + X/Z feedforward; superdense coding recovers
-  all four 2-bit messages from a single transmitted qubit.
+- **Quantum teleportation, superdense coding & entanglement swapping**
+  (`algorithms.teleport`, `algorithms.superdense_coding`,
+  `algorithms.entanglement_swap`) — teleport an arbitrary single-qubit state with
+  fidelity ~1.0 using a Bell pair + X/Z feedforward; superdense coding recovers all
+  four 2-bit messages from a single transmitted qubit; entanglement swapping
+  entangles two qubits that never interacted (fidelity 1.0 to |Phi+>), the basis of
+  quantum repeaters.
 - **HHL quantum linear-systems solver** (`algorithms.hhl`) — solves `A x = b` for
   a small Hermitian `A` via QPE + eigenvalue-inversion rotation + inverse QPE +
   post-selection; the solution state matches the classical `A^{-1} b` with

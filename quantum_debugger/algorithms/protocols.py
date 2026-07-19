@@ -1,15 +1,39 @@
 """
-Quantum communication protocols: teleportation and superdense coding.
+Quantum communication protocols: teleportation, superdense coding, and
+entanglement swapping.
 
-Both use a shared Bell pair as the resource. Teleportation moves an unknown qubit
-state using two classical bits; superdense coding sends two classical bits using
-one qubit.
+Teleportation moves an unknown qubit state using a shared Bell pair and two
+classical bits; superdense coding sends two classical bits using one qubit;
+entanglement swapping entangles two qubits that never interacted (the basis of
+quantum repeaters).
 """
 
 import numpy as np
 
 from ..core.quantum_state import QuantumState
 from ..core.gates import GateLibrary
+
+
+def _two_qubit_reduced_dm(sv, qa, qb, n):
+    """Reduced 4x4 density matrix of qubits (qa, qb), tracing out the rest."""
+    rho = np.zeros((4, 4), dtype=complex)
+    env_qubits = [q for q in range(n) if q not in (qa, qb)]
+    for env in range(2 ** len(env_qubits)):
+        # Fixed environment bits; sum over the (qa, qb) subspace.
+        base = 0
+        for k, q in enumerate(env_qubits):
+            if (env >> k) & 1:
+                base |= 1 << q
+        amps = np.zeros(4, dtype=complex)
+        for two in range(4):
+            idx = base
+            if two & 1:
+                idx |= 1 << qa
+            if two & 2:
+                idx |= 1 << qb
+            amps[two] = sv[idx]
+        rho += np.outer(amps, amps.conj())
+    return rho
 
 
 def teleport(psi) -> dict:
@@ -108,3 +132,42 @@ def superdense_coding(bits) -> dict:
         "decoded": decoded,
         "success": decoded == (b0, b1),
     }
+
+
+def entanglement_swap(seed: int = 0) -> dict:
+    """
+    Entangle two qubits that never interacted, via entanglement swapping.
+
+    Prepares two independent Bell pairs (qubits 0-1 and 2-3), performs a Bell
+    measurement on the inner qubits (1, 2), and applies X/Z feedforward on qubit 3.
+    Qubits 0 and 3 -- which have no common history -- end up in the Bell state
+    ``|Phi+>``. Returns the fidelity of the (0, 3) pair to ``|Phi+>``.
+    """
+    np.random.seed(seed)
+    state = QuantumState(4)
+    H, X, Z = GateLibrary.H, GateLibrary.X, GateLibrary.Z
+    CNOT = GateLibrary.CNOT
+
+    # Two independent Bell pairs.
+    state.apply_gate(H, [0])
+    state.apply_gate(CNOT, [0, 1])
+    state.apply_gate(H, [2])
+    state.apply_gate(CNOT, [2, 3])
+
+    # Bell measurement on the inner qubits 1 and 2.
+    state.apply_gate(CNOT, [1, 2])
+    state.apply_gate(H, [1])
+    m1 = state.measure(1)
+    m2 = state.measure(2)
+
+    # Feedforward on qubit 3 so the (0, 3) pair becomes |Phi+>.
+    if m2 == 1:
+        state.apply_gate(X, [3])
+    if m1 == 1:
+        state.apply_gate(Z, [3])
+
+    # Fidelity of qubits (0, 3) to |Phi+> = (|00> + |11>)/sqrt(2).
+    rho = _two_qubit_reduced_dm(state.state_vector, 0, 3, 4)
+    phi_plus = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+    fidelity = float(np.real(np.conj(phi_plus) @ rho @ phi_plus))
+    return {"fidelity": fidelity, "measurement": (m1, m2)}

@@ -153,6 +153,19 @@ result["fidelity"]      # ~1.0  (qubit 2 now holds psi)
 result["measurement"]   # the two Bell-measurement bits
 ```
 
+## Entanglement Swapping
+
+Entangle two qubits that have never interacted -- the primitive behind quantum
+repeaters. Two independent Bell pairs (qubits 0-1 and 2-3) are prepared; a Bell
+measurement on the inner qubits (1, 2) plus X/Z feedforward leaves the outer
+qubits (0, 3) in the Bell state `|Phi+>`.
+
+```python
+from quantum_debugger.algorithms import entanglement_swap
+
+entanglement_swap()["fidelity"]   # 1.0  -- qubits 0 and 3 are now maximally entangled
+```
+
 ## Superdense Coding
 
 The dual of teleportation: send two classical bits by transmitting a single
