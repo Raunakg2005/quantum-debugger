@@ -19,7 +19,9 @@ from quantum_debugger.algorithms import (
     quantum_counting,
     amplitude_estimation,
     iterative_phase_estimation,
+    amplitude_amplification,
 )
+from quantum_debugger.core.circuit import QuantumCircuit
 
 
 def _circuit_unitary(circuit, n):
@@ -125,6 +127,23 @@ class TestQuantumCounting:
         result = quantum_counting(n_qubits=4, marked=marked, n_counting=5)
         assert result["true_count"] == len(marked)
         assert abs(result["estimated_count"] - len(marked)) < 1.5
+
+
+class TestAmplitudeAmplification:
+    def test_boosts_low_amplitude(self):
+        qc = QuantumCircuit(3)
+        for q in range(3):
+            qc.ry(0.6, q)  # small amplitude on |111>
+        result = amplitude_amplification(qc, marked=[7])
+        assert result["success_probability"] > 5 * result["initial_probability"]
+        assert result["success_probability"] > 0.9
+
+    def test_reduces_to_grover_for_uniform(self):
+        qc = QuantumCircuit(4)
+        for q in range(4):
+            qc.h(q)
+        result = amplitude_amplification(qc, marked=[10])
+        assert result["success_probability"] > 0.9
 
 
 class TestAmplitudeEstimation:

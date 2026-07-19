@@ -23,6 +23,10 @@ from .oracles import (
 from .quantum_walk import quantum_walk
 from .quantum_counting import quantum_counting
 from .amplitude_estimation import amplitude_estimation
+from .amplitude_amplification import (
+    amplitude_amplification,
+    optimal_amplification_iterations,
+)
 
 __all__ = [
     # QFT
@@ -49,4 +53,6 @@ __all__ = [
     "quantum_walk",
     "quantum_counting",
     "amplitude_estimation",
+    "amplitude_amplification",
+    "optimal_amplification_iterations",
 ]

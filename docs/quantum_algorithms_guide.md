@@ -84,3 +84,46 @@ quantum_counting(n_qubits=4, marked=[1, 5, 9], n_counting=5)["estimated_count"] 
 # Maximum-likelihood amplitude estimation (QPE-free, more accurate)
 amplitude_estimation(4, marked=[1, 5, 9])["estimated_count"]  # ~3.0
 ```
+
+## Amplitude Amplification
+
+Grover generalized to any state preparation `A` (Grover is the case `A = H^n`).
+
+```python
+from quantum_debugger.algorithms import amplitude_amplification
+from quantum_debugger.core.circuit import QuantumCircuit
+
+A = QuantumCircuit(3)
+for q in range(3):
+    A.ry(0.6, q)                              # |111> has a tiny amplitude here
+result = amplitude_amplification(A, marked=[7])
+result["initial_probability"]   # ~0.001
+result["success_probability"]   # ~1.0
+```
+
+## Iterative Phase Estimation
+
+Single-ancilla, bit-by-bit phase estimation (only 2 qubits total).
+
+```python
+from quantum_debugger.algorithms import iterative_phase_estimation
+import numpy as np
+
+iterative_phase_estimation(2 * np.pi * 0.375, n_bits=4)["phase"]   # 0.375
+```
+
+## State Tomography
+
+Reconstruct the density matrix of a small (<= 3 qubit) state from simulated
+Pauli measurements.
+
+```python
+from quantum_debugger.tomography import state_tomography
+from quantum_debugger.core.circuit import QuantumCircuit
+
+qc = QuantumCircuit(2)
+qc.h(0); qc.cnot(0, 1)
+result = state_tomography(qc.get_statevector().state_vector, shots=8000)
+result["density_matrix"]   # reconstructed 4x4 rho
+result["fidelity"]          # ~1.0 vs the true Bell state
+```

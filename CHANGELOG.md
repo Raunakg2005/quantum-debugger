@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Quantum State Tomography** (`quantum_debugger.tomography.state_tomography`) —
+  reconstructs a <=3-qubit density matrix from simulated Pauli measurements
+  (fidelity ~1.0 to the true state).
+- **Amplitude Amplification** (`algorithms.amplitude_amplification`) — generalizes
+  Grover to any state preparation A; boosts a marked-state probability of 0.001
+  to ~1.0.
 - **Quantum Actor-Critic (A2C)** (`qml.algorithms.QuantumActorCritic`) — online
   advantage actor-critic with a PQC actor and a PQC critic; the critic learns a
   genuine value function (V increases toward the goal). Completes the QRL suite
