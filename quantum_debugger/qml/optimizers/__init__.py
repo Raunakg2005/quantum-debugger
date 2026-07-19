@@ -4,6 +4,7 @@ Optimizers module for quantum machine learning
 
 # Basic optimizers
 from .basics import Adam, GradientDescent
+from .spsa import SPSA
 
 # Advanced optimizers
 from .advanced import (
@@ -19,6 +20,7 @@ __all__ = [
     # Basic optimizers
     "Adam",
     "GradientDescent",
+    "SPSA",
     # Advanced optimizers
     "QuantumNaturalGradient",
     "NelderMeadOptimizer",

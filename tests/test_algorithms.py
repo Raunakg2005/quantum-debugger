@@ -17,6 +17,7 @@ from quantum_debugger.algorithms import (
     balanced_oracle,
     quantum_walk,
     quantum_counting,
+    amplitude_estimation,
 )
 
 
@@ -117,6 +118,16 @@ class TestQuantumCounting:
         result = quantum_counting(n_qubits=4, marked=marked, n_counting=5)
         assert result["true_count"] == len(marked)
         assert abs(result["estimated_count"] - len(marked)) < 1.5
+
+
+class TestAmplitudeEstimation:
+    @pytest.mark.parametrize("marked", [[3], [1, 5, 9], [2, 4, 6, 8]])
+    def test_mlqae_estimates_count(self, marked):
+        result = amplitude_estimation(4, marked, shots=3000, seed=0)
+        assert result["true_count"] == len(marked)
+        # MLQAE is very accurate given several Grover powers.
+        assert abs(result["estimated_count"] - len(marked)) < 0.6
+        assert abs(result["estimated_amplitude"] - result["true_amplitude"]) < 0.05
 
 
 if __name__ == "__main__":

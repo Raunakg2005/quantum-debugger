@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **SPSA optimizer** (`qml.optimizers.SPSA`) — gradient-free, two objective
+  evaluations per step regardless of parameter count (ideal for VQAs).
+- **Maximum-Likelihood Amplitude Estimation** (`algorithms.amplitude_estimation`)
+  — QPE-free amplitude/count estimation via Grover powers + max-likelihood; more
+  accurate than QPE-based counting (counts recovered to <0.6).
 - **VQD (Variational Quantum Deflation)** (`qml.algorithms.VQD`) — finds excited
   states, not just the ground state, by penalizing overlap with previously found
   eigenstates. Recovers exact ground + excited energies on test Hamiltonians.

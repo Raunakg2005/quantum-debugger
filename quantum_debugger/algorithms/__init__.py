@@ -18,6 +18,7 @@ from .oracles import (
 )
 from .quantum_walk import quantum_walk
 from .quantum_counting import quantum_counting
+from .amplitude_estimation import amplitude_estimation
 
 __all__ = [
     # QFT
@@ -39,7 +40,8 @@ __all__ = [
     "deutsch_jozsa_circuit",
     "constant_oracle",
     "balanced_oracle",
-    # Walk & counting
+    # Walk, counting & estimation
     "quantum_walk",
     "quantum_counting",
+    "amplitude_estimation",
 ]
