@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Quantum spectroscopy** (`algorithms.unitary_eigenphase`,
+  `algorithms.hermitian_eigenvalue`) — phase estimation for an *arbitrary* unitary
+  or Hermitian operator (not just the demo phase gate): read out the eigenphase of a
+  unitary or the eigenvalue of a Hermitian `H` (via `U = exp(iH)`) from a supplied
+  eigenstate. Verified against classical diagonalization (exact eigenphases for
+  P/T gates, Hermitian eigenvalues to ~1e-3).
 - **Repetition-code logical error rate** (`algorithms.repetition_code_error_rate`) —
   Monte-Carlo QEC-threshold demonstration: encode a logical bit in the 3-qubit code,
   apply independent per-qubit bit-flip noise, syndrome-correct, and measure the

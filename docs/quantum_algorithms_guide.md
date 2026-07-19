@@ -52,6 +52,26 @@ result = estimate_phase(2 * np.pi * 0.25, n_counting=4)
 result["phase"]   # 0.25
 ```
 
+## Quantum Spectroscopy (Arbitrary-Operator QPE)
+
+Estimate the eigenphase of any unitary, or the eigenvalue of any Hermitian
+operator, with phase estimation on a supplied eigenstate -- verified against
+classical diagonalization.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import unitary_eigenphase, hermitian_eigenvalue
+
+# Eigenphase of a unitary (|1> is the eigenstate of P(2*pi*0.375)).
+P = np.array([[1, 0], [0, np.exp(2j * np.pi * 0.375)]], dtype=complex)
+unitary_eigenphase(P, [0, 1], n_counting=8)["phase"]        # 0.375
+
+# Eigenvalue of a Hermitian operator (quantum spectroscopy).
+H = np.array([[2.0, 0.5], [0.5, 1.0]], dtype=complex)
+evals, evecs = np.linalg.eigh(H)
+hermitian_eigenvalue(H, evecs[:, 0], n_counting=10)["eigenvalue"]   # ~0.793
+```
+
 ## Bernstein-Vazirani & Deutsch-Jozsa
 
 ```python
