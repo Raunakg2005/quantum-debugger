@@ -20,6 +20,8 @@ from quantum_debugger.algorithms import (
     amplitude_estimation,
     iterative_phase_estimation,
     amplitude_amplification,
+    hhl,
+    swap_test,
 )
 from quantum_debugger.core.circuit import QuantumCircuit
 
@@ -127,6 +129,44 @@ class TestQuantumCounting:
         result = quantum_counting(n_qubits=4, marked=marked, n_counting=5)
         assert result["true_count"] == len(marked)
         assert abs(result["estimated_count"] - len(marked)) < 1.5
+
+
+class TestSwapTest:
+    def test_identical_states(self):
+        qc = QuantumCircuit(2)
+        qc.h(0)
+        qc.cnot(0, 1)
+        bell = qc.get_statevector().state_vector
+        assert np.isclose(swap_test(bell, bell)["overlap"], 1.0, atol=1e-9)
+
+    def test_orthogonal_states(self):
+        e00 = np.zeros(4, dtype=complex)
+        e00[0] = 1
+        e11 = np.zeros(4, dtype=complex)
+        e11[3] = 1
+        assert np.isclose(swap_test(e00, e11)["overlap"], 0.0, atol=1e-9)
+
+    @pytest.mark.parametrize("seed", [0, 1, 2])
+    def test_matches_exact_overlap(self, seed):
+        rng = np.random.default_rng(seed)
+        a = rng.standard_normal(4) + 1j * rng.standard_normal(4)
+        b = rng.standard_normal(4) + 1j * rng.standard_normal(4)
+        result = swap_test(a, b)
+        assert np.isclose(result["overlap"], result["exact_overlap"], atol=1e-9)
+
+
+class TestHHL:
+    @pytest.mark.parametrize("b", [[1, 0], [0.6, 0.8], [1, 1]])
+    def test_matches_classical_solution(self, b):
+        A = np.array([[1.5, 0.5], [0.5, 1.5]], dtype=complex)  # eigenvalues 1, 2
+        result = hhl(A, b, n_clock=3)
+        assert result["fidelity"] > 0.99
+        assert result["success_probability"] > 0.0
+
+    def test_solution_is_normalized(self):
+        A = np.array([[1.5, 0.5], [0.5, 1.5]], dtype=complex)
+        result = hhl(A, [1, 0], n_clock=3)
+        assert np.isclose(np.linalg.norm(result["solution"]), 1.0)
 
 
 class TestAmplitudeAmplification:

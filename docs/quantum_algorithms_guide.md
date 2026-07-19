@@ -112,6 +112,32 @@ import numpy as np
 iterative_phase_estimation(2 * np.pi * 0.375, n_bits=4)["phase"]   # 0.375
 ```
 
+## Swap Test
+
+Estimate the squared overlap `|<psi|phi>|^2` between two states with one ancilla
+and controlled-SWAP gates.
+
+```python
+from quantum_debugger.algorithms import swap_test
+
+swap_test(psi, phi)["overlap"]   # |<psi|phi>|^2
+```
+
+## HHL -- Quantum Linear Systems
+
+Solve `A x = b` for a Hermitian `A`. The solution register ends up in the state
+`|x> proportional to A^{-1} |b>`.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import hhl
+
+A = np.array([[1.5, 0.5], [0.5, 1.5]])   # eigenvalues 1 and 2
+result = hhl(A, b=[1, 0], n_clock=3)
+result["fidelity"]        # ~1.0 vs the classical A^-1 b
+result["solution"]        # normalized |x>
+```
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated

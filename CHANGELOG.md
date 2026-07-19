@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **HHL quantum linear-systems solver** (`algorithms.hhl`) — solves `A x = b` for
+  a small Hermitian `A` via QPE + eigenvalue-inversion rotation + inverse QPE +
+  post-selection; the solution state matches the classical `A^{-1} b` with
+  fidelity ~1.0.
 - **Quantum State Tomography** (`quantum_debugger.tomography.state_tomography`) —
   reconstructs a <=3-qubit density matrix from simulated Pauli measurements
   (fidelity ~1.0 to the true state).

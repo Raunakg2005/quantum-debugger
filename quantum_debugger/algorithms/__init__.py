@@ -27,6 +27,8 @@ from .amplitude_amplification import (
     amplitude_amplification,
     optimal_amplification_iterations,
 )
+from .hhl import hhl
+from .swap_test import swap_test
 
 __all__ = [
     # QFT
@@ -55,4 +57,8 @@ __all__ = [
     "amplitude_estimation",
     "amplitude_amplification",
     "optimal_amplification_iterations",
+    # Linear systems
+    "hhl",
+    # Overlap / fidelity
+    "swap_test",
 ]
