@@ -71,7 +71,7 @@ from .metrology import (
     parity_signal,
     quantum_fisher_information,
 )
-from .bell_test import chsh_value, correlator, bell_state
+from .bell_test import chsh_value, correlator, bell_state, chsh_game
 from .bb84 import bb84
 from .vqe_solver import (
     variational_ground_state,
@@ -158,6 +158,7 @@ __all__ = [
     "chsh_value",
     "correlator",
     "bell_state",
+    "chsh_game",
     # BB84 QKD
     "bb84",
     # Variational ground-state solver

@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from quantum_debugger.algorithms import chsh_value, correlator, bell_state
+from quantum_debugger.algorithms import chsh_value, correlator, bell_state, chsh_game
 
 
 class TestBellState:
@@ -37,6 +37,15 @@ class TestCHSH:
         r = chsh_value(a=0.0, a_prime=0.0, b=0.0, b_prime=0.0)
         assert abs(r["S"]) <= 2.0 + 1e-9
         assert not r["violates_classical"]
+
+
+class TestCHSHGame:
+    def test_quantum_beats_classical(self):
+        r = chsh_game()
+        assert np.isclose(r["quantum_win_probability"], np.cos(np.pi / 8) ** 2)
+        assert r["quantum_win_probability"] > 0.75
+        assert r["beats_classical"]
+        assert r["classical_win_probability"] == 0.75
 
 
 if __name__ == "__main__":

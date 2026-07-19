@@ -316,6 +316,18 @@ r["violates_classical"]        # True
 Each party measures `M(theta) = cos(theta) Z + sin(theta) X`; the correlator for
 `|Phi+>` is `E(a,b) = cos(a-b)`, and `S = E(a,b) + E(a,b') + E(a',b) - E(a',b')`.
 
+The same nonlocality wins the **CHSH game** (referee sends `(x, y)`, players answer
+`(a, b)`, win iff `a XOR b == x AND y`) more often than any classical strategy:
+
+```python
+from quantum_debugger.algorithms import chsh_game
+
+g = chsh_game()
+g["quantum_win_probability"]     # 0.854  (= cos^2(pi/8))
+g["classical_win_probability"]   # 0.75
+g["beats_classical"]             # True
+```
+
 ## Quantum Metrology (Heisenberg-Limited Sensing)
 
 A GHZ probe accumulates phase N times faster than independent qubits, so its

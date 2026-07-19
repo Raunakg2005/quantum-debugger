@@ -34,10 +34,12 @@ Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
   Without an eavesdropper the sifted keys match exactly (QBER 0); an
   intercept-resend eavesdropper injects a ~25% error rate that trips the security
   threshold. Security emerges from real measurement back-action.
-- **Bell / CHSH inequality test** (`algorithms.chsh_value`, `algorithms.correlator`,
-  `algorithms.bell_state`) — demonstrates quantum nonlocality: a Bell pair measured
-  along optimal angles gives a CHSH value `S = 2 sqrt(2)`, exactly Tsirelson's bound,
-  violating the classical limit `|S| <= 2`. Correlator matches `cos(a-b)`.
+- **Bell / CHSH inequality test & nonlocal game** (`algorithms.chsh_value`,
+  `algorithms.correlator`, `algorithms.bell_state`, `algorithms.chsh_game`) —
+  demonstrates quantum nonlocality: a Bell pair measured along optimal angles gives
+  a CHSH value `S = 2 sqrt(2)`, exactly Tsirelson's bound, violating the classical
+  limit `|S| <= 2`. The CHSH game win probability is `cos^2(pi/8) ~ 0.854`, beating
+  the best classical strategy (0.75). Correlator matches `cos(a-b)`.
 - **Quantum metrology** (`algorithms.phase_sensitivity`, `algorithms.parity_signal`,
   `algorithms.quantum_fisher_information`) — Heisenberg-limited phase sensing: a GHZ
   probe reaches quantum Fisher information `N^2` (phase uncertainty `1/N`) versus

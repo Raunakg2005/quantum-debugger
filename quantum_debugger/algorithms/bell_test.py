@@ -72,3 +72,46 @@ def chsh_value(
         "tsirelson_bound": 2 * np.sqrt(2),
         "violates_classical": abs(S) > 2.0 + 1e-9,
     }
+
+
+def chsh_game(
+    a: float = 0.0,
+    a_prime: float = np.pi / 2,
+    b: float = np.pi / 4,
+    b_prime: float = -np.pi / 4,
+) -> dict:
+    """
+    The CHSH nonlocal game with the optimal quantum strategy.
+
+    A referee sends questions (x, y); the players (sharing a Bell pair) answer
+    (a, b) and win iff ``a XOR b == x AND y``. The best classical strategy wins
+    with probability 3/4; the quantum strategy wins with ``cos^2(pi/8) ~ 0.854``.
+
+    Player x measures at angle ``a`` (x=0) or ``a'`` (x=1); player y at ``b`` or
+    ``b'``. The win probability is computed from the Bell-pair correlators.
+
+    Returns dict with 'quantum_win_probability', 'classical_win_probability' (0.75),
+    'tsirelson_win_probability' (cos^2(pi/8)), and 'beats_classical'.
+    """
+    psi = bell_state()
+    angles_a = {0: a, 1: a_prime}
+    angles_b = {0: b, 1: b_prime}
+
+    total = 0.0
+    for x in (0, 1):
+        for y in (0, 1):
+            e = correlator(psi, angles_a[x], angles_b[y])
+            # Win needs a == b when x AND y == 0, else a != b.
+            if (x & y) == 0:
+                p_win = (1 + e) / 2
+            else:
+                p_win = (1 - e) / 2
+            total += p_win
+    quantum_win = total / 4
+
+    return {
+        "quantum_win_probability": quantum_win,
+        "classical_win_probability": 0.75,
+        "tsirelson_win_probability": float(np.cos(np.pi / 8) ** 2),
+        "beats_classical": quantum_win > 0.75 + 1e-9,
+    }
