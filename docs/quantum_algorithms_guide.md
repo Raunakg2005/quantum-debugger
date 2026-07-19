@@ -192,6 +192,25 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Grover Adaptive Minimization
+
+Find the input minimizing a cost function using Grover search as a subroutine
+(Durr-Hoyer). Each round marks the states beating the current best and uses Grover
+(with a randomized iteration count, BBHT-style) to sample one, ratcheting the
+threshold down to the global minimum with O(sqrt(N)) expected queries.
+
+```python
+from quantum_debugger.algorithms import grover_minimize
+
+r = grover_minimize(lambda x: (x - 11) ** 2, n_qubits=4)
+r["argmin"]          # 11
+r["min_value"]       # 0
+r["found_optimum"]   # True  (matches the brute-force minimum)
+```
+
+The randomized iteration count is essential -- a fixed "optimal" count over-rotates
+and stalls when more than half the states are marked (the early rounds).
+
 ## Multi-Controlled-X Synthesis
 
 Decompose Toffoli (CCX) and general n-controlled-X gates into the elementary

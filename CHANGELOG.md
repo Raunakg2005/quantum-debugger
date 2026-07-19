@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Grover adaptive minimization** (`algorithms.grover_minimize`) — Durr-Hoyer
+  quantum optimization: find the argmin of a cost function via Grover search with a
+  threshold oracle and BBHT-randomized iteration counts (which avoid the
+  over-rotation stall when many states are marked). Reliably finds the global
+  minimum, verified against brute force.
 - **Multi-controlled-X synthesis** (`algorithms.toffoli_gates`, `algorithms.mcx_gates`)
   — decompose Toffoli (CCX) and general n-controlled-X gates into the elementary
   H/T/T-dagger/CNOT set; the n-control MCX uses a clean-ancilla Toffoli ladder.

@@ -80,6 +80,7 @@ from .vqe_solver import (
 )
 from .sat_solver import grover_solve
 from .multicontrol import toffoli_gates, mcx_gates, apply_gates
+from .grover_optimize import grover_minimize
 
 __all__ = [
     # QFT
@@ -169,4 +170,6 @@ __all__ = [
     "toffoli_gates",
     "mcx_gates",
     "apply_gates",
+    # Grover adaptive minimization
+    "grover_minimize",
 ]
