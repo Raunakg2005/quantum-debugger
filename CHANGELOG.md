@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Quantum Actor-Critic (A2C)** (`qml.algorithms.QuantumActorCritic`) — online
+  advantage actor-critic with a PQC actor and a PQC critic; the critic learns a
+  genuine value function (V increases toward the goal). Completes the QRL suite
+  (value-based, policy-based, actor-critic).
+- **Multi-class Variational Quantum Classifier**
+  (`qml.advanced.VariationalQuantumClassifier`) — K-class softmax readout with
+  cross-entropy + parameter-shift training (~0.98 on 3-class data).
+- **Iterative QPE** (`algorithms.iterative_phase_estimation`) — single-ancilla,
+  bit-by-bit phase estimation (Kitaev); recovers representable phases exactly.
 - **SPSA optimizer** (`qml.optimizers.SPSA`) — gradient-free, two objective
   evaluations per step regardless of parameter count (ideal for VQAs).
 - **Maximum-Likelihood Amplitude Estimation** (`algorithms.amplitude_estimation`)

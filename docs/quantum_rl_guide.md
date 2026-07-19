@@ -51,6 +51,22 @@ agent.select_action(env.reset(), greedy=True)
 agent.policy(env.reset())        # action probability distribution
 ```
 
+## Quantum Actor-Critic (A2C)
+
+Combines a PQC **actor** (policy) with a PQC **critic** (state-value function).
+The TD error `delta = r + gamma * V(s') - V(s)` trains the critic and weights the
+actor's policy gradient as the advantage.
+
+```python
+from quantum_debugger.qml.algorithms import QuantumActorCritic
+
+agent = QuantumActorCritic(n_qubits=4, n_actions=2, n_layers=3,
+                           actor_lr=0.2, critic_lr=0.2)
+agent.train(env, episodes=150)
+agent.policy(env.reset())                        # actor's action distribution
+agent._value(env.reset(), agent.critic_params)   # critic's value estimate
+```
+
 ## Excited States: VQD
 
 Variational Quantum Deflation finds excited states (not just the ground state) of

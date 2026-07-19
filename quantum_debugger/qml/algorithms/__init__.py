@@ -11,6 +11,7 @@ from .qgan import QuantumGAN
 from .qrl import QuantumQLearning, SimpleEnvironment
 from .policy_gradient import QuantumPolicyGradient
 from .dqn import QuantumDQN
+from .actor_critic import QuantumActorCritic
 
 __all__ = [
     "VQE",
@@ -21,4 +22,5 @@ __all__ = [
     "SimpleEnvironment",
     "QuantumPolicyGradient",
     "QuantumDQN",
+    "QuantumActorCritic",
 ]

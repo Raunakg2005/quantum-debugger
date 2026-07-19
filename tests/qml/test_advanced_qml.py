@@ -7,6 +7,7 @@ from quantum_debugger.qml.advanced import (
     DataReuploadingClassifier,
     QuantumAutoencoder,
     QCNN,
+    VariationalQuantumClassifier,
     expressibility,
     entangling_capability,
     gradient_variance,
@@ -155,6 +156,39 @@ class TestQCNN:
         clf = QCNN(n_qubits=4, learning_rate=0.1)
         clf.fit(X, y, epochs=40)
         assert clf.score(X, y) > 0.75
+
+
+class TestVariationalQuantumClassifier:
+    def test_rejects_too_many_classes(self):
+        with pytest.raises(ValueError):
+            VariationalQuantumClassifier(n_qubits=2, n_classes=3)
+
+    def test_proba_is_distribution(self):
+        clf = VariationalQuantumClassifier(n_qubits=3, n_classes=3)
+        proba = clf.predict_proba(np.random.rand(4, 3))
+        assert proba.shape == (4, 3)
+        assert np.allclose(proba.sum(axis=1), 1.0)
+
+    def test_predict_labels_in_range(self):
+        clf = VariationalQuantumClassifier(n_qubits=3, n_classes=3)
+        preds = clf.predict(np.random.rand(5, 3))
+        assert preds.shape == (5,)
+        assert np.all((preds >= 0) & (preds < 3))
+
+    def test_learns_three_classes(self):
+        pytest.importorskip("sklearn")
+        from sklearn.datasets import make_blobs
+
+        np.random.seed(0)
+        X, y = make_blobs(
+            n_samples=90, centers=3, n_features=3, cluster_std=1.0, random_state=0
+        )
+        X = (X - X.min(0)) / (X.max(0) - X.min(0)) * np.pi
+        clf = VariationalQuantumClassifier(
+            n_qubits=3, n_classes=3, n_layers=3, learning_rate=0.15
+        )
+        clf.fit(X, y, epochs=40)
+        assert clf.score(X, y) > 0.8
 
 
 if __name__ == "__main__":

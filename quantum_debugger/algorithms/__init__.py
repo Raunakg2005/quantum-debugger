@@ -7,7 +7,11 @@ QFT, Quantum Phase Estimation, Grover search, Bernstein-Vazirani, Deutsch-Jozsa.
 
 from .qft import qft, apply_qft, apply_inverse_qft, qft_matrix
 from .grover import grover, grover_search, optimal_iterations
-from .phase_estimation import phase_estimation_circuit, estimate_phase
+from .phase_estimation import (
+    phase_estimation_circuit,
+    estimate_phase,
+    iterative_phase_estimation,
+)
 from .oracles import (
     bernstein_vazirani,
     bernstein_vazirani_circuit,
@@ -33,6 +37,7 @@ __all__ = [
     # Phase estimation
     "phase_estimation_circuit",
     "estimate_phase",
+    "iterative_phase_estimation",
     # Oracle algorithms
     "bernstein_vazirani",
     "bernstein_vazirani_circuit",

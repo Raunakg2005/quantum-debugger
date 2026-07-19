@@ -50,6 +50,20 @@ clf.fit(X, y, epochs=50)
 clf.score(X, y)
 ```
 
+## Variational Quantum Classifier (multi-class)
+
+A general K-class classifier: angle-encode the input, apply a variational ansatz,
+softmax the Pauli-Z expectations of K readout qubits, and train with the
+cross-entropy loss.
+
+```python
+from quantum_debugger.qml.advanced import VariationalQuantumClassifier
+
+clf = VariationalQuantumClassifier(n_qubits=3, n_classes=3, n_layers=3)
+clf.fit(X, y, epochs=40)         # y in {0, 1, 2}
+clf.predict_proba(X)             # (n_samples, 3), rows sum to 1
+```
+
 ## Ansatz Analysis
 
 Quantitative diagnostics for variational circuits:

@@ -18,6 +18,7 @@ from quantum_debugger.algorithms import (
     quantum_walk,
     quantum_counting,
     amplitude_estimation,
+    iterative_phase_estimation,
 )
 
 
@@ -79,6 +80,12 @@ class TestPhaseEstimation:
         result = estimate_phase(2 * np.pi * frac, n_counting=4)
         assert np.isclose(result["phase"], frac, atol=1e-6)
         assert result["probability"] > 0.99
+
+    @pytest.mark.parametrize("frac", [0.375, 0.25, 0.625, 0.8125, 0.0625])
+    def test_iterative_qpe_single_ancilla(self, frac):
+        result = iterative_phase_estimation(2 * np.pi * frac, n_bits=4)
+        assert np.isclose(result["phase"], frac)
+        assert len(result["bits"]) == 4
 
 
 class TestBernsteinVazirani:
