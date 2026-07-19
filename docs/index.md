@@ -1,8 +1,35 @@
 # Quantum Debugger Documentation
 
-**Version 0.6.1** - Interactive quantum circuit debugger with Quantum Machine Learning
+**Version 0.7.0 (development)** - Interactive quantum circuit debugger with Quantum Machine Learning
 
 Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
+
+## What's New in v0.7.0 (in development)
+
+A large, genuinely gate-based **quantum algorithms library** (`quantum_debugger.algorithms`),
+every routine verified against its known outcome:
+
+- **Textbook algorithms** — QFT, Grover, Quantum Phase Estimation (+ iterative),
+  Bernstein-Vazirani, Deutsch-Jozsa, quantum walk, quantum counting, amplitude
+  estimation/amplification, HHL linear solver, swap test.
+- **Shor's algorithm** — quantum period finding that genuinely factors (15 → 3×5,
+  21 → 3×7).
+- **Quantum error correction** — 3-qubit bit-flip / phase-flip codes and the
+  9-qubit Shor code (corrects an arbitrary single-qubit error) with real
+  stabilizer syndrome extraction.
+- **Clifford / stabilizer simulator** — a second engine (CHP tableau) that runs
+  hundred-qubit Clifford circuits instantly.
+- **Hamiltonian simulation** (Trotter-Suzuki), **gate decomposition** (ZYZ, ABC,
+  two-qubit KAK), **randomized benchmarking**, **Draper QFT adder**, a **QAOA
+  MaxCut solver**, entangled **state preparation** (GHZ/W/graph), teleportation,
+  superdense coding, and **state tomography**.
+- **Advanced QML/QRL** — VQD excited states, quantum autoencoder, QCNN,
+  data-reuploading classifier, multi-class VQC, ansatz analysis, SPSA, plus
+  Policy Gradient, DQN, and Actor-Critic reinforcement learning.
+
+See the [Algorithms guide](quantum_algorithms_guide) and the
+[CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CHANGELOG.md)
+for the full list.
 
 ## What's New in v0.6.1
 
@@ -25,7 +52,9 @@ See the [CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CH
 - 🔗 Qiskit / PennyLane / Cirq integration
 - 🧠 Quantum Machine Learning (QNN, AutoML, quantum kernels, hybrid models)
 - ⚗️ VQE for molecular chemistry
-- 🎯 QAOA for optimization
+- 🎯 QAOA for optimization (with a MaxCut solver)
+- 📚 Quantum algorithms library (Shor, Grover, QPE, HHL, QEC, Trotter, ...)
+- 🧮 Clifford / stabilizer simulator (hundreds of qubits)
 
 ## Quick Start
 
