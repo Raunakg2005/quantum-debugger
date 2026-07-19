@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Quantum error correction** (`algorithms.bit_flip_code`,
+  `algorithms.phase_flip_code`, `algorithms.shor_code`) — genuine gate-based
+  stabilizer codes: encode a logical qubit, inject a Pauli error, extract the
+  syndrome by measuring stabilizer generators with ancillas, and recover. The
+  3-qubit codes correct any single X (bit-flip) or Z (phase-flip) error; the
+  9-qubit Shor code corrects an **arbitrary** single-qubit error (X/Y/Z on any of
+  the 9 qubits). Logical fidelity returns to 1.0 in every case.
 - **Shor's algorithm** (`algorithms.period_finding`, `algorithms.shor_factor`) —
   quantum period finding via QPE on the modular-multiplication unitary
   `U|y> = |a*y mod N>`, with continued-fraction recovery of the period. Genuinely

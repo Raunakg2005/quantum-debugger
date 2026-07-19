@@ -179,6 +179,31 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Quantum Error Correction
+
+Genuine, gate-based stabilizer codes. A logical qubit is encoded across several
+physical qubits, a Pauli error is injected, the code's stabilizer generators are
+measured with ancillas to extract a *syndrome*, and the matching recovery Pauli
+is applied. The logical fidelity returns to 1.0.
+
+```python
+from quantum_debugger.algorithms import bit_flip_code, phase_flip_code, shor_code
+
+# 3-qubit bit-flip code: corrects any single X error.
+bit_flip_code(0.6, 0.8, error_qubit=1)["syndrome"]    # (1, 1) -> qubit 1 flipped
+bit_flip_code(0.6, 0.8, error_qubit=1)["fidelity"]    # 1.0
+
+# 3-qubit phase-flip code: same idea in the Hadamard basis, corrects a Z error.
+phase_flip_code(0.6, 0.8, error_qubit=2)["fidelity"]  # 1.0
+
+# 9-qubit Shor code: corrects an ARBITRARY single-qubit error (X, Y, or Z).
+shor_code(0.6, 0.8, error_qubit=4, error_type="Y")["fidelity"]   # 1.0
+```
+
+The syndrome is extracted by measuring each stabilizer with an ancilla
+(`|0> -> H -> controlled-Pauli string -> H -> measure`), so no error information
+leaks about the encoded amplitudes -- exactly as real QEC requires.
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated

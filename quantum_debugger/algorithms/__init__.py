@@ -31,6 +31,7 @@ from .hhl import hhl
 from .swap_test import swap_test
 from .protocols import teleport, superdense_coding
 from .shor import period_finding, shor_factor
+from .error_correction import bit_flip_code, phase_flip_code, shor_code
 
 __all__ = [
     # QFT
@@ -69,4 +70,8 @@ __all__ = [
     # Shor
     "period_finding",
     "shor_factor",
+    # Error correction
+    "bit_flip_code",
+    "phase_flip_code",
+    "shor_code",
 ]
