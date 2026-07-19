@@ -42,7 +42,6 @@ def hhl(A, b, n_clock: int = 4, C: float = None) -> dict:
     b = np.asarray(b, dtype=complex)
     b = b / np.linalg.norm(b)
     dim_b = A.shape[0]
-    n_b = int(round(np.log2(dim_b)))
     T = 2**n_clock
 
     eigvals = np.linalg.eigvalsh(A)

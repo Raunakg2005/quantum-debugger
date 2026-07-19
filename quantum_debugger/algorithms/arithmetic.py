@@ -15,7 +15,6 @@ import numpy as np
 
 from ..core.quantum_state import QuantumState
 from ..core.circuit import QuantumCircuit
-from ..core.gates import GateLibrary
 from .qft import apply_qft, apply_inverse_qft
 
 

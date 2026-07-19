@@ -23,7 +23,6 @@ def _good_probability(n_qubits: int, marked, power: int) -> float:
     """Exact probability of measuring a good (marked) state after `power` Grover iterates."""
     from .quantum_counting import _grover_iterate
 
-    N = 2**n_qubits
     state = QuantumState(n_qubits)
     H = GateLibrary.H
     for q in range(n_qubits):

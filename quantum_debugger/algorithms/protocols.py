@@ -8,7 +8,6 @@ one qubit.
 
 import numpy as np
 
-from ..core.circuit import QuantumCircuit
 from ..core.quantum_state import QuantumState
 from ..core.gates import GateLibrary
 
