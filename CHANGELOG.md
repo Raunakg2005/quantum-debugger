@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Quantum metrology** (`algorithms.phase_sensitivity`, `algorithms.parity_signal`,
+  `algorithms.quantum_fisher_information`) — Heisenberg-limited phase sensing: a GHZ
+  probe reaches quantum Fisher information `N^2` (phase uncertainty `1/N`) versus
+  `N` (`1/sqrt(N)`) for a product state, and its parity signal oscillates as
+  `cos(N*phi)`. Verified exactly for N up to 5.
 - **Simon's algorithm** (`algorithms.simon`, `algorithms.simon_oracle`) — recovers
   the hidden XOR mask of a 2-to-1 function with O(n) quantum queries (exponential
   speedup). Runs the H-oracle-H circuit, collects `y . s = 0` constraints, and

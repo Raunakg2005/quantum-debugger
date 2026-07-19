@@ -52,6 +52,11 @@ from .arithmetic import qft_add, quantum_adder
 from .maxcut import solve_maxcut, brute_force_maxcut
 from .state_preparation import ghz_state, w_state, graph_state
 from .simon import simon, simon_oracle
+from .metrology import (
+    phase_sensitivity,
+    parity_signal,
+    quantum_fisher_information,
+)
 
 __all__ = [
     # QFT
@@ -120,4 +125,8 @@ __all__ = [
     # Simon's algorithm
     "simon",
     "simon_oracle",
+    # Quantum metrology
+    "phase_sensitivity",
+    "parity_signal",
+    "quantum_fisher_information",
 ]

@@ -179,6 +179,25 @@ shor_factor(15, a=7)["factors"]        # (3, 5)
 shor_factor(21, a=2)["factors"]        # (3, 7)
 ```
 
+## Quantum Metrology (Heisenberg-Limited Sensing)
+
+A GHZ probe accumulates phase N times faster than independent qubits, so its
+quantum Fisher information scales as `N**2` (the Heisenberg limit) versus `N` for a
+product state (the standard quantum limit) -- the best phase uncertainty scales as
+`1/N` instead of `1/sqrt(N)`.
+
+```python
+from quantum_debugger.algorithms import phase_sensitivity, parity_signal
+
+r = phase_sensitivity(4)
+r["qfi_ghz"]            # 16.0  (= N**2, Heisenberg)
+r["qfi_product"]       # 4.0   (= N,    standard quantum limit)
+r["advantage"]         # 4.0   (= N)
+r["delta_phi_ghz"]     # 0.25  (= 1/N)
+
+parity_signal(4, phi)  # cos(4*phi) -- the GHZ interferometer oscillates N x faster
+```
+
 ## Simon's Algorithm
 
 Recover the hidden XOR mask `s` of a 2-to-1 function (`f(x) = f(y)` iff
