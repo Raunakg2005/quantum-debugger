@@ -489,6 +489,24 @@ trotter_evolve(H, time=1.0, steps=50, order=2)["fidelity"]   # ~1.0
 returns the raw gate list, and `hamiltonian_matrix(terms, n)` builds the dense
 operator if you want to inspect it.
 
+## Repetition-Code Logical Error Rate
+
+The central promise of QEC in one experiment: below a noise threshold, encoding
+suppresses errors. A logical bit is encoded in the 3-qubit repetition code, each
+physical qubit flips with probability `p`, and majority decoding recovers it. The
+logical failure rate follows `3 p^2 (1 - p) + p^3` -- below the physical rate `p`
+for every `p < 1/2`.
+
+```python
+from quantum_debugger.algorithms import repetition_code_error_rate
+
+r = repetition_code_error_rate(p=0.1, trials=8000)
+r["logical_error_rate"]   # ~0.028
+r["analytic_rate"]        # 3*0.1^2*0.9 + 0.1^3 = 0.028
+r["physical_rate"]        # 0.1
+r["below_physical"]       # True
+```
+
 ## Quantum Error Correction
 
 Genuine, gate-based stabilizer codes. A logical qubit is encoded across several

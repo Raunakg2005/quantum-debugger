@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Repetition-code logical error rate** (`algorithms.repetition_code_error_rate`) —
+  Monte-Carlo QEC-threshold demonstration: encode a logical bit in the 3-qubit code,
+  apply independent per-qubit bit-flip noise, syndrome-correct, and measure the
+  logical failure rate. Matches the analytic `3p^2(1-p)+p^3` and stays below the
+  physical rate for all `p < 1/2`.
 - **Grover adaptive minimization** (`algorithms.grover_minimize`) — Durr-Hoyer
   quantum optimization: find the argmin of a cost function via Grover search with a
   threshold oracle and BBHT-randomized iteration counts (which avoid the

@@ -81,6 +81,7 @@ from .vqe_solver import (
 from .sat_solver import grover_solve
 from .multicontrol import toffoli_gates, mcx_gates, apply_gates
 from .grover_optimize import grover_minimize
+from .qec_threshold import repetition_code_error_rate
 
 __all__ = [
     # QFT
@@ -173,4 +174,6 @@ __all__ = [
     "apply_gates",
     # Grover adaptive minimization
     "grover_minimize",
+    # QEC threshold
+    "repetition_code_error_rate",
 ]
