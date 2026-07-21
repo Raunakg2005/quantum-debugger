@@ -42,10 +42,11 @@ Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
   success probability.
 - **Variational ground-state solver (VQE)** (`algorithms.variational_ground_state`,
   `algorithms.tfim_hamiltonian`, `algorithms.heisenberg_hamiltonian`) — a
-  self-contained hardware-efficient VQE (layered RY + CNOT ansatz, restarts) for any
-  Pauli-sum Hamiltonian, checked against exact diagonalization. Recovers the TFIM and
-  Heisenberg ground energies to ~1e-8 for small chains; includes ready-made TFIM and
-  Heisenberg Hamiltonian builders.
+  self-contained hardware-efficient VQE (layered RY + CNOT ansatz, gradient-based
+  BFGS optimizer, restarts) for any Pauli-sum Hamiltonian, checked against exact
+  diagonalization. Reaches the exact TFIM/Heisenberg ground energies to near machine
+  precision up to ~4 qubits (~1e-11) and ~1e-6 at 5 qubits; includes ready-made TFIM
+  and Heisenberg Hamiltonian builders.
 - **BB84 quantum key distribution** (`algorithms.bb84`) — the first quantum
   cryptography protocol, with genuine per-qubit preparation and measurement.
   Without an eavesdropper the sifted keys match exactly (QBER 0); an

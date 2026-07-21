@@ -22,25 +22,23 @@ class TestHamiltonians:
 
 
 class TestVQE:
-    @pytest.mark.parametrize("n", [2, 3])
+    # The gradient-based (BFGS) solver reaches the exact ground energy to near
+    # machine precision, including n=4.
+    @pytest.mark.parametrize("n", [2, 3, 4])
     def test_tfim_matches_exact(self, n):
-        r = variational_ground_state(
-            tfim_hamiltonian(n, field=1.0), layers=3, restarts=10, seed=1
-        )
-        assert r["error"] < 1e-3
+        r = variational_ground_state(tfim_hamiltonian(n, field=1.0), seed=1)
+        assert r["error"] < 1e-6
 
-    @pytest.mark.parametrize("n", [2, 3])
+    @pytest.mark.parametrize("n", [2, 3, 4])
     def test_heisenberg_matches_exact(self, n):
-        r = variational_ground_state(
-            heisenberg_hamiltonian(n), layers=3, restarts=10, seed=2
-        )
-        assert r["error"] < 1e-3
+        r = variational_ground_state(heisenberg_hamiltonian(n), seed=2)
+        assert r["error"] < 1e-6
 
     def test_energy_is_variational_upper_bound(self):
         # VQE energy can never be below the true ground energy.
-        r = variational_ground_state(tfim_hamiltonian(4), layers=3, restarts=8, seed=1)
-        assert r["energy"] >= r["exact_energy"] - 1e-6
-        assert r["error"] < 0.05  # approximate, but close
+        r = variational_ground_state(tfim_hamiltonian(4), seed=1)
+        assert r["energy"] >= r["exact_energy"] - 1e-9
+        assert r["error"] < 1e-6
 
 
 if __name__ == "__main__":

@@ -283,26 +283,28 @@ grover_solve(lambda x: bin(x).count("1") == 2, n_qubits=4)["satisfies"]   # True
 ## Variational Ground-State Solver (VQE)
 
 A self-contained hardware-efficient VQE for any Pauli-sum Hamiltonian. A layered
-`RY + CNOT` ansatz is optimized to minimize the energy; the result is checked
-against the exact ground energy (smallest eigenvalue).
+`RY + CNOT` ansatz is optimized (gradient-based BFGS by default) to minimize the
+energy; the result is checked against the exact ground energy (smallest eigenvalue).
 
 ```python
 from quantum_debugger.algorithms import (
     variational_ground_state, tfim_hamiltonian, heisenberg_hamiltonian,
 )
 
-# Transverse-field Ising model on 3 spins.
-r = variational_ground_state(tfim_hamiltonian(3, field=1.0), layers=3)
+# Transverse-field Ising model on 4 spins.
+r = variational_ground_state(tfim_hamiltonian(4, field=1.0))
 r["energy"]         # VQE estimate
-r["exact_energy"]   # exact ground energy (matches to ~1e-8)
-r["error"]
+r["exact_energy"]   # exact ground energy
+r["error"]          # ~1e-11 (machine precision)
 
 # Isotropic Heisenberg chain.
-variational_ground_state(heisenberg_hamiltonian(3))["error"]   # ~1e-9
+variational_ground_state(heisenberg_hamiltonian(4))["error"]   # ~1e-12
 ```
 
-The Hamiltonian uses the same `(coeff, pauli_string)` format as the Trotter module,
-so you can pass any spin Hamiltonian. The VQE energy is a variational upper bound on
+The gradient-based optimizer reaches the exact ground energy to near machine
+precision for TFIM/Heisenberg chains up to ~4 qubits (and ~1e-6 at 5 qubits). The
+Hamiltonian uses the same `(coeff, pauli_string)` format as the Trotter module, so
+you can pass any spin Hamiltonian. The VQE energy is a variational upper bound on
 the true ground energy.
 
 ## BB84 Quantum Key Distribution
