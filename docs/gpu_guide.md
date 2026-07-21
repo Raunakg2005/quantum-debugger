@@ -412,4 +412,4 @@ backend.synchronize()
 ## See Also
 
 - [QNN Guide](qnn_guide.md) - Quantum Neural Networks
-- [Performance Guide](performance_guide.md) - Optimization tips (if available)
+- [Circuit Optimization Guide](circuit_optimization_guide.md) - Optimization tips

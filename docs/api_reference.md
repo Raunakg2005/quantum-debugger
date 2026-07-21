@@ -117,7 +117,7 @@ composite = CompositeNoise([
 ])
 ```
 
-See [Noise Tutorial](./tutorials/noise_tutorial.md) for complete documentation.
+See [Error Mitigation Guide](error_mitigation_guide.md) for complete documentation.
 
 ---
 
@@ -231,7 +231,7 @@ mitigated_energy = apply_zne(
 )
 ```
 
-See [ZNE Tutorial](./tutorials/zne_tutorial.md) for detailed examples.
+See [ZNE Guide](zne_guide.md) for detailed examples.
 
 ---
 
@@ -426,7 +426,7 @@ If you use QuantumDebugger in research:
 
 ## Links
 
-- **Documentation:** [Noise Tutorial](./tutorials/noise_tutorial.md) | [ZNE Tutorial](./tutorials/zne_tutorial.md)
+- **Documentation:** [Error Mitigation Guide](error_mitigation_guide.md) | [ZNE Guide](zne_guide.md)
 - **GitHub:** [github.com/Raunakg2005/quantum-debugger](https://github.com/Raunakg2005/quantum-debugger)
 - **PyPI:** [pypi.org/project/quantum-debugger](https://pypi.org/project/quantum-debugger)
 - **Issues:** [GitHub Issues](https://github.com/Raunakg2005/quantum-debugger/issues)

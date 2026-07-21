@@ -27,7 +27,8 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+# No custom static assets yet; keep empty to avoid a missing-path warning.
+html_static_path = []
 
 # -- Extension configuration -------------------------------------------------
 intersphinx_mapping = {
@@ -44,3 +45,7 @@ myst_enable_extensions = [
     "colon_fence",
     "deflist",
 ]
+
+# Auto-generate anchors for headings (levels 1-3) so in-page "[text](#anchor)"
+# links in the guides resolve instead of warning.
+myst_heading_anchors = 3

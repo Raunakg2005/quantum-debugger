@@ -8,8 +8,8 @@ Advanced error mitigation techniques for production quantum machine learning on 
 
 1. [Quick Start](#quick-start)
 2. [Noise Models](#noise-models)
-3. [PEC (Probabilistic Error Cancellation)](#pec)
-4. [CDR (Clifford Data Regression)](#cdr)
+3. [PEC (Probabilistic Error Cancellation)](#pec-probabilistic-error-cancellation)
+4. [CDR (Clifford Data Regression)](#cdr-clifford-data-regression)
 5. [Error Characterization](#error-characterization)
 6. [Best Practices](#best-practices)
 7. [API Reference](#api-reference)

@@ -249,5 +249,5 @@ agent.train(env, episodes=200)
 ## See Also
 
 - [QNN Guide](qnn_guide.md) - Quantum Neural Networks
-- [VQE Guide](vqe_guide.md) - Variational Quantum Eigensolver
-- [QAOA Guide](qaoa_guide.md) - Quantum Approximate Optimization
+- [Advanced QML Guide](advanced_qml_guide.md) - Variational Quantum Eigensolver & QAOA
+- [Algorithms Guide](quantum_algorithms_guide.md) - VQE ground states & QAOA MaxCut

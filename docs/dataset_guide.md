@@ -60,7 +60,7 @@ dataset = load_json('data.json')
 ```
 
 **Expected JSON Format:**
-```json
+```text
 {
     "data": [[x1, x2, ...], [x1, x2, ...], ...],
     "labels": [y1, y2, ...],

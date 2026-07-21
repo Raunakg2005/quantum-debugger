@@ -406,6 +406,6 @@ zne = ZeroNoiseExtrapolation(
 
 ## See Also
 
-- [VQE Guide](vqe_guide.md) - Variational Quantum Eigensolver
+- [Advanced QML Guide](advanced_qml_guide.md) - Variational Quantum Eigensolver
 - [QNN Guide](qnn_guide.md) - Quantum Neural Networks
 - [Hamiltonians Guide](hamiltonians_guide.md) - Molecular Hamiltonians

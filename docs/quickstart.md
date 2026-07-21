@@ -62,4 +62,4 @@ debugger = QuantumDebugger(qc_qd)
 
 - Explore the [API Reference](api.md)
 - Check out [Examples](examples.md)
-- Read about [Qiskit Integration](qiskit.md)
+- Read about [Hardware Backends & Integrations](hardware_backends_guide.md)
