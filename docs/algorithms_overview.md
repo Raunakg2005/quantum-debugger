@@ -19,7 +19,8 @@ from quantum_debugger.algorithms import grover_search, shor_factor, trotter_evol
 | `grover_minimize` | Durr-Hoyer adaptive minimization of a cost function |
 | `amplitude_amplification`, `optimal_amplification_iterations` | Grover for any state prep |
 | `bernstein_vazirani` | Recover a hidden bit-string in one query |
-| `deutsch_jozsa`, `constant_oracle`, `balanced_oracle` | Constant vs balanced |
+| `deutsch` | Deutsch's algorithm: constant vs balanced 1-bit function (1 query) |
+| `deutsch_jozsa`, `constant_oracle`, `balanced_oracle` | Constant vs balanced (n-bit) |
 | `simon`, `simon_oracle` | Hidden XOR-mask (period) finding |
 
 ## Fourier, phase estimation & factoring

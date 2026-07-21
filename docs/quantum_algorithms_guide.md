@@ -72,9 +72,15 @@ evals, evecs = np.linalg.eigh(H)
 hermitian_eigenvalue(H, evecs[:, 0], n_counting=10)["eigenvalue"]   # ~0.793
 ```
 
-## Bernstein-Vazirani & Deutsch-Jozsa
+## Deutsch, Bernstein-Vazirani & Deutsch-Jozsa
 
 ```python
+from quantum_debugger.algorithms import deutsch
+
+# Deutsch's algorithm (1985): constant vs balanced 1-bit function in ONE query.
+deutsch(lambda x: 0)        # -> "constant"
+deutsch(lambda x: x)        # -> "balanced"
+
 bernstein_vazirani("1011")           # -> [1, 1, 0, 1]  (recovered in one query)
 
 from quantum_debugger.algorithms import constant_oracle, balanced_oracle

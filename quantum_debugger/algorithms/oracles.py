@@ -95,6 +95,40 @@ def deutsch_jozsa(
     return "constant" if query_zero_prob > 0.5 else "balanced"
 
 
+def deutsch(f: Callable[[int], int]) -> str:
+    """
+    Deutsch's algorithm (1985) -- the first quantum algorithm.
+
+    Determine whether a one-bit function ``f: {0,1} -> {0,1}`` is *constant*
+    (f(0) == f(1)) or *balanced* (f(0) != f(1)) with a single quantum query,
+    where any classical approach needs two. Runs H -> phase oracle -> H on the
+    input qubit and reads it out.
+
+    Args:
+        f: a callable taking 0/1 and returning 0/1.
+
+    Returns:
+        'constant' or 'balanced'.
+    """
+    f0, f1 = int(f(0)) & 1, int(f(1)) & 1
+
+    circuit = QuantumCircuit(2)
+    circuit.x(1)  # ancilla |1>
+    circuit.h(0)
+    circuit.h(1)
+    # Oracle |x>|y> -> |x>|y XOR f(x)>, with f(x) = f0 XOR (f0 XOR f1)*x.
+    if f0 ^ f1:
+        circuit.cnot(0, 1)
+    if f0:
+        circuit.x(1)
+    circuit.h(0)
+
+    probs = circuit.get_statevector().get_probabilities()
+    # P(input qubit 0 == 0), marginalizing the ancilla (qubit 1).
+    p_zero = sum(probs[index] for index in range(len(probs)) if (index & 1) == 0)
+    return "constant" if p_zero > 0.5 else "balanced"
+
+
 def constant_oracle(bit: int = 0) -> Callable:
     """A constant oracle f(x) = bit (does nothing, or flips the ancilla)."""
 

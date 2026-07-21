@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
 
 ### Added
+- **Deutsch's algorithm** (`algorithms.deutsch`) — the first quantum algorithm
+  (1985): decide whether a one-bit function is constant or balanced with a single
+  query. Completes the query-algorithm family (Deutsch -> Deutsch-Jozsa ->
+  Bernstein-Vazirani -> Simon).
 - **Quantum spectroscopy** (`algorithms.unitary_eigenphase`,
   `algorithms.hermitian_eigenvalue`) — phase estimation for an *arbitrary* unitary
   or Hermitian operator (not just the demo phase gate): read out the eigenphase of a

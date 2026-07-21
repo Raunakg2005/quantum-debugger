@@ -29,6 +29,7 @@ from .phase_estimation import (
 from .oracles import (
     bernstein_vazirani,
     bernstein_vazirani_circuit,
+    deutsch,
     deutsch_jozsa,
     deutsch_jozsa_circuit,
     constant_oracle,
@@ -107,6 +108,7 @@ __all__ = [
     # Oracle algorithms
     "bernstein_vazirani",
     "bernstein_vazirani_circuit",
+    "deutsch",
     "deutsch_jozsa",
     "deutsch_jozsa_circuit",
     "constant_oracle",

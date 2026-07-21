@@ -12,6 +12,7 @@ from quantum_debugger.algorithms import (
     optimal_iterations,
     estimate_phase,
     bernstein_vazirani,
+    deutsch,
     deutsch_jozsa,
     constant_oracle,
     balanced_oracle,
@@ -97,6 +98,16 @@ class TestBernsteinVazirani:
     def test_recovers_secret_in_one_query(self, secret):
         recovered = "".join(map(str, bernstein_vazirani(secret)))
         assert recovered == secret
+
+
+class TestDeutsch:
+    def test_constant_functions(self):
+        assert deutsch(lambda x: 0) == "constant"
+        assert deutsch(lambda x: 1) == "constant"
+
+    def test_balanced_functions(self):
+        assert deutsch(lambda x: x) == "balanced"
+        assert deutsch(lambda x: 1 - x) == "balanced"
 
 
 class TestDeutschJozsa:
