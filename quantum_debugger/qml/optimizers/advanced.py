@@ -38,9 +38,9 @@ class QuantumNaturalGradient:
         """
         Compute the Fubini-Study metric tensor (quantum geometric tensor, real part).
 
-        g_ij = Re[<d_i psi | d_j psi> - <d_i psi | psi><psi | d_j psi>]
+        ``g_ij = Re[<d_i psi | d_j psi> - <d_i psi | psi><psi | d_j psi>]``
 
-        where |psi(theta)> = circuit_fn(theta) must return the state vector. The
+        where ``|psi(theta)> = circuit_fn(theta)`` must return the state vector. The
         derivative states are obtained by central finite differences. When
         circuit_fn does not return a usable state vector (e.g. returns None), the
         metric cannot be computed and we fall back to the identity (equivalent to

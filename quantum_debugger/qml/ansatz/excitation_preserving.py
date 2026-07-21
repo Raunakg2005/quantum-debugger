@@ -19,7 +19,7 @@ def excitation_preserving(
     """
     Create an ExcitationPreserving ansatz.
 
-    This ansatz preserves the total number of excitations (number of |1⟩ states).
+    This ansatz preserves the total number of excitations (number of ``|1>`` states).
     It uses RZ rotations and special two-qubit gates that preserve excitation number.
 
     Useful for:

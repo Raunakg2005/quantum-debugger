@@ -135,7 +135,7 @@ class AmplitudeDamping(NoiseModel):
     """
     Amplitude damping: Energy loss (T1 decay)
 
-    |1⟩ can decay to |0⟩ with rate γ.
+    ``|1>`` can decay to ``|0>`` with rate gamma.
     Models spontaneous emission and energy relaxation.
     """
 

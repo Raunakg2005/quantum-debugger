@@ -251,7 +251,7 @@ class QuantumCircuit:
 
         Args:
             shots: Number of measurement samples
-            initial_state: Optional initial state (defaults to |0...0>)
+            initial_state: Optional initial state (defaults to ``|0...0>``)
             use_gpu: Simulate the circuit on the GPU (see get_statevector)
             precision: 'double' (complex128) or 'single' (complex64) for the GPU path
 

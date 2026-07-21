@@ -149,7 +149,7 @@ class RZGate(ParameterizedGate):
     Rotation gate around the Z-axis.
 
     The RZ gate performs a rotation around the Z-axis of the Bloch sphere.
-    This is a phase gate that adds relative phase between |0⟩ and |1⟩.
+    This is a phase gate that adds relative phase between ``|0>`` and ``|1>``.
 
     Matrix representation:
         RZ(θ) = [[e^(-iθ/2),    0      ],
