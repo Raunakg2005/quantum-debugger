@@ -5,9 +5,16 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (0.7.0.dev)
+## [0.7.0] - 2026-07-22
 
-Theme: performance & scale, advanced QML/QRL, plus test-suite integrity.
+Theme: performance & scale, a large genuine quantum-algorithms library, advanced
+QML/QRL, and test-suite integrity. Highlights: Shor factoring, Simon, quantum error
+correction (incl. the 9-qubit Shor code), a Clifford/stabilizer simulator, Trotter
+Hamiltonian simulation, a machine-precision VQE ground-state solver, gate
+decomposition (ZYZ/KAK) and multi-controlled synthesis, quantum arithmetic (Fourier
++ ripple-carry adders), teleportation/superdense/entanglement-swapping, Bell-CHSH /
+GHZ-Mermin nonlocality, BB84 QKD, and quantum spectroscopy. All routines verified
+against known outcomes; the `algorithms` package is at ~99% line coverage.
 
 ### Added
 - **Deutsch's algorithm** (`algorithms.deutsch`) — the first quantum algorithm
