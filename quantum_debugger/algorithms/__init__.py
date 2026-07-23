@@ -69,6 +69,7 @@ from .arithmetic import (
     qft_subtract,
     quantum_compare,
     ripple_carry_add,
+    quantum_multiply,
 )
 from .maxcut import solve_maxcut, brute_force_maxcut
 from .state_preparation import ghz_state, w_state, graph_state
@@ -153,6 +154,7 @@ __all__ = [
     "qft_subtract",
     "quantum_compare",
     "ripple_carry_add",
+    "quantum_multiply",
     # QAOA MaxCut solver
     "solve_maxcut",
     "brute_force_maxcut",

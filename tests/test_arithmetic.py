@@ -8,6 +8,7 @@ from quantum_debugger.algorithms import (
     qft_subtract,
     quantum_compare,
     ripple_carry_add,
+    quantum_multiply,
 )
 
 
@@ -66,6 +67,20 @@ class TestRippleCarryAdder:
     def test_carry_out(self):
         assert ripple_carry_add(15, 15, 4) == 30  # carry-out set
         assert ripple_carry_add(9, 7, 4) == 16
+
+
+class TestMultiplier:
+    @pytest.mark.parametrize("n", [2, 3])
+    def test_exact_product_all_pairs(self, n):
+        mod = 2**n
+        assert all(
+            quantum_multiply(a, b, n) == a * b for a in range(mod) for b in range(mod)
+        )
+
+    def test_examples(self):
+        assert quantum_multiply(7, 6, 3) == 42
+        assert quantum_multiply(15, 15, 4) == 225
+        assert quantum_multiply(0, 5, 3) == 0
 
 
 class TestComparator:

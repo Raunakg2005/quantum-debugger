@@ -479,6 +479,18 @@ ripple_carry_add(9, 7, n_bits=4)     # 16   -- exact 5-bit sum with carry-out
 ripple_carry_add(15, 15, n_bits=4)   # 30
 ```
 
+Multiplication is done in the Fourier basis too -- `|a>|b>|0> -> |a>|b>|a*b>` via
+doubly-controlled phase rotations that add `2^(j+k)` for each pair of set input bits:
+
+```python
+from quantum_debugger.algorithms import quantum_multiply
+
+quantum_multiply(7, 6, n_bits=3)     # 42
+quantum_multiply(15, 15, n_bits=4)   # 225
+```
+
+`quantum_multiply` returns the exact `2*n`-bit product for every input pair.
+
 ## Randomized Benchmarking
 
 Estimate the average error per Clifford gate independently of state-prep and

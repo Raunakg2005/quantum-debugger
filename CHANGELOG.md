@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Quantum multiplier** (`algorithms.quantum_multiply`) — Fourier-basis
+  multiplication `|a>|b>|0> -> |a>|b>|a*b>` via doubly-controlled phase rotations
+  (adds `2^(j+k)` per pair of set input bits). Returns the exact `2n`-bit product for
+  every input pair; complements the Fourier and ripple-carry adders.
 
 ## [0.7.0] - 2026-07-22
 

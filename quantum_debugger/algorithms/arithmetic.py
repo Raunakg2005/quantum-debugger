@@ -32,6 +32,13 @@ def _controlled_phase(angle):
     return m
 
 
+def _cc_phase(angle):
+    """Doubly-controlled phase: e^{i angle} on the |111> component only."""
+    m = np.eye(8, dtype=complex)
+    m[7, 7] = np.exp(1j * angle)
+    return m
+
+
 def _apply_circuit(state, circuit):
     for g in circuit.gates:
         state.apply_gate(g.matrix, g.qubits)
@@ -173,3 +180,52 @@ def quantum_adder(a: int, b: int, n_bits: int) -> int:
     probs = np.abs(state.state_vector) ** 2
     index = int(np.argmax(probs))
     return index & ((1 << n) - 1)
+
+
+def quantum_multiply(a: int, b: int, n_bits: int) -> int:
+    """
+    Multiply two ``n_bits`` numbers in the Fourier basis: ``|a>|b>|0> -> |a>|b>|a*b>``.
+
+    QFTs a ``2*n_bits`` product register, then for every pair of input bits
+    ``(a_j, b_k)`` applies a doubly-controlled phase that adds ``2**(j+k)`` to the
+    product; the inverse QFT reads out ``a * b`` exactly.
+
+    Registers: a = qubits 0..n-1, b = qubits n..2n-1, product = qubits 2n..4n-1.
+    Returns the exact product ``a * b``.
+    """
+    n = n_bits
+    width = 2 * n
+    total = 2 * n + width
+    a_q = list(range(n))
+    b_q = list(range(n, 2 * n))
+    p_q = list(range(2 * n, 2 * n + width))
+
+    state = QuantumState(total)
+    index = 0
+    for i in range(n):
+        if (a >> i) & 1:
+            index |= 1 << a_q[i]
+        if (b >> i) & 1:
+            index |= 1 << b_q[i]
+    sv = np.zeros(2**total, dtype=complex)
+    sv[index] = 1.0
+    state.state_vector = sv
+
+    # QFT the product register (reversed order -> analytic-DFT convention).
+    order = list(reversed(p_q))
+    qft = QuantumCircuit(total)
+    apply_qft(qft, qubits=order)
+    _apply_circuit(state, qft)
+
+    for j in range(n):
+        for k in range(n):
+            for q in range(width):
+                angle = 2 * np.pi * (2 ** (j + k + q)) / (2**width)
+                state.apply_gate(_cc_phase(angle), [a_q[j], b_q[k], p_q[q]])
+
+    iqft = QuantumCircuit(total)
+    apply_inverse_qft(iqft, qubits=order)
+    _apply_circuit(state, iqft)
+
+    out = int(np.argmax(np.abs(state.state_vector) ** 2))
+    return sum(((out >> p_q[q]) & 1) << q for q in range(width))
