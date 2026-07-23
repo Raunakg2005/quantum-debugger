@@ -163,6 +163,30 @@ class TestToStatevector:
         assert abs(np.vdot(sim.to_statevector(), st.state_vector)) ** 2 > 1 - 1e-9
 
 
+class TestSampling:
+    def test_ghz_sample_only_all_zero_or_all_one(self):
+        sim = StabilizerSimulator(3, seed=0)
+        sim.h(0)
+        sim.cnot(0, 1)
+        sim.cnot(1, 2)
+        counts = sim.sample(500, seed=1)
+        assert set(counts) <= {"000", "111"}
+        assert len(counts) == 2  # both outcomes appear
+
+    def test_sampling_does_not_disturb_state(self):
+        sim = StabilizerSimulator(2, seed=0)
+        sim.h(0)
+        sim.cnot(0, 1)
+        sim.sample(50, seed=1)
+        # Original still Bell (its stabilizers are intact).
+        assert set(ps for _, ps in sim.stabilizers()) == {"XX", "ZZ"}
+
+    def test_computational_basis_deterministic(self):
+        sim = StabilizerSimulator(2, seed=0)
+        sim.x_gate(0)  # |10> (qubit 0 = 1)
+        assert sim.sample(20, seed=3) == {"10": 20}
+
+
 class TestScaling:
     def test_large_ghz_is_fast(self):
         sim = StabilizerSimulator(200, seed=2)

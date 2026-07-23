@@ -138,6 +138,29 @@ class StabilizerSimulator:
         """Measure every qubit (0..n-1) in order."""
         return [self.measure(q) for q in range(self.n)]
 
+    def copy(self) -> "StabilizerSimulator":
+        """Return an independent copy of the tableau (state)."""
+        new = StabilizerSimulator(self.n)
+        new.x = self.x.copy()
+        new.z = self.z.copy()
+        new.r = self.r.copy()
+        return new
+
+    def sample(self, shots: int, seed: int = 0) -> dict:
+        """
+        Sample ``shots`` computational-basis measurement outcomes without disturbing
+        this state (each shot measures a fresh copy). Returns a dict mapping bitstring
+        (qubit 0 = first character) to its count.
+        """
+        rng = np.random.default_rng(seed)
+        counts = {}
+        for _ in range(shots):
+            clone = self.copy()
+            clone._rng = np.random.default_rng(int(rng.integers(2**31)))
+            key = "".join(str(b) for b in clone.measure_all())
+            counts[key] = counts.get(key, 0) + 1
+        return counts
+
     # --- Inspection / verification -----------------------------------------
 
     def stabilizers(self) -> list:
