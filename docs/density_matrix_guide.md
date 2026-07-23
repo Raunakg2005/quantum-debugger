@@ -42,6 +42,8 @@ dm.apply_unitary(GateLibrary.CNOT, [0, 1])     # Bell state (pure, purity 1)
 
 reduced = dm.partial_trace([0])                # trace out qubit 1
 reduced.purity()                               # 0.5 -- maximally mixed (entanglement)
+
+dm.entanglement_entropy([0])                   # 1.0 bit -- maximally entangled
 ```
 
 ## Readout

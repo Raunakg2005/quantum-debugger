@@ -81,6 +81,31 @@ class TestChannels:
             assert np.allclose(total, np.eye(2))  # trace-preserving
 
 
+class TestEntropy:
+    def test_pure_state_zero_entropy(self):
+        dm = DensityMatrix(1)
+        dm.apply_unitary(_H, [0])
+        assert np.isclose(dm.von_neumann_entropy(), 0.0, atol=1e-9)
+
+    def test_maximally_mixed_entropy(self):
+        dm = DensityMatrix(1)
+        dm.apply_unitary(_H, [0])
+        dm.apply_channel(depolarizing(1.0), [0])
+        assert np.isclose(dm.von_neumann_entropy(), 1.0)
+
+    def test_bell_entanglement_entropy_is_one_bit(self):
+        dm = DensityMatrix(2)
+        dm.apply_unitary(_H, [0])
+        dm.apply_unitary(_CNOT, [0, 1])
+        assert np.isclose(dm.von_neumann_entropy(), 0.0, atol=1e-9)  # global pure
+        assert np.isclose(dm.entanglement_entropy([0]), 1.0)  # maximally entangled
+
+    def test_product_state_no_entanglement(self):
+        dm = DensityMatrix(2)
+        dm.apply_unitary(_H, [0])
+        assert np.isclose(dm.entanglement_entropy([0]), 0.0, atol=1e-9)
+
+
 class TestFidelity:
     def test_fidelity_identical_and_orthogonal(self):
         dm = DensityMatrix(1, state_vector=np.array([1, 1]) / np.sqrt(2))

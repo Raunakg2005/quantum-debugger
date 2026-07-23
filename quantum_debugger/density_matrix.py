@@ -80,6 +80,23 @@ class DensityMatrix:
         """Tr(rho^2): 1 for a pure state, down to 1/2**n for the maximally mixed state."""
         return float(np.real(np.trace(self.rho @ self.rho)))
 
+    def von_neumann_entropy(self) -> float:
+        """
+        Von Neumann entropy ``S = -Tr(rho log2 rho)`` in bits: 0 for a pure state, up to
+        ``n`` for the maximally mixed state.
+        """
+        vals = np.linalg.eigvalsh(self.rho).real
+        vals = vals[vals > 1e-12]
+        return float(-np.sum(vals * np.log2(vals)))
+
+    def entanglement_entropy(self, qubits) -> float:
+        """
+        Entanglement entropy of the ``qubits`` subsystem: the von Neumann entropy of its
+        reduced density matrix. For a pure global state this measures entanglement across
+        the cut (0 = product, 1 bit = a maximally entangled qubit pair).
+        """
+        return self.partial_trace(qubits).von_neumann_entropy()
+
     def probabilities(self) -> np.ndarray:
         """Computational-basis populations (the diagonal of rho)."""
         return np.real(np.diag(self.rho))
