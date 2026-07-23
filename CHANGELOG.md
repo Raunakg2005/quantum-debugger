@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Density-matrix simulator** (`quantum_debugger.density_matrix.DensityMatrix`) — an
+  open-quantum-systems engine tracking the full `rho`: apply unitary gates and Kraus
+  noise channels, take partial traces, and read out purity, populations, expectation
+  values, and Uhlmann state fidelity. Ships standard channels (`bit_flip`,
+  `phase_flip`, `depolarizing`, `amplitude_damping`, `phase_damping`). Verified:
+  purity 1 for pure states, Bell reduced state maximally mixed, depolarizing → I/2,
+  amplitude damping relaxes |1> → |0>; unitary evolution matches the state-vector sim.
 - **Scalable graph / cluster states** (`StabilizerSimulator.graph`) — prepare a graph
   (cluster) state (H on all qubits + CZ per edge) in `O(n + |edges|)`; thousand-qubit
   cluster states are instant, with the canonical stabilizers `X_i prod_{j~i} Z_j`.

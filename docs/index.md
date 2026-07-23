@@ -129,6 +129,7 @@ advanced_qml_guide
 quantum_rl_guide
 advanced_algorithms_guide
 stabilizer_guide
+density_matrix_guide
 ```
 
 ```{toctree}
