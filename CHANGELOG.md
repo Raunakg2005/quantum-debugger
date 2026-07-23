@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Scalable graph / cluster states** (`StabilizerSimulator.graph`) — prepare a graph
+  (cluster) state (H on all qubits + CZ per edge) in `O(n + |edges|)`; thousand-qubit
+  cluster states are instant, with the canonical stabilizers `X_i prod_{j~i} Z_j`.
+  Verified against the state-vector `graph_state` for small graphs.
 - **Stabilizer simulator: expectation values, S-dagger, state-vector bridge, sampling**
   (`StabilizerSimulator.expectation_value`, `.s_dagger`, `.to_statevector`, `.copy`,
   `.sample`) — compute `<psi|P|psi>` for any Pauli string directly from the tableau

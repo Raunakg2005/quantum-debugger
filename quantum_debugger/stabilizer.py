@@ -37,6 +37,20 @@ class StabilizerSimulator:
             self.x[i, i] = 1  # destabilizer i = X_i
             self.z[n + i, i] = 1  # stabilizer i = Z_i
 
+    @classmethod
+    def graph(cls, n: int, edges, seed: int = 0) -> "StabilizerSimulator":
+        """
+        Prepare the graph (cluster) state on ``n`` qubits for ``edges``: Hadamard on
+        every qubit, then CZ on each edge. Runs in O(n + |edges|) -- graph states of
+        thousands of qubits are instant, with stabilizers ``X_i prod_{j~i} Z_j``.
+        """
+        sim = cls(n, seed=seed)
+        for q in range(n):
+            sim.h(q)
+        for a, b in edges:
+            sim.cz(a, b)
+        return sim
+
     # --- Clifford gates -----------------------------------------------------
 
     def h(self, a: int):

@@ -163,6 +163,30 @@ class TestToStatevector:
         assert abs(np.vdot(sim.to_statevector(), st.state_vector)) ** 2 > 1 - 1e-9
 
 
+class TestGraphState:
+    def test_line_graph_stabilizers(self):
+        sim = StabilizerSimulator.graph(3, [(0, 1), (1, 2)])
+        paulis = {ps for _, ps in sim.stabilizers()}
+        assert paulis == {"XZI", "ZXZ", "IZX"}
+
+    def test_matches_state_vector_graph_state(self):
+        from quantum_debugger.algorithms import graph_state as sv_graph_state
+
+        edges = [(0, 1), (1, 2), (2, 0)]
+        sim = StabilizerSimulator.graph(3, edges)
+        fid = abs(np.vdot(sim.to_statevector(), sv_graph_state(edges, 3))) ** 2
+        assert fid > 1 - 1e-9
+
+    def test_large_ring_is_instant(self):
+        n = 300
+        sim = StabilizerSimulator.graph(n, [(i, (i + 1) % n) for i in range(n)])
+        # Node 0's graph stabilizer X_0 Z_1 Z_{n-1} has eigenvalue +1.
+        ps = "".join(
+            "X" if q == 0 else ("Z" if q in (1, n - 1) else "I") for q in range(n)
+        )
+        assert sim.expectation_value(ps) == 1
+
+
 class TestSampling:
     def test_ghz_sample_only_all_zero_or_all_one(self):
         sim = StabilizerSimulator(3, seed=0)

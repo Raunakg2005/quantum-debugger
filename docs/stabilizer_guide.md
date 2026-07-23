@@ -46,6 +46,20 @@ assert sim.measure(0) == b                 # deterministic on repeat
 assert sim.measure(2) == b                 # perfectly correlated
 ```
 
+## Graph / cluster states at scale
+
+`StabilizerSimulator.graph(n, edges)` prepares a graph (cluster) state -- Hadamard on
+every qubit, then CZ on each edge -- in `O(n + |edges|)`. Graph states of thousands of
+qubits are instant, with the canonical stabilizers `X_i * prod_{j~i} Z_j`.
+
+```python
+sim = StabilizerSimulator.graph(3, [(0, 1), (1, 2)])   # linear cluster
+sim.stabilizers()        # [(1, 'XZI'), (1, 'ZXZ'), (1, 'IZX')]
+
+# A 1000-qubit ring cluster state, instantly:
+ring = StabilizerSimulator.graph(1000, [(i, (i + 1) % 1000) for i in range(1000)])
+```
+
 ## Pauli expectation values
 
 `expectation_value(pauli_string)` returns `<psi|P|psi>` for the current stabilizer
