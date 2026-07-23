@@ -51,6 +51,13 @@ class StabilizerSimulator:
         self.z[:, a] ^= self.x[:, a]
         return self
 
+    def s_dagger(self, a: int):
+        """Inverse phase gate S-dagger on qubit a (= S applied three times)."""
+        self.s(a)
+        self.s(a)
+        self.s(a)
+        return self
+
     def z_gate(self, a: int):
         """Pauli Z on qubit a."""
         self.r ^= self.x[:, a]
@@ -150,6 +157,37 @@ class StabilizerSimulator:
                 )
             out.append((-1 if self.r[i] else 1, "".join(chars)))
         return out
+
+    def expectation_value(self, pauli_string: str) -> int:
+        """
+        Expectation value <psi|P|psi> of a Pauli string P for this stabilizer state.
+
+        Returns exactly +1 or -1 if P (or -P) is in the stabilizer group, else 0
+        (P anticommutes with a stabilizer). ``pauli_string[q]`` in {'I','X','Y','Z'}
+        acts on qubit q.
+        """
+        n = self.n
+        px = [1 if c in "XY" else 0 for c in pauli_string]
+        pz = [1 if c in "ZY" else 0 for c in pauli_string]
+
+        # If P anticommutes with any stabilizer generator, <P> = 0.
+        for i in range(n, 2 * n):
+            sp = sum(px[q] * self.z[i, q] + pz[q] * self.x[i, q] for q in range(n)) % 2
+            if sp:
+                return 0
+
+        # P commutes with all stabilizers -> P = +/- product of the generators whose
+        # partner destabilizer anticommutes with P. Build that product in the scratch
+        # row and read its sign.
+        sc = 2 * n
+        self.x[sc, :] = 0
+        self.z[sc, :] = 0
+        self.r[sc] = 0
+        for i in range(n):
+            sp = sum(px[q] * self.z[i, q] + pz[q] * self.x[i, q] for q in range(n)) % 2
+            if sp:
+                self._rowsum(sc, n + i)
+        return -1 if self.r[sc] else 1
 
 
 def _g(x1, z1, x2, z2):

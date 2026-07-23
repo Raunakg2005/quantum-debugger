@@ -86,6 +86,51 @@ class TestMeasurement:
         assert ps == "X" and sign == -1
 
 
+class TestExpectation:
+    def test_bell_expectations(self):
+        sim = StabilizerSimulator(2)
+        sim.h(0)
+        sim.cnot(0, 1)
+        assert sim.expectation_value("XX") == 1
+        assert sim.expectation_value("ZZ") == 1
+        assert sim.expectation_value("YY") == -1
+        assert sim.expectation_value("XZ") == 0  # anticommutes with a stabilizer
+
+    @pytest.mark.parametrize("seed", range(10))
+    def test_matches_state_vector(self, seed):
+        n = 3
+        rng = np.random.default_rng(seed)
+        sim = StabilizerSimulator(n, seed=seed)
+        st = QuantumState(n)
+        for _ in range(20):
+            g = rng.integers(3)
+            if g == 0:
+                q = int(rng.integers(n))
+                sim.h(q)
+                st.apply_gate(_H, [q])
+            elif g == 1:
+                q = int(rng.integers(n))
+                sim.s(q)
+                st.apply_gate(_S, [q])
+            else:
+                a, b = (int(x) for x in rng.choice(n, 2, replace=False))
+                sim.cnot(a, b)
+                st.apply_gate(_CNOT, [a, b])
+        sv = st.state_vector
+        for _ in range(4):
+            ps = "".join(rng.choice(["I", "X", "Y", "Z"]) for _ in range(n))
+            exp_sv = float(np.real(np.vdot(sv, stabilizer_to_pauli_matrix(1, ps) @ sv)))
+            assert abs(sim.expectation_value(ps) - exp_sv) < 1e-9
+
+    def test_s_dagger_inverts_s(self):
+        # S then S-dagger leaves |+> stabilized by +X.
+        sim = StabilizerSimulator(1)
+        sim.h(0)
+        sim.s(0)
+        sim.s_dagger(0)
+        assert sim.stabilizers() == [(1, "X")]
+
+
 class TestScaling:
     def test_large_ghz_is_fast(self):
         sim = StabilizerSimulator(200, seed=2)

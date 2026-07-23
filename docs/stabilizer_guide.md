@@ -46,6 +46,22 @@ assert sim.measure(0) == b                 # deterministic on repeat
 assert sim.measure(2) == b                 # perfectly correlated
 ```
 
+## Pauli expectation values
+
+`expectation_value(pauli_string)` returns `<psi|P|psi>` for the current stabilizer
+state -- exactly `+1`/`-1` if `P` (or `-P`) is in the stabilizer group, else `0`
+(when `P` anticommutes with a stabilizer). No state vector required.
+
+```python
+sim = StabilizerSimulator(2)
+sim.h(0); sim.cnot(0, 1)          # Bell state
+sim.expectation_value("XX")        # 1
+sim.expectation_value("YY")        # -1
+sim.expectation_value("XZ")        # 0
+```
+
+`s_dagger(q)` is also available (the inverse phase gate).
+
 ## When to use it
 
 Use the stabilizer simulator for stabilizer codes, GHZ/graph/cluster states,
