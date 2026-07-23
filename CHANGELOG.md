@@ -8,11 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
-- **Stabilizer simulator: Pauli expectation values + S-dagger**
-  (`StabilizerSimulator.expectation_value`, `.s_dagger`) — compute `<psi|P|psi>` for
-  any Pauli string directly from the tableau (exactly +1/-1 if P or -P is in the
-  stabilizer group, else 0), verified against the state-vector simulator. Adds the
-  inverse phase gate.
+- **Stabilizer simulator: Pauli expectation values, S-dagger, and state-vector bridge**
+  (`StabilizerSimulator.expectation_value`, `.s_dagger`, `.to_statevector`) — compute
+  `<psi|P|psi>` for any Pauli string directly from the tableau (exactly +1/-1 if P or
+  -P is in the stabilizer group, else 0); reconstruct the dense state vector for small
+  n via the stabilizer projector; and the inverse phase gate. All verified against the
+  state-vector simulator.
 - **Quantum multiplier** (`algorithms.quantum_multiply`) — Fourier-basis
   multiplication `|a>|b>|0> -> |a>|b>|a*b>` via doubly-controlled phase rotations
   (adds `2^(j+k)` per pair of set input bits). Returns the exact `2n`-bit product for

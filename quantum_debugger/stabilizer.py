@@ -189,6 +189,22 @@ class StabilizerSimulator:
                 self._rowsum(sc, n + i)
         return -1 if self.r[sc] else 1
 
+    def to_statevector(self) -> np.ndarray:
+        """
+        Reconstruct the dense state vector for small ``n`` (bridge to the state-vector
+        engine). Builds the rank-1 projector ``prod_i (I + S_i) / 2`` onto the common
+        +1 eigenspace of the stabilizers and returns its normalized image. O(4^n).
+        """
+        dim = 2**self.n
+        proj = np.eye(dim, dtype=complex)
+        identity = np.eye(dim, dtype=complex)
+        for sign, ps in self.stabilizers():
+            proj = proj @ ((identity + stabilizer_to_pauli_matrix(sign, ps)) / 2)
+        # The projector is |psi><psi|; take its largest-norm column and normalize.
+        col = int(np.argmax(np.linalg.norm(proj, axis=0)))
+        psi = proj[:, col]
+        return psi / np.linalg.norm(psi)
+
 
 def _g(x1, z1, x2, z2):
     """Phase exponent (mod 4) contributed by multiplying two single-qubit Paulis."""

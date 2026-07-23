@@ -131,6 +131,38 @@ class TestExpectation:
         assert sim.stabilizers() == [(1, "X")]
 
 
+class TestToStatevector:
+    def test_bell(self):
+        sim = StabilizerSimulator(2)
+        sim.h(0)
+        sim.cnot(0, 1)
+        expected = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        sv = sim.to_statevector()
+        assert abs(np.vdot(expected, sv)) ** 2 > 1 - 1e-9
+
+    @pytest.mark.parametrize("seed", range(8))
+    def test_matches_state_vector(self, seed):
+        n = 4
+        rng = np.random.default_rng(seed)
+        sim = StabilizerSimulator(n, seed=seed)
+        st = QuantumState(n)
+        for _ in range(25):
+            g = rng.integers(3)
+            if g == 0:
+                q = int(rng.integers(n))
+                sim.h(q)
+                st.apply_gate(_H, [q])
+            elif g == 1:
+                q = int(rng.integers(n))
+                sim.s(q)
+                st.apply_gate(_S, [q])
+            else:
+                a, b = (int(x) for x in rng.choice(n, 2, replace=False))
+                sim.cnot(a, b)
+                st.apply_gate(_CNOT, [a, b])
+        assert abs(np.vdot(sim.to_statevector(), st.state_vector)) ** 2 > 1 - 1e-9
+
+
 class TestScaling:
     def test_large_ghz_is_fast(self):
         sim = StabilizerSimulator(200, seed=2)
