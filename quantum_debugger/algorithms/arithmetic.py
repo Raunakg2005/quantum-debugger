@@ -93,18 +93,70 @@ def quantum_compare(a: int, b: int, n_bits: int) -> dict:
     return {"a_geq_b": sign == 0, "a_lt_b": sign == 1, "difference": diff}
 
 
+def _maj_gates(c, b, a):
+    return [(_CNOT, [a, b]), (_CNOT, [a, c]), (_TOFFOLI, [c, b, a])]
+
+
+def _uma_gates(c, b, a):
+    return [(_TOFFOLI, [c, b, a]), (_CNOT, [a, c]), (_CNOT, [c, b])]
+
+
 def _maj(state, c, b, a):
     """Cuccaro MAJ gate: compute the majority (carry) into qubit a."""
-    state.apply_gate(_CNOT, [a, b])
-    state.apply_gate(_CNOT, [a, c])
-    state.apply_gate(_TOFFOLI, [c, b, a])
+    for mat, qubits in _maj_gates(c, b, a):
+        state.apply_gate(mat, qubits)
 
 
 def _uma(state, c, b, a):
     """Cuccaro UMA gate: un-majority and add (inverse of MAJ plus the sum bit)."""
-    state.apply_gate(_TOFFOLI, [c, b, a])
-    state.apply_gate(_CNOT, [a, c])
-    state.apply_gate(_CNOT, [c, b])
+    for mat, qubits in _uma_gates(c, b, a):
+        state.apply_gate(mat, qubits)
+
+
+def _cuccaro_gates(n_bits, c, a_q, b_q, z):
+    """Full Cuccaro adder gate list (b += a, carry-out into z)."""
+    gates = list(_maj_gates(c, b_q[0], a_q[0]))
+    for i in range(1, n_bits):
+        gates += _maj_gates(a_q[i - 1], b_q[i], a_q[i])
+    gates.append((_CNOT, [a_q[n_bits - 1], z]))
+    for i in range(n_bits - 1, 0, -1):
+        gates += _uma_gates(a_q[i - 1], b_q[i], a_q[i])
+    gates += _uma_gates(c, b_q[0], a_q[0])
+    return gates
+
+
+def ripple_carry_subtract(a: int, b: int, n_bits: int) -> dict:
+    """
+    Ripple-carry subtractor: compute ``b - a`` by running the Cuccaro adder in
+    reverse (every CNOT/Toffoli is self-inverse, so the inverse circuit is the gate
+    list reversed).
+
+    Returns dict with 'result' = ``(b - a) mod 2**n_bits`` and 'borrow' = 1 iff
+    ``a > b``. ``a`` is restored.
+    """
+    total = 2 * n_bits + 2
+    c = 0
+    a_q = [1 + i for i in range(n_bits)]
+    b_q = [1 + n_bits + i for i in range(n_bits)]
+    z = 1 + 2 * n_bits
+
+    state = QuantumState(total)
+    index = 0
+    for i in range(n_bits):
+        if (a >> i) & 1:
+            index |= 1 << a_q[i]
+        if (b >> i) & 1:
+            index |= 1 << b_q[i]
+    sv = np.zeros(2**total, dtype=complex)
+    sv[index] = 1.0
+    state.state_vector = sv
+
+    for mat, qubits in reversed(_cuccaro_gates(n_bits, c, a_q, b_q, z)):
+        state.apply_gate(mat, qubits)
+
+    out = int(np.argmax(np.abs(state.state_vector) ** 2))
+    result = sum(((out >> b_q[i]) & 1) << i for i in range(n_bits))
+    return {"result": result, "borrow": (out >> z) & 1}
 
 
 def ripple_carry_add(a: int, b: int, n_bits: int) -> int:

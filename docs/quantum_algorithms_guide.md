@@ -479,6 +479,15 @@ ripple_carry_add(9, 7, n_bits=4)     # 16   -- exact 5-bit sum with carry-out
 ripple_carry_add(15, 15, n_bits=4)   # 30
 ```
 
+Running that adder in reverse gives a subtractor (`b - a` with a borrow bit):
+
+```python
+from quantum_debugger.algorithms import ripple_carry_subtract
+
+ripple_carry_subtract(4, 9, n_bits=4)   # {"result": 5,  "borrow": 0}  (9-4)
+ripple_carry_subtract(9, 4, n_bits=4)   # {"result": 11, "borrow": 1}  (4-9 mod 16)
+```
+
 Multiplication is done in the Fourier basis too -- `|a>|b>|0> -> |a>|b>|a*b>` via
 doubly-controlled phase rotations that add `2^(j+k)` for each pair of set input bits:
 
