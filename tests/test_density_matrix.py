@@ -106,6 +106,29 @@ class TestEntropy:
         assert np.isclose(dm.entanglement_entropy([0]), 0.0, atol=1e-9)
 
 
+class TestMeasurement:
+    def test_bell_sample_only_correlated(self):
+        dm = DensityMatrix(2)
+        dm.apply_unitary(_H, [0])
+        dm.apply_unitary(_CNOT, [0, 1])
+        counts = dm.sample(500, seed=1)
+        assert set(counts) <= {"00", "11"}
+        assert len(counts) == 2
+
+    def test_measure_collapses_and_correlates(self):
+        dm = DensityMatrix(2)
+        dm.apply_unitary(_H, [0])
+        dm.apply_unitary(_CNOT, [0, 1])
+        rng = np.random.default_rng(0)
+        assert dm.measure(0, rng) == dm.measure(1, rng)  # GHZ/Bell correlation
+
+    def test_measure_deterministic_after_damping(self):
+        dm = DensityMatrix(1)
+        dm.apply_unitary(_X, [0])
+        dm.apply_channel(amplitude_damping(1.0), [0])  # -> |0>
+        assert dm.measure(0, np.random.default_rng(5)) == 0
+
+
 class TestFidelity:
     def test_fidelity_identical_and_orthogonal(self):
         dm = DensityMatrix(1, state_vector=np.array([1, 1]) / np.sqrt(2))

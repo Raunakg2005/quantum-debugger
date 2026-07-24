@@ -18,6 +18,8 @@ _I = np.eye(2, dtype=complex)
 _X = GateLibrary.X
 _Y = GateLibrary.Y
 _Z = GateLibrary.Z
+_P0 = np.array([[1, 0], [0, 0]], dtype=complex)
+_P1 = np.array([[0, 0], [0, 1]], dtype=complex)
 
 
 def _embed(op, targets, n):
@@ -73,6 +75,37 @@ class DensityMatrix:
             new += emb @ self.rho @ emb.conj().T
         self.rho = new
         return self
+
+    def measure(self, qubit, rng=None) -> int:
+        """
+        Projectively measure ``qubit`` in the computational basis, collapsing ``rho``.
+        Returns 0 or 1 with the Born-rule probabilities.
+        """
+        rng = rng or np.random.default_rng()
+        proj0 = _embed(_P0, [qubit], self.n)
+        p0 = float(np.real(np.trace(proj0 @ self.rho)))
+        outcome = 0 if rng.random() < p0 else 1
+        proj = proj0 if outcome == 0 else _embed(_P1, [qubit], self.n)
+        p = p0 if outcome == 0 else 1 - p0
+        self.rho = (proj @ self.rho @ proj) / p
+        return outcome
+
+    def sample(self, shots: int, seed: int = 0) -> dict:
+        """
+        Sample ``shots`` full computational-basis measurement outcomes (non-destructive;
+        the outcome distribution is the diagonal of ``rho``). Returns bitstring -> count
+        with bit ``q`` = qubit ``q``.
+        """
+        rng = np.random.default_rng(seed)
+        probs = self.probabilities()
+        probs = np.clip(probs, 0, None)
+        probs = probs / probs.sum()
+        draws = rng.choice(len(probs), size=shots, p=probs)
+        counts = {}
+        for d in draws:
+            key = "".join(str((int(d) >> q) & 1) for q in range(self.n))
+            counts[key] = counts.get(key, 0) + 1
+        return counts
 
     # --- readout -----------------------------------------------------------
 

@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `phase_flip`, `depolarizing`, `amplitude_damping`, `phase_damping`). Verified:
   purity 1 for pure states, Bell reduced state maximally mixed, depolarizing → I/2,
   amplitude damping relaxes |1> → |0>; unitary evolution matches the state-vector sim.
-  Also `von_neumann_entropy` and `entanglement_entropy` (Bell → 1 bit, product → 0).
+  Also `von_neumann_entropy` and `entanglement_entropy` (Bell → 1 bit, product → 0),
+  plus projective `measure(qubit)` (Born-rule collapse) and `sample(shots)`.
 - **Scalable graph / cluster states** (`StabilizerSimulator.graph`) — prepare a graph
   (cluster) state (H on all qubits + CZ per edge) in `O(n + |edges|)`; thousand-qubit
   cluster states are instant, with the canonical stabilizers `X_i prod_{j~i} Z_j`.
