@@ -91,6 +91,11 @@ from .sat_solver import grover_solve
 from .multicontrol import toffoli_gates, fredkin_gates, mcx_gates, apply_gates
 from .grover_optimize import grover_minimize
 from .qec_threshold import repetition_code_error_rate
+from .qec_noise import (
+    bit_flip_code_noisy,
+    phase_flip_code_noisy,
+    repetition_code_logical_error,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -194,6 +199,9 @@ __all__ = [
     "grover_minimize",
     # QEC threshold
     "repetition_code_error_rate",
+    "bit_flip_code_noisy",
+    "phase_flip_code_noisy",
+    "repetition_code_logical_error",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

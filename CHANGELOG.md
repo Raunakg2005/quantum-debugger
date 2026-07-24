@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **QEC under continuous noise** (`algorithms.bit_flip_code_noisy`,
+  `phase_flip_code_noisy`, `repetition_code_logical_error`) — run a quantum
+  error-correcting code against *continuous* noise (an independent bit-/phase-flip
+  channel of strength `p` on every physical qubit) exactly on the density-matrix
+  engine, with an exact CPTP syndrome-recovery map, and read out the logical
+  fidelity. Verified against the closed form `(1-p)^3 + 3p(1-p)^2`: the encoded
+  qubit beats the un-encoded one for all `p < 1/2` and is worse above threshold;
+  `|+_L>` is logical-X-invariant and stays perfectly protected. Ships the exact
+  majority-vote logical error rate for any odd code distance, showing distance-`d`
+  error suppression below threshold.
 - **Random Clifford circuits** (`StabilizerSimulator.random`) — apply a random
   H/S/CNOT Clifford circuit (default depth `10n`) and get back the sim; useful for
   randomized benchmarking, testing, and random stabilizer states. Scales to hundreds
