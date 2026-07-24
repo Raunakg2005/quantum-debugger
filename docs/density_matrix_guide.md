@@ -54,3 +54,28 @@ dm.entanglement_entropy([0])                   # 1.0 bit -- maximally entangled
 - `fidelity(other)` — Uhlmann state fidelity to another `DensityMatrix` or a pure
   state vector.
 - `partial_trace(keep)` — reduced density matrix on the kept qubits.
+
+## Channel quality metrics
+
+How noisy is a channel? Given its Kraus operators, two standard scalar figures of
+merit quantify the deviation from a target unitary (default: the identity):
+
+```python
+from quantum_debugger.density_matrix import (
+    depolarizing, process_fidelity, average_gate_fidelity,
+)
+
+average_gate_fidelity(depolarizing(0.1))        # 0.95  == 1 - p/2
+process_fidelity(depolarizing(0.1))             # 0.925 == 1 - 3p/4
+```
+
+- `process_fidelity(kraus, target=None)` — the entanglement (process) fidelity
+  `(1/d^2) * sum_i |Tr(target† K_i)|^2`; equals 1 iff the channel *is* the target
+  unitary.
+- `average_gate_fidelity(kraus, target=None)` — the fidelity averaged uniformly over
+  pure input states, tied to the process fidelity by the exact identity
+  `F_avg = (d·F_process + 1)/(d + 1)`.
+
+A perfect gate scores 1; a stray Pauli-`X` error (`[X]`) scores `1/3` — the textbook
+average fidelity of a bit flip over the Bloch sphere. Pass `target=U` to score a
+channel against the gate it was meant to implement.

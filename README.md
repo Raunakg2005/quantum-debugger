@@ -32,6 +32,30 @@ every routine verified against its known outcome:
 
 See [CHANGELOG.md](CHANGELOG.md) for the full list.
 
+## What's New in v0.7.0
+
+The **second simulation engine** release — Clifford/stabilizer and open quantum
+systems:
+- **Clifford / stabilizer simulator** (`StabilizerSimulator`) — the
+  Aaronson-Gottesman tableau: GHZ, graph/cluster states, and randomized
+  benchmarking on **hundreds of qubits** instantly, far past the state-vector wall.
+  Pauli expectation values, sampling, and an exact bridge back to the state vector.
+- **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
+  noise channels (bit/phase flip, depolarizing, amplitude/phase damping), partial
+  trace, purity, von Neumann / entanglement entropy, and Uhlmann fidelity.
+- **Quantum arithmetic** — Fourier (Draper) and ripple-carry (Cuccaro) adders,
+  subtractor, comparator, and multiplier, exact for every input pair.
+- **VQE** now converges to machine precision on larger chains (BFGS optimizer).
+
+### In development (0.8.0-dev)
+- **QEC under continuous noise** — run a code against an independent bit-/phase-flip
+  channel on every qubit, exactly, with CPTP syndrome recovery; verified against the
+  closed-form threshold curve.
+- **Channel quality metrics** — process fidelity and average gate fidelity of any
+  Kraus channel.
+
+See [CHANGELOG.md](CHANGELOG.md) for the full list.
+
 ## What's New in v0.6.1
 
 Correctness, performance, and "make the advertised features real" release:
@@ -343,8 +367,8 @@ pytest tests/ --cov=quantum_debugger --cov-report=html
 
 See [FINAL_TEST_SUMMARY.md](tests/FINAL_TEST_SUMMARY.md) for detailed test information.
 
-**Test Statistics (v0.6.1):**
-- ~980 tests passing (`pytest tests/ -m "not aws"`)
+**Test Statistics (v0.7.0):**
+- ~1400 tests passing (`pytest tests/ -m "not aws"`)
 - GPU-hardware tests require a working CUDA + CuPy install; they skip otherwise
 - A few tests are performance/timing based and may vary by machine
 
@@ -391,5 +415,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.6.1  
+**Version:** 0.7.0 (on PyPI) · 0.8.0-dev (in development)  
 **Last Updated:** July 2026

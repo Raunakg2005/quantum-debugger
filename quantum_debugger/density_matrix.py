@@ -222,3 +222,44 @@ def phase_damping(gamma: float):
         np.array([[1, 0], [0, np.sqrt(1 - gamma)]], dtype=complex),
         np.array([[0, 0], [0, np.sqrt(gamma)]], dtype=complex),
     ]
+
+
+# --- channel quality metrics ----------------------------------------------
+
+
+def process_fidelity(kraus_ops, target=None) -> float:
+    """
+    Entanglement (process) fidelity of a Kraus channel ``{K_i}`` to a target unitary
+    ``target`` (default: the identity):
+
+        F_process = (1 / d**2) * sum_i |Tr(target-dagger K_i)|**2
+
+    This is the fidelity between the channel's Choi state and the target's, and it
+    equals 1 iff the channel *is* the target unitary. ``d`` is the Hilbert-space
+    dimension inferred from the Kraus operators.
+    """
+    K0 = np.asarray(kraus_ops[0], dtype=complex)
+    d = K0.shape[0]
+    U = np.eye(d, dtype=complex) if target is None else np.asarray(target, dtype=complex)
+    Ud = U.conj().T
+    return float(
+        sum(abs(np.trace(Ud @ np.asarray(K, dtype=complex))) ** 2 for K in kraus_ops)
+        / d**2
+    )
+
+
+def average_gate_fidelity(kraus_ops, target=None) -> float:
+    """
+    Average gate fidelity of a Kraus channel to ``target`` (default identity),
+    averaged uniformly over pure input states. Related to the process fidelity by
+    the exact Horodecki/Nielsen identity
+
+        F_avg = (d * F_process + 1) / (d + 1).
+
+    Examples (single qubit, d = 2): a perfect gate gives 1; ``depolarizing(p)`` gives
+    ``1 - p/2``; a stray Pauli-X error (``[X]``) gives 1/3.
+    """
+    K0 = np.asarray(kraus_ops[0], dtype=complex)
+    d = K0.shape[0]
+    fp = process_fidelity(kraus_ops, target)
+    return (d * fp + 1) / (d + 1)

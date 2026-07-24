@@ -147,3 +147,49 @@ class TestFidelity:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestChannelMetrics:
+    def test_identity_is_perfect(self):
+        from quantum_debugger.density_matrix import (
+            process_fidelity,
+            average_gate_fidelity,
+        )
+
+        I = np.eye(2, dtype=complex)
+        assert abs(process_fidelity([I]) - 1.0) < 1e-12
+        assert abs(average_gate_fidelity([I]) - 1.0) < 1e-12
+
+    @pytest.mark.parametrize("p", [0.0, 0.1, 0.3, 0.5, 1.0])
+    def test_depolarizing_average_fidelity(self, p):
+        # Exact: average gate fidelity of the depolarizing channel is 1 - p/2.
+        from quantum_debugger.density_matrix import average_gate_fidelity
+
+        assert abs(average_gate_fidelity(depolarizing(p)) - (1 - p / 2)) < 1e-12
+
+    def test_pauli_x_error_is_one_third(self):
+        from quantum_debugger.density_matrix import average_gate_fidelity
+
+        X = np.array([[0, 1], [1, 0]], dtype=complex)
+        assert abs(average_gate_fidelity([X]) - 1 / 3) < 1e-12
+
+    def test_fidelity_to_target_unitary(self):
+        # A channel that IS the target unitary has process fidelity 1 to it.
+        from quantum_debugger.density_matrix import process_fidelity
+
+        H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)
+        assert abs(process_fidelity([H], target=H) - 1.0) < 1e-12
+        # X measured against identity: orthogonal, process fidelity 0.
+        X = np.array([[0, 1], [1, 0]], dtype=complex)
+        assert abs(process_fidelity([X])) < 1e-12
+
+    def test_bit_flip_matches_depolarizing_form(self):
+        # bit_flip(p): F_process = 1 - p, F_avg = (2(1-p)+1)/3.
+        from quantum_debugger.density_matrix import (
+            process_fidelity,
+            average_gate_fidelity,
+        )
+
+        p = 0.2
+        assert abs(process_fidelity(bit_flip(p)) - (1 - p)) < 1e-12
+        assert abs(average_gate_fidelity(bit_flip(p)) - (2 * (1 - p) + 1) / 3) < 1e-12

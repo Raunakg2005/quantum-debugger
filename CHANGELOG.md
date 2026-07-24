@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Channel quality metrics** (`density_matrix.process_fidelity`,
+  `average_gate_fidelity`) — quantify how noisy a Kraus channel is: the entanglement
+  (process) fidelity to a target unitary and the state-averaged gate fidelity, linked
+  by the exact identity `F_avg = (d·F_process + 1)/(d+1)`. Verified: identity gate → 1,
+  `depolarizing(p)` → `1 - p/2`, a stray Pauli-X error → 1/3.
 - **QEC under continuous noise** (`algorithms.bit_flip_code_noisy`,
   `phase_flip_code_noisy`, `repetition_code_logical_error`) — run a quantum
   error-correcting code against *continuous* noise (an independent bit-/phase-flip
