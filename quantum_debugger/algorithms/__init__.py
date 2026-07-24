@@ -97,6 +97,7 @@ from .qec_noise import (
     syndrome_extraction_cycle,
     repetition_code_logical_error,
 )
+from .perfect_code import five_qubit_code, five_qubit_stabilizers
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -204,6 +205,8 @@ __all__ = [
     "phase_flip_code_noisy",
     "syndrome_extraction_cycle",
     "repetition_code_logical_error",
+    "five_qubit_code",
+    "five_qubit_stabilizers",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

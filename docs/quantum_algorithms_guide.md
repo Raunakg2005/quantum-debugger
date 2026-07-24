@@ -620,6 +620,27 @@ The syndrome is extracted by measuring each stabilizer with an ancilla
 (`|0> -> H -> controlled-Pauli string -> H -> measure`), so no error information
 leaks about the encoded amplitudes -- exactly as real QEC requires.
 
+### The 5-qubit perfect code [[5,1,3]]
+
+The **smallest** code that corrects an arbitrary single-qubit error — smaller than the
+9-qubit Shor code. Its four stabilizers give 16 distinct syndromes, exactly matching
+the error-free case plus the 15 single-qubit Pauli errors (hence "perfect": none left
+over).
+
+```python
+from quantum_debugger.algorithms import five_qubit_code, five_qubit_stabilizers
+
+five_qubit_stabilizers()                       # ['XZZXI', 'IXZZX', 'XIXZZ', 'ZXIXZ']
+
+r = five_qubit_code(0.6, 0.8j, error="Y3")     # Y error on qubit 3
+r["syndrome"]                                  # the measured 4-bit syndrome
+r["correction"]                                # 'Y3' -- decoded exactly
+r["fidelity"]                                  # 1.0 for ANY single-qubit error
+```
+
+`error` is `"I"` or `"<P><q>"` with `P` in `X/Y/Z` and `q` in `0..4`. Every one of the
+15 single-qubit errors is corrected to fidelity 1 for an arbitrary logical input.
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated

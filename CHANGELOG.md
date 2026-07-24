@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **5-qubit perfect code [[5,1,3]]** (`algorithms.five_qubit_code`,
+  `five_qubit_stabilizers`) — the smallest code that corrects an *arbitrary*
+  single-qubit error. Encodes a logical qubit via the stabilizer projector, applies a
+  chosen `X`/`Y`/`Z` error on any qubit, extracts the 4-bit syndrome, and recovers
+  exactly. Verified: all 16 syndromes are distinct (the "perfect" property — 1
+  error-free + 15 single-qubit errors, none left over), and every single-qubit error
+  is corrected to fidelity 1 for arbitrary logical inputs.
 - **Quantum mutual information** (`DensityMatrix.mutual_information`) —
   `I(A:B) = S(A) + S(B) - S(AB)`, the total (classical + quantum) correlation across a
   cut. Verified: a Bell pair carries 2 bits, a classically correlated pair 1 bit, and a
