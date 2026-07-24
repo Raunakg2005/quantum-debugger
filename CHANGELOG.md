@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Lindblad master-equation evolution** (`DensityMatrix.evolve_lindblad`) —
+  continuous-time open-system dynamics: evolve `rho` under a Hamiltonian plus
+  collapse (jump) operators `{L_k}` for `T1` relaxation, `T2` dephasing, and general
+  Markovian decoherence. Computed exactly by exponentiating the Liouvillian
+  superoperator (no time-stepping error). Verified against the analytic laws:
+  excited-state population `e^{-γt}`, coherence decay `½e^{-2κt}`, closed-system Rabi
+  in the no-collapse limit, trace preservation, and relaxation to the ground state.
 - **Channel quality metrics** (`density_matrix.process_fidelity`,
   `average_gate_fidelity`) — quantify how noisy a Kraus channel is: the entanglement
   (process) fidelity to a target unitary and the state-averaged gate fidelity, linked

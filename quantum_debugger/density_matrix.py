@@ -76,6 +76,43 @@ class DensityMatrix:
         self.rho = new
         return self
 
+    def evolve_lindblad(self, hamiltonian, collapse_ops=None, time=1.0):
+        """
+        Evolve ``rho`` for a duration ``time`` under the Lindblad master equation
+
+            d rho / dt = -i [H, rho]
+                         + sum_k ( L_k rho L_k-dagger
+                                   - 1/2 { L_k-dagger L_k, rho } )
+
+        with Hamiltonian ``H`` and collapse (jump) operators ``{L_k}`` -- the exact
+        continuous-time model of decoherence (T1 relaxation, T2 dephasing, ...).
+
+        ``hamiltonian`` and each collapse operator are full ``2**n x 2**n`` matrices.
+        The evolution is computed exactly by exponentiating the Liouvillian
+        superoperator (no time-stepping error). Returns ``self``.
+        """
+        from scipy.linalg import expm
+
+        H = np.asarray(hamiltonian, dtype=complex)
+        dim = H.shape[0]
+        eye = np.eye(dim, dtype=complex)
+        cols = [np.asarray(L, dtype=complex) for L in (collapse_ops or [])]
+
+        # Liouvillian in column-stacking convention: vec(A rho B) = (B^T kron A) vec.
+        liou = -1j * (np.kron(eye, H) - np.kron(H.T, eye))
+        for L in cols:
+            LdL = L.conj().T @ L
+            liou += (
+                np.kron(L.conj(), L)
+                - 0.5 * np.kron(eye, LdL)
+                - 0.5 * np.kron(LdL.T, eye)
+            )
+
+        vec = self.rho.flatten(order="F")
+        vec = expm(liou * time) @ vec
+        self.rho = vec.reshape((dim, dim), order="F")
+        return self
+
     def measure(self, qubit, rng=None) -> int:
         """
         Projectively measure ``qubit`` in the computational basis, collapsing ``rho``.

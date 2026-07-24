@@ -79,3 +79,36 @@ process_fidelity(depolarizing(0.1))             # 0.925 == 1 - 3p/4
 A perfect gate scores 1; a stray Pauli-`X` error (`[X]`) scores `1/3` — the textbook
 average fidelity of a bit flip over the Bloch sphere. Pass `target=U` to score a
 channel against the gate it was meant to implement.
+
+## Continuous-time evolution (Lindblad master equation)
+
+Kraus channels apply noise in discrete jumps; `evolve_lindblad` instead evolves
+`rho` in *continuous time* under the Lindblad master equation
+
+```
+d rho / dt = -i [H, rho] + sum_k ( L_k rho L_k† - ½ {L_k†L_k, rho} )
+```
+
+with a Hamiltonian `H` and collapse (jump) operators `{L_k}`. It is solved exactly
+by exponentiating the Liouvillian superoperator — there is no time-step error.
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import DensityMatrix
+
+sigma_minus = np.array([[0, 1], [0, 0]], dtype=complex)   # |1> -> |0>
+gamma = 0.7                                                # relaxation rate
+
+dm = DensityMatrix(state_vector=np.array([0, 1]))          # start in |1>
+dm.evolve_lindblad(np.zeros((2, 2)), [np.sqrt(gamma) * sigma_minus], time=1.3)
+dm.rho[1, 1].real         # 0.4025... == exp(-gamma * t)   (T1 relaxation)
+```
+
+Common uses:
+- **T1 relaxation** — collapse operator `√γ σ_-`; excited population decays `e^{-γt}`.
+- **T2 dephasing** — collapse operator `√κ σ_z`; coherences decay `e^{-2κt}` while
+  populations are untouched.
+- **Closed system** — pass no collapse operators to recover unitary (Rabi) evolution.
+
+Long-time relaxation drives the qubit to its ground state `|0><0|`; the evolution
+preserves `Tr(rho) = 1` throughout.

@@ -193,3 +193,45 @@ class TestChannelMetrics:
         p = 0.2
         assert abs(process_fidelity(bit_flip(p)) - (1 - p)) < 1e-12
         assert abs(average_gate_fidelity(bit_flip(p)) - (2 * (1 - p) + 1) / 3) < 1e-12
+
+
+class TestLindblad:
+    _SM = np.array([[0, 1], [0, 0]], dtype=complex)   # sigma_- : |1> -> |0>
+    _SZ = np.array([[1, 0], [0, -1]], dtype=complex)
+    _H0 = np.zeros((2, 2), dtype=complex)
+
+    @pytest.mark.parametrize("gamma,t", [(0.7, 1.3), (1.0, 0.5), (0.3, 2.0)])
+    def test_t1_relaxation_exponential(self, gamma, t):
+        # |1> under sigma_- collapse: excited population decays as e^{-gamma t}.
+        dm = DensityMatrix(state_vector=np.array([0, 1], dtype=complex))
+        dm.evolve_lindblad(self._H0, [np.sqrt(gamma) * self._SM], t)
+        assert abs(dm.rho[1, 1].real - np.exp(-gamma * t)) < 1e-9
+        assert abs(dm.rho.trace().real - 1.0) < 1e-12
+
+    @pytest.mark.parametrize("kappa,t", [(0.4, 0.9), (0.8, 1.5)])
+    def test_t2_dephasing_kills_coherence(self, kappa, t):
+        # |+> under sigma_z collapse: coherence decays as (1/2) e^{-2 kappa t}.
+        dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
+        dm.evolve_lindblad(self._H0, [np.sqrt(kappa) * self._SZ], t)
+        assert abs(abs(dm.rho[0, 1]) - 0.5 * np.exp(-2 * kappa * t)) < 1e-9
+        # populations are untouched by pure dephasing
+        assert abs(dm.rho[0, 0].real - 0.5) < 1e-9
+
+    def test_unitary_limit_is_rabi(self):
+        # No collapse ops -> closed-system Rabi oscillation under H = omega X / 2.
+        omega, t = 1.0, 1.1
+        dm = DensityMatrix(state_vector=np.array([1, 0], dtype=complex))
+        dm.evolve_lindblad(0.5 * omega * np.array([[0, 1], [1, 0]], dtype=complex), [], t)
+        assert abs(dm.rho[1, 1].real - np.sin(omega * t / 2) ** 2) < 1e-9
+
+    def test_zero_time_is_identity(self):
+        dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
+        before = dm.rho.copy()
+        dm.evolve_lindblad(self._SZ, [np.sqrt(0.5) * self._SM], 0.0)
+        assert np.allclose(dm.rho, before, atol=1e-12)
+
+    def test_steady_state_is_ground(self):
+        # Long relaxation drives any state to |0><0|.
+        dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
+        dm.evolve_lindblad(self._H0, [self._SM], 50.0)
+        assert abs(dm.rho[0, 0].real - 1.0) < 1e-6
