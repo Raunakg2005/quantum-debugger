@@ -181,6 +181,38 @@ class DensityMatrix:
         s_diag = float(-np.sum(diag * np.log2(diag)))
         return s_diag - self.von_neumann_entropy()
 
+    def partial_transpose(self, qubits) -> "DensityMatrix":
+        """
+        Partial transpose of ``rho`` over the given ``qubits`` (subsystem A): transpose
+        the row/column indices of those qubits only. The basis of the Peres-Horodecki
+        (PPT) separability criterion -- see :meth:`negativity`.
+        """
+        n = self.n
+        T = self.rho.reshape([2] * n + [2] * n)
+        for q in qubits:
+            T = np.swapaxes(T, q, n + q)
+        return DensityMatrix(rho=T.reshape(2**n, 2**n))
+
+    def negativity(self, qubits) -> float:
+        """
+        Entanglement negativity across the ``qubits`` vs rest bipartition:
+        ``N = (||rho^{T_A}||_1 - 1) / 2``, the sum of the magnitudes of the negative
+        eigenvalues of the partial transpose. Zero for a PPT (separable for 2x2 / 2x3)
+        state; a Bell pair gives 1/2. A positive value certifies entanglement.
+        """
+        pt = self.partial_transpose(qubits).rho
+        pt = (pt + pt.conj().T) / 2
+        ev = np.linalg.eigvalsh(pt).real
+        return float(np.sum(np.abs(ev[ev < 0])))
+
+    def logarithmic_negativity(self, qubits) -> float:
+        """
+        Logarithmic negativity ``E_N = log2 ||rho^{T_A}||_1 = log2(2 N + 1)`` in bits:
+        an entanglement monotone and an upper bound on distillable entanglement. Zero
+        for a PPT state, 1 bit for a Bell pair.
+        """
+        return float(np.log2(2 * self.negativity(qubits) + 1))
+
     def entanglement_entropy(self, qubits) -> float:
         """
         Entanglement entropy of the ``qubits`` subsystem: the von Neumann entropy of its

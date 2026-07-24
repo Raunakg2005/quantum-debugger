@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Entanglement negativity** (`DensityMatrix.negativity`,
+  `logarithmic_negativity`, `partial_transpose`) — a mixed-state entanglement measure
+  from the Peres-Horodecki partial transpose: `N = (||rho^{T_A}||_1 - 1)/2` and the
+  log-negativity `log2(2N+1)`. Verified exactly: a Bell pair gives `N = 1/2`
+  (1 bit log-negativity), a product state 0, and a Werner state matches the analytic
+  `max(0, (3p-1)/4)` with the PPT-separability threshold at `p = 1/3`.
 - **Coherence measures** (`DensityMatrix.l1_coherence`,
   `relative_entropy_coherence`) — quantify superposition as a resource: the l1-norm of
   coherence (sum of off-diagonal magnitudes) and the relative entropy of coherence

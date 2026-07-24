@@ -157,3 +157,29 @@ plus.l1_coherence()                  # 0.0  -- dephasing kills coherence
   diagonal (incoherent) state, up to `2**n - 1` for a maximally coherent state.
 - `relative_entropy_coherence()` — the distance to the nearest incoherent state,
   `S(diag rho) - S(rho)`; a Bell state and `|+>` each carry exactly 1 bit.
+
+## Mixed-state entanglement (negativity)
+
+Entanglement entropy only measures entanglement for *pure* states. For a general
+mixed `rho`, the **negativity** — built from the Peres-Horodecki partial transpose —
+certifies and quantifies entanglement:
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import DensityMatrix
+
+bell = DensityMatrix(state_vector=np.array([1, 0, 0, 1]) / np.sqrt(2))
+bell.negativity([0])               # 0.5  -- max for a two-qubit state
+bell.logarithmic_negativity([0])   # 1.0  bit
+
+# Werner state: entangled iff p > 1/3
+p = 0.5
+rho = p * bell.rho + (1 - p) * np.eye(4) / 4
+DensityMatrix(rho=rho).negativity([0])   # 0.125 == max(0, (3p-1)/4)
+```
+
+- `partial_transpose(qubits)` — transpose the indices of a subsystem only.
+- `negativity(qubits)` — `(||rho^{T_A}||_1 - 1)/2`; `> 0` certifies entanglement
+  across the cut (exact for 2×2 and 2×3 systems by the PPT criterion).
+- `logarithmic_negativity(qubits)` — `log2(2N + 1)`, an entanglement monotone and an
+  upper bound on distillable entanglement.

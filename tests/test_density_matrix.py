@@ -299,3 +299,39 @@ class TestCoherence:
         dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
         dm.apply_channel(phase_damping(1.0), [0])
         assert abs(dm.l1_coherence()) < 1e-12
+
+
+class TestNegativity:
+    def _bell(self):
+        sv = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        return DensityMatrix(state_vector=sv)
+
+    def test_bell_negativity_half(self):
+        dm = self._bell()
+        assert abs(dm.negativity([0]) - 0.5) < 1e-12
+        assert abs(dm.logarithmic_negativity([0]) - 1.0) < 1e-12
+
+    def test_product_state_zero(self):
+        dm = DensityMatrix(state_vector=np.array([1, 0, 0, 0], dtype=complex))
+        assert abs(dm.negativity([0])) < 1e-12
+        assert abs(dm.logarithmic_negativity([0])) < 1e-12
+
+    @pytest.mark.parametrize("p", [0.2, 1 / 3, 0.5, 0.8, 1.0])
+    def test_werner_matches_analytic(self, p):
+        bell_sv = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        bell = np.outer(bell_sv, bell_sv.conj())
+        rho = p * bell + (1 - p) * np.eye(4, dtype=complex) / 4
+        dm = DensityMatrix(rho=rho)
+        assert abs(dm.negativity([0]) - max(0.0, (3 * p - 1) / 4)) < 1e-12
+
+    def test_ppt_below_threshold_is_separable(self):
+        # A Werner state with p < 1/3 is PPT (zero negativity).
+        bell_sv = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        bell = np.outer(bell_sv, bell_sv.conj())
+        rho = 0.25 * bell + 0.75 * np.eye(4, dtype=complex) / 4
+        dm = DensityMatrix(rho=rho)
+        assert dm.negativity([0]) < 1e-12
+
+    def test_partial_transpose_preserves_trace(self):
+        dm = self._bell()
+        assert abs(dm.partial_transpose([0]).rho.trace().real - 1.0) < 1e-12
