@@ -163,6 +163,18 @@ class TestToStatevector:
         assert abs(np.vdot(sim.to_statevector(), st.state_vector)) ** 2 > 1 - 1e-9
 
 
+class TestRandomClifford:
+    @pytest.mark.parametrize("seed", range(5))
+    def test_produces_valid_stabilizer_state(self, seed):
+        sim = StabilizerSimulator.random(4, depth=40, seed=seed)
+        assert len(sim.stabilizers()) == 4
+        assert np.isclose(np.linalg.norm(sim.to_statevector()), 1.0)
+
+    def test_scales(self):
+        sim = StabilizerSimulator.random(120, depth=400, seed=1)
+        assert sim.n == 120  # instant, far beyond state-vector reach
+
+
 class TestGraphState:
     def test_line_graph_stabilizers(self):
         sim = StabilizerSimulator.graph(3, [(0, 1), (1, 2)])

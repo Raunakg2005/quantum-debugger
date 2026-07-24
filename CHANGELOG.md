@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Random Clifford circuits** (`StabilizerSimulator.random`) — apply a random
+  H/S/CNOT Clifford circuit (default depth `10n`) and get back the sim; useful for
+  randomized benchmarking, testing, and random stabilizer states. Scales to hundreds
+  of qubits instantly.
 - **Density-matrix simulator** (`quantum_debugger.density_matrix.DensityMatrix`) — an
   open-quantum-systems engine tracking the full `rho`: apply unitary gates and Kraus
   noise channels, take partial traces, and read out purity, populations, expectation

@@ -38,6 +38,27 @@ class StabilizerSimulator:
             self.z[n + i, i] = 1  # stabilizer i = Z_i
 
     @classmethod
+    def random(cls, n: int, depth: int = None, seed: int = 0) -> "StabilizerSimulator":
+        """
+        Apply a random Clifford circuit (random H / S / CNOT gates) and return the sim.
+        Handy for randomized benchmarking, testing, and random stabilizer states.
+        ``depth`` defaults to ``10 * n`` gates.
+        """
+        rng = np.random.default_rng(seed)
+        depth = depth if depth is not None else 10 * n
+        sim = cls(n, seed=seed)
+        for _ in range(depth):
+            g = rng.integers(3)
+            if g == 0 or n < 2:
+                sim.h(int(rng.integers(n)))
+            elif g == 1:
+                sim.s(int(rng.integers(n)))
+            else:
+                a, b = (int(x) for x in rng.choice(n, 2, replace=False))
+                sim.cnot(a, b)
+        return sim
+
+    @classmethod
     def graph(cls, n: int, edges, seed: int = 0) -> "StabilizerSimulator":
         """
         Prepare the graph (cluster) state on ``n`` qubits for ``edges``: Hadamard on
