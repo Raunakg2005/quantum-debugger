@@ -112,3 +112,26 @@ Common uses:
 
 Long-time relaxation drives the qubit to its ground state `|0><0|`; the evolution
 preserves `Tr(rho) = 1` throughout.
+
+## Channel representations (Choi matrix, CPTP check)
+
+Beyond scalar fidelities, a channel has a full operator representation — the **Choi
+matrix** `J = sum_k |K_k>> <<K_k|` (column-stacked vectorization). It is positive
+semidefinite iff the channel is completely positive, and its rank is the minimal
+number of Kraus operators.
+
+```python
+from quantum_debugger.density_matrix import (
+    depolarizing, choi_matrix, is_cptp, kraus_rank,
+)
+
+is_cptp(depolarizing(0.3))        # True  -- completely positive & trace preserving
+kraus_rank(depolarizing(0.3))     # 4     -- full depolarizing needs 4 Kraus ops
+kraus_rank([X])                   # 1     -- a unitary is Kraus rank 1
+is_cptp([0.5 * I])                # False -- shrinks the trace, not TP
+```
+
+- `choi_matrix(kraus)` — the `d² × d²` Jamiolkowski image; the identity channel's
+  Choi is rank-1 and proportional to the maximally entangled state.
+- `is_cptp(kraus)` — checks CP (Choi PSD) **and** TP (`sum_k K_k† K_k = I`).
+- `kraus_rank(kraus)` — the Kraus rank; 1 for unitaries, larger for noisier channels.

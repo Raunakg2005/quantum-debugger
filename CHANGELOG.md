@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Choi matrix & CPTP verification** (`density_matrix.choi_matrix`, `is_cptp`,
+  `kraus_rank`) — the Jamiolkowski image of a Kraus channel, a completely-positive
+  + trace-preserving check, and the Kraus rank (minimal number of Kraus operators).
+  Verified: the identity channel gives a rank-1 Choi ∝ the maximally entangled state,
+  all standard channels are CPTP, a non-trace-preserving map is rejected, and the
+  Kraus rank counts noise terms (unitary → 1, full depolarizing → 4).
 - **Lindblad master-equation evolution** (`DensityMatrix.evolve_lindblad`) —
   continuous-time open-system dynamics: evolve `rho` under a Hamiltonian plus
   collapse (jump) operators `{L_k}` for `T1` relaxation, `T2` dephasing, and general

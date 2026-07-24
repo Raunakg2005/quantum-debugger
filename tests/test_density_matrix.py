@@ -235,3 +235,38 @@ class TestLindblad:
         dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
         dm.evolve_lindblad(self._H0, [self._SM], 50.0)
         assert abs(dm.rho[0, 0].real - 1.0) < 1e-6
+
+
+class TestChoiCPTP:
+    def test_identity_choi_is_rank_one_maximally_entangled(self):
+        from quantum_debugger.density_matrix import choi_matrix, kraus_rank
+
+        I = np.eye(2, dtype=complex)
+        J = choi_matrix([I])
+        assert kraus_rank([I]) == 1
+        # J / d is the maximally entangled Bell state |Omega><Omega|.
+        eigs = np.linalg.eigvalsh(J).real
+        assert abs(eigs.max() - 2.0) < 1e-9 and abs(eigs[:-1].max()) < 1e-9
+
+    @pytest.mark.parametrize("p", [0.0, 0.1, 0.5, 1.0])
+    def test_standard_channels_are_cptp(self, p):
+        from quantum_debugger.density_matrix import is_cptp
+
+        assert is_cptp(bit_flip(p))
+        assert is_cptp(phase_flip(p))
+        assert is_cptp(depolarizing(p))
+        assert is_cptp(amplitude_damping(p))
+
+    def test_non_tp_map_rejected(self):
+        # A lone shrinking operator is CP but not trace preserving.
+        from quantum_debugger.density_matrix import is_cptp
+
+        assert not is_cptp([0.5 * np.eye(2, dtype=complex)])
+
+    def test_kraus_rank_counts_noise(self):
+        from quantum_debugger.density_matrix import kraus_rank
+
+        X = np.array([[0, 1], [1, 0]], dtype=complex)
+        assert kraus_rank([X]) == 1                 # unitary -> rank 1
+        assert kraus_rank(depolarizing(0.3)) == 4   # full depolarizing -> rank 4
+        assert kraus_rank(amplitude_damping(0.2)) == 2

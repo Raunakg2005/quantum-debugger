@@ -300,3 +300,46 @@ def average_gate_fidelity(kraus_ops, target=None) -> float:
     d = K0.shape[0]
     fp = process_fidelity(kraus_ops, target)
     return (d * fp + 1) / (d + 1)
+
+
+def choi_matrix(kraus_ops) -> np.ndarray:
+    """
+    Choi matrix of a Kraus channel: ``J = sum_k |K_k>> <<K_k|`` where ``|K>>`` is the
+    column-stacked vectorization of ``K``. This ``d**2 x d**2`` operator is the
+    Jamiolkowski image of the channel -- it is positive semidefinite iff the channel
+    is completely positive, and its rank equals the minimal number of Kraus operators
+    (the Kraus rank). The identity channel gives a rank-1 Choi matrix proportional to
+    the maximally entangled state.
+    """
+    K0 = np.asarray(kraus_ops[0], dtype=complex)
+    d = K0.shape[0]
+    J = np.zeros((d * d, d * d), dtype=complex)
+    for K in kraus_ops:
+        v = np.asarray(K, dtype=complex).flatten(order="F").reshape(-1, 1)
+        J += v @ v.conj().T
+    return J
+
+
+def is_cptp(kraus_ops, atol: float = 1e-9) -> bool:
+    """
+    Check that a Kraus channel is completely positive and trace preserving (CPTP):
+    the Choi matrix is positive semidefinite (CP) and ``sum_k K_k-dagger K_k = I``
+    (TP). Returns ``True`` iff both hold to tolerance ``atol``.
+    """
+    K0 = np.asarray(kraus_ops[0], dtype=complex)
+    d = K0.shape[0]
+    tp = sum(np.asarray(K, dtype=complex).conj().T @ np.asarray(K, dtype=complex)
+             for K in kraus_ops)
+    if not np.allclose(tp, np.eye(d, dtype=complex), atol=atol):
+        return False
+    eigs = np.linalg.eigvalsh(choi_matrix(kraus_ops)).real
+    return bool(eigs.min() > -atol)
+
+
+def kraus_rank(kraus_ops, atol: float = 1e-9) -> int:
+    """
+    Minimal number of Kraus operators needed to represent the channel -- the rank of
+    its Choi matrix. A unitary channel has Kraus rank 1; noise increases it.
+    """
+    eigs = np.linalg.eigvalsh(choi_matrix(kraus_ops)).real
+    return int(np.sum(eigs > atol))
