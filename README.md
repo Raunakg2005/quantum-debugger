@@ -34,25 +34,25 @@ See [CHANGELOG.md](CHANGELOG.md) for the full list.
 
 ## What's New in v0.7.0
 
-The **second simulation engine** release — Clifford/stabilizer and open quantum
-systems:
+A **second simulation engine** plus a large, verified quantum-algorithms library:
 - **Clifford / stabilizer simulator** (`StabilizerSimulator`) — the
   Aaronson-Gottesman tableau: GHZ, graph/cluster states, and randomized
   benchmarking on **hundreds of qubits** instantly, far past the state-vector wall.
-  Pauli expectation values, sampling, and an exact bridge back to the state vector.
-- **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
-  noise channels (bit/phase flip, depolarizing, amplitude/phase damping), partial
-  trace, purity, von Neumann / entanglement entropy, and Uhlmann fidelity.
-- **Quantum arithmetic** — Fourier (Draper) and ripple-carry (Cuccaro) adders,
-  subtractor, comparator, and multiplier, exact for every input pair.
-- **VQE** now converges to machine precision on larger chains (BFGS optimizer).
+- **Big algorithms library** — Shor factoring, Simon, quantum error correction
+  (bit-flip / phase-flip / the 9-qubit Shor code), Trotter Hamiltonian simulation,
+  gate decomposition (ZYZ/KAK), quantum arithmetic (Fourier + ripple-carry adders),
+  teleportation / superdense / entanglement swapping, Bell-CHSH & GHZ-Mermin
+  nonlocality, and BB84 QKD — each verified against its known outcome.
+- **VQE** ground-state solver converges to machine precision on larger chains
+  (BFGS optimizer).
 
 ### In development (0.8.0-dev)
-- **QEC under continuous noise** — run a code against an independent bit-/phase-flip
-  channel on every qubit, exactly, with CPTP syndrome recovery; verified against the
-  closed-form threshold curve.
-- **Channel quality metrics** — process fidelity and average gate fidelity of any
-  Kraus channel.
+- **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
+  channels, Lindblad master-equation evolution, and channel metrics (process /
+  average gate fidelity, Choi matrix, CPTP checks).
+- **QEC under continuous noise** — a code run against an independent bit-/phase-flip
+  channel on every qubit, exactly, with CPTP syndrome recovery.
+- **Quantum multiplier** and a **ripple-carry subtractor**.
 
 See [CHANGELOG.md](CHANGELOG.md) for the full list.
 
@@ -415,5 +415,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.0 (on PyPI) · 0.8.0-dev (in development)  
+**Version:** 0.7.1 (on PyPI) · 0.8.0-dev (in development)  
 **Last Updated:** July 2026
