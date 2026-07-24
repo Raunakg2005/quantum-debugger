@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Coherence measures** (`DensityMatrix.l1_coherence`,
+  `relative_entropy_coherence`) — quantify superposition as a resource: the l1-norm of
+  coherence (sum of off-diagonal magnitudes) and the relative entropy of coherence
+  `S(diag rho) - S(rho)`. Verified: `|+>` and a Bell state each carry exactly 1 bit,
+  computational-basis and maximally mixed states carry none, and full phase damping
+  destroys all coherence.
 - **Choi matrix & CPTP verification** (`density_matrix.choi_matrix`, `is_cptp`,
   `kraus_rank`) — the Jamiolkowski image of a Kraus channel, a completely-positive
   + trace-preserving check, and the Kraus rank (minimal number of Kraus operators).

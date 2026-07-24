@@ -135,3 +135,25 @@ is_cptp([0.5 * I])                # False -- shrinks the trace, not TP
   Choi is rank-1 and proportional to the maximally entangled state.
 - `is_cptp(kraus)` — checks CP (Choi PSD) **and** TP (`sum_k K_k† K_k = I`).
 - `kraus_rank(kraus)` — the Kraus rank; 1 for unitaries, larger for noisier channels.
+
+## Coherence measures
+
+Superposition is a resource, and coherence measures quantify how much of it a state
+holds in the computational basis:
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import DensityMatrix, phase_damping
+
+plus = DensityMatrix(state_vector=np.array([1, 1]) / np.sqrt(2))
+plus.l1_coherence()                  # 1.0  -- sum of off-diagonal magnitudes
+plus.relative_entropy_coherence()    # 1.0  -- S(diag rho) - S(rho), in bits
+
+plus.apply_channel(phase_damping(1.0), [0])
+plus.l1_coherence()                  # 0.0  -- dephasing kills coherence
+```
+
+- `l1_coherence()` — the sum of `|rho_ij|` over off-diagonal entries; 0 for any
+  diagonal (incoherent) state, up to `2**n - 1` for a maximally coherent state.
+- `relative_entropy_coherence()` — the distance to the nearest incoherent state,
+  `S(diag rho) - S(rho)`; a Bell state and `|+>` each carry exactly 1 bit.

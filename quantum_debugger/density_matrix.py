@@ -159,6 +159,28 @@ class DensityMatrix:
         vals = vals[vals > 1e-12]
         return float(-np.sum(vals * np.log2(vals)))
 
+    def l1_coherence(self) -> float:
+        """
+        l1-norm of coherence: the sum of the magnitudes of the off-diagonal elements
+        of ``rho`` in the computational basis. Zero for any diagonal (incoherent)
+        state, 1 for a single-qubit ``|+>``, and up to ``2**n - 1`` for an
+        n-qubit maximally coherent state.
+        """
+        off = self.rho - np.diag(np.diag(self.rho))
+        return float(np.sum(np.abs(off)))
+
+    def relative_entropy_coherence(self) -> float:
+        """
+        Relative entropy of coherence ``C_r = S(diag(rho)) - S(rho)`` in bits: the
+        distance to the nearest incoherent state. Zero for a diagonal state, 1 bit for
+        ``|+>`` or a Bell state, and equal to the state's basis-population entropy for a
+        pure state.
+        """
+        diag = np.real(np.diag(self.rho))
+        diag = diag[diag > 1e-12]
+        s_diag = float(-np.sum(diag * np.log2(diag)))
+        return s_diag - self.von_neumann_entropy()
+
     def entanglement_entropy(self, qubits) -> float:
         """
         Entanglement entropy of the ``qubits`` subsystem: the von Neumann entropy of its

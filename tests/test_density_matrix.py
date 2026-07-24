@@ -270,3 +270,32 @@ class TestChoiCPTP:
         assert kraus_rank([X]) == 1                 # unitary -> rank 1
         assert kraus_rank(depolarizing(0.3)) == 4   # full depolarizing -> rank 4
         assert kraus_rank(amplitude_damping(0.2)) == 2
+
+
+class TestCoherence:
+    def test_plus_state_is_unit_coherent(self):
+        dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
+        assert abs(dm.l1_coherence() - 1.0) < 1e-12
+        assert abs(dm.relative_entropy_coherence() - 1.0) < 1e-12
+
+    def test_computational_basis_is_incoherent(self):
+        dm = DensityMatrix(state_vector=np.array([0, 1], dtype=complex))
+        assert abs(dm.l1_coherence()) < 1e-12
+        assert abs(dm.relative_entropy_coherence()) < 1e-12
+
+    def test_maximally_mixed_is_incoherent(self):
+        dm = DensityMatrix(rho=np.eye(2, dtype=complex) / 2)
+        assert abs(dm.l1_coherence()) < 1e-12
+        assert abs(dm.relative_entropy_coherence()) < 1e-12
+
+    def test_bell_state_one_bit_of_coherence(self):
+        sv = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        dm = DensityMatrix(state_vector=sv)
+        assert abs(dm.l1_coherence() - 1.0) < 1e-12
+        assert abs(dm.relative_entropy_coherence() - 1.0) < 1e-12
+
+    def test_dephasing_destroys_coherence(self):
+        # Full phase damping on |+> removes all coherence.
+        dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
+        dm.apply_channel(phase_damping(1.0), [0])
+        assert abs(dm.l1_coherence()) < 1e-12
