@@ -195,6 +195,19 @@ def depolarizing(p: float):
     ]
 
 
+def pauli_channel(px: float, py: float, pz: float):
+    """
+    General single-qubit Pauli channel: apply X/Y/Z with probabilities px/py/pz
+    (identity otherwise). Generalizes bit-flip, phase-flip, and depolarizing.
+    """
+    return [
+        np.sqrt(max(0.0, 1 - px - py - pz)) * _I,
+        np.sqrt(px) * _X,
+        np.sqrt(py) * _Y,
+        np.sqrt(pz) * _Z,
+    ]
+
+
 def amplitude_damping(gamma: float):
     """Amplitude damping (T1): |1> decays to |0> with rate gamma."""
     return [

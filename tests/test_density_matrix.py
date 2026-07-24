@@ -10,6 +10,7 @@ from quantum_debugger.density_matrix import (
     depolarizing,
     amplitude_damping,
     phase_damping,
+    pauli_channel,
 )
 from quantum_debugger.core.gates import GateLibrary
 
@@ -79,6 +80,14 @@ class TestChannels:
         for ch in (bit_flip(0.3), phase_flip(0.3), phase_damping(0.4)):
             total = sum(K.conj().T @ K for K in ch)
             assert np.allclose(total, np.eye(2))  # trace-preserving
+
+    def test_pauli_channel(self):
+        ch = pauli_channel(0.1, 0.05, 0.15)
+        assert np.allclose(sum(K.conj().T @ K for K in ch), np.eye(2))
+        # A pure Z channel at p=0.5 fully dephases |+>.
+        dm = DensityMatrix(1, state_vector=np.array([1, 1]) / np.sqrt(2))
+        dm.apply_channel(pauli_channel(0, 0, 0.5), [0])
+        assert np.isclose(dm.purity(), 0.5)
 
 
 class TestEntropy:
