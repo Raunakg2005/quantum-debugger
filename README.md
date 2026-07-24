@@ -32,6 +32,30 @@ every routine verified against its known outcome:
 
 See [CHANGELOG.md](CHANGELOG.md) for the full list.
 
+## What's New in v0.7.0
+
+A **second simulation engine** plus a large, verified quantum-algorithms library:
+- **Clifford / stabilizer simulator** (`StabilizerSimulator`) — the
+  Aaronson-Gottesman tableau: GHZ, graph/cluster states, and randomized
+  benchmarking on **hundreds of qubits** instantly, far past the state-vector wall.
+- **Big algorithms library** — Shor factoring, Simon, quantum error correction
+  (bit-flip / phase-flip / the 9-qubit Shor code), Trotter Hamiltonian simulation,
+  gate decomposition (ZYZ/KAK), quantum arithmetic (Fourier + ripple-carry adders),
+  teleportation / superdense / entanglement swapping, Bell-CHSH & GHZ-Mermin
+  nonlocality, and BB84 QKD — each verified against its known outcome.
+- **VQE** ground-state solver converges to machine precision on larger chains
+  (BFGS optimizer).
+
+### In development (0.8.0-dev)
+- **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
+  channels, Lindblad master-equation evolution, and channel metrics (process /
+  average gate fidelity, Choi matrix, CPTP checks).
+- **QEC under continuous noise** — a code run against an independent bit-/phase-flip
+  channel on every qubit, exactly, with CPTP syndrome recovery.
+- **Quantum multiplier** and a **ripple-carry subtractor**.
+
+See [CHANGELOG.md](CHANGELOG.md) for the full list.
+
 ## What's New in v0.6.1
 
 Correctness, performance, and "make the advertised features real" release:
@@ -343,8 +367,8 @@ pytest tests/ --cov=quantum_debugger --cov-report=html
 
 See [FINAL_TEST_SUMMARY.md](tests/FINAL_TEST_SUMMARY.md) for detailed test information.
 
-**Test Statistics (v0.6.1):**
-- ~980 tests passing (`pytest tests/ -m "not aws"`)
+**Test Statistics (v0.7.0):**
+- ~1400 tests passing (`pytest tests/ -m "not aws"`)
 - GPU-hardware tests require a working CUDA + CuPy install; they skip otherwise
 - A few tests are performance/timing based and may vary by machine
 
@@ -391,5 +415,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.6.1  
+**Version:** 0.7.1 (on PyPI) · 0.8.0-dev (in development)  
 **Last Updated:** July 2026

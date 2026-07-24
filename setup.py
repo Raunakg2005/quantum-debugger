@@ -22,7 +22,7 @@ setup(
     version=_read_version(),
     author="Raunak Kumar Gupta",
     author_email="raunak.gupta@somaiya.edu",
-    description="Comprehensive quantum machine learning library with AutoML, GPU acceleration, advanced algorithms (QGANs, Quantum RL), transfer learning, and multi-framework support (Qiskit, PennyLane, Cirq, TensorFlow, PyTorch)",
+    description="A quantum simulation and debugging toolkit: state-vector and Clifford/stabilizer simulation engines, a broad verified algorithm library (Shor, Grover, QPE, HHL, QEC, VQE, QAOA), quantum machine learning, GPU acceleration, and multi-framework support (Qiskit, PennyLane, Cirq, TensorFlow, PyTorch).",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Raunakg2005/quantum-debugger",

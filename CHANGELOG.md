@@ -5,6 +5,15 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2026-07-24
+
+Documentation / packaging patch (no code changes).
+
+### Changed
+- Refreshed the PyPI project summary and README to reflect the current scope —
+  the state-vector and Clifford/stabilizer engines and the verified algorithm
+  library — instead of the older QML-only description.
+
 ## [0.7.0] - 2026-07-22
 
 Theme: performance & scale, a large genuine quantum-algorithms library, advanced
