@@ -22,10 +22,13 @@ closed-form logical error rate for any odd code distance.
 
 import numpy as np
 
-from ..density_matrix import DensityMatrix, bit_flip, phase_flip
+from ..density_matrix import DensityMatrix, bit_flip, phase_flip, _P0, _P1, _embed
 from ..stabilizer import stabilizer_to_pauli_matrix
+from ..core.gates import GateLibrary
 
 _H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)
+_CNOT = GateLibrary.CNOT
+_X = GateLibrary.X
 
 
 def _recovery_channel(rho, stabilizers, corrections):
@@ -124,6 +127,62 @@ def phase_flip_code_noisy(p: float, alpha: float = 1.0, beta: float = 0.0) -> di
 
     return {
         "corrected": dm.fidelity(DensityMatrix(rho=ideal)),
+        "analytic": (1 - p) ** 3 + 3 * p * (1 - p) ** 2,
+    }
+
+
+def syndrome_extraction_cycle(p: float, alpha: float = 1.0, beta: float = 0.0) -> dict:
+    """
+    Full measured-ancilla error-correction cycle for the 3-qubit bit-flip code, on the
+    density-matrix engine. Unlike :func:`bit_flip_code_noisy` (which applies an abstract
+    CPTP recovery), this runs the *physical* syndrome-extraction circuit:
+
+      1. encode ``alpha|0_L> + beta|1_L>`` on 3 data qubits, 2 ancillas in ``|0>``;
+      2. apply an independent bit-flip channel of strength ``p`` to each data qubit;
+      3. extract the syndrome with CNOTs -- ancilla 0 = parity(d0, d1) (stabilizer
+         ``Z0Z1``), ancilla 1 = parity(d1, d2) (``Z1Z2``);
+      4. measure the ancillas and apply the ``X`` correction their outcome dictates
+         (summed over outcomes as a CPTP measurement channel);
+      5. discard the ancillas and read out the logical fidelity of the data.
+
+    This reproduces the ideal-recovery fidelity ``(1-p)^3 + 3p(1-p)^2`` exactly,
+    confirming the physical circuit implements the code. Returns ``corrected`` and
+    ``analytic``.
+    """
+    norm = np.sqrt(abs(alpha) ** 2 + abs(beta) ** 2)
+    alpha, beta = alpha / norm, beta / norm
+
+    n = 5  # data 0,1,2 ; ancillas 3,4
+    sv = np.zeros(2**n, dtype=complex)
+    sv[0], sv[0b111] = alpha, beta  # data code state, ancillas |0>
+    dm = DensityMatrix(state_vector=sv)
+
+    ideal_data = np.zeros(8, dtype=complex)
+    ideal_data[0], ideal_data[7] = alpha, beta
+
+    for q in range(3):
+        dm.apply_channel(bit_flip(p), [q])
+
+    # Syndrome extraction into the ancillas.
+    dm.apply_unitary(_CNOT, [0, 3])
+    dm.apply_unitary(_CNOT, [1, 3])
+    dm.apply_unitary(_CNOT, [1, 4])
+    dm.apply_unitary(_CNOT, [2, 4])
+
+    # Measure ancillas + conditional X correction, summed as a CPTP channel.
+    recovery = {(0, 0): None, (1, 0): 0, (1, 1): 1, (0, 1): 2}
+    identity = np.eye(2**n, dtype=complex)
+    new = np.zeros_like(dm.rho)
+    for (s1, s2), data_qubit in recovery.items():
+        proj = _embed(_P1 if s1 else _P0, [3], n) @ _embed(_P1 if s2 else _P0, [4], n)
+        corr = identity if data_qubit is None else _embed(_X, [data_qubit], n)
+        M = corr @ proj
+        new += M @ dm.rho @ M.conj().T
+    dm.rho = new
+
+    data = dm.partial_trace([0, 1, 2])
+    return {
+        "corrected": data.fidelity(ideal_data),
         "analytic": (1 - p) ** 3 + 3 * p * (1 - p) ** 2,
     }
 

@@ -81,3 +81,28 @@ Below threshold, adding qubits suppresses the logical error — the defining
 feature of a good code. At exactly `p = 1/2` every distance gives `P_L = 1/2`:
 the code neither helps nor hurts. This complements the Monte-Carlo
 `repetition_code_error_rate` with a closed-form curve.
+
+## The physical syndrome-extraction circuit
+
+`bit_flip_code_noisy` applies an abstract CPTP recovery. `syndrome_extraction_cycle`
+instead runs the **measured-ancilla circuit** — the way a real device corrects errors:
+
+```python
+from quantum_debugger.algorithms import syndrome_extraction_cycle
+
+r = syndrome_extraction_cycle(p=0.1)
+r["corrected"]   # 0.972 == (1-p)^3 + 3p(1-p)^2
+```
+
+The cycle, on 3 data + 2 ancilla qubits (density matrix):
+
+1. encode the logical qubit, ancillas in `|0>`;
+2. hit each data qubit with an independent bit-flip channel of strength `p`;
+3. **extract the syndrome** with CNOTs — ancilla 0 records `parity(d0, d1)`
+   (stabilizer `Z0Z1`), ancilla 1 records `parity(d1, d2)` (`Z1Z2`);
+4. **measure the ancillas** and apply the `X` correction their outcome selects,
+   summed over outcomes as a CPTP measurement channel;
+5. **discard the ancillas** (partial trace) and read out the logical fidelity.
+
+This reproduces the ideal-recovery fidelity `(1-p)^3 + 3p(1-p)^2` exactly — a direct
+check that the physical circuit implements the code, not just the abstract map.

@@ -6,6 +6,7 @@ import pytest
 from quantum_debugger.algorithms import (
     bit_flip_code_noisy,
     phase_flip_code_noisy,
+    syndrome_extraction_cycle,
     repetition_code_logical_error,
 )
 
@@ -71,3 +72,26 @@ class TestRepetitionCodeLogicalError:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestSyndromeExtractionCircuit:
+    @pytest.mark.parametrize("p", [0.0, 0.05, 0.1, 0.2, 0.3, 0.4])
+    def test_circuit_matches_ideal_recovery(self, p):
+        # The physical measured-ancilla circuit reproduces (1-p)^3 + 3p(1-p)^2.
+        r = syndrome_extraction_cycle(p)
+        assert abs(r["corrected"] - r["analytic"]) < 1e-9
+
+    def test_agrees_with_abstract_recovery(self):
+        from quantum_debugger.algorithms import bit_flip_code_noisy
+
+        for p in (0.1, 0.25):
+            circ = syndrome_extraction_cycle(p)["corrected"]
+            abstract = bit_flip_code_noisy(p)["corrected"]
+            assert abs(circ - abstract) < 1e-9
+
+    def test_superposition_codeword_protected(self):
+        r = syndrome_extraction_cycle(0.15, alpha=1.0, beta=1.0)
+        assert abs(r["corrected"] - 1.0) < 1e-7  # |+_L> logical-X-invariant
+
+    def test_perfect_channel_lossless(self):
+        assert abs(syndrome_extraction_cycle(0.0)["corrected"] - 1.0) < 1e-12

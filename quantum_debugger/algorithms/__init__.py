@@ -94,6 +94,7 @@ from .qec_threshold import repetition_code_error_rate
 from .qec_noise import (
     bit_flip_code_noisy,
     phase_flip_code_noisy,
+    syndrome_extraction_cycle,
     repetition_code_logical_error,
 )
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
@@ -201,6 +202,7 @@ __all__ = [
     "repetition_code_error_rate",
     "bit_flip_code_noisy",
     "phase_flip_code_noisy",
+    "syndrome_extraction_cycle",
     "repetition_code_logical_error",
     # Quantum spectroscopy
     "unitary_eigenphase",

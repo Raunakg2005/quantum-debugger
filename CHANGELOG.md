@@ -42,6 +42,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (process) fidelity to a target unitary and the state-averaged gate fidelity, linked
   by the exact identity `F_avg = (d·F_process + 1)/(d+1)`. Verified: identity gate → 1,
   `depolarizing(p)` → `1 - p/2`, a stray Pauli-X error → 1/3.
+- **Measured syndrome-extraction circuit** (`algorithms.syndrome_extraction_cycle`) —
+  the *physical* 3-qubit bit-flip code cycle on the density-matrix engine: two ancilla
+  qubits, CNOT parity checks (`Z0Z1`, `Z1Z2`), ancilla measurement, and the
+  outcome-conditioned `X` correction (summed as a CPTP measurement channel), then the
+  ancillas are traced out. Verified to reproduce the ideal-recovery fidelity
+  `(1-p)^3 + 3p(1-p)^2` exactly, confirming the circuit implements the code.
 - **QEC under continuous noise** (`algorithms.bit_flip_code_noisy`,
   `phase_flip_code_noisy`, `repetition_code_logical_error`) — run a quantum
   error-correcting code against *continuous* noise (an independent bit-/phase-flip
