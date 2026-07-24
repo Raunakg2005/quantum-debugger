@@ -335,3 +335,21 @@ class TestNegativity:
     def test_partial_transpose_preserves_trace(self):
         dm = self._bell()
         assert abs(dm.partial_transpose([0]).rho.trace().real - 1.0) < 1e-12
+
+
+class TestMutualInformation:
+    def test_bell_two_bits(self):
+        sv = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        dm = DensityMatrix(state_vector=sv)
+        assert abs(dm.mutual_information([0]) - 2.0) < 1e-9
+
+    def test_product_state_zero(self):
+        dm = DensityMatrix(state_vector=np.array([1, 0, 0, 0], dtype=complex))
+        assert abs(dm.mutual_information([0])) < 1e-9
+
+    def test_classically_correlated_one_bit(self):
+        # (|00><00| + |11><11|)/2 : classical correlation, I = 1 bit.
+        rho = np.zeros((4, 4), dtype=complex)
+        rho[0, 0] = rho[3, 3] = 0.5
+        dm = DensityMatrix(rho=rho)
+        assert abs(dm.mutual_information([0]) - 1.0) < 1e-9

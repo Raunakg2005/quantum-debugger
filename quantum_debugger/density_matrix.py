@@ -181,6 +181,18 @@ class DensityMatrix:
         s_diag = float(-np.sum(diag * np.log2(diag)))
         return s_diag - self.von_neumann_entropy()
 
+    def mutual_information(self, qubits) -> float:
+        """
+        Quantum mutual information ``I(A:B) = S(A) + S(B) - S(AB)`` in bits, where A is
+        ``qubits`` and B is the rest -- the total (classical + quantum) correlation
+        across the cut. Zero for a product state, 1 bit for a classically correlated
+        pair, and 2 bits for a maximally entangled (Bell) pair.
+        """
+        rest = [q for q in range(self.n) if q not in qubits]
+        s_a = self.partial_trace(qubits).von_neumann_entropy()
+        s_b = self.partial_trace(rest).von_neumann_entropy()
+        return s_a + s_b - self.von_neumann_entropy()
+
     def partial_transpose(self, qubits) -> "DensityMatrix":
         """
         Partial transpose of ``rho`` over the given ``qubits`` (subsystem A): transpose

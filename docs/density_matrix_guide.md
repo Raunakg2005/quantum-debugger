@@ -183,3 +183,23 @@ DensityMatrix(rho=rho).negativity([0])   # 0.125 == max(0, (3p-1)/4)
   across the cut (exact for 2×2 and 2×3 systems by the PPT criterion).
 - `logarithmic_negativity(qubits)` — `log2(2N + 1)`, an entanglement monotone and an
   upper bound on distillable entanglement.
+
+## Total correlations (quantum mutual information)
+
+The quantum mutual information `I(A:B) = S(A) + S(B) - S(AB)` captures *all*
+correlations across a cut — classical and quantum together:
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import DensityMatrix
+
+bell = DensityMatrix(state_vector=np.array([1, 0, 0, 1]) / np.sqrt(2))
+bell.mutual_information([0])        # 2.0 bits -- maximal for a qubit pair
+
+rho = np.zeros((4, 4)); rho[0, 0] = rho[3, 3] = 0.5   # classical (|00> or |11>)
+DensityMatrix(rho=rho).mutual_information([0])         # 1.0 bit
+```
+
+A Bell pair carries 2 bits (twice its 1 bit of entanglement, reflecting both
+classical and quantum correlation); a classically correlated mixture carries 1 bit;
+a product state carries 0.

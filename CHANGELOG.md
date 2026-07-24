@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Quantum mutual information** (`DensityMatrix.mutual_information`) —
+  `I(A:B) = S(A) + S(B) - S(AB)`, the total (classical + quantum) correlation across a
+  cut. Verified: a Bell pair carries 2 bits, a classically correlated pair 1 bit, and a
+  product state 0.
 - **Entanglement negativity** (`DensityMatrix.negativity`,
   `logarithmic_negativity`, `partial_transpose`) — a mixed-state entanglement measure
   from the Peres-Horodecki partial transpose: `N = (||rho^{T_A}||_1 - 1)/2` and the
