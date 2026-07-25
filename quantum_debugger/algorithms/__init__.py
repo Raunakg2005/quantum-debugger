@@ -141,6 +141,12 @@ from .contextuality import (
     classical_assignment_maximum,
     quantum_context_measurement,
 )
+from .geometric_phase import (
+    bloch_spinor,
+    pancharatnam_phase,
+    solid_angle,
+    berry_phase_triangle,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -291,6 +297,10 @@ __all__ = [
     "mermin_peres_square",
     "classical_assignment_maximum",
     "quantum_context_measurement",
+    "bloch_spinor",
+    "pancharatnam_phase",
+    "solid_angle",
+    "berry_phase_triangle",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

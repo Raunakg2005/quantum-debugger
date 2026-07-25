@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Geometric (Pancharatnam-Berry) phase** (`algorithms.berry_phase_triangle`,
+  `pancharatnam_phase`, `bloch_spinor`, `solid_angle`) — the phase that depends
+  only on the path: transporting a qubit around a geodesic Bloch triangle gives
+  `gamma = arg(<n1|n2><n2|n3><n3|n1>) = Omega/2` (mod 2pi), verified against the
+  solid angle computed *independently* by classical spherical trigonometry
+  (L'Huilier's excess) — exact agreement on 50/50 random triangles, the octant
+  giving exactly `pi/4`. Gauge invariance (re-phasing any state changes nothing),
+  orientation-oddness (reversing the loop flips the sign), and the degenerate-loop
+  zero are all confirmed. The working principle of holonomic quantum gates.
 - **Quantum contextuality: the Peres-Mermin magic square**
   (`algorithms.mermin_peres_square`, `classical_assignment_maximum`,
   `quantum_context_measurement`) — a complete 2-qubit Kochen-Specker proof. The 3x3

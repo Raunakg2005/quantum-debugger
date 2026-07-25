@@ -947,3 +947,23 @@ values appears in exactly two constraints — so no pre-assigned values can sati
 them all. Quantum measurements do, on every state, because what an observable
 "reveals" depends on which commuting context it is measured in. This is the
 Kochen-Specker theorem in its smallest, sharpest form.
+
+## Geometric (Berry) Phase
+
+Take a qubit around a closed loop on the Bloch sphere and it remembers only the
+*geometry* — the solid angle enclosed:
+
+```python
+from quantum_debugger.algorithms import berry_phase_triangle
+
+r = berry_phase_triangle([1, 0, 0], [0, 1, 0], [0, 0, 1])   # one octant
+r["solid_angle"]   # pi/2  -- classical spherical trigonometry (L'Huilier)
+r["phase"]         # pi/4  -- quantum spinor overlaps: exactly Omega/2
+r["matches"]       # True  -- two independent computations agree
+```
+
+The Pancharatnam phase `arg(<n1|n2><n2|n3><n3|n1>)` is gauge invariant (re-phase
+any state, nothing changes), flips sign with loop orientation, and vanishes for
+degenerate loops. Because it depends on the path and not the timing, it is
+naturally robust — the working principle behind holonomic (geometric) quantum
+gates.
