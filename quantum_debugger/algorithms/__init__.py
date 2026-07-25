@@ -186,6 +186,7 @@ from .thermal import (
 )
 from .imaginary_time import imaginary_time_evolution
 from .adiabatic import adiabatic_evolution
+from .krylov import krylov_spectrum, krylov_ground_energy
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -373,6 +374,8 @@ __all__ = [
     "thermal_properties",
     "imaginary_time_evolution",
     "adiabatic_evolution",
+    "krylov_spectrum",
+    "krylov_ground_energy",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Krylov subspace diagonalization (Lanczos)** (`algorithms.krylov_spectrum`,
+  `krylov_ground_energy`) — build a small subspace `span{|psi>, H|psi>, ...,
+  H^{m-1}|psi>}` and diagonalize `H` inside it. The Ritz values converge to the exact
+  extreme eigenvalues — ground energy to machine precision by `m = 8` on TFIM
+  (Fermi-Hubbard, Heisenberg too), and, unlike imaginary-time evolution, the lowest
+  Ritz values recover the low-lying *excited* states as well. Solved through a
+  thresholded generalized eigenproblem for stability against the near-parallel Krylov
+  vectors; Ritz values are provably bracketed by the exact spectrum.
 - **Adiabatic quantum computation** (`algorithms.adiabatic_evolution`) — the
   alternative computing paradigm: start in the easy ground state of a driver
   Hamiltonian and slowly interpolate `H(s) = (1-s)H_i + s H_f` to the problem

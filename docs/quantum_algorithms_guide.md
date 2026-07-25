@@ -1246,3 +1246,27 @@ ground state; go too fast and it is excited (a diabatic transition). The returne
 `min_gap` is exactly the quantity that sets the required runtime — small gaps are
 what make some optimization problems hard for adiabatic (and quantum-annealing)
 machines.
+
+## Krylov Subspace Diagonalization (Lanczos)
+
+Neither variational search nor cooling — just apply the Hamiltonian a few times and
+diagonalize in the tiny subspace it spans. This recovers the ground energy *and* the
+excited states (which imaginary-time evolution cannot):
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    krylov_ground_energy, krylov_spectrum, hamiltonian_matrix, tfim_hamiltonian,
+)
+
+H = hamiltonian_matrix(tfim_hamiltonian(3, 1.0, 0.7), 3)
+
+krylov_ground_energy(H, dim=8)["error"]     # < 1e-8 -- machine precision from 8 vectors
+krylov_spectrum(H, dim=8)[:3]               # ground + first two excited levels, exact
+```
+
+The Krylov space `span{|psi>, H|psi>, ..., H^{m-1}|psi>}` is diagonalized via a
+thresholded generalized eigenproblem (the vectors become near-parallel, so the
+overlap matrix is regularized). The Ritz values are always bracketed by the true
+spectrum and converge to its extremes exponentially in `m` — the classical Lanczos
+method, and the blueprint for quantum Krylov / subspace-expansion algorithms.
