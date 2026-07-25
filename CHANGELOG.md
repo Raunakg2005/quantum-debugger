@@ -13,6 +13,14 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **TEBD time evolution** (`algorithms.tebd_tfim`, `tebd_magnetization`,
+  `tfim_bond_gate`) — real-time many-body dynamics on the MPS: Trotterize
+  `e^{-iHt}` into two-site gates, apply them even-then-odd, and let the SVD truncation
+  bound the bond dimension. Verified to match exact state-vector evolution to fidelity
+  > 0.9999 on small TFIM chains (finer Trotter steps improving it), runs a 30-qubit
+  quench beyond the dense simulator's reach, keeps the bond capped at `max_bond`, and
+  reproduces the physics — a vanishing field freezes the magnetization (`|0...0>` is an
+  eigenstate) while a transverse field tilts the spins.
 - **Matrix Product State simulator** (`quantum_debugger.mps.MPS`) — the 1.0 flagship:
   a tensor-network engine that breaks the exponential state-vector wall for
   low-entanglement states. Represents an n-qubit state as a chain of rank-3 tensors

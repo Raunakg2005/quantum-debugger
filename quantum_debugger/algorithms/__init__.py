@@ -208,6 +208,7 @@ from .schmidt import (
     truncation_fidelity,
     area_law_compressibility,
 )
+from .tebd import tfim_bond_gate, tebd_tfim, tebd_magnetization
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -417,6 +418,9 @@ __all__ = [
     "schmidt_decomposition",
     "truncation_fidelity",
     "area_law_compressibility",
+    "tfim_bond_gate",
+    "tebd_tfim",
+    "tebd_magnetization",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

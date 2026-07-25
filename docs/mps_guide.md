@@ -59,3 +59,24 @@ bond dimension faithfully tracks entanglement — 1 for product states, 2 for GH
 `apply_two` truncation keeps `chi <= max_bond` so a random deep circuit stays bounded.
 The approximation is only invoked when a two-qubit gate would push the bond past
 `max_bond`; below that, the MPS is exact.
+
+## TEBD: dynamics on large systems
+
+Time evolution comes for free once you can apply two-site gates: Trotterize
+`e^{-iHt}` into nearest-neighbour bond gates and sweep them across the MPS. This is
+**TEBD** (time-evolving block decimation):
+
+```python
+from quantum_debugger.algorithms import tebd_magnetization
+
+# Quench a 30-qubit Ising chain -- far beyond the dense state vector.
+r = tebd_magnetization(n=30, time=0.5, steps=30, field=0.5, max_bond=12)
+r["z_profile"]   # <Z_i> on each of the 30 sites
+r["max_bond"]    # the bond dimension the entanglement demanded (<= 12)
+```
+
+Each Trotter step applies `exp(-i h_{j,j+1} dt)` on the even bonds, then the odd
+bonds, with the SVD truncation keeping the bond bounded. It reproduces exact
+state-vector evolution to fidelity > 0.9999 on small chains (and improves with finer
+steps), while scaling to system sizes the dense engine cannot touch — as long as the
+generated entanglement keeps the bond dimension manageable.
