@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Mixed-state quantum Fisher information** (`algorithms.qfi_mixed`) — precision
+  metrology for realistic (noisy) probes: the SLD spectral formula
+  `F_Q = 2 sum (l_i-l_j)^2/(l_i+l_j) |<i|G|j>|^2`. Triple-verified: reduces to
+  `4 Var(G)` on pure states, hits the Heisenberg limit `N^2` on a GHZ probe, and
+  matches an *independent* numerical Bures-fidelity derivative
+  (`8(1-sqrt(F))/dphi^2`) on random mixed states. Mixing monotonically destroys
+  Fisher information, down to exactly 0 for the maximally mixed (phase-blind)
+  state.
 - **Uncertainty relations** (`algorithms.robertson_bound`,
   `entropic_uncertainty`) — Heisenberg made precise, twice. Robertson:
   `dA dB >= |<[A,B]>|/2`, verified on random observables/states and *tight* on a Z

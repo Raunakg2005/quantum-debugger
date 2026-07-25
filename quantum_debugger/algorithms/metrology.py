@@ -84,3 +84,29 @@ def phase_sensitivity(n: int) -> dict:
         "delta_phi_product": 1.0 / np.sqrt(qfi_prod) if qfi_prod > 0 else np.inf,
         "advantage": qfi_ghz / qfi_prod if qfi_prod > 0 else np.inf,
     }
+
+
+def qfi_mixed(rho, generator) -> float:
+    """
+    Quantum Fisher information of a *mixed* state for the phase family
+    ``rho_phi = e^{-i phi G} rho e^{i phi G}``, via the symmetric logarithmic
+    derivative (SLD) spectral formula:
+
+        F_Q = 2 sum_{i,j : l_i + l_j > 0} (l_i - l_j)^2 / (l_i + l_j) |<i|G|j>|^2.
+
+    Reduces to ``4 Var(G)`` on pure states and to ``N^2`` for an N-qubit GHZ probe
+    with ``G = sum_q Z_q / 2`` (the Heisenberg limit). The quantum Cramer-Rao bound
+    reads ``delta_phi >= 1 / sqrt(F_Q)`` per shot.
+    """
+    rho = np.asarray(rho, dtype=complex)
+    G = np.asarray(generator, dtype=complex)
+    vals, vecs = np.linalg.eigh(rho)
+    vals = np.clip(vals.real, 0, None)
+    Ge = vecs.conj().T @ G @ vecs
+    F = 0.0
+    for i in range(len(vals)):
+        for j in range(len(vals)):
+            s = vals[i] + vals[j]
+            if s > 1e-12:
+                F += 2 * (vals[i] - vals[j]) ** 2 / s * abs(Ge[i, j]) ** 2
+    return float(F)

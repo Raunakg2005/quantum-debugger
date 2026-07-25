@@ -482,6 +482,29 @@ r["delta_phi_ghz"]     # 0.25  (= 1/N)
 parity_signal(4, phi)  # cos(4*phi) -- the GHZ interferometer oscillates N x faster
 ```
 
+### Noisy probes: mixed-state QFI
+
+Real probes decohere. `qfi_mixed` gives the exact Fisher information of any mixed
+state via the symmetric-logarithmic-derivative formula:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import qfi_mixed
+
+G = np.diag([0.5, -0.5])                       # phase generator Z/2
+psi = np.array([1, 1]) / np.sqrt(2)
+pure = np.outer(psi, psi.conj())
+
+qfi_mixed(pure, G)                             # 1.0 = 4 Var(G)
+qfi_mixed(0.5 * pure + 0.5 * np.eye(2)/2, G)   # 0.5 -- decoherence costs precision
+qfi_mixed(np.eye(2) / 2, G)                    # 0.0 -- fully mixed = phase-blind
+```
+
+Verified three independent ways: `4 Var(G)` on pure states, `N^2` on a GHZ probe,
+and the numerical Bures-fidelity derivative on random mixed states. The quantum
+Cramer-Rao bound `delta_phi >= 1/sqrt(F_Q)` then tells you exactly what your noisy
+sensor can still resolve.
+
 ## Simon's Algorithm
 
 Recover the hidden XOR mask `s` of a 2-to-1 function (`f(x) = f(y)` iff

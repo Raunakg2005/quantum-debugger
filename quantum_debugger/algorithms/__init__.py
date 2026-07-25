@@ -79,6 +79,7 @@ from .metrology import (
     phase_sensitivity,
     parity_signal,
     quantum_fisher_information,
+    qfi_mixed,
 )
 from .bell_test import chsh_value, correlator, bell_state, chsh_game, mermin_ghz_test
 from .bb84 import bb84
@@ -228,6 +229,7 @@ __all__ = [
     "phase_sensitivity",
     "parity_signal",
     "quantum_fisher_information",
+    "qfi_mixed",
     # Bell / CHSH test
     "chsh_value",
     "correlator",
