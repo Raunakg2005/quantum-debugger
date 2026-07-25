@@ -121,6 +121,12 @@ from .decoherence_free import collective_dephasing, dfs_encode, dfs_protection
 from .dynamical_decoupling import spin_echo, echo_state_fidelity
 from .zeno import quantum_zeno, zeno_postselected
 from .loss_robustness import loss_robustness
+from .nonlocality import (
+    correlation_matrix,
+    chsh_maximum,
+    chsh_maximum_optimized,
+    werner_nonlocality,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -254,6 +260,10 @@ __all__ = [
     "quantum_zeno",
     "zeno_postselected",
     "loss_robustness",
+    "correlation_matrix",
+    "chsh_maximum",
+    "chsh_maximum_optimized",
+    "werner_nonlocality",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

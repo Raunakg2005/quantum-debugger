@@ -431,6 +431,29 @@ For three qubits the **GHZ (Mermin) test** gives an all-or-nothing violation: th
 Mermin operator `M = XXX - XYY - YXY - YYX` has expectation 4 on the GHZ state, but
 any local hidden-variable model is bounded by 2.
 
+### Mixed states: the Horodecki criterion & the entangled-but-local window
+
+For a noisy (mixed) state, what is the best CHSH value *any* measurement choice can
+reach? There is an exact answer — `S_max = 2 sqrt(u1 + u2)` from the two largest
+eigenvalues of `T^T T`, where `T` is the state's 3x3 Pauli correlation matrix:
+
+```python
+from quantum_debugger.algorithms import chsh_maximum, werner_nonlocality
+
+r = werner_nonlocality(0.65)   # a Werner state, fidelity 0.65
+r["entangled"]                 # True  -- negativity certifies entanglement
+r["nonlocal"]                  # False -- S_max = 1.51 < 2: NO measurement violates CHSH
+r["entangled_but_local"]       # True  -- the window 1/2 < F < 0.7803
+
+werner_nonlocality(0.9)["chsh"]    # 2.45  > 2 -- genuinely nonlocal
+```
+
+The closed form is verified against brute-force optimization over all four
+measurement directions and hits `S = 2` exactly at `F = (1 + 3/sqrt(2))/4`.
+The window shows that **entanglement and Bell nonlocality are inequivalent
+resources** — some entangled states admit a local hidden-variable model for every
+CHSH experiment.
+
 ```python
 from quantum_debugger.algorithms import mermin_ghz_test
 

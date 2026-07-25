@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **CHSH nonlocality of mixed states — the Horodecki criterion**
+  (`algorithms.chsh_maximum`, `chsh_maximum_optimized`, `correlation_matrix`,
+  `werner_nonlocality`) — the exact maximal CHSH value of ANY two-qubit state:
+  `S_max = 2 sqrt(u1 + u2)` from the correlation matrix `T`. Verified: matches
+  brute-force optimization over all measurement angles on random mixed states, a
+  Bell pair reaches Tsirelson's `2 sqrt(2)`, Werner states follow
+  `2 sqrt(2)|4F-1|/3` with `S = 2` exactly at `F = (1+3/sqrt(2))/4 ≈ 0.7803` — and
+  the **entangled-but-local window** `1/2 < F < 0.7803` is demonstrated: states
+  whose entanglement is certified by negativity, yet no CHSH experiment on them can
+  ever violate a Bell inequality. Entanglement and nonlocality are different
+  resources.
 - **Steane code under continuous depolarizing noise**
   (`algorithms.steane_code_noisy`) — the distance-3 promise demonstrated exactly on
   the 7-qubit density matrix: independent `depolarizing(p)` on every physical qubit,
