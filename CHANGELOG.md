@@ -5,7 +5,18 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (0.8.0.dev)
+## [0.8.0]
+
+Theme: a comprehensive quantum-information-theory layer on the two simulation
+engines — open systems & noise (Lindblad, channel metrics, Stinespring dilation,
+process tomography), fault tolerance & QEC ([[5,1,3]], Steane [[7,1,3]] with
+transversal gates, [[4,2,2]], magic-state injection, Petz recovery), quantum
+networking (BBPSSW/DEJMPS distillation, noisy swapping, repeater chains),
+noise-protection without QEC (DFS, spin echo, Zeno), and foundational measures
+(negativity, concurrence, discord, mutual information, Horodecki nonlocality,
+contextuality, geometric phase, uncertainty relations, weak values, Holevo,
+channel capacity, state discrimination, no-cloning, magic, MBQC). Every routine
+verified against a closed form or an independent computation.
 
 ### Added
 - **Petz recovery map (approximate QEC)** (`algorithms.petz_recovery`,
