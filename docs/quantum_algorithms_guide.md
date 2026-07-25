@@ -1223,3 +1223,26 @@ start always does. It's the deterministic counterpart to `variational_ground_sta
 (no ansatz, no optimization), and the classical model of QITE. One honest caveat:
 plain imaginary-time evolution *cannot* target excited states — even a start made
 orthogonal to the ground state is pulled back to it by its residual overlap.
+
+## Adiabatic Quantum Computation
+
+Encode the answer in a Hamiltonian's ground state and *slowly* deform an easy
+Hamiltonian into it — the adiabatic theorem keeps you in the ground state the whole
+way:
+
+```python
+from quantum_debugger.algorithms import adiabatic_evolution, hamiltonian_matrix
+
+driver  = hamiltonian_matrix([(-1.0, "XII"), (-1.0, "IXI"), (-1.0, "IIX")], 3)  # |+++>
+problem = hamiltonian_matrix([(-1.0, "ZZI"), (-1.0, "IZZ"), (-0.3, "ZII")], 3)  # |000>
+
+adiabatic_evolution(driver, problem, total_time=50)["fidelity"]   # 0.9999 -- slow succeeds
+adiabatic_evolution(driver, problem, total_time=0.5)["fidelity"]  # 0.15   -- fast fails
+```
+
+`H(s) = (1-s)H_i + s H_f` is swept from `s=0` to `s=1`. Go slowly relative to the
+inverse-square of the minimum spectral gap and the state tracks the instantaneous
+ground state; go too fast and it is excited (a diabatic transition). The returned
+`min_gap` is exactly the quantity that sets the required runtime — small gaps are
+what make some optimization problems hard for adiabatic (and quantum-annealing)
+machines.

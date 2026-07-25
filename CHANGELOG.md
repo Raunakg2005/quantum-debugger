@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Adiabatic quantum computation** (`algorithms.adiabatic_evolution`) — the
+  alternative computing paradigm: start in the easy ground state of a driver
+  Hamiltonian and slowly interpolate `H(s) = (1-s)H_i + s H_f` to the problem
+  Hamiltonian, ending in *its* ground state. Verified across both regimes of the
+  adiabatic theorem: a slow sweep (T=50) reaches the target ground state at fidelity
+  > 0.99, a fast one (T=0.5) is left excited at < 0.5 (diabatic transition), fidelity
+  is monotone in the total time, and the minimum spectral gap along the path is
+  tracked — the quantity that sets how slow "slow enough" must be.
 - **Trotter error scaling** (`algorithms.trotter_unitary`,
   `trotter_error_scaling`) — assemble the full Trotterized evolution operator and
   measure how its error `|| U_trotter - exp(-iHt) ||` shrinks with the step count.

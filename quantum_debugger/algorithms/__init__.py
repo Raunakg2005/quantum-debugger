@@ -185,6 +185,7 @@ from .thermal import (
     thermal_properties,
 )
 from .imaginary_time import imaginary_time_evolution
+from .adiabatic import adiabatic_evolution
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -371,6 +372,7 @@ __all__ = [
     "partition_function",
     "thermal_properties",
     "imaginary_time_evolution",
+    "adiabatic_evolution",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
