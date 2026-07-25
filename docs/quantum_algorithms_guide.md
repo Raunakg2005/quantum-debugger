@@ -469,6 +469,26 @@ graph_state([(0,1),(1,2)], 3)   # cluster/graph state (H on all, CZ per edge)
 excitation evenly with a cascade of Givens rotations; `graph_state` is the MBQC
 resource state whose stabilizers are `X_i prod_{j~i} Z_j`.
 
+### GHZ vs W: robustness under particle loss
+
+GHZ and W are the two inequivalent classes of 3-qubit entanglement, and losing a
+qubit tells them apart *operationally*:
+
+```python
+from quantum_debugger.algorithms import loss_robustness
+
+r = loss_robustness(3)
+r["ghz_before_loss"]        # 0.5    -- intact GHZ: maximally entangled
+r["ghz_pair_negativity"]    # 0.0    -- lose ONE qubit: fully separable!
+r["w_pair_negativity"]      # 0.206  == (sqrt(5)-1)/6 -- W survivors stay entangled
+```
+
+All of GHZ's entanglement is global — the surviving pair is the classical mixture
+`(|00><00| + |11><11|)/2`. The W state spreads its entanglement pairwise, so any
+surviving pair keeps negativity `(sqrt((n-2)^2+4) - (n-2))/(2n) > 0` for every n
+(exact, verified for n = 3..6). This is why W-type entanglement is preferred when
+qubit loss is the dominant error.
+
 ## QAOA MaxCut Solver
 
 An application-level solver that returns an actual MaxCut *solution* -- the node

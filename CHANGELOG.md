@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **GHZ vs W robustness under particle loss** (`algorithms.loss_robustness`) —
+  the standard demonstration that how entanglement is *shared* matters: tracing one
+  qubit out of an n-qubit GHZ leaves a fully separable mixture (negativity exactly 0,
+  though the intact state is maximally entangled at 1/2), while a W state's surviving
+  pair stays entangled with negativity exactly `(sqrt((n-2)^2+4) - (n-2))/(2n)` —
+  the golden value `(sqrt(5)-1)/6` at n=3 — verified for n = 3..6, diluting but never
+  vanishing as n grows.
 - **Quantum Zeno effect** (`algorithms.quantum_zeno`, `zeno_postselected`) —
   frequent measurement freezes coherent evolution. A Rabi drive interrupted by N
   unread projective measurements (exact measurement channels on the density matrix)
