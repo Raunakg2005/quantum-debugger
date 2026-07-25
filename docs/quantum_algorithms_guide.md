@@ -1270,3 +1270,27 @@ thresholded generalized eigenproblem (the vectors become near-parallel, so the
 overlap matrix is regularized). The Ritz values are always bracketed by the true
 spectrum and converge to its extremes exponentially in `m` — the classical Lanczos
 method, and the blueprint for quantum Krylov / subspace-expansion algorithms.
+
+## Loschmidt Echo & Dynamical Phase Transitions
+
+Quench a state — evolve it under a Hamiltonian it is *not* an eigenstate of — and
+watch how much of it survives:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import quench_dynamics, loschmidt_echo
+
+delta, theta = 2.0, np.pi / 4
+H = np.array([[delta/2, 0], [0, -delta/2]])
+psi0 = np.array([1, 1]) / np.sqrt(2)
+
+r = quench_dynamics(H, psi0, t_max=2*np.pi/delta)
+r["min_echo"]   # ~0 -- the echo hits zero: a dynamical quantum phase transition
+r["revival"]    # True -- coherent few-level dynamics returns near 1
+```
+
+`L(t) = |<psi_0|e^{-iHt}|psi_0>|^2`, and its rate function `-ln L / N` is the
+dynamical analogue of a free energy — cusps in time are DQPTs, where the evolved
+state momentarily becomes orthogonal to the start. Eigenstates give a flat `L = 1`;
+a two-level superposition follows the exact `1 - sin^2(2θ)sin^2(Δt/2)`, verified to
+machine precision.

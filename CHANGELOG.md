@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Loschmidt echo & dynamical quantum phase transitions**
+  (`algorithms.loschmidt_echo`, `rate_function`, `quench_dynamics`) — quench a state
+  under a Hamiltonian and track `L(t) = |<psi_0|e^{-iHt}|psi_0>|^2` and its rate
+  function `-ln L / N`, whose non-analytic cusps mark DQPTs. Verified: an eigenstate
+  never dephases (`L = 1`), a two-level superposition reproduces the analytic
+  `1 - sin^2(2θ) sin^2(Δt/2)` exactly, the rate function peaks precisely where the
+  echo dips, and at `θ = π/4` the echo hits zero — a genuine dynamical phase
+  transition where the evolved state becomes orthogonal to the start.
 - **Krylov subspace diagonalization (Lanczos)** (`algorithms.krylov_spectrum`,
   `krylov_ground_energy`) — build a small subspace `span{|psi>, H|psi>, ...,
   H^{m-1}|psi>}` and diagonalize `H` inside it. The Ritz values converge to the exact
