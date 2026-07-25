@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Holevo bound & accessible information** (`algorithms.holevo_bound`,
+  `accessible_information`, `holevo_gap`) — why a qubit carries at most one
+  classical bit, and why non-orthogonal states can't even deliver that:
+  `chi = S(avg) - sum p_i S(rho_i)` vs the best measurement's mutual information
+  (optimized over the Bloch sphere). Verified against the exact two-pure-state
+  closed forms `chi = h((1+cos t)/2)` and `I_acc = 1 - h((1+sin t)/2)` (Levitin),
+  with a strictly positive gap for non-orthogonal states; the BB84 ensemble gives
+  exactly `chi = 1` but accessible information exactly `1/2` — the eavesdropper's
+  fundamental limit that makes QKD secure.
 - **Channel coherent information & quantum capacity**
   (`algorithms.coherent_information`, `amplitude_damping_capacity`) — quantum
   Shannon theory from first principles: `I_c = S(N(rho)) - S(E)` computed by

@@ -128,6 +128,7 @@ from .nonlocality import (
     werner_nonlocality,
 )
 from .channel_capacity import coherent_information, amplitude_damping_capacity
+from .holevo import holevo_bound, accessible_information, holevo_gap
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -267,6 +268,9 @@ __all__ = [
     "werner_nonlocality",
     "coherent_information",
     "amplitude_damping_capacity",
+    "holevo_bound",
+    "accessible_information",
+    "holevo_gap",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

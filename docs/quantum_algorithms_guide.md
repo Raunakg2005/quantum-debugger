@@ -842,3 +842,30 @@ result = state_tomography(qc.get_statevector().state_vector, shots=8000)
 result["density_matrix"]   # reconstructed 4x4 rho
 result["fidelity"]          # ~1.0 vs the true Bell state
 ```
+
+## The Holevo Bound & Accessible Information
+
+Alice encodes classical data in quantum states; Bob measures. The **Holevo
+quantity** bounds what any measurement can extract — and for non-orthogonal
+states, even that bound is unreachable:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import holevo_gap, holevo_bound, accessible_information
+
+r = holevo_gap(np.pi / 4)      # two pure states with overlap cos(pi/4)
+r["chi"]                       # 0.601 == h((1+cos)/2) -- the Holevo bound
+r["accessible"]                # 0.399 == 1 - h((1+sin)/2) -- best measurement
+r["gap"]                       # 0.202 -- information no measurement can reach
+
+# The BB84 ensemble: the eavesdropper's fundamental limit.
+bb84 = [np.array([1,0]), np.array([0,1]),
+        np.array([1,1])/np.sqrt(2), np.array([1,-1])/np.sqrt(2)]
+holevo_bound([0.25]*4, bb84)            # 1.0 exactly
+accessible_information([0.25]*4, bb84)  # 0.5 exactly
+```
+
+The accessible information is found by genuinely optimizing a projective
+measurement over the Bloch sphere and matches Levitin's closed form. The BB84
+numbers are the security of quantum key distribution in two lines: the four
+states *hold* one bit but surrender only half of it to any single measurement.
