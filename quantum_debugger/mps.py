@@ -296,6 +296,21 @@ class MPS:
             counts[key] = counts.get(key, 0) + 1
         return counts
 
+    def expectation_pauli(self, pauli_string: str) -> float:
+        """
+        Expectation ``<psi|P|psi>`` of a full Pauli string ``P`` (``pauli_string[q]`` in
+        ``I/X/Y/Z`` acts on qubit ``q``), by ``O(n * chi^3)`` contraction -- so any
+        multi-qubit observable is measurable on a large MPS with no dense state.
+        """
+        paulis = {
+            "I": np.eye(2, dtype=complex),
+            "X": np.array([[0, 1], [1, 0]], dtype=complex),
+            "Y": np.array([[0, -1j], [1j, 0]], dtype=complex),
+            "Z": np.array([[1, 0], [0, -1]], dtype=complex),
+        }
+        ops = {i: paulis[p] for i, p in enumerate(pauli_string) if p != "I"}
+        return float(np.real(self._environment_scan(ops) / self._environment_scan({})))
+
     def correlation(self, obs_a, qubit_a: int, obs_b, qubit_b: int) -> float:
         """
         Two-point correlation ``<psi| O_a O_b |psi>`` for single-qubit operators on

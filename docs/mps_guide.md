@@ -52,8 +52,10 @@ mps.expectation(Z, 50)                      # 0.0 -- each qubit is unbiased
   to `max_bond` (the controlled approximation of DMRG/TEBD).
 - `apply_two_long_range(gate, a, b)` — a two-qubit gate on *any* pair, via a SWAP
   ladder (swap together, apply, swap back), so arbitrary connectivity is supported.
-- `expectation(O, qubit)`, `correlation(A, i, B, j)`, `norm()` — computed by
-  `O(n * chi^3)` tensor contraction, never forming the dense state.
+- `expectation(O, qubit)`, `correlation(A, i, B, j)`, `expectation_pauli(string)`,
+  `norm()` — computed by `O(n * chi^3)` tensor contraction, never forming the dense
+  state. `expectation_pauli` measures any multi-qubit Pauli observable (e.g. a
+  20-qubit GHZ's `<X^20> = 1`).
 - `sample(shots, seed)` — draw measurement outcomes by exact sequential conditional
   sampling (right environments), `O(shots * n * chi^2)`; the distribution is the exact
   Born rule, verified against the dense state for small systems.

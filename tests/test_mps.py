@@ -331,6 +331,35 @@ class TestFromCircuit:
         with pytest.raises(NotImplementedError):
             MPS.from_circuit(qc)
 
+class TestPauliExpectation:
+    def test_matches_dense_all_strings(self):
+        from quantum_debugger.algorithms import pauli_term_matrix
+        import itertools
+
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        psi = psi / np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        for labels in itertools.product("IXYZ", repeat=n):
+            ps = "".join(labels)
+            dense = np.real(psi.conj() @ pauli_term_matrix(ps) @ psi)
+            assert abs(m.expectation_pauli(ps) - dense) < 1e-9
+
+    def test_ghz_stabilizers(self):
+        n = 20
+        m = MPS.zero_state(n)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        assert abs(m.expectation_pauli("X" * n) - 1.0) < 1e-9        # X^n stabilizes GHZ
+        assert abs(m.expectation_pauli("Z" + "I" * (n - 2) + "Z") - 1.0) < 1e-9
+
+    def test_identity_string_is_one(self):
+        m = MPS.zero_state(4)
+        m.apply_single(_H, 0)
+        assert abs(m.expectation_pauli("IIII") - 1.0) < 1e-9
+
 
 
 if __name__ == "__main__":

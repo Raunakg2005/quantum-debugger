@@ -13,6 +13,11 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **MPS Pauli-string expectation** (`MPS.expectation_pauli`) — the expectation of any
+  multi-qubit Pauli observable `<psi|P|psi>` on a matrix product state by
+  `O(n·chi^3)` contraction. Verified against the dense value for all 256 Pauli strings
+  on 4 qubits, and a 20-qubit GHZ correctly returns `<X^20> = 1` (its stabilizer) —
+  measuring arbitrary observables on systems too large to store densely.
 - **Circuit → MPS runner** (`MPS.from_circuit`) — run an existing `QuantumCircuit` on
   the tensor-network engine: single-qubit gates applied exactly, two-qubit gates via
   the long-range SWAP path (either control/target ordering handled by re-indexing the
