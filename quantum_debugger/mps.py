@@ -157,6 +157,25 @@ class MPS:
         den = self._environment_scan({})
         return float(np.real(num / den))
 
+    def overlap(self, other: "MPS") -> complex:
+        """
+        Inner product ``<other|self>`` of two MPS on the same number of qubits, by
+        sweeping the double-layer contraction in ``O(n * chi^3)`` -- no dense state.
+        """
+        if other.n != self.n:
+            raise ValueError("MPS overlap requires equal qubit counts")
+        E = np.ones((1, 1), dtype=complex)  # (bra bond, ket bond)
+        for A, B in zip(other.tensors, self.tensors):
+            # E[a,b], B[b,s,b'] -> tmp[a,s,b'] ; then conj(A)[a,s,a'] -> E'[a',b']
+            tmp = np.einsum("ab,bsr->asr", E, B)
+            E = np.einsum("asx,asr->xr", np.conj(A), tmp)
+        return complex(E[0, 0])
+
+    def fidelity(self, other: "MPS") -> float:
+        """State fidelity ``|<other|self>|^2 / (||self||^2 ||other||^2)`` to another MPS."""
+        ov = abs(self.overlap(other)) ** 2
+        return float(ov / (self.norm() ** 2 * other.norm() ** 2))
+
     def bond_entropies(self) -> list:
         """
         Entanglement entropy (bits) across each of the ``n-1`` bonds, from the Schmidt

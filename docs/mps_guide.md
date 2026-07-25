@@ -53,6 +53,8 @@ mps.expectation(Z, 50)                      # 0.0 -- each qubit is unbiased
 - `bond_entropies()` / `entanglement_entropy(bond)` — the entanglement entropy across
   each cut, from the Schmidt spectrum after canonicalization; matches the dense value
   exactly and scales to large systems (a 60-qubit GHZ's profile is instant).
+- `overlap(other)` / `fidelity(other)` — inner product and state fidelity between two
+  MPS by `O(n * chi^3)` double-layer contraction, matching the dense inner product.
 - `bond_dimensions()`, `max_bond_dimension()` — inspect the entanglement structure.
 - `to_statevector()` — contract back to a dense vector (small `n` only).
 

@@ -220,6 +220,47 @@ class TestEntanglementEntropy:
         assert len(ent) == n - 1
         assert all(abs(s - 1.0) < 1e-9 for s in ent)
 
+class TestOverlapFidelity:
+    def test_overlap_matches_dense(self):
+        rng = np.random.default_rng(0)
+        n = 4
+        a = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); a /= np.linalg.norm(a)
+        b = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); b /= np.linalg.norm(b)
+        ov = MPS.from_statevector(a).overlap(MPS.from_statevector(b))
+        assert abs(ov - np.vdot(b, a)) < 1e-9
+
+    def test_fidelity_matches_dense(self):
+        rng = np.random.default_rng(1)
+        n = 4
+        a = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); a /= np.linalg.norm(a)
+        b = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); b /= np.linalg.norm(b)
+        fid = MPS.from_statevector(a).fidelity(MPS.from_statevector(b))
+        assert abs(fid - abs(np.vdot(b, a)) ** 2) < 1e-9
+
+    def test_self_fidelity_is_one(self):
+        m = MPS.zero_state(5)
+        m.apply_single(_H, 0)
+        m.apply_two(_CNOT, 0)
+        assert abs(m.fidelity(m) - 1.0) < 1e-9
+
+    def test_orthogonal_states_zero_overlap(self):
+        a = MPS.zero_state(3)              # |000>
+        b = MPS.zero_state(3); b.apply_single(_X, 0)  # |001>
+        assert abs(a.overlap(b)) < 1e-12
+
+    def test_large_ghz_self_fidelity(self):
+        n = 40
+        m = MPS.zero_state(n, max_bond=4)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        assert abs(m.fidelity(m) - 1.0) < 1e-9
+
+    def test_mismatched_size_rejected(self):
+        with pytest.raises(ValueError):
+            MPS.zero_state(3).overlap(MPS.zero_state(4))
+
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

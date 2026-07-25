@@ -13,6 +13,12 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **MPS overlap & fidelity** (`MPS.overlap`, `MPS.fidelity`) — the inner product
+  `<phi|psi>` of two matrix product states by the double-layer `O(n·chi^3)`
+  contraction, and the state fidelity from it. Verified to match the dense inner
+  product exactly, self-fidelity is 1 (including a 40-qubit GHZ), and orthogonal states
+  give zero overlap — comparing tensor-network states without ever forming them
+  densely.
 - **MPS entanglement entropy** (`MPS.bond_entropies`, `MPS.entanglement_entropy`) —
   the entanglement entropy across every bond, read from the Schmidt spectrum by
   canonicalizing the network (right-to-left then left-to-right SVD sweeps), scaling to
