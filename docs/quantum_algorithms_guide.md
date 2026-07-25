@@ -226,6 +226,28 @@ above it every round improves the pair, below it distillation only makes things
 worse — matching exactly the Werner state's entanglement threshold (checked via
 negativity).
 
+### DEJMPS: distilling any Bell-diagonal state
+
+BBPSSW assumes Werner inputs. The **DEJMPS** protocol (Deutsch et al., 1996) adds
+local `Rx(±pi/2)` rotations before the bilateral CNOTs and handles *any*
+Bell-diagonal state — converging faster because it never throws the noise
+asymmetry away:
+
+```python
+from quantum_debugger.algorithms import dejmps_distill, dejmps_rounds
+
+# All the noise concentrated in one Bell component (fidelity still 0.7):
+r = dejmps_distill((0.7, 0.3, 0.0, 0.0))
+r["fidelity"]              # 0.845  -- vs 0.735 for BBPSSW at the same F!
+r["coefficients"]          # all four output Bell weights, == the exact recurrence
+
+dejmps_rounds((0.7, 0.3, 0.0, 0.0), 0.99)["rounds"]   # fewer rounds than BBPSSW
+```
+
+The 4-qubit circuit reproduces the four-coefficient DEJMPS recurrence to machine
+precision, and on Werner inputs it reduces exactly to BBPSSW — the two protocols
+agree where their domains overlap.
+
 ## Noisy Entanglement Swapping & Repeater Chains
 
 Distillation's partner primitive. A middle node holding halves of two noisy pairs

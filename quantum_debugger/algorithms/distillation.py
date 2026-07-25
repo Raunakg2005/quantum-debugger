@@ -83,6 +83,103 @@ def bbpssw_distill(F: float) -> dict:
     }
 
 
+def bell_diagonal_state(l1: float, l2: float, l3: float, l4: float) -> np.ndarray:
+    """
+    Bell-diagonal two-qubit state with weights ``(l1, l2, l3, l4)`` on
+    ``(|Phi+>, |Phi->, |Psi+>, |Psi->)``. Weights must sum to 1. The Werner state
+    is the special case ``l2 = l3 = l4``.
+    """
+    rho = np.zeros((4, 4), dtype=complex)
+    for lam, bell in zip((l1, l2, l3, l4), (_PHI_P, _PHI_M, _PSI_P, _PSI_M)):
+        rho = rho + lam * np.outer(bell, bell.conj())
+    return rho
+
+
+def _rx(theta):
+    c, s = np.cos(theta / 2), np.sin(theta / 2)
+    return np.array([[c, -1j * s], [-1j * s, c]], dtype=complex)
+
+
+def dejmps_recurrence(lams) -> tuple:
+    """
+    One round of the DEJMPS map on Bell-diagonal weights ``(l1, l2, l3, l4)``
+    (order ``Phi+, Phi-, Psi+, Psi-``). Returns ``(new_weights, success_probability)``:
+
+        l1' = (l1^2 + l4^2)/N,   l2' = 2 l1 l4 / N,
+        l3' = (l2^2 + l3^2)/N,   l4' = 2 l2 l3 / N,
+        N   = (l1 + l4)^2 + (l2 + l3)^2   (the success probability).
+    """
+    l1, l2, l3, l4 = lams
+    N = (l1 + l4) ** 2 + (l2 + l3) ** 2
+    return ((l1**2 + l4**2) / N, 2 * l1 * l4 / N, (l2**2 + l3**2) / N, 2 * l2 * l3 / N), N
+
+
+def dejmps_distill(lams) -> dict:
+    """
+    One round of DEJMPS distillation (Deutsch et al., Phys. Rev. Lett. 77, 2818,
+    1996) on two identical Bell-diagonal pairs with weights ``lams``
+    (order ``Phi+, Phi-, Psi+, Psi-``), run as the exact 4-qubit circuit:
+    Alice rotates her qubits by ``Rx(pi/2)``, Bob by ``Rx(-pi/2)``, bilateral CNOTs,
+    measure pair 2, keep pair 1 iff the outcomes agree.
+
+    Unlike BBPSSW (which needs Werner inputs), DEJMPS works on any Bell-diagonal
+    state and converges faster because it never discards the weight asymmetry.
+
+    Returns dict with ``coefficients`` (the output weights, matching the closed-form
+    recurrence exactly), ``fidelity`` (the ``Phi+`` weight), ``success_probability``,
+    and ``analytic`` (the recurrence's prediction).
+    """
+    # Qubits (little-endian): A1=0, B1=1, A2=2, B2=3.
+    rho_pair = bell_diagonal_state(*lams)
+    dm = DensityMatrix(rho=np.kron(rho_pair, rho_pair))
+    for q in (0, 2):
+        dm.apply_unitary(_rx(np.pi / 2), [q])  # Alice
+    for q in (1, 3):
+        dm.apply_unitary(_rx(-np.pi / 2), [q])  # Bob
+    dm.apply_unitary(GateLibrary.CNOT, [0, 2])
+    dm.apply_unitary(GateLibrary.CNOT, [1, 3])
+
+    n = 4
+    p00 = _embed(_P0, [2], n) @ _embed(_P0, [3], n)
+    p11 = _embed(_P1, [2], n) @ _embed(_P1, [3], n)
+    kept = p00 @ dm.rho @ p00 + p11 @ dm.rho @ p11
+    p_success = float(np.real(np.trace(kept)))
+    pair = DensityMatrix(rho=kept / p_success).partial_trace([0, 1])
+
+    coeffs = tuple(
+        float(np.real(b.conj() @ pair.rho @ b)) for b in (_PHI_P, _PHI_M, _PSI_P, _PSI_M)
+    )
+    analytic, N = dejmps_recurrence(lams)
+    return {
+        "coefficients": coeffs,
+        "fidelity": coeffs[0],
+        "success_probability": p_success,
+        "analytic": analytic,
+    }
+
+
+def dejmps_rounds(lams, target: float, max_rounds: int = 50) -> dict:
+    """
+    Iterate the (exact) DEJMPS recurrence until the ``Phi+`` weight reaches
+    ``target``. Bell-diagonal states are closed under the map, so the scalar
+    recurrence is the exact physics of repeated rounds.
+
+    Returns dict with ``rounds``, ``fidelities`` (trajectory of the ``Phi+`` weight),
+    and ``reached``.
+    """
+    lams = tuple(float(x) for x in lams)
+    fids = [lams[0]]
+    for _ in range(max_rounds):
+        if fids[-1] >= target:
+            break
+        prev = fids[-1]
+        lams, _ = dejmps_recurrence(lams)
+        fids.append(lams[0])
+        if fids[-1] <= prev + 1e-15:  # not converging (e.g. below threshold)
+            return {"rounds": len(fids) - 1, "fidelities": fids, "reached": False}
+    return {"rounds": len(fids) - 1, "fidelities": fids, "reached": fids[-1] >= target}
+
+
 def entanglement_swap_noisy(F1: float, F2: float) -> dict:
     """
     Entanglement swapping with noisy pairs: A-B (Werner ``F1``) and B-C (Werner

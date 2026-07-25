@@ -111,6 +111,10 @@ from .distillation import (
     distillation_rounds,
     entanglement_swap_noisy,
     repeater_chain,
+    bell_diagonal_state,
+    dejmps_distill,
+    dejmps_recurrence,
+    dejmps_rounds,
 )
 from .decoherence_free import collective_dephasing, dfs_encode, dfs_protection
 from .dynamical_decoupling import spin_echo, echo_state_fidelity
@@ -236,6 +240,10 @@ __all__ = [
     "distillation_rounds",
     "entanglement_swap_noisy",
     "repeater_chain",
+    "bell_diagonal_state",
+    "dejmps_distill",
+    "dejmps_recurrence",
+    "dejmps_rounds",
     "collective_dephasing",
     "dfs_encode",
     "dfs_protection",

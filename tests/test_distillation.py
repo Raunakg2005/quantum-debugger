@@ -146,5 +146,74 @@ class TestRepeaterChain:
             repeater_chain(0.9, 0)
 
 
+class TestDEJMPS:
+    @pytest.mark.parametrize("seed", range(6))
+    def test_circuit_matches_recurrence(self, seed):
+        from quantum_debugger.algorithms import dejmps_distill
+
+        rng = np.random.default_rng(seed)
+        lams = tuple(rng.dirichlet([2, 1, 1, 1]))
+        r = dejmps_distill(lams)
+        for got, want in zip(r["coefficients"], r["analytic"]):
+            assert abs(got - want) < 1e-9
+        l1, l2, l3, l4 = lams
+        N = (l1 + l4) ** 2 + (l2 + l3) ** 2
+        assert abs(r["success_probability"] - N) < 1e-9
+
+    def test_werner_input_reduces_to_bbpssw(self):
+        from quantum_debugger.algorithms import dejmps_distill, bbpssw_distill
+
+        F = 0.75
+        r = (1 - F) / 3
+        d = dejmps_distill((F, r, r, r))
+        b = bbpssw_distill(F)
+        assert abs(d["fidelity"] - b["fidelity"]) < 1e-9
+        assert abs(d["success_probability"] - b["success_probability"]) < 1e-9
+
+    def test_beats_bbpssw_on_asymmetric_state(self):
+        # Same total fidelity 0.7, but all the noise in one Bell component:
+        # DEJMPS keeps the asymmetry and purifies much faster than BBPSSW
+        # (which would first twirl the state to Werner form).
+        from quantum_debugger.algorithms import dejmps_distill, bbpssw_distill
+
+        d = dejmps_distill((0.7, 0.3, 0.0, 0.0))
+        b = bbpssw_distill(0.7)
+        assert d["fidelity"] > b["fidelity"] + 0.05  # 0.845 vs 0.735
+
+    def test_rounds_reach_target(self):
+        from quantum_debugger.algorithms import dejmps_rounds
+
+        r = dejmps_rounds((0.7, 0.1, 0.1, 0.1), 0.999)
+        assert r["reached"]
+        fids = r["fidelities"]
+        assert all(b > a for a, b in zip(fids, fids[1:]))
+
+    def test_rounds_faster_than_bbpssw(self):
+        from quantum_debugger.algorithms import dejmps_rounds, distillation_rounds
+
+        target = 0.99
+        dej = dejmps_rounds((0.7, 0.3, 0.0, 0.0), target)
+        bbp = distillation_rounds(0.7, target)
+        assert dej["reached"] and bbp["reached"]
+        assert dej["rounds"] <= bbp["rounds"]
+
+    def test_below_threshold_not_reached(self):
+        from quantum_debugger.algorithms import dejmps_rounds
+
+        r = dejmps_rounds((0.25, 0.25, 0.25, 0.25), 0.9)
+        assert not r["reached"]
+
+    def test_bell_diagonal_state_valid(self):
+        from quantum_debugger.algorithms import bell_diagonal_state
+        from quantum_debugger.density_matrix import DensityMatrix
+
+        rho = bell_diagonal_state(0.4, 0.3, 0.2, 0.1)
+        assert abs(np.trace(rho).real - 1.0) < 1e-12
+        assert np.all(np.linalg.eigvalsh(rho) > -1e-12)
+        # Pure Phi+ at (1,0,0,0).
+        phi_p = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        assert np.allclose(bell_diagonal_state(1, 0, 0, 0), np.outer(phi_p, phi_p.conj()))
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

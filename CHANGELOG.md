@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **DEJMPS distillation** (`algorithms.dejmps_distill`, `bell_diagonal_state`,
+  `dejmps_recurrence`, `dejmps_rounds`) — the protocol real repeaters use: works on
+  *any* Bell-diagonal state (BBPSSW needs Werner) via local `Rx(±pi/2)` rotations
+  before the bilateral CNOTs. The exact 4-qubit circuit reproduces the Deutsch et al.
+  four-coefficient recurrence to machine precision (all Bell weights, plus success
+  probability `(l1+l4)^2 + (l2+l3)^2`); on Werner inputs it reduces exactly to
+  BBPSSW, and on an asymmetric state of the same fidelity it purifies strictly
+  faster (0.845 vs 0.735 in one round from F = 0.7). Bell-diagonal states are closed
+  under the map, so `dejmps_rounds` iterates the exact recurrence to a target.
 - **GHZ vs W robustness under particle loss** (`algorithms.loss_robustness`) —
   the standard demonstration that how entanglement is *shared* matters: tracing one
   qubit out of an n-qubit GHZ leaves a fully separable mixture (negativity exactly 0,
