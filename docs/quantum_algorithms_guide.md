@@ -641,6 +641,30 @@ r["fidelity"]                                  # 1.0 for ANY single-qubit error
 `error` is `"I"` or `"<P><q>"` with `P` in `X/Y/Z` and `q` in `0..4`. Every one of the
 15 single-qubit errors is corrected to fidelity 1 for an arbitrary logical input.
 
+### The Steane code [[7,1,3]]
+
+The classic **CSS code**, built from the classical [7,4,3] Hamming code. Its six
+stabilizers split into three X-type and three Z-type generators taken from the same
+Hamming parity-check matrix — so X and Z errors are detected and decoded
+*independently* (a Y error just trips both sets):
+
+```python
+from quantum_debugger.algorithms import steane_code, steane_stabilizers
+
+steane_stabilizers()
+# ['IIIXXXX', 'IXXIIXX', 'XIXIXIX', 'IIIZZZZ', 'IZZIIZZ', 'ZIZIZIZ']
+
+r = steane_code(0.6, 0.8j, error="Z5")
+r["syndrome"]      # Z-type half is (0,0,0): a Z error only trips X-type checks
+r["correction"]    # 'Z5'
+r["fidelity"]      # 1.0 for ANY single-qubit error
+```
+
+The CSS structure is what makes the Steane code the workhorse of fault-tolerance
+theory: transversal CNOT, H, and S gates all preserve the code space. Together the
+QEC family now spans the 3-qubit repetition codes, the [[5,1,3]] perfect code, the
+[[7,1,3]] Steane code, and the 9-qubit Shor code.
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated

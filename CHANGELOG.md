@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Steane 7-qubit code [[7,1,3]]** (`algorithms.steane_code`,
+  `steane_stabilizers`) — the CSS code built from the classical [7,4,3] Hamming code,
+  correcting an arbitrary single-qubit error. Three X-type and three Z-type stabilizer
+  generators decode Z and X errors independently (a Y error trips both). Verified:
+  all 22 syndromes distinct, every one of the 21 single-qubit errors corrected to
+  fidelity 1 for arbitrary logical inputs, and the CSS structure confirmed (a pure X
+  error leaves all X-type stabilizers at +1 and vice versa). Completes the code
+  family: 3-qubit repetition → [[5,1,3]] → [[7,1,3]] → 9-qubit Shor.
 - **5-qubit perfect code [[5,1,3]]** (`algorithms.five_qubit_code`,
   `five_qubit_stabilizers`) — the smallest code that corrects an *arbitrary*
   single-qubit error. Encodes a logical qubit via the stabilizer projector, applies a

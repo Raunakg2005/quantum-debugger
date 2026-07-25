@@ -98,6 +98,7 @@ from .qec_noise import (
     repetition_code_logical_error,
 )
 from .perfect_code import five_qubit_code, five_qubit_stabilizers
+from .steane_code import steane_code, steane_stabilizers
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -207,6 +208,8 @@ __all__ = [
     "repetition_code_logical_error",
     "five_qubit_code",
     "five_qubit_stabilizers",
+    "steane_code",
+    "steane_stabilizers",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
