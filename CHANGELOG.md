@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Out-of-time-order correlators (scrambling)** (`algorithms.otoc`,
+  `scrambling_time`) — the butterfly effect of quantum chaos: the growth of
+  `C(t) = <|[W(t), V]|^2>` as a local operator spreads across the lattice. Verified
+  the exact structure — `C(0) = 0` for spatially-separated operators (they commute),
+  `C(0) = 4` for anticommuting same-site operators, `C(t) >= 0` always, and the exact
+  identity `C(t) = 2(1 - Re F(t))` with the OTOC `F(0) = 1`. `scrambling_time` tracks
+  a perturbation from one edge to the other and finds when it arrives — the far qubit
+  lagging the near one, the operator light cone made quantitative.
 - **Loschmidt echo & dynamical quantum phase transitions**
   (`algorithms.loschmidt_echo`, `rate_function`, `quench_dynamics`) — quench a state
   under a Hamiltonian and track `L(t) = |<psi_0|e^{-iHt}|psi_0>|^2` and its rate

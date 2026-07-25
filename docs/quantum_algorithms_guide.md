@@ -1294,3 +1294,27 @@ dynamical analogue of a free energy — cusps in time are DQPTs, where the evolv
 state momentarily becomes orthogonal to the start. Eigenstates give a flat `L = 1`;
 a two-level superposition follows the exact `1 - sin^2(2θ)sin^2(Δt/2)`, verified to
 machine precision.
+
+## Out-of-Time-Order Correlators (Scrambling)
+
+How fast does a local disturbance spread — the quantum butterfly effect? The OTOC
+tracks the growth of a commutator between a time-evolved operator and a distant one:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import scrambling_time, hamiltonian_matrix, tfim_hamiltonian
+
+n = 4
+H = hamiltonian_matrix(tfim_hamiltonian(n, 1.0, 1.0), n)
+
+r = scrambling_time(H, n, t_max=8.0)
+r["C"][0]                 # 0 -- edges commute initially
+r["scrambling_time"]      # when the disturbance reaches the far edge
+r["max_C"]                # peak commutator growth
+```
+
+`C(t) = <|[W(t), V]|^2>` with `W(t) = e^{iHt} W e^{-iHt}`; it starts at 0 (separated
+operators commute) and grows as `W` scrambles across the system. The exact identity
+`C(t) = 2(1 - Re F(t))` links it to the OTOC `F(t)`, and comparing near vs far
+operators reveals the operator light cone — information cannot spread faster than the
+interactions allow.
