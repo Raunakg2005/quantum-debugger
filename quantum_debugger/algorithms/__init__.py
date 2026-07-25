@@ -130,7 +130,12 @@ from .nonlocality import (
     werner_nonlocality,
 )
 from .channel_capacity import coherent_information, amplitude_damping_capacity
-from .holevo import holevo_bound, accessible_information, holevo_gap
+from .holevo import (
+    holevo_bound,
+    accessible_information,
+    holevo_gap,
+    dense_coding_capacity,
+)
 from .discrimination import (
     helstrom_bound,
     helstrom_measurement,
@@ -294,6 +299,7 @@ __all__ = [
     "holevo_bound",
     "accessible_information",
     "holevo_gap",
+    "dense_coding_capacity",
     "helstrom_bound",
     "helstrom_measurement",
     "unambiguous_discrimination",

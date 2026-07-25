@@ -84,5 +84,38 @@ class TestAccessibleInformation:
         assert accessible_information(probs, states) <= holevo_bound(probs, states) + 1e-9
 
 
+class TestDenseCodingCapacity:
+    def test_perfect_bell_pair_two_bits(self):
+        from quantum_debugger.algorithms import dense_coding_capacity
+
+        r = dense_coding_capacity(1.0)
+        assert abs(r["capacity"] - 2.0) < 1e-9
+        assert r["beats_classical"]
+
+    @pytest.mark.parametrize("F", [0.9, 0.75, 0.5, 0.3])
+    def test_ensemble_matches_closed_form(self, F):
+        from quantum_debugger.algorithms import dense_coding_capacity
+
+        r = dense_coding_capacity(F)
+        assert abs(r["capacity"] - r["analytic"]) < 1e-9
+
+    def test_maximally_mixed_resource_useless(self):
+        from quantum_debugger.algorithms import dense_coding_capacity
+
+        assert dense_coding_capacity(0.25)["capacity"] < 1e-9
+
+    def test_quantum_advantage_lost_below_threshold(self):
+        from quantum_debugger.algorithms import dense_coding_capacity
+
+        assert dense_coding_capacity(0.9)["beats_classical"]
+        assert not dense_coding_capacity(0.7)["beats_classical"]
+
+    def test_monotone_in_fidelity(self):
+        from quantum_debugger.algorithms import dense_coding_capacity
+
+        caps = [dense_coding_capacity(F)["capacity"] for F in (0.3, 0.5, 0.7, 0.9, 1.0)]
+        assert all(b > a for a, b in zip(caps, caps[1:]))
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

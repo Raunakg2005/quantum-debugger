@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Dense coding with a noisy resource** (`algorithms.dense_coding_capacity`) —
+  superdense coding meets reality: encoding 2 bits by local Paulis on half a
+  Werner pair gives an ensemble whose Holevo capacity (computed directly with
+  `holevo_bound`) equals `2 - S(rho_W)` exactly at every fidelity. A perfect Bell
+  pair delivers 2 bits, the maximally mixed resource exactly 0, capacity is
+  monotone in F, and the *quantum advantage* (beating the 1 classical bit) is lost
+  well before entanglement is — another resource-hierarchy gap, quantified.
 - **Magic measures: stabilizer Renyi entropy**
   (`algorithms.stabilizer_renyi_entropy`, `magic_of_t_states`) — quantify the
   resource that takes computation beyond classically-simulable Clifford circuits:

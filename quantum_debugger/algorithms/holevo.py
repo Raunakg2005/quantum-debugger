@@ -103,6 +103,47 @@ def accessible_information(probs, states, restarts: int = 8, seed: int = 0) -> f
     return best
 
 
+def dense_coding_capacity(F: float) -> dict:
+    """
+    Superdense coding with a *noisy* shared resource: Alice encodes 2 bits by
+    applying I/X/Y/Z to her half of a Werner pair of fidelity ``F`` and sends it.
+    Bob's best decoding extracts the Holevo quantity of the resulting 4-state
+    ensemble, computed here directly with :func:`holevo_bound` and equal to the
+    closed form
+
+        C = 2 - S(rho_W)      (the average encoded state is I/4),
+
+    where ``S`` is the Werner state's entropy. ``C = 2`` bits for a perfect Bell
+    pair, drops below the classical 1 bit when the pair is too noisy, and hits 0
+    for the maximally mixed resource (``F = 1/4``).
+
+    Returns dict with ``capacity`` (from the ensemble), ``analytic``
+    (``2 - S(rho_W)``), and ``beats_classical`` (``capacity > 1``).
+    """
+    from .distillation import werner_state
+
+    rho = werner_state(F)
+    paulis = [
+        np.eye(2, dtype=complex),
+        np.array([[0, 1], [1, 0]], dtype=complex),
+        np.array([[0, -1j], [1j, 0]], dtype=complex),
+        np.array([[1, 0], [0, -1]], dtype=complex),
+    ]
+    # Alice's qubit is qubit 0 (little-endian): encoded state (I x P_A) rho (...)
+    ensemble = []
+    for P in paulis:
+        op = np.kron(np.eye(2, dtype=complex), P)
+        ensemble.append(op @ rho @ op.conj().T)
+    capacity = holevo_bound([0.25] * 4, ensemble)
+
+    s_w = DensityMatrix(rho=rho).von_neumann_entropy()
+    return {
+        "capacity": capacity,
+        "analytic": 2 - s_w,
+        "beats_classical": capacity > 1 + 1e-9,
+    }
+
+
 def holevo_gap(theta: float) -> dict:
     """
     The gap for two equiprobable pure states ``|0>`` and

@@ -1039,3 +1039,22 @@ states (verified on random Clifford orbits from the tableau engine), invariant
 under every Clifford gate (H, S, CNOT — verified), and additive. Each T state
 carries `log2(4/3) ~ 0.415` of magic — the quantity that magic-state distillation
 concentrates and `inject_t_gate` spends, one T gate per state.
+
+### Dense coding with a noisy resource
+
+How much of superdense coding's 2-bit capacity survives a noisy shared pair?
+
+```python
+from quantum_debugger.algorithms import dense_coding_capacity
+
+dense_coding_capacity(1.0)["capacity"]    # 2.0  bits -- perfect Bell pair
+dense_coding_capacity(0.9)["capacity"]    # 1.37 -- still beats 1 classical bit
+dense_coding_capacity(0.7)["capacity"]    # 0.88 -- quantum advantage GONE
+dense_coding_capacity(0.25)["capacity"]   # 0.0  -- maximally mixed = useless
+```
+
+The four Pauli-encoded states form an ensemble whose Holevo quantity — computed
+directly with `holevo_bound` — equals `2 - S(rho_W)` exactly. Note the hierarchy:
+the quantum advantage disappears near `F ~ 0.81`, while the pair stays *entangled*
+down to `F = 1/2` — entanglement is necessary but not sufficient for beating the
+classical channel.
