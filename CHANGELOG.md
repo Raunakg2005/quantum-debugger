@@ -5,6 +5,16 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (1.2.0.dev)
+
+Theme: hardware realism & error mitigation — the NISQ capstone of the roadmap.
+Realistic device noise, and the mitigation techniques that squeeze signal out of
+noisy hardware: readout-error correction, zero-noise extrapolation, symmetry
+verification, virtual distillation, and probabilistic error cancellation — each
+verified to recover the noise-free expectation value.
+
+### Added
+
 ## [1.1.0]
 
 Theme: QSVT & modern algorithm primitives — the unifying framework behind today's
