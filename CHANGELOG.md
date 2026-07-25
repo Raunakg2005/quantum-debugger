@@ -5,12 +5,21 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.0.0.dev)
+## [1.0.0]
 
-Theme: scale & tensor networks — breaking the exponential state-vector wall. A
-matrix-product-state simulator for large, low-entanglement systems, and the
-large-scale tooling built around it. (The 1.0 milestone: from "simulate a handful of
-qubits exactly" to "simulate many qubits when entanglement allows.")
+Theme: scale & tensor networks — breaking the exponential state-vector wall. The
+headline is a full **matrix product state** engine (`quantum_debugger.mps.MPS`):
+construction from a state vector or a `QuantumCircuit`, exact single-qubit and
+SVD-truncated two-qubit gates (nearest-neighbour and long-range via SWAP networks),
+and a complete `O(n·chi^2)` readout toolkit — expectation values, arbitrary
+Pauli-string and Pauli-sum-Hamiltonian energies, correlations, entanglement entropy
+across every bond, overlap/fidelity between states, and exact Born-rule sampling —
+none of which ever forms the dense state. On top of it, TEBD gives real-time dynamics
+and imaginary-time DMRG-style ground states. Every MPS operation is verified against
+the state-vector simulator; the engine scales to 100-qubit GHZ states, 40-qubit
+quenches, and 24-qubit ground states — moving the library from "≤25 qubits exactly"
+to "hundreds of qubits when entanglement allows." (The major-version bump the
+tensor-network capability earns.)
 
 ### Added
 - **MPS Hamiltonian energy** (`MPS.energy`) — evaluate `<psi|H|psi>` for any
