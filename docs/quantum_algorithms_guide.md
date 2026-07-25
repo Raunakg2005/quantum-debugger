@@ -899,3 +899,23 @@ The Helstrom measurement projects onto the positive part of `p0 rho0 - p1 rho1`
 elements are orthogonal to the *other* state, so a conclusive click is a
 guarantee. Certainty costs success rate: `1 - |s|` < the Helstrom success
 `(1 + sqrt(1-s^2))/2` for every overlap `s != 0`.
+
+## Optimal Universal Cloning (Buzek-Hillery)
+
+Perfect cloning is impossible — but the *optimal imperfect* cloner is exactly
+known, and it is a genuine 3-qubit circuit:
+
+```python
+from quantum_debugger.algorithms import universal_clone
+
+r = universal_clone(0.6, 0.8j)     # clone an arbitrary unknown qubit
+r["clone1_fidelity"]               # 0.8333... = 5/6 exactly
+r["clone2_fidelity"]               # 0.8333... = 5/6 -- clones identical
+r["classical_limit"]               # 2/3 -- best measure-and-prepare strategy
+```
+
+The Buzek-Hillery isometry sends `|psi>|0>|0>` to a symmetric 3-qubit state whose
+two clone marginals are each `5/6 |psi><psi| + 1/6 |psi_perp><psi_perp|` — the
+same fidelity for *every* input (universality, verified on random states). The
+gap between 5/6 (quantum) and 2/3 (classical) is another face of the Holevo/
+discrimination limits above; the gap between 5/6 and 1 is the no-cloning theorem.

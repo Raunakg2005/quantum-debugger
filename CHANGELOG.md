@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Optimal universal quantum cloning (Buzek-Hillery)**
+  (`algorithms.universal_clone`) — no-cloning made quantitative: the exact 1 -> 2
+  cloning machine (a verified 8x2 isometry with two clones + ancilla) copies ANY
+  unknown qubit with fidelity exactly 5/6 — the proven optimum — for every input
+  state (universality confirmed on random states to 1e-12), with the two clones
+  identical. Beats the best classical measure-and-prepare strategy (2/3) while
+  respecting the no-cloning bound (< 1).
 - **Logical qubit lifetime under repeated QEC cycles**
   (`algorithms.repeated_qec_cycles`) — the fault-tolerance payoff, exact: each
   (noise -> recovery) cycle of the 3-qubit bit-flip code acts on the code space as a

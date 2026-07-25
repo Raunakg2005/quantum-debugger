@@ -135,6 +135,7 @@ from .discrimination import (
     helstrom_measurement,
     unambiguous_discrimination,
 )
+from .cloning import universal_clone
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -281,6 +282,7 @@ __all__ = [
     "helstrom_bound",
     "helstrom_measurement",
     "unambiguous_discrimination",
+    "universal_clone",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
