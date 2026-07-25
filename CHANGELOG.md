@@ -5,11 +5,18 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (0.9.0.dev)
+## [0.9.0]
 
-Theme: quantum chemistry & advanced simulation — fermionic systems (Jordan-Wigner),
-molecular Hamiltonians, and the algorithms that run on them. (Open systems, noise,
-and fault tolerance largely landed in 0.8.0.)
+Theme: quantum chemistry, many-body physics & advanced simulation. Fermionic systems
+(Jordan-Wigner, Fermi-Hubbard, the Kitaev topological chain), ground- and
+excited-state solvers (chemistry-via-VQE with Pauli decomposition, imaginary-time
+cooling, Krylov/Lanczos, adiabatic evolution), finite-temperature physics (Gibbs
+states & thermodynamics), quantum dynamics (Trotter error scaling, Loschmidt echo &
+DQPTs, out-of-time-order correlators, entanglement growth), quantum chaos (level-
+spacing statistics), metrology (spin squeezing, mixed-state QFI), and the modern
+measurement/tensor-network toolkit (classical shadows, Schmidt decomposition & the
+area law). Every routine verified against a closed form or an independent
+computation. (Open systems, noise, and fault tolerance landed in 0.8.0.)
 
 ### Added
 - **Schmidt decomposition & the area law** (`algorithms.schmidt_decomposition`,
