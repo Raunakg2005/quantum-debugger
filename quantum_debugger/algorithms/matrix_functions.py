@@ -47,6 +47,59 @@ def matrix_function_chebyshev(matrix, func, degree: int) -> np.ndarray:
     return result
 
 
+def matrix_inverse_qsvt(matrix, degree: int = 30, samples: int = 400) -> np.ndarray:
+    """
+    Approximate ``A^{-1}`` for a Hermitian positive-definite ``matrix`` (spectrum in
+    ``(0, 1]``) by fitting ``1/x`` with a Chebyshev series over the spectral support and
+    building each ``T_k(A)`` from the qubitization walk -- the QSVT route to matrix
+    inversion (the heart of the quantum linear-systems algorithm).
+
+    The fit of the singular ``1/x`` is ill-conditioned at high ``degree``; ``degree``
+    should scale with the condition number. Returns the approximate inverse.
+    """
+    import warnings
+    from numpy.polynomial import chebyshev as _cheb
+
+    A = np.asarray(matrix, dtype=complex)
+    d = A.shape[0]
+    w = np.linalg.eigvalsh(A).real
+    lo, hi = w.min(), w.max()
+    xs = np.linspace(lo, hi, samples)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")  # 1/x fit is expectedly ill-conditioned
+        coeffs = _cheb.chebfit(xs, 1.0 / xs, degree)
+
+    result = np.zeros((d, d), dtype=complex)
+    for k, ck in enumerate(coeffs):
+        Tk = np.eye(d, dtype=complex) if k == 0 else chebyshev_of_matrix(A, k)
+        result += ck * Tk
+    return result
+
+
+def solve_linear_system_qsvt(matrix, b, degree: int = 30) -> dict:
+    """
+    Solve ``A x = b`` for a Hermitian positive-definite ``matrix`` via the QSVT matrix
+    inverse.
+
+    Returns dict with ``solution`` (the QSVT ``A^{-1} b``), ``exact`` (``numpy.linalg.solve``),
+    ``error`` (2-norm), and ``fidelity`` (normalized overlap of the two solutions).
+    """
+    A = np.asarray(matrix, dtype=complex)
+    b = np.asarray(b, dtype=complex)
+    x = matrix_inverse_qsvt(A, degree) @ b
+    exact = np.linalg.solve(A, b)
+    fidelity = float(
+        abs(np.vdot(exact, x)) ** 2
+        / (np.linalg.norm(exact) ** 2 * np.linalg.norm(x) ** 2)
+    )
+    return {
+        "solution": x,
+        "exact": exact,
+        "error": float(np.linalg.norm(x - exact)),
+        "fidelity": fidelity,
+    }
+
+
 def hamiltonian_simulation_qsvt(hamiltonian, time: float, degree: int = 20) -> dict:
     """
     Approximate the time-evolution operator ``e^{-i H t}`` of a Hermitian

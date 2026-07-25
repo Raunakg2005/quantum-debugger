@@ -1586,3 +1586,25 @@ each `T_k(A)` from the qubitization walk (a linear combination of walk powers). 
 series converges geometrically for smooth `f`, so choosing `f(x) = e^{-ixt}` gives
 Hamiltonian simulation, `f(x) = 1/x` gives matrix inversion, and a smoothed step
 function gives a spectral projector — all from the single QSVT primitive.
+
+## Quantum Linear Systems via QSVT
+
+Approximating `1/x` with QSVT solves `A x = b` — the QSVT form of the HHL algorithm:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import solve_linear_system_qsvt
+
+A = np.diag([0.2, 0.5, 0.9])          # Hermitian positive-definite
+b = np.array([1.0, 2.0, -1.0])
+
+r = solve_linear_system_qsvt(A, b, degree=40)
+r["solution"]     # A^{-1} b, matching numpy.linalg.solve to < 1e-5
+r["fidelity"]     # ~1.0
+```
+
+`matrix_inverse_qsvt` fits `1/x` on the matrix's spectral support and assembles
+`sum_k c_k T_k(A)` from the qubitization walk. Because `1/x` is singular, the fit is
+ill-conditioned and the required degree grows with the condition number — the same
+`1/kappa` cost that appears in HHL. Together with `hamiltonian_simulation_qsvt`, this
+shows the two canonical quantum algorithms falling out of the single QSVT primitive.

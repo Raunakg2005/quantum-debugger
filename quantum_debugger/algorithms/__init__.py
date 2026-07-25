@@ -235,6 +235,8 @@ from .matrix_functions import (
     chebyshev_coefficients,
     matrix_function_chebyshev,
     hamiltonian_simulation_qsvt,
+    matrix_inverse_qsvt,
+    solve_linear_system_qsvt,
 )
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
@@ -466,6 +468,8 @@ __all__ = [
     "chebyshev_coefficients",
     "matrix_function_chebyshev",
     "hamiltonian_simulation_qsvt",
+    "matrix_inverse_qsvt",
+    "solve_linear_system_qsvt",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

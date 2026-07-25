@@ -13,6 +13,14 @@ unitaries (LCU), and quantum singular value transformation, each verified agains
 polynomial or matrix function it is supposed to implement.
 
 ### Added
+- **Quantum linear systems via QSVT** (`algorithms.matrix_inverse_qsvt`,
+  `solve_linear_system_qsvt`) — the other headline QSVT application: approximate
+  `A^{-1}` by fitting `1/x` over the spectral support and building the Chebyshev series
+  from the qubitization walk, then solve `Ax = b` — the QSVT form of the quantum
+  linear-systems (HHL) problem. Verified against `numpy.linalg.solve`: the inverse
+  converges to `< 1e-6` (improving with degree), `A^{-1}·A = I`, the solution matches
+  to `< 1e-5` with residual `||Ax-b||` tiny and fidelity ~1. (The `1/x` fit is
+  ill-conditioned, so the degree must scale with the condition number — documented.)
 - **Matrix functions & Hamiltonian simulation via QSVT**
   (`algorithms.matrix_function_chebyshev`, `hamiltonian_simulation_qsvt`,
   `chebyshev_coefficients`) — the payoff of the QSVT machinery: approximate any smooth
