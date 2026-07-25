@@ -19,6 +19,8 @@ recovers the state exactly.
 import numpy as np
 
 from ..stabilizer import stabilizer_to_pauli_matrix as _pauli
+from ..core.quantum_state import apply_gate_tensor
+from ..core.gates import GateLibrary
 
 _STABILIZERS = [
     "IIIXXXX",
@@ -113,3 +115,93 @@ def steane_code(alpha=1.0, beta=0.0, error: str = "I") -> dict:
 def steane_stabilizers() -> list:
     """The six stabilizer generators as Pauli strings (three X-type, three Z-type)."""
     return list(_STABILIZERS)
+
+
+# --- transversal logical gates ---------------------------------------------
+
+_H_GATE = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)
+_S_GATE = np.array([[1, 0], [0, 1j]], dtype=complex)
+
+# Physical gate applied to all 7 qubits -> the logical gate it enacts. For the
+# Steane code, transversal S implements logical S-DAGGER (and vice versa), because
+# the |1_L> codewords have Hamming weight 3 mod 4; H and the Paulis map to themselves.
+_X_GATE = np.array([[0, 1], [1, 0]], dtype=complex)
+_Z_GATE = np.array([[1, 0], [0, -1]], dtype=complex)
+
+_TRANSVERSAL = {
+    "X": (_X_GATE, _X_GATE),
+    "Z": (_Z_GATE, _Z_GATE),
+    "H": (_H_GATE, _H_GATE),
+    "S": (_S_GATE, _S_GATE.conj().T),
+    "Sdg": (_S_GATE.conj().T, _S_GATE),
+}
+
+
+def _encode(alpha, beta):
+    norm = np.sqrt(abs(alpha) ** 2 + abs(beta) ** 2)
+    return (alpha * _ZERO_L + beta * _ONE_L) / norm
+
+
+def steane_transversal(gate: str, alpha=1.0, beta=0.0) -> dict:
+    """
+    Apply a physical gate to **all 7 qubits** of an encoded ``alpha|0_L> + beta|1_L>``
+    and identify the logical gate this enacts -- without ever decoding. This is the
+    defining fault-tolerance property of the Steane code: transversal gates cannot
+    spread an error within a block.
+
+    ``gate`` is one of ``"X"``, ``"Z"``, ``"H"``, ``"S"``, ``"Sdg"``. Transversal
+    X/Z/H enact logical X/Z/H; transversal S enacts logical **S-dagger** (and vice
+    versa), a hallmark of the code's weight structure.
+
+    Returns dict with ``logical_action`` (the logical gate name) and ``fidelity`` of
+    the transversally-acted state to that logical action's encoding (1.0 exactly).
+    """
+    if gate not in _TRANSVERSAL:
+        raise ValueError(f"gate must be one of {sorted(_TRANSVERSAL)}")
+    U, logical = _TRANSVERSAL[gate]
+
+    encoded = _encode(alpha, beta)
+    acted = encoded
+    for q in range(_N):
+        acted = apply_gate_tensor(np, acted, U, [q], _N)
+
+    norm = np.sqrt(abs(alpha) ** 2 + abs(beta) ** 2)
+    la, lb = logical @ np.array([alpha / norm, beta / norm])
+    ideal = _encode(la, lb)
+
+    names = {"X": "X", "Z": "Z", "H": "H", "S": "Sdg", "Sdg": "S"}
+    return {
+        "logical_action": names[gate],
+        "fidelity": float(abs(np.vdot(ideal, acted)) ** 2),
+    }
+
+
+def steane_transversal_cnot(control=(1.0, 0.0), target=(1.0, 0.0)) -> dict:
+    """
+    Bitwise CNOT between two Steane code blocks (14 physical qubits): CNOT from qubit
+    ``i`` of block A to qubit ``i`` of block B, for all 7 pairs. Being a CSS code,
+    this enacts a perfect **logical CNOT** (control A, target B) -- the workhorse of
+    fault-tolerant computation, since each physical CNOT touches one qubit per block.
+
+    ``control`` and ``target`` are the logical amplitude pairs ``(alpha, beta)`` of the
+    two blocks. Returns dict with ``fidelity`` of the 14-qubit state after the 7
+    physical CNOTs to the encoding of ``CNOT (|control_L> |target_L>)`` (1.0 exactly).
+    """
+    a, b = control
+    c, d = target
+    na = np.sqrt(abs(a) ** 2 + abs(b) ** 2)
+    nb = np.sqrt(abs(c) ** 2 + abs(d) ** 2)
+    a, b, c, d = a / na, b / na, c / nb, d / nb
+
+    basis = {0: _ZERO_L, 1: _ONE_L}
+
+    def enc2(i, j):  # block A = qubits 0..6, block B = qubits 7..13 (little-endian)
+        return np.kron(basis[j], basis[i])
+
+    vec = a * c * enc2(0, 0) + a * d * enc2(0, 1) + b * c * enc2(1, 0) + b * d * enc2(1, 1)
+    for q in range(_N):
+        vec = apply_gate_tensor(np, vec, GateLibrary.CNOT, [q, _N + q], 2 * _N)
+
+    # Logical CNOT: (i, j) -> (i, j XOR i).
+    ideal = a * c * enc2(0, 0) + a * d * enc2(0, 1) + b * c * enc2(1, 1) + b * d * enc2(1, 0)
+    return {"fidelity": float(abs(np.vdot(ideal, vec)) ** 2)}

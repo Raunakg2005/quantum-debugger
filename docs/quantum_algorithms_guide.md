@@ -665,6 +665,33 @@ theory: transversal CNOT, H, and S gates all preserve the code space. Together t
 QEC family now spans the 3-qubit repetition codes, the [[5,1,3]] perfect code, the
 [[7,1,3]] Steane code, and the 9-qubit Shor code.
 
+### Transversal logical gates
+
+Why the Steane code is fault tolerance's workhorse, demonstrated directly: apply a
+physical gate to **all 7 qubits at once** and the *logical* gate happens — no
+decoding, and no physical gate ever couples two qubits of the same block (so one
+faulty gate cannot spread into an uncorrectable multi-qubit error):
+
+```python
+from quantum_debugger.algorithms import steane_transversal, steane_transversal_cnot
+
+steane_transversal("H", 0.6, 0.8j)
+# {'logical_action': 'H', 'fidelity': 1.0}
+
+steane_transversal("S", 1.0, 1.0)
+# {'logical_action': 'Sdg', 'fidelity': 1.0}   <- transversal S = logical S-DAGGER!
+
+# Bitwise CNOT between two code blocks (14 qubits) = perfect logical CNOT,
+# even for entangling inputs: (|0_L> + |1_L>) x |0_L> -> a logical Bell state.
+steane_transversal_cnot(control=(1.0, 1.0), target=(1.0, 0.0))
+# {'fidelity': 1.0}
+```
+
+The S → S-dagger twist is a real property of the code (the `|1_L>` codewords have
+Hamming weight ≡ 3 mod 4), and the tests confirm the transversal S matches logical
+S-dagger and *not* logical S. The missing gate is T — no distance-3 CSS code has a
+transversal T, which is why magic-state distillation exists.
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated

@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Transversal logical gates on the Steane code** (`algorithms.steane_transversal`,
+  `steane_transversal_cnot`) — fault tolerance's defining property, demonstrated
+  exactly: applying a physical gate to all 7 qubits enacts the *logical* gate without
+  decoding. Verified: transversal X/Z/H enact logical X/Z/H; transversal S enacts
+  logical **S-dagger** (the code's weight-structure hallmark — and explicitly *not*
+  logical S); and a bitwise CNOT between two code blocks (14 qubits) enacts a perfect
+  logical CNOT, including entangling superposition inputs into encoded logical Bell
+  states (fidelity 1.0 for random logical inputs).
 - **Steane 7-qubit code [[7,1,3]]** (`algorithms.steane_code`,
   `steane_stabilizers`) — the CSS code built from the classical [7,4,3] Hamming code,
   correcting an arbitrary single-qubit error. Three X-type and three Z-type stabilizer

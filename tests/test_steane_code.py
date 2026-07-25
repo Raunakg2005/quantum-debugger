@@ -47,5 +47,66 @@ class TestSteaneCode:
         assert len(stabs) == 6 and all(len(s) == 7 for s in stabs)
 
 
+class TestTransversalGates:
+    @pytest.mark.parametrize("gate,expected", [
+        ("X", "X"), ("Z", "Z"), ("H", "H"), ("S", "Sdg"), ("Sdg", "S"),
+    ])
+    def test_logical_action(self, gate, expected):
+        from quantum_debugger.algorithms import steane_transversal
+
+        r = steane_transversal(gate, 0.6, 0.8j)
+        assert r["logical_action"] == expected
+        assert abs(r["fidelity"] - 1.0) < 1e-9
+
+    def test_transversal_s_is_not_logical_s(self):
+        # On |+_L>, logical S and logical S-dagger give different states; the
+        # transversal S must match S-dagger, NOT S.
+        import numpy as np
+        from quantum_debugger.algorithms.steane_code import (
+            _encode, _S_GATE, apply_gate_tensor, _N,
+        )
+
+        acted = _encode(1.0, 1.0)
+        for q in range(_N):
+            acted = apply_gate_tensor(np, acted, _S_GATE, [q], _N)
+        ideal_s = _encode(1.0, 1j)     # logical S on |+_L>
+        ideal_sdg = _encode(1.0, -1j)  # logical S-dagger on |+_L>
+        assert abs(np.vdot(ideal_sdg, acted)) ** 2 > 1 - 1e-9
+        assert abs(np.vdot(ideal_s, acted)) ** 2 < 0.6
+
+    def test_invalid_gate_rejected(self):
+        from quantum_debugger.algorithms import steane_transversal
+
+        with pytest.raises(ValueError):
+            steane_transversal("T")
+
+
+class TestTransversalCNOT:
+    @pytest.mark.parametrize("ctrl,tgt", [
+        ((1, 0), (1, 0)), ((0, 1), (1, 0)), ((1, 0), (0, 1)), ((0, 1), (0, 1)),
+    ])
+    def test_logical_basis(self, ctrl, tgt):
+        from quantum_debugger.algorithms import steane_transversal_cnot
+
+        assert abs(steane_transversal_cnot(ctrl, tgt)["fidelity"] - 1.0) < 1e-9
+
+    def test_superposition_control_entangles(self):
+        # (|0>+|1>)_A |0>_B -> encoded logical Bell state, exactly.
+        from quantum_debugger.algorithms import steane_transversal_cnot
+
+        r = steane_transversal_cnot((1.0, 1.0), (1.0, 0.0))
+        assert abs(r["fidelity"] - 1.0) < 1e-9
+
+    def test_random_logical_inputs(self):
+        import numpy as np
+        from quantum_debugger.algorithms import steane_transversal_cnot
+
+        rng = np.random.default_rng(5)
+        for _ in range(3):
+            ctrl = tuple(rng.normal(size=2) + 1j * rng.normal(size=2))
+            tgt = tuple(rng.normal(size=2) + 1j * rng.normal(size=2))
+            assert abs(steane_transversal_cnot(ctrl, tgt)["fidelity"] - 1.0) < 1e-9
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
