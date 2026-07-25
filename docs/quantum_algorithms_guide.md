@@ -1156,3 +1156,28 @@ the ground energy crosses over to the Heisenberg exchange `-4t^2/U` — the
 metal-to-Mott-insulator transition on two sites. The model conserves total and
 per-spin electron number, which is exactly what makes particle-number-preserving
 VQE ansaetze the right tool for its larger cousins.
+
+## Pauli Decomposition: Running Chemistry on Qubits
+
+A molecular or Hubbard Hamiltonian arrives as a dense matrix; a quantum algorithm
+needs it as Pauli strings. `pauli_decompose` bridges the two, completing the
+fermion -> qubit -> VQE pipeline:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    fermi_hubbard_hamiltonian, pauli_decompose, variational_ground_state,
+)
+
+H = fermi_hubbard_hamiltonian(2, t=1.0, u=3.0)   # dense 16x16 Hamiltonian
+terms = pauli_decompose(H)                        # -> [(coeff, 'IZIZ'), ...]
+
+res = variational_ground_state(terms, layers=4, restarts=6)
+res["energy"]                                     # -1.0, matching exact diag to ~1e-11
+```
+
+`c_P = Tr(P H) / 2^n` for every Pauli string `P`; the decomposition round-trips any
+Hermitian operator exactly and preserves its whole spectrum. Combined with
+`jordan_wigner` (fermions -> operators) and `variational_ground_state` (ground
+state on the RY+CNOT ansatz), this is the end-to-end path a real quantum-chemistry
+calculation follows.

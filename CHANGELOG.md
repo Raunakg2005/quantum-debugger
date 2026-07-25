@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Pauli decomposition + chemistry-via-VQE**
+  (`algorithms.pauli_decompose`) — decompose any Hermitian matrix into weighted
+  Pauli strings (`c_P = Tr(P H)/2^n`), the step that turns a dense molecular or
+  Fermi-Hubbard Hamiltonian into something a gate-based algorithm can run. Verified
+  to round-trip random Hermitian operators exactly and to preserve the full
+  spectrum; feeding the decomposed Fermi-Hubbard dimer (and a hopping chain) to the
+  existing VQE solver recovers the exact ground energy to ~1e-11 — the complete
+  fermion → qubit → variational-ground-state pipeline.
 - **Fermi-Hubbard model** (`algorithms.fermi_hubbard_hamiltonian`,
   `hubbard_ground_energy`, `hubbard_dimer_energy`) — interacting electrons on a
   lattice, built on the Jordan-Wigner operators: hopping `t` vs on-site repulsion

@@ -52,6 +52,32 @@ def hamiltonian_matrix(terms, n_qubits: int) -> np.ndarray:
     return H
 
 
+def pauli_decompose(H, tol: float = 1e-12) -> list:
+    """
+    Decompose a Hermitian ``2**n x 2**n`` matrix into a sum of weighted Pauli strings,
+
+        H = sum_P c_P P,   c_P = Tr(P H) / 2**n,
+
+    returning the ``(coefficient, pauli_string)`` terms (in the same format
+    :func:`hamiltonian_matrix`, ``trotter_evolve``, and the VQE solver consume) with
+    ``|c_P| > tol``. For a Hermitian ``H`` the coefficients are real. This is what
+    turns a dense operator -- a molecular or Fermi-Hubbard Hamiltonian -- into
+    something a gate-based quantum algorithm can run.
+    """
+    import itertools
+
+    H = np.asarray(H, dtype=complex)
+    dim = H.shape[0]
+    n = int(round(np.log2(dim)))
+    terms = []
+    for labels in itertools.product("IXYZ", repeat=n):
+        pauli = "".join(labels)
+        coeff = np.trace(pauli_term_matrix(pauli) @ H) / dim
+        if abs(coeff) > tol:
+            terms.append((float(np.real(coeff)), pauli))
+    return terms
+
+
 def _append_pauli_exp(gates, pauli_string, angle):
     """Append gates realizing exp(-i * angle * P) for a single Pauli string P."""
     active = [q for q, p in enumerate(pauli_string) if p != "I"]

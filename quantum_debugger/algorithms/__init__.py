@@ -52,6 +52,7 @@ from .hamiltonian_simulation import (
     trotter_circuit,
     hamiltonian_matrix,
     pauli_term_matrix,
+    pauli_decompose,
 )
 from .decomposition import (
     zyz_decompose,
@@ -226,6 +227,7 @@ __all__ = [
     "trotter_circuit",
     "hamiltonian_matrix",
     "pauli_term_matrix",
+    "pauli_decompose",
     # Gate decomposition
     "zyz_decompose",
     "abc_decomposition",
