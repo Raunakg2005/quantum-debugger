@@ -1368,3 +1368,25 @@ matrices and Poisson spectra — reproducing the universal 0.531 and 0.386. One
 important caveat, documented in the module: a *physical* Hamiltonian only shows these
 clean values within a single symmetry sector; leaving symmetries unresolved biases
 `<r>` toward Poisson even for a chaotic system.
+
+## The Kitaev Chain (Topological Superconductor)
+
+The simplest model hosting Majorana zero modes — and the physics behind topological
+qubits — built from the Jordan-Wigner operators:
+
+```python
+from quantum_debugger.algorithms import kitaev_ground_degeneracy
+
+# Topological phase (|mu| < 2t): two Majoranas at the ends -> degenerate ground state.
+kitaev_ground_degeneracy(6, mu=0.0, t=1.0, delta=1.0)["splitting"]   # ~1e-15
+
+# Trivial phase (|mu| > 2t): unique, gapped ground state.
+kitaev_ground_degeneracy(6, mu=3.0, t=1.0, delta=1.0)["splitting"]   # ~0.5
+```
+
+`H = -mu sum n_j - t sum hopping + Delta sum pairing`. In the topological phase an
+unpaired Majorana localizes at each end; because no *local* operator connects them,
+the two ground states are split only exponentially in the chain length (the splitting
+halves with every added site — a direct test of Majorana localization). That nonlocal,
+noise-protected degeneracy is exactly what a topological qubit would store its
+information in.

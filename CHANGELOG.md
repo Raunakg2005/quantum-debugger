@@ -12,6 +12,16 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Kitaev chain (topological superconductor)** (`algorithms.kitaev_chain_hamiltonian`,
+  `kitaev_ground_degeneracy`) — the simplest model with Majorana edge modes, built on
+  the Jordan-Wigner operators: `-mu sum n_j - t sum hopping + Delta sum pairing`.
+  Verified the topological hallmarks — for `|mu| < 2t` the ground state is doubly
+  degenerate (splitting < 1e-9 at `mu = 0`) with the bulk gap staying open, while for
+  `|mu| > 2t` it is unique and gapped; the topological flag flips exactly at the
+  `|mu| = 2t` transition; fermion parity is conserved; and the ground-state splitting
+  decays *exponentially* with chain length (halving per site) — the localization of
+  the two Majorana modes at the chain ends, the nonlocal storage behind topological
+  qubits.
 - **Level-spacing statistics (quantum chaos)** (`algorithms.level_spacing_ratio`,
   `goe_reference`, `poisson_reference`, `classify_spectrum`) — the symmetry-free
   Oganesyan-Huse gap-ratio `<r>` that distinguishes integrable from chaotic spectra

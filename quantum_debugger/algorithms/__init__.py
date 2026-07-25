@@ -196,6 +196,7 @@ from .level_statistics import (
     poisson_reference,
     classify_spectrum,
 )
+from .kitaev_chain import kitaev_chain_hamiltonian, kitaev_ground_degeneracy
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -395,6 +396,8 @@ __all__ = [
     "goe_reference",
     "poisson_reference",
     "classify_spectrum",
+    "kitaev_chain_hamiltonian",
+    "kitaev_ground_degeneracy",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
