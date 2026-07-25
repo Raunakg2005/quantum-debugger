@@ -555,3 +555,46 @@ class TestStinespringDilation:
         V = stinespring_isometry(depolarizing(0.5))
         big = np.outer(V @ psi, (V @ psi).conj())
         assert abs(np.trace(big @ big).real - 1.0) < 1e-9  # purity 1
+
+
+class TestProcessTomography:
+    def _apply(self, kraus):
+        def f(rho):
+            dm = DensityMatrix(rho=np.array(rho, dtype=complex))
+            dm.apply_channel(kraus, [0])
+            return dm.rho
+        return f
+
+    @pytest.mark.parametrize("channel", ["depol", "ad", "pd", "bf"])
+    def test_recovers_true_choi(self, channel):
+        from quantum_debugger.density_matrix import (
+            process_tomography, choi_matrix, depolarizing,
+            amplitude_damping, phase_damping, bit_flip,
+        )
+
+        kr = {"depol": depolarizing(0.3), "ad": amplitude_damping(0.4),
+              "pd": phase_damping(0.5), "bf": bit_flip(0.2)}[channel]
+        J = process_tomography(self._apply(kr))
+        assert np.allclose(J, choi_matrix(kr), atol=1e-9)
+
+    def test_identity_channel(self):
+        from quantum_debugger.density_matrix import process_tomography, choi_matrix
+
+        J = process_tomography(lambda r: r)
+        assert np.allclose(J, choi_matrix([np.eye(2, dtype=complex)]), atol=1e-9)
+
+    def test_reconstructed_choi_is_cptp(self):
+        from quantum_debugger.density_matrix import process_tomography, amplitude_damping
+
+        J = process_tomography(self._apply(amplitude_damping(0.3)))
+        # CP: positive semidefinite; TP: partial trace over output = I.
+        assert np.linalg.eigvalsh(J).min() > -1e-9
+        ptrace = J.reshape(2, 2, 2, 2).trace(axis1=1, axis2=3)
+        assert np.allclose(ptrace, np.eye(2), atol=1e-9)
+
+    def test_unitary_channel_recovered(self):
+        from quantum_debugger.density_matrix import process_tomography, choi_matrix
+
+        H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)
+        J = process_tomography(lambda r: H @ np.array(r, dtype=complex) @ H.conj().T)
+        assert np.allclose(J, choi_matrix([H]), atol=1e-9)

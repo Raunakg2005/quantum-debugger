@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Quantum process tomography** (`density_matrix.process_tomography`) —
+  reconstruct an unknown single-qubit channel's full Choi matrix from its
+  input/output behavior alone: probe the black box on the four
+  informationally-complete states `|0>, |1>, |+>, |+i>`, recover the off-diagonal
+  image by linear combination, and assemble `J = sum_ij |i><j| x N(|i><j|)`.
+  Verified to recover the exact `choi_matrix` for every standard channel and for
+  unitary channels, with the reconstruction certified CPTP (positive Choi, partial
+  trace = I). A channel is fully characterized by how it acts, not how it is built.
 - **Stabilizer entanglement entropy from the tableau**
   (`StabilizerSimulator.entanglement_entropy`) — the entropy across any cut of a
   stabilizer state in `O(n^3)` directly from the binary tableau (Fattal et al.:

@@ -552,6 +552,44 @@ def kraus_rank(kraus_ops, atol: float = 1e-9) -> int:
     return int(np.sum(eigs > atol))
 
 
+def process_tomography(apply_fn) -> np.ndarray:
+    """
+    Reconstruct the Choi matrix of an unknown single-qubit channel from its action on
+    a set of probe states -- quantum process tomography by linear inversion.
+
+    ``apply_fn(rho) -> rho`` is a black box implementing the channel (any callable
+    that maps a 2x2 density matrix to its output). The channel is probed on the four
+    informationally-complete inputs ``|0>, |1>, |+>, |+i>``; the off-diagonal image
+    ``N(|0><1|)`` is recovered by linear combination, and the Choi matrix is assembled
+    as ``J = sum_{ij} |i><j| x N(|i><j|)``.
+
+    Returns the ``4x4`` Choi matrix, identical (for a Kraus channel) to
+    :func:`choi_matrix` -- so a channel can be fully characterized through its
+    input/output behavior alone.
+    """
+    rho00 = np.array([[1, 0], [0, 0]], dtype=complex)
+    rho11 = np.array([[0, 0], [0, 1]], dtype=complex)
+    rho_plus = np.array([[0.5, 0.5], [0.5, 0.5]], dtype=complex)
+    rho_iplus = np.array([[0.5, -0.5j], [0.5j, 0.5]], dtype=complex)
+
+    N00 = np.asarray(apply_fn(rho00), dtype=complex)
+    N11 = np.asarray(apply_fn(rho11), dtype=complex)
+    Npp = np.asarray(apply_fn(rho_plus), dtype=complex)
+    Nii = np.asarray(apply_fn(rho_iplus), dtype=complex)
+
+    # |0><1| = |+><+| + i|+i><+i| - (1+i)/2 (|0><0| + |1><1|), and N is linear.
+    N01 = Npp + 1j * Nii - (1 + 1j) / 2 * (N00 + N11)
+    N10 = N01.conj().T
+    images = {(0, 0): N00, (1, 1): N11, (0, 1): N01, (1, 0): N10}
+
+    J = np.zeros((4, 4), dtype=complex)
+    for (i, j), Nij in images.items():
+        E = np.zeros((2, 2), dtype=complex)
+        E[i, j] = 1
+        J += np.kron(E, Nij)
+    return J
+
+
 def stinespring_isometry(kraus_ops) -> np.ndarray:
     """
     Stinespring dilation of a Kraus channel: the isometry ``V`` (shape

@@ -328,3 +328,29 @@ channel exactly (verified for every built-in channel). The dilated global state 
 *pure* — decoherence of the system is nothing but entanglement with the
 environment, and "measuring" that environment is what the Kraus operators secretly
 describe.
+
+## Process tomography: characterizing a black-box channel
+
+Given only the ability to send states through an unknown channel and measure what
+comes out, you can reconstruct the channel *completely*:
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import (
+    process_tomography, choi_matrix, amplitude_damping, DensityMatrix,
+)
+
+def black_box(rho):                      # some unknown channel
+    dm = DensityMatrix(rho=np.array(rho, dtype=complex))
+    dm.apply_channel(amplitude_damping(0.3), [0])
+    return dm.rho
+
+J = process_tomography(black_box)        # 4x4 Choi matrix, reconstructed
+np.allclose(J, choi_matrix(amplitude_damping(0.3)))   # True -- exact
+```
+
+The channel is probed on the four informationally-complete states `|0>, |1>, |+>,
+|+i>`; because a channel is linear, its action on those four fixes its action on
+everything, and the Choi matrix follows by linear inversion. The reconstruction is
+certified CPTP and matches `choi_matrix` exactly — the experimental route to the
+same object `stinespring_isometry` and `is_cptp` analyze.
