@@ -869,3 +869,33 @@ The accessible information is found by genuinely optimizing a projective
 measurement over the Bloch sphere and matches Levitin's closed form. The BB84
 numbers are the security of quantum key distribution in two lines: the four
 states *hold* one bit but surrender only half of it to any single measurement.
+
+## Quantum State Discrimination
+
+Non-orthogonal states cannot be perfectly distinguished — the fact quantum
+cryptography is built on. Two optimal strategies, both exact:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    helstrom_bound, helstrom_measurement, unambiguous_discrimination,
+)
+
+a = np.array([1, 0]); b = np.array([1, 1]) / np.sqrt(2)   # overlap 1/sqrt(2)
+
+# Minimum-error (Helstrom): guess every time, err as little as possible.
+helstrom_bound(0.5, a, 0.5, b)               # 0.146 = (1 - sqrt(1 - s^2))/2
+helstrom_measurement(0.5, a, 0.5, b)         # explicit optimal measurement hits it
+
+# Unambiguous (IDP): NEVER guess wrong -- pay with inconclusive outcomes.
+r = unambiguous_discrimination(a, b)
+r["success_probability"]      # 0.293 = 1 - |<a|b>|
+r["error_probability"]        # 0.0   -- exactly
+r["inconclusive_probability"] # 0.707
+```
+
+The Helstrom measurement projects onto the positive part of `p0 rho0 - p1 rho1`
+(works for mixed states and unequal priors too); the IDP POVM's conclusive
+elements are orthogonal to the *other* state, so a conclusive click is a
+guarantee. Certainty costs success rate: `1 - |s|` < the Helstrom success
+`(1 + sqrt(1-s^2))/2` for every overlap `s != 0`.

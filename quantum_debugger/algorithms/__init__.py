@@ -129,6 +129,11 @@ from .nonlocality import (
 )
 from .channel_capacity import coherent_information, amplitude_damping_capacity
 from .holevo import holevo_bound, accessible_information, holevo_gap
+from .discrimination import (
+    helstrom_bound,
+    helstrom_measurement,
+    unambiguous_discrimination,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -271,6 +276,9 @@ __all__ = [
     "holevo_bound",
     "accessible_information",
     "holevo_gap",
+    "helstrom_bound",
+    "helstrom_measurement",
+    "unambiguous_discrimination",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

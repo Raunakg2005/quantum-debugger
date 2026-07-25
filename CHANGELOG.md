@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Quantum state discrimination** (`algorithms.helstrom_bound`,
+  `helstrom_measurement`, `unambiguous_discrimination`) — the two optimal ways to
+  tell non-orthogonal states apart. Helstrom minimum-error:
+  `P_err = (1 - ||p0 rho0 - p1 rho1||_1)/2`, with the optimal measurement
+  constructed explicitly (positive-eigenspace projector) and achieving the bound to
+  machine precision, including mixed states and unequal priors
+  (`(1-sqrt(1-4 p0 p1 s^2))/2` verified). Unambiguous (IDP): a 3-outcome POVM that
+  is *never* wrong (error exactly 0), succeeding with exactly `1 - |<psi0|psi1>|`
+  and paying the difference in inconclusive outcomes — strictly below the Helstrom
+  success rate, the price of certainty.
 - **Holevo bound & accessible information** (`algorithms.holevo_bound`,
   `accessible_information`, `holevo_gap`) — why a qubit carries at most one
   classical bit, and why non-orthogonal states can't even deliver that:
