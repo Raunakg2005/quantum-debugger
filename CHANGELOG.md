@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Entanglement growth after a quench** (`algorithms.entanglement_growth`) — how
+  isolated systems thermalize: start in a product state, evolve under an entangling
+  Hamiltonian, and watch a subregion's entanglement entropy grow and saturate near
+  the volume-law value. Verified against the analytic two-qubit case (an `X x X`
+  quench of `|00>` gives exactly the binary entropy `h(sin^2(gt))`, reaching 1 bit at
+  a quarter period), and for larger TFIM/Heisenberg quenches the entropy starts at 0,
+  grows, saturates below its `min(|A|, n-|A|)` bound, and stays static for an energy
+  eigenstate.
 - **Out-of-time-order correlators (scrambling)** (`algorithms.otoc`,
   `scrambling_time`) — the butterfly effect of quantum chaos: the growth of
   `C(t) = <|[W(t), V]|^2>` as a local operator spreads across the lattice. Verified

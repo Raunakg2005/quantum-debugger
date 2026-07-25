@@ -1318,3 +1318,30 @@ operators commute) and grows as `W` scrambles across the system. The exact ident
 `C(t) = 2(1 - Re F(t))` links it to the OTOC `F(t)`, and comparing near vs far
 operators reveals the operator light cone — information cannot spread faster than the
 interactions allow.
+
+## Entanglement Growth & Thermalization
+
+Quench a product state under an entangling Hamiltonian and its subregions grow
+entangled — the microscopic story of how isolated quantum systems thermalize:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    entanglement_growth, hamiltonian_matrix, tfim_hamiltonian,
+)
+
+n = 6
+H = hamiltonian_matrix(tfim_hamiltonian(n, 1.0, 1.0), n)
+psi0 = np.zeros(2**n); psi0[0] = 1        # product state |000000>
+
+r = entanglement_growth(H, psi0, region=[0, 1, 2], times=np.linspace(0, 10, 60))
+r["initial"]       # 0 -- product state
+r["saturation"]    # grows and levels off, below...
+r["max_entropy"]   # min(|A|, n-|A|) = 3 bits, the volume-law ceiling
+```
+
+Locally the subregion looks thermal once information has spread into entanglement
+with the rest. The routine is checked against the exact two-qubit result — an
+`X x X` quench of `|00>` gives entropy `h(sin^2(gt))` precisely — and reproduces the
+grow-then-saturate curve for many-body quenches, while an energy eigenstate keeps a
+constant entropy.
