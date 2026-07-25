@@ -103,6 +103,7 @@ from .steane_code import (
     steane_stabilizers,
     steane_transversal,
     steane_transversal_cnot,
+    steane_code_noisy,
 )
 from .magic_state import t_magic_state, inject_t_gate
 from .distillation import (
@@ -233,6 +234,7 @@ __all__ = [
     "steane_stabilizers",
     "steane_transversal",
     "steane_transversal_cnot",
+    "steane_code_noisy",
     "t_magic_state",
     "inject_t_gate",
     "werner_state",

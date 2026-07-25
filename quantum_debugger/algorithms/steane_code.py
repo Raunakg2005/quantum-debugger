@@ -21,6 +21,7 @@ import numpy as np
 from ..stabilizer import stabilizer_to_pauli_matrix as _pauli
 from ..core.quantum_state import apply_gate_tensor
 from ..core.gates import GateLibrary
+from ..density_matrix import DensityMatrix, depolarizing
 
 _STABILIZERS = [
     "IIIXXXX",
@@ -115,6 +116,74 @@ def steane_code(alpha=1.0, beta=0.0, error: str = "I") -> dict:
 def steane_stabilizers() -> list:
     """The six stabilizer generators as Pauli strings (three X-type, three Z-type)."""
     return list(_STABILIZERS)
+
+
+# --- continuous noise: distance-3 quadratic suppression ---------------------
+
+_RECOVERY_CACHE = []
+
+
+def _recovery_ops():
+    """
+    Lazily build the exact CPTP recovery: for each of the 64 syndromes, the
+    projector ``P_s = prod_i (I + (-1)^{s_i} S_i)/2`` and the decoder's correction
+    (the matching weight-<=1 Pauli where one exists, identity otherwise).
+    """
+    if _RECOVERY_CACHE:
+        return _RECOVERY_CACHE
+    stab_mats = [_pauli(1, s) for s in _STABILIZERS]
+    for code in range(64):
+        syndrome = tuple((code >> i) & 1 for i in range(6))
+        proj = _EYE.copy()
+        for bit, S in zip(syndrome, stab_mats):
+            proj = proj @ ((_EYE + (-1 if bit else 1) * S) / 2)
+        corr = _ERRORS[_DECODER.get(syndrome, "I")]
+        _RECOVERY_CACHE.append((proj, corr))
+    return _RECOVERY_CACHE
+
+
+def steane_code_noisy(p: float, alpha=1.0, beta=0.0) -> dict:
+    """
+    Run the Steane code against an independent depolarizing channel of strength ``p``
+    on every physical qubit, with the exact CPTP syndrome recovery, on the 7-qubit
+    density matrix. Because the code has distance 3, every weight-0 and weight-1
+    error is corrected and the logical error is **quadratically suppressed**:
+    ``1 - F ~ O(p^2)`` while a bare qubit fails at ``O(p)``.
+
+    Returns dict with:
+      * ``corrected``     -- logical fidelity after recovery
+      * ``uncorrected``   -- a bare qubit under the same channel (``1 - 2p/3`` for |0>)
+      * ``weight1_bound`` -- ``(1-p)^7 + 7p(1-p)^6``, the guaranteed floor from
+                             correcting all weight-<=1 errors (``corrected`` exceeds it
+                             because some higher-weight errors are also fixed)
+    """
+    norm = np.sqrt(abs(alpha) ** 2 + abs(beta) ** 2)
+    alpha, beta = alpha / norm, beta / norm
+    encoded = alpha * _ZERO_L + beta * _ONE_L
+
+    dm = DensityMatrix(state_vector=encoded)
+    kraus = depolarizing(p)
+    for q in range(_N):
+        dm.apply_channel(kraus, [q])
+
+    new = np.zeros_like(dm.rho)
+    for proj, corr in _recovery_ops():
+        M = corr @ proj
+        new += M @ dm.rho @ M.conj().T
+    dm.rho = new
+
+    corrected = float(np.real(encoded.conj() @ dm.rho @ encoded))
+
+    single = DensityMatrix(state_vector=np.array([alpha, beta], dtype=complex))
+    single.apply_channel(kraus, [0])
+    psi = np.array([alpha, beta], dtype=complex)
+    uncorrected = float(np.real(psi.conj() @ single.rho @ psi))
+
+    return {
+        "corrected": corrected,
+        "uncorrected": uncorrected,
+        "weight1_bound": (1 - p) ** 7 + 7 * p * (1 - p) ** 6,
+    }
 
 
 # --- transversal logical gates ---------------------------------------------

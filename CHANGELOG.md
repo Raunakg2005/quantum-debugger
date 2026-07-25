@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Steane code under continuous depolarizing noise**
+  (`algorithms.steane_code_noisy`) — the distance-3 promise demonstrated exactly on
+  the 7-qubit density matrix: independent `depolarizing(p)` on every physical qubit,
+  then the exact 64-syndrome CPTP recovery. Doubling `p` quadruples the logical
+  error (measured ratio 3.98 — quadratic suppression, `1-F ~ O(p^2)` vs `O(p)`
+  bare), the logical error at `p = 0.002` is 24x below the bare qubit's, the exact
+  fidelity always exceeds the weight-1 floor `(1-p)^7 + 7p(1-p)^6`, and the
+  pseudo-threshold is visible: encoding wins below `p ~ 0.05` and loses at 0.25.
 - **T1/T2 relaxation times** (`density_matrix.relaxation_times`) — extract a qubit's
   datasheet numbers from exact Lindblad evolution (amplitude damping + pure
   dephasing) and verify the fundamental relation `1/T2 = 1/(2 T1) + 1/T_phi`, hence

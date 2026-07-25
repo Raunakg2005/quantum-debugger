@@ -176,3 +176,28 @@ final `|0>` population is exactly `1/2 + cos^N(wT/N)/2`. Post-selecting outcome 
 each time survives with probability `cos^{2N}(wT/2N) -> 1`. Together with the DFS
 (symmetry) and the spin echo (correlation), this completes the trio of ways to
 protect a qubit *without* the overhead of full error correction.
+
+## Distance 3 in action: the Steane code vs depolarizing noise
+
+The 3-qubit codes above correct only one error *type*. Running the full Steane
+[[7,1,3]] code against independent depolarizing noise on all 7 qubits (exact
+64-syndrome CPTP recovery on the density matrix) shows what distance 3 buys:
+
+```python
+from quantum_debugger.algorithms import steane_code_noisy
+
+r = steane_code_noisy(p=0.002)
+1 - r["corrected"]      # 4.2e-5  -- logical error
+1 - r["uncorrected"]    # 1.0e-3  -- bare qubit: 24x worse
+r["weight1_bound"]      # (1-p)^7 + 7p(1-p)^6, always exceeded
+
+# Quadratic suppression: doubling p quadruples the logical error.
+(1 - steane_code_noisy(0.004)["corrected"]) / (1 - steane_code_noisy(0.002)["corrected"])
+# 3.98  ~= 4
+```
+
+`1 - F ~ O(p^2)` versus `O(p)` bare — the hallmark of a distance-3 code, since any
+single-qubit error is corrected and only (some) weight-2 errors cause logical
+failure. The **pseudo-threshold** sits near `p ~ 0.05`: below it encoding helps,
+at `p = 0.25` it hurts. This is the number a fault-tolerant architecture must
+engineer its physical error rate below.

@@ -108,5 +108,45 @@ class TestTransversalCNOT:
             assert abs(steane_transversal_cnot(ctrl, tgt)["fidelity"] - 1.0) < 1e-9
 
 
+class TestSteaneUnderContinuousNoise:
+    def test_perfect_channel_is_lossless(self):
+        from quantum_debugger.algorithms import steane_code_noisy
+
+        assert abs(steane_code_noisy(0.0)["corrected"] - 1.0) < 1e-9
+
+    def test_quadratic_error_suppression(self):
+        # Distance 3: doubling p quadruples the logical error (small p).
+        from quantum_debugger.algorithms import steane_code_noisy
+
+        e1 = 1 - steane_code_noisy(0.002)["corrected"]
+        e2 = 1 - steane_code_noisy(0.004)["corrected"]
+        assert 3.5 < e2 / e1 < 4.5
+
+    @pytest.mark.parametrize("p", [0.01, 0.05])
+    def test_exceeds_weight1_floor(self, p):
+        from quantum_debugger.algorithms import steane_code_noisy
+
+        r = steane_code_noisy(p)
+        assert r["corrected"] >= r["weight1_bound"] - 1e-9
+
+    def test_beats_bare_qubit_below_pseudothreshold(self):
+        from quantum_debugger.algorithms import steane_code_noisy
+
+        r = steane_code_noisy(0.01)
+        assert (1 - r["corrected"]) < (1 - r["uncorrected"]) / 4  # ~5x better
+
+    def test_worse_above_pseudothreshold(self):
+        from quantum_debugger.algorithms import steane_code_noisy
+
+        r = steane_code_noisy(0.25)
+        assert (1 - r["corrected"]) > (1 - r["uncorrected"])
+
+    def test_superposition_codeword_protected(self):
+        from quantum_debugger.algorithms import steane_code_noisy
+
+        r = steane_code_noisy(0.05, alpha=1.0, beta=1j)
+        assert r["corrected"] >= r["weight1_bound"] - 1e-9
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
