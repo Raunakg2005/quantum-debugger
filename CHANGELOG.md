@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Noisy entanglement swapping & repeater chains**
+  (`algorithms.entanglement_swap_noisy`, `repeater_chain`) — a Bell measurement at a
+  middle node splices two noisy Werner pairs A-B, B-C into an A-C pair of fidelity
+  `F1·F2 + (1-F1)(1-F2)/3`, exact for every measurement outcome (each probability
+  1/4), run as the 4-qubit density-matrix circuit with Pauli corrections. Since
+  Werner⊗Werner swaps to Werner again, the scalar recurrence composes exactly:
+  `repeater_chain` gives the end-to-end fidelity of an n-link chain, decaying toward
+  1/4. Verified highlights: two *entangled* pairs (0.7, 0.6) swap to a *separable*
+  0.46 pair (cross-checked via negativity), and one BBPSSW round rescues a degraded
+  chain — the complete quantum-repeater story.
 - **Entanglement distillation (BBPSSW)** (`algorithms.bbpssw_distill`,
   `werner_state`, `distillation_rounds`) — two noisy Werner pairs → one
   higher-fidelity pair using only local CNOTs, measurement, and classical

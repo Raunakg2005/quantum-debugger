@@ -25,6 +25,9 @@ import numpy as np
 from ..density_matrix import DensityMatrix, _embed, _P0, _P1
 from ..core.gates import GateLibrary
 
+_X = np.array([[0, 1], [1, 0]], dtype=complex)
+_Z = np.array([[1, 0], [0, -1]], dtype=complex)
+
 _S2 = np.sqrt(2)
 _PHI_P = np.array([1, 0, 0, 1], dtype=complex) / _S2
 _PHI_M = np.array([1, 0, 0, -1], dtype=complex) / _S2
@@ -77,6 +80,78 @@ def bbpssw_distill(F: float) -> dict:
         "success_probability": p_success,
         "analytic": analytic,
         "improved": fidelity > F,
+    }
+
+
+def entanglement_swap_noisy(F1: float, F2: float) -> dict:
+    """
+    Entanglement swapping with noisy pairs: A-B (Werner ``F1``) and B-C (Werner
+    ``F2``); a Bell measurement at the middle node B (CNOT + H + measure both) plus
+    the outcome-conditioned Pauli correction on C leaves A and C -- which never
+    interacted -- sharing a pair of fidelity
+
+        F_swap = F1 * F2 + (1 - F1)(1 - F2) / 3
+
+    for *every* measurement outcome (each occurring with probability exactly 1/4).
+    Run as the exact 4-qubit density-matrix circuit. Since swapping two Werner states
+    yields a Werner state again, chaining this recurrence is exact -- see
+    :func:`repeater_chain`.
+
+    Returns dict with ``fidelity`` (the A-C pair, averaged over outcomes -- all four
+    agree), ``analytic`` (the closed form), and ``outcome_probability`` (1/4).
+    """
+    # Qubits (little-endian): A=0, B1=1, B2=2, C=3.
+    dm = DensityMatrix(rho=np.kron(werner_state(F2), werner_state(F1)))
+    dm.apply_unitary(GateLibrary.CNOT, [1, 2])
+    dm.apply_unitary(GateLibrary.H, [1])
+
+    n = 4
+    fidelity = 0.0
+    for m1 in (0, 1):
+        for m2 in (0, 1):
+            proj = _embed(_P1 if m1 else _P0, [1], n) @ _embed(
+                _P1 if m2 else _P0, [2], n
+            )
+            branch = proj @ dm.rho @ proj
+            p = float(np.real(np.trace(branch)))
+            corr = np.eye(2**n, dtype=complex)
+            if m2:
+                corr = _embed(_X, [3], n) @ corr
+            if m1:
+                corr = _embed(_Z, [3], n) @ corr
+            branch = corr @ branch @ corr.conj().T
+            ac = DensityMatrix(rho=branch / p).partial_trace([0, 3])
+            fidelity += p * float(np.real(_PHI_P.conj() @ ac.rho @ _PHI_P))
+
+    return {
+        "fidelity": fidelity,
+        "analytic": F1 * F2 + (1 - F1) * (1 - F2) / 3,
+        "outcome_probability": 0.25,
+    }
+
+
+def repeater_chain(F: float, links: int) -> dict:
+    """
+    Fidelity of the end-to-end pair after swapping a chain of ``links`` identical
+    Werner links of fidelity ``F`` (``links - 1`` Bell measurements at the middle
+    nodes). Exact, because swapping Werner states yields Werner states, so the
+    scalar recurrence ``f <- f F + (1 - f)(1 - F)/3`` composes.
+
+    Returns dict with ``fidelity``, the ``trajectory`` after each swap, and
+    ``entangled`` (whether the final pair is still above the ``F > 1/2`` Werner
+    entanglement threshold). Fidelity decays toward 1/4 (the fully mixed value) as
+    the chain grows -- the reason long repeater chains interleave distillation.
+    """
+    if links < 1:
+        raise ValueError("links must be >= 1")
+    traj = [F]
+    for _ in range(links - 1):
+        f = traj[-1]
+        traj.append(f * F + (1 - f) * (1 - F) / 3)
+    return {
+        "fidelity": traj[-1],
+        "trajectory": traj,
+        "entangled": traj[-1] > 0.5,
     }
 
 

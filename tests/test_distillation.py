@@ -73,5 +73,78 @@ class TestRounds:
         assert not r["reached"]
 
 
+class TestNoisySwap:
+    @pytest.mark.parametrize("F1,F2", [(1.0, 1.0), (0.9, 0.9), (0.8, 0.95), (0.7, 0.6)])
+    def test_circuit_matches_closed_form(self, F1, F2):
+        from quantum_debugger.algorithms import entanglement_swap_noisy
+
+        r = entanglement_swap_noisy(F1, F2)
+        assert abs(r["fidelity"] - r["analytic"]) < 1e-9
+        assert abs(r["analytic"] - (F1 * F2 + (1 - F1) * (1 - F2) / 3)) < 1e-12
+
+    def test_perfect_pairs_swap_perfectly(self):
+        from quantum_debugger.algorithms import entanglement_swap_noisy
+
+        assert abs(entanglement_swap_noisy(1.0, 1.0)["fidelity"] - 1.0) < 1e-9
+
+    def test_swap_degrades_fidelity(self):
+        from quantum_debugger.algorithms import entanglement_swap_noisy
+
+        r = entanglement_swap_noisy(0.9, 0.9)
+        assert r["fidelity"] < 0.9
+
+    def test_two_entangled_pairs_can_swap_to_separable(self):
+        # 0.7 and 0.6 are both entangled (> 1/2), but the swapped pair is not.
+        from quantum_debugger.algorithms import entanglement_swap_noisy
+        from quantum_debugger.algorithms import werner_state
+        from quantum_debugger.density_matrix import DensityMatrix
+
+        r = entanglement_swap_noisy(0.7, 0.6)
+        assert r["fidelity"] < 0.5
+        assert DensityMatrix(rho=werner_state(r["fidelity"])).negativity([0]) < 1e-12
+
+
+class TestRepeaterChain:
+    def test_single_link_is_input(self):
+        from quantum_debugger.algorithms import repeater_chain
+
+        assert abs(repeater_chain(0.9, 1)["fidelity"] - 0.9) < 1e-12
+
+    def test_two_links_match_swap_circuit(self):
+        from quantum_debugger.algorithms import repeater_chain, entanglement_swap_noisy
+
+        chain = repeater_chain(0.9, 2)["fidelity"]
+        circuit = entanglement_swap_noisy(0.9, 0.9)["fidelity"]
+        assert abs(chain - circuit) < 1e-9
+
+    def test_decays_toward_quarter(self):
+        from quantum_debugger.algorithms import repeater_chain
+
+        r = repeater_chain(0.9, 40)
+        traj = r["trajectory"]
+        assert all(b < a for a, b in zip(traj, traj[1:]))  # monotone decay
+        assert abs(r["fidelity"] - 0.25) < 0.01            # -> fully mixed value
+
+    def test_long_chain_loses_entanglement(self):
+        from quantum_debugger.algorithms import repeater_chain
+
+        assert repeater_chain(0.9, 2)["entangled"]
+        assert not repeater_chain(0.9, 12)["entangled"]
+
+    def test_distillation_rescues_chain(self):
+        # The repeater story: swap degrades, distill restores.
+        from quantum_debugger.algorithms import repeater_chain, bbpssw_distill
+
+        f_after_swaps = repeater_chain(0.95, 3)["fidelity"]
+        assert f_after_swaps < 0.95
+        assert bbpssw_distill(f_after_swaps)["fidelity"] > f_after_swaps
+
+    def test_invalid_links_rejected(self):
+        from quantum_debugger.algorithms import repeater_chain
+
+        with pytest.raises(ValueError):
+            repeater_chain(0.9, 0)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

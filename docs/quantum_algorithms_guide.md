@@ -226,6 +226,29 @@ above it every round improves the pair, below it distillation only makes things
 worse — matching exactly the Werner state's entanglement threshold (checked via
 negativity).
 
+## Noisy Entanglement Swapping & Repeater Chains
+
+Distillation's partner primitive. A middle node holding halves of two noisy pairs
+performs a Bell measurement, splicing them into one long-distance pair between
+parties that never interacted:
+
+```python
+from quantum_debugger.algorithms import entanglement_swap_noisy, repeater_chain
+
+entanglement_swap_noisy(0.9, 0.9)["fidelity"]   # 0.8133 = F1*F2 + (1-F1)(1-F2)/3
+entanglement_swap_noisy(0.7, 0.6)["fidelity"]   # 0.46 -- SEPARABLE! (< 1/2)
+
+r = repeater_chain(0.9, links=8)                # 8 links, 7 swaps
+r["fidelity"]                                   # decays toward 1/4 (fully mixed)
+r["entangled"]                                  # False -- chain too long
+```
+
+Two striking exact results: swapping two *entangled* pairs can produce a
+*separable* pair (0.7 and 0.6 above), and an n-link chain's fidelity decays
+geometrically toward 1/4. That is why real repeaters interleave the two
+primitives: swap to extend distance, distill (`bbpssw_distill`) to restore
+fidelity — and the tests confirm one round of BBPSSW rescues a degraded chain.
+
 ## Shor's Algorithm -- Period Finding & Factoring
 
 Quantum phase estimation on the modular-multiplication unitary
