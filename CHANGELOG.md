@@ -12,6 +12,15 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Level-spacing statistics (quantum chaos)** (`algorithms.level_spacing_ratio`,
+  `goe_reference`, `poisson_reference`, `classify_spectrum`) — the symmetry-free
+  Oganesyan-Huse gap-ratio `<r>` that distinguishes integrable from chaotic spectra
+  without unfolding. Validated against both defining ensembles: Gaussian Orthogonal
+  Ensemble spectra give `<r> ~ 0.531` (Wigner-Dyson level repulsion) and uncorrelated
+  Poisson spectra give `~ 0.386`, with a rigid equally-spaced spectrum giving exactly
+  1. `classify_spectrum` labels a spectrum against these universal values.
+  Honestly documented: physical Hamiltonians only show the clean values within a
+  single symmetry sector (mixed sectors bias toward Poisson).
 - **Entanglement growth after a quench** (`algorithms.entanglement_growth`) — how
   isolated systems thermalize: start in a product state, evolve under an entangling
   Hamiltonian, and watch a subregion's entanglement entropy grow and saturate near

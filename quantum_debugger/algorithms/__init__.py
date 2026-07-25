@@ -190,6 +190,12 @@ from .krylov import krylov_spectrum, krylov_ground_energy
 from .loschmidt import loschmidt_echo, rate_function, quench_dynamics
 from .otoc import otoc, scrambling_time
 from .entanglement_growth import entanglement_growth
+from .level_statistics import (
+    level_spacing_ratio,
+    goe_reference,
+    poisson_reference,
+    classify_spectrum,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -385,6 +391,10 @@ __all__ = [
     "otoc",
     "scrambling_time",
     "entanglement_growth",
+    "level_spacing_ratio",
+    "goe_reference",
+    "poisson_reference",
+    "classify_spectrum",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

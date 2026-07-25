@@ -1345,3 +1345,26 @@ with the rest. The routine is checked against the exact two-qubit result — an
 `X x X` quench of `|00>` gives entropy `h(sin^2(gt))` precisely — and reproduces the
 grow-then-saturate curve for many-body quenches, while an energy eigenstate keeps a
 constant entropy.
+
+## Level-Spacing Statistics (Quantum Chaos)
+
+Integrable and chaotic systems differ in how their energy levels correlate — and the
+gap-ratio statistic reads it off without any spectral unfolding:
+
+```python
+from quantum_debugger.algorithms import (
+    level_spacing_ratio, goe_reference, poisson_reference, classify_spectrum,
+)
+
+goe_reference()       # ~0.531 -- chaotic (Wigner-Dyson level repulsion)
+poisson_reference()   # ~0.386 -- integrable (uncorrelated levels)
+
+classify_spectrum(my_eigenvalues)["classification"]   # 'chaotic' | 'integrable'
+```
+
+`<r> = <min(s_n, s_{n+1}) / max(s_n, s_{n+1})>` over adjacent gaps `s_n`
+(Oganesyan-Huse). It is validated against its two defining ensembles — GOE random
+matrices and Poisson spectra — reproducing the universal 0.531 and 0.386. One
+important caveat, documented in the module: a *physical* Hamiltonian only shows these
+clean values within a single symmetry sector; leaving symmetries unresolved biases
+`<r>` toward Poisson even for a chaotic system.
