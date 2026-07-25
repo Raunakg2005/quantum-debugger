@@ -1538,3 +1538,26 @@ controlled on ancilla state `i`, and `PREPARE† SELECT PREPARE` leaves `H/lambd
 top-left block. Together with `block_encode` and `qubitization_walk`, this completes
 the input side of QSVT: any Pauli-sum Hamiltonian becomes a block encoding you can
 transform.
+
+## Quantum Singular Value Transformation (QSVT)
+
+The capstone that ties QSP and block encoding together: apply a phase sequence to a
+block-encoded matrix and get a *polynomial of the matrix* in the corner.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import qsvt_transform, qsvt_scalar_response
+
+A = np.diag([0.3, -0.5, 0.6])            # Hermitian, ||A|| <= 1
+phases = [0.2, -0.4, 0.6]
+
+qsvt_transform(A, phases)                # P(A) = sum_i g(lambda_i) |v_i><v_i|
+# == diag(g(0.3), g(-0.5), g(0.6)) with g = qsvt_scalar_response(phases, .)
+```
+
+The matrix transform applies the *same scalar function to every eigenvalue* — the
+QSVT theorem, verified here to machine precision. Zero phases give the Chebyshev
+`T_d(A)`; other phase sequences approximate `sign`, `1/x`, `exp(-i t x)`, and the rest
+of the algorithmic zoo. This is the single primitive from which amplitude
+amplification, Hamiltonian simulation, and the quantum linear-systems algorithm all
+descend.

@@ -13,6 +13,16 @@ unitaries (LCU), and quantum singular value transformation, each verified agains
 polynomial or matrix function it is supposed to implement.
 
 ### Added
+- **Quantum Singular Value Transformation (QSVT)** (`algorithms.qsvt_transform`,
+  `qsvt_scalar_response`) — the capstone unifying QSP and block encoding: apply a QSP
+  phase sequence to the qubitization walk of a Hermitian `A` and obtain the matrix
+  function `P(A) = sum_i g(lambda_i)|v_i><v_i|` in the top-left block. Verified to
+  machine precision that the matrix transform equals the scalar QSVT response applied
+  *eigenvalue-by-eigenvalue* (the QSVT theorem itself) across random phase sequences,
+  that zero phases reproduce the Chebyshev `T_d(A)`, that the output commutes with `A`
+  (it is a genuine function of `A`), and the scalar response stays bounded by 1 — the
+  framework that unifies amplitude amplification, Hamiltonian simulation, and quantum
+  linear algebra.
 - **Linear Combination of Unitaries (LCU)** (`algorithms.lcu_block_encoding`,
   `lcu_matrix`) — block-encode a weighted sum `H = sum alpha_i U_i` from its PREPARE
   (amplitude-loading) and SELECT (controlled-unitary) pieces:

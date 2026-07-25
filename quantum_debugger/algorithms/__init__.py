@@ -227,6 +227,8 @@ from .block_encoding import (
     is_block_encoding,
     qubitization_walk,
     chebyshev_of_matrix,
+    qsvt_scalar_response,
+    qsvt_transform,
 )
 from .lcu import lcu_block_encoding, lcu_matrix
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
@@ -452,6 +454,8 @@ __all__ = [
     "is_block_encoding",
     "qubitization_walk",
     "chebyshev_of_matrix",
+    "qsvt_scalar_response",
+    "qsvt_transform",
     "lcu_block_encoding",
     "lcu_matrix",
     # Quantum spectroscopy

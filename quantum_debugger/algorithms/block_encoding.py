@@ -66,6 +66,44 @@ def qubitization_walk(block_encoding) -> np.ndarray:
     return U @ reflection
 
 
+def qsvt_scalar_response(phases, x: float) -> complex:
+    """
+    The scalar function ``g(x) = <0| V_Phi |0>`` that QSVT applies, where ``V_Phi``
+    interleaves the 2x2 qubitized walk at signal ``x`` with the ancilla rotations
+    ``e^{i phi_k Z}``. This is the eigenvalue transformation the matrix version below
+    applies to every eigenvalue of ``A``.
+    """
+    s = np.sqrt(max(0.0, 1 - x * x))
+    walk2 = np.array([[x, s], [s, -x]], dtype=complex) @ np.array(
+        [[1, 0], [0, -1]], dtype=complex
+    )
+    diag = np.array([1.0, -1.0])
+    V = np.diag(np.exp(1j * phases[0] * diag))
+    for phi in phases[1:]:
+        V = V @ walk2 @ np.diag(np.exp(1j * phi * diag))
+    return complex(V[0, 0])
+
+
+def qsvt_transform(matrix, phases) -> np.ndarray:
+    """
+    Quantum Singular Value Transformation: apply the QSP ``phases`` to the qubitization
+    walk of a Hermitian ``matrix`` ``A`` (``||A|| <= 1``), producing the eigenvalue
+    transformation ``P(A) = sum_i g(lambda_i) |v_i><v_i|`` in the top-left block, where
+    ``g`` is :func:`qsvt_scalar_response`. A sequence of ``d + 1`` phases gives a
+    degree-``d`` transform. Zero phases reproduce ``T_d(A)`` (Chebyshev).
+
+    Returns the ``d x d`` top-left block, i.e. the matrix function of ``A``.
+    """
+    A = np.asarray(matrix, dtype=complex)
+    d = A.shape[0]
+    W = qubitization_walk(block_encode(A))
+    diag = np.concatenate([np.ones(d), -np.ones(d)])
+    V = np.diag(np.exp(1j * phases[0] * diag))
+    for phi in phases[1:]:
+        V = V @ W @ np.diag(np.exp(1j * phi * diag))
+    return top_left_block(V, d)
+
+
 def chebyshev_of_matrix(matrix, degree: int) -> np.ndarray:
     """
     The Chebyshev polynomial ``T_degree(A)`` of a Hermitian ``matrix`` (``||A|| <= 1``),
