@@ -14,6 +14,14 @@ verification, virtual distillation, and probabilistic error cancellation — eac
 verified to recover the noise-free expectation value.
 
 ### Added
+- **Clifford Data Regression (CDR)** (`algorithms.cdr_mitigate`, `fit_cdr_model`,
+  `apply_cdr`) — learning-based mitigation that needs no noise model: because
+  near-Clifford circuits are classically simulable, fit `ideal ~= slope*noisy +
+  intercept` on training states where both values are known, then correct the real
+  circuit's noisy result. Verified: the fit recovers an exact linear relation
+  (`R^2 = 1`), a global-depolarizing channel gives a pure rescaling (`slope > 1`,
+  `intercept ~ 0`), and applying the learned model corrects a Bell-state target from
+  raw error > 0.1 to < 1e-6.
 - **Pauli twirling** (`algorithms.pauli_twirl`, `coherent_error_kraus`) — tailor
   hard-to-handle coherent noise into stochastic Pauli noise by averaging over
   Pauli conjugations, `N_twirled = (1/4^n) sum_P P† N(P . P†) P`. Verified: the twirled

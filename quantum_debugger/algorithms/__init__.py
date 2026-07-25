@@ -262,6 +262,7 @@ from .zne import (
     zero_noise_extrapolation,
 )
 from .pauli_twirling import pauli_twirl, coherent_error_kraus
+from .cdr import fit_cdr_model, apply_cdr, cdr_mitigate
 
 __all__ = [
     "assignment_matrix",
@@ -281,6 +282,9 @@ __all__ = [
     "zero_noise_extrapolation",
     "pauli_twirl",
     "coherent_error_kraus",
+    "fit_cdr_model",
+    "apply_cdr",
+    "cdr_mitigate",
     # QFT
     "qft",
     "apply_qft",

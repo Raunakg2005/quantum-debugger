@@ -1764,3 +1764,34 @@ Pauli basis, with the *same* average gate fidelity — twirling doesn't reduce t
 it *reshapes* coherent noise into the stochastic form that error correction and the
 other mitigation methods (ZNE, PEC) assume. It is why randomized compiling is standard
 on today's devices.
+
+## Clifford Data Regression (CDR)
+
+Learn the noise correction from data instead of modeling it — the trick is that
+near-Clifford circuits are classically simulable, so their exact values are free
+training labels:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import cdr_mitigate
+from quantum_debugger.density_matrix import DensityMatrix, depolarizing
+
+Z = np.diag([1, -1]); ZZ = np.kron(Z, Z)
+def noisy(psi):
+    dm = DensityMatrix(state_vector=psi)
+    for q in (0, 1):
+        dm.apply_channel(depolarizing(0.15), [q])
+    return np.real(np.trace(ZZ @ dm.rho))
+ideal = lambda psi: np.real(psi.conj() @ ZZ @ psi)
+
+training = [...]                                  # near-Clifford training states
+target = np.array([1, 0, 0, 1]) / np.sqrt(2)      # the real (Bell) circuit
+r = cdr_mitigate(noisy, ideal, training, target)
+r["model"]        # {'slope': 1.38, 'intercept': 0.0, 'r_squared': 1.0}
+r["mitigated"]    # 1.0 -- corrected from raw 0.72
+```
+
+Fit `ideal = slope*noisy + intercept` on the training pairs, then apply it to the
+target's noisy value. For global depolarizing the map is a pure rescaling and CDR is
+exact; for structured noise the linear fit removes the dominant error — all without
+ever characterizing the noise channel.
