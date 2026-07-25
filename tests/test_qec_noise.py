@@ -95,3 +95,43 @@ class TestSyndromeExtractionCircuit:
 
     def test_perfect_channel_lossless(self):
         assert abs(syndrome_extraction_cycle(0.0)["corrected"] - 1.0) < 1e-12
+
+
+class TestRepeatedCycles:
+    @pytest.mark.parametrize("p", [0.02, 0.05, 0.1])
+    def test_matches_closed_form_every_cycle(self, p):
+        from quantum_debugger.algorithms import repeated_qec_cycles
+
+        r = repeated_qec_cycles(p, 8)
+        for sim, ana in zip(r["fidelities"], r["analytic"]):
+            assert abs(sim - ana) < 1e-9
+        assert abs(r["logical_flip_probability"] - (3 * p**2 - 2 * p**3)) < 1e-12
+
+    def test_monotone_decay_toward_half(self):
+        from quantum_debugger.algorithms import repeated_qec_cycles
+
+        fids = repeated_qec_cycles(0.1, 12)["fidelities"]
+        assert all(b < a for a, b in zip(fids, fids[1:]))
+        assert fids[-1] > 0.5  # decays toward 1/2, never below
+
+    def test_lifetime_gain_scales_inverse_p(self):
+        from quantum_debugger.algorithms import repeated_qec_cycles
+
+        gain = repeated_qec_cycles(0.01, 1)["lifetime_gain"]
+        assert 25 < gain < 40  # ~ 1/(3p) ~ 33
+
+    def test_plus_logical_immune(self):
+        from quantum_debugger.algorithms import repeated_qec_cycles
+
+        r = repeated_qec_cycles(0.1, 5, alpha=1.0, beta=1.0)
+        assert all(abs(f - 1.0) < 1e-9 for f in r["fidelities"])
+
+    def test_gain_above_one_for_all_p_below_half(self):
+        # q = 3p^2 - 2p^3 < p iff (2p-1)(p-1) > 0, i.e. for EVERY p < 1/2;
+        # the crossover is exactly at the p = 1/2 threshold (q = 1/2 there).
+        from quantum_debugger.algorithms import repeated_qec_cycles
+
+        assert repeated_qec_cycles(0.05, 1)["lifetime_gain"] > 1
+        assert repeated_qec_cycles(0.45, 1)["lifetime_gain"] > 1
+        q_at_half = repeated_qec_cycles(0.5, 1)["logical_flip_probability"]
+        assert abs(q_at_half - 0.5) < 1e-12  # fixed point: no help, no harm

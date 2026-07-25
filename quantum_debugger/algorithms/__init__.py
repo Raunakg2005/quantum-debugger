@@ -96,6 +96,7 @@ from .qec_noise import (
     phase_flip_code_noisy,
     syndrome_extraction_cycle,
     repetition_code_logical_error,
+    repeated_qec_cycles,
 )
 from .perfect_code import five_qubit_code, five_qubit_stabilizers
 from .steane_code import (
@@ -241,6 +242,7 @@ __all__ = [
     "phase_flip_code_noisy",
     "syndrome_extraction_cycle",
     "repetition_code_logical_error",
+    "repeated_qec_cycles",
     "five_qubit_code",
     "five_qubit_stabilizers",
     "steane_code",

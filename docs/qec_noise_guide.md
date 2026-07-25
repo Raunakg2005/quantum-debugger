@@ -201,3 +201,24 @@ single-qubit error is corrected and only (some) weight-2 errors cause logical
 failure. The **pseudo-threshold** sits near `p ~ 0.05`: below it encoding helps,
 at `p = 0.25` it hurts. This is the number a fault-tolerant architecture must
 engineer its physical error rate below.
+
+## The payoff: logical qubit lifetime
+
+Run the full loop — noise, syndrome extraction, recovery, repeat — and watch the
+encoded qubit outlive a bare one:
+
+```python
+from quantum_debugger.algorithms import repeated_qec_cycles
+
+r = repeated_qec_cycles(p=0.01, cycles=10)
+r["logical_flip_probability"]   # 2.98e-4 == 3p^2 - 2p^3, vs p = 0.01 bare
+r["lifetime_gain"]              # 33.9    ~= 1/(3p)
+r["fidelities"][-1]             # matches (1 + (1-2q)^10)/2 exactly
+```
+
+The exact effective dynamics: one cycle = a *logical* bit-flip channel with
+`q = 3p^2 - 2p^3`, because every weight-2 or weight-3 physical error decodes to
+exactly `X_L`. So the k-cycle fidelity has the closed form `(1 + (1-2q)^k)/2` —
+and the simulation reproduces it to machine precision at every cycle. The gain
+exceeds 1 for every `p < 1/2` (the fixed point sits exactly at threshold), and a
+`|+_L>` codeword, being logical-X-invariant, never decays at all.

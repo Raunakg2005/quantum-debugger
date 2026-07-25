@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Logical qubit lifetime under repeated QEC cycles**
+  (`algorithms.repeated_qec_cycles`) — the fault-tolerance payoff, exact: each
+  (noise -> recovery) cycle of the 3-qubit bit-flip code acts on the code space as a
+  *logical* bit-flip channel with `q = 3p^2 - 2p^3` (weight-2/3 errors decode to
+  exactly `X_L`), so k cycles give `F_k = (1 + (1-2q)^k)/2` — matched by the
+  simulation to machine precision at every cycle. The encoded qubit outlives a bare
+  one by `lifetime_gain ~ 1/(3p)` (33.9x at p = 0.01), the gain exceeds 1 for every
+  `p < 1/2` with the fixed point exactly at threshold, and `|+_L>` never decays at
+  all.
 - **Quantum state discrimination** (`algorithms.helstrom_bound`,
   `helstrom_measurement`, `unambiguous_discrimination`) — the two optimal ways to
   tell non-orthogonal states apart. Helstrom minimum-error:

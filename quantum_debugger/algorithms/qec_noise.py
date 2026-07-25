@@ -187,6 +187,56 @@ def syndrome_extraction_cycle(p: float, alpha: float = 1.0, beta: float = 0.0) -
     }
 
 
+def repeated_qec_cycles(p: float, cycles: int, alpha: float = 1.0, beta: float = 0.0) -> dict:
+    """
+    A logical qubit's *lifetime*: run ``cycles`` rounds of (bit-flip channel of
+    strength ``p`` on each qubit -> exact syndrome recovery) on the 3-qubit code,
+    tracking the logical fidelity after every round.
+
+    The exact effective dynamics: one cycle acts on the code space as a **logical
+    bit-flip channel** with ``q = 3p^2 - 2p^3`` (weight-2/3 physical errors decode to
+    exactly ``X_L``), so for a ``|0_L>`` codeword
+
+        F_k = (1 + (1 - 2q)^k) / 2      -- verified to machine precision.
+
+    A bare qubit under the same per-cycle noise decays with per-step flip
+    probability ``p``; the encoded qubit's decay constant is smaller by
+    ``lifetime_gain ~ 1/(3p)`` below threshold -- the fault-tolerance payoff.
+
+    Returns dict with ``fidelities`` (after each cycle), ``analytic`` (the closed
+    form), ``logical_flip_probability`` (q), and ``lifetime_gain``
+    (``ln(1-2p) / ln(1-2q)``, > 1 iff ``p < 1/2``).
+    """
+    norm = np.sqrt(abs(alpha) ** 2 + abs(beta) ** 2)
+    alpha, beta = alpha / norm, beta / norm
+
+    sv = np.zeros(8, dtype=complex)
+    sv[0], sv[7] = alpha, beta
+    dm = DensityMatrix(state_vector=sv)
+    ideal = sv.copy()
+
+    kraus = bit_flip(p)
+    q = 3 * p**2 - 2 * p**3
+    fids, analytic = [], []
+    for k in range(1, cycles + 1):
+        for qubit in range(3):
+            dm.apply_channel(kraus, [qubit])
+        dm.rho = _recovery_channel(dm.rho, _BITFLIP_STABS, _BITFLIP_RECOVERY)
+        fids.append(float(np.real(ideal.conj() @ dm.rho @ ideal)))
+        analytic.append((1 + (1 - 2 * q) ** k) / 2)
+
+    if 0 < q < 0.5 and 0 < p < 0.5:
+        gain = float(np.log(1 - 2 * p) / np.log(1 - 2 * q))
+    else:
+        gain = 1.0 if p == 0 else 0.0
+    return {
+        "fidelities": fids,
+        "analytic": analytic,
+        "logical_flip_probability": q,
+        "lifetime_gain": gain,
+    }
+
+
 def repetition_code_logical_error(p: float, distance: int = 3) -> float:
     """
     Exact logical error rate of the ``distance``-qubit repetition code under an
