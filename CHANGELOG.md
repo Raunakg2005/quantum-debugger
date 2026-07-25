@@ -13,6 +13,18 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **Matrix Product State simulator** (`quantum_debugger.mps.MPS`) — the 1.0 flagship:
+  a tensor-network engine that breaks the exponential state-vector wall for
+  low-entanglement states. Represents an n-qubit state as a chain of rank-3 tensors
+  with bond dimension `chi` (`O(n·chi^2)` memory instead of `2^n`), applies
+  single-qubit gates exactly and neighbouring two-qubit gates by SVD with truncation
+  to `max_bond` (the DMRG/TEBD approximation), and computes norms, expectation values,
+  and two-point correlations by `O(n·chi^3)` contraction — never forming the dense
+  state. Verified: exact state-vector roundtrip, single- and two-qubit gates
+  (including asymmetric random unitaries) match the state-vector simulator to 1e-10,
+  bond dimensions correctly detect structure (product → 1, GHZ → 2), and a **100-qubit
+  GHZ** builds instantly at bond dimension 2 with correct `<Z0 Z99> = 1`, `<X0> = 0` —
+  a `2^100`-amplitude state held in a handful of small tensors.
 
 ## [0.9.0]
 

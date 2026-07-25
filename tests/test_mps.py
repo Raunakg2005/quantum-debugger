@@ -1,0 +1,134 @@
+"""Tests for the matrix product state simulator."""
+
+import numpy as np
+import pytest
+
+from quantum_debugger.mps import MPS
+from quantum_debugger.core.quantum_state import apply_gate_tensor
+from quantum_debugger.core.gates import GateLibrary
+
+_Z = np.diag([1, -1]).astype(complex)
+_X = GateLibrary.X
+_H = GateLibrary.H
+_CNOT = GateLibrary.CNOT
+
+
+class TestRoundtrip:
+    @pytest.mark.parametrize("n", [2, 3, 4, 5])
+    def test_statevector_roundtrip(self, n):
+        rng = np.random.default_rng(n)
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        psi = psi / np.linalg.norm(psi)
+        rec = MPS.from_statevector(psi).to_statevector()
+        assert abs(np.vdot(psi, rec)) ** 2 > 1 - 1e-10
+
+    def test_zero_state(self):
+        m = MPS.zero_state(4)
+        sv = m.to_statevector()
+        expected = np.zeros(16, dtype=complex)
+        expected[0] = 1
+        assert np.allclose(sv, expected)
+
+
+class TestBondDimensions:
+    def test_product_state_bond_one(self):
+        m = MPS.zero_state(5)
+        assert m.max_bond_dimension() == 1
+
+    def test_ghz_bond_two(self):
+        n = 6
+        m = MPS.zero_state(n)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        assert m.max_bond_dimension() == 2
+
+    def test_bond_dim_list_length(self):
+        m = MPS.zero_state(5)
+        assert len(m.bond_dimensions()) == 4
+
+
+class TestGatesMatchStateVector:
+    @pytest.mark.parametrize("q", range(4))
+    def test_single_qubit_gate(self, q):
+        rng = np.random.default_rng(q)
+        psi = rng.normal(size=16) + 1j * rng.normal(size=16)
+        psi = psi / np.linalg.norm(psi)
+        m = MPS.from_statevector(psi)
+        m.apply_single(_H, q)
+        ref = apply_gate_tensor(np, psi, _H, [q], 4)
+        assert np.allclose(m.to_statevector(), ref, atol=1e-10)
+
+    @pytest.mark.parametrize("q", range(3))
+    def test_two_qubit_gate(self, q):
+        from scipy.stats import unitary_group
+
+        rng = np.random.default_rng(q)
+        psi = rng.normal(size=16) + 1j * rng.normal(size=16)
+        psi = psi / np.linalg.norm(psi)
+        G = unitary_group.rvs(4, random_state=q + 1)  # asymmetric 2-qubit gate
+        m = MPS.from_statevector(psi)
+        m.apply_two(G, q)
+        ref = apply_gate_tensor(np, psi, G, [q, q + 1], 4)
+        assert np.allclose(m.to_statevector(), ref, atol=1e-10)
+
+
+class TestExpectation:
+    def test_matches_state_vector(self):
+        rng = np.random.default_rng(0)
+        psi = rng.normal(size=16) + 1j * rng.normal(size=16)
+        psi = psi / np.linalg.norm(psi)
+        m = MPS.from_statevector(psi)
+        for q in range(4):
+            full = np.array([[1]], dtype=complex)
+            for k in range(4):
+                full = np.kron(_Z if k == q else np.eye(2, dtype=complex), full)
+            ref = np.real(psi.conj() @ full @ psi)
+            assert abs(m.expectation(_Z, q) - ref) < 1e-9
+
+    def test_correlation(self):
+        # Bell pair: <Z0 Z1> = 1.
+        m = MPS.zero_state(2)
+        m.apply_single(_H, 0)
+        m.apply_two(_CNOT, 0)
+        assert abs(m.correlation(_Z, 0, _Z, 1) - 1.0) < 1e-9
+
+
+class TestScale:
+    def test_large_ghz_low_bond(self):
+        # A 100-qubit GHZ has bond dimension 2 -- impossible for a state vector.
+        n = 100
+        m = MPS.zero_state(n, max_bond=4)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        assert m.max_bond_dimension() == 2
+        assert abs(m.norm() - 1.0) < 1e-9
+        assert abs(m.correlation(_Z, 0, _Z, n - 1) - 1.0) < 1e-9  # perfectly correlated
+        assert abs(m.expectation(_X, 0)) < 1e-9                    # <X> = 0
+
+    def test_product_circuit_stays_bond_one(self):
+        n = 50
+        m = MPS.zero_state(n)
+        for q in range(n):
+            m.apply_single(_X, q)  # all-ones product state
+        assert m.max_bond_dimension() == 1
+        assert abs(m.expectation(_Z, 25) - (-1.0)) < 1e-9  # |1> -> <Z> = -1
+
+
+class TestTruncation:
+    def test_bond_capped_at_max(self):
+        # A random circuit generates entanglement; the bond stays capped.
+        from scipy.stats import unitary_group
+
+        n = 8
+        m = MPS.zero_state(n, max_bond=4)
+        for layer in range(3):
+            for q in range(n - 1):
+                G = unitary_group.rvs(4, random_state=layer * n + q)
+                m.apply_two(G, q)
+        assert m.max_bond_dimension() <= 4
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

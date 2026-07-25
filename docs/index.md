@@ -131,6 +131,7 @@ advanced_algorithms_guide
 stabilizer_guide
 density_matrix_guide
 qec_noise_guide
+mps_guide
 ```
 
 ```{toctree}
