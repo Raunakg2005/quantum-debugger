@@ -256,6 +256,11 @@ from .pec import (
     apply_pauli_channel,
     pec_mitigate,
 )
+from .zne import (
+    fold_noise_expectation,
+    extrapolate_zero_noise,
+    zero_noise_extrapolation,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -270,6 +275,9 @@ __all__ = [
     "depolarizing_coeffs",
     "apply_pauli_channel",
     "pec_mitigate",
+    "fold_noise_expectation",
+    "extrapolate_zero_noise",
+    "zero_noise_extrapolation",
     # QFT
     "qft",
     "apply_qft",

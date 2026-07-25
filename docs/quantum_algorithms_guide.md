@@ -1711,3 +1711,33 @@ pec_mitigate(noisy, a, Z, ideal_state=psi)["mitigated_error"]   # ~0
 sample operation `P_i` with probability `|b_i|/gamma` and weight by `sign(b_i)*gamma`,
 giving an unbiased noise-free estimate at the cost of a `gamma^2` variance blow-up —
 which is why the overhead, growing with the noise, is the quantity that limits PEC.
+
+## Zero-Noise Extrapolation (ZNE)
+
+You can't lower a device's noise, but you can raise it — run at several noise levels
+and extrapolate the trend back to zero:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import zero_noise_extrapolation
+from quantum_debugger.density_matrix import DensityMatrix, depolarizing
+
+psi = np.array([1, 0, 0, 1]) / np.sqrt(2)
+factory = lambda: DensityMatrix(state_vector=psi)
+def noise_layer(dm):
+    for q in (0, 1):
+        dm.apply_channel(depolarizing(0.1), [q])
+
+Z = np.diag([1, -1]); ZZ = np.kron(Z, Z)
+r = zero_noise_extrapolation(factory, noise_layer, ZZ, scales=(1, 2, 3),
+                             method="exponential", ideal_state=psi)
+r["values"]            # [0.81, 0.656, 0.531] -- <ZZ> at noise scales 1, 2, 3
+r["raw"]               # 0.81  (scale 1)
+r["mitigated"]         # 1.0   -- extrapolated to zero noise (exact for geometric decay)
+```
+
+Noise is amplified by *folding* (applying the noise layer `c` times); the observable
+is measured at each scale and fit in `c`. Depolarizing noise decays geometrically, so
+the exponential fit is exact here; on real data a linear (Richardson) fit already
+removes the leading-order error. This is the density-matrix companion to the
+circuit-level ZNE in the mitigation package.

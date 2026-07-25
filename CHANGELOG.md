@@ -14,6 +14,15 @@ verification, virtual distillation, and probabilistic error cancellation — eac
 verified to recover the noise-free expectation value.
 
 ### Added
+- **Zero-noise extrapolation (ZNE)** (`algorithms.zero_noise_extrapolation`,
+  `extrapolate_zero_noise`, `fold_noise_expectation`) — the flagship mitigation
+  method: amplify the noise by folding (apply the noise layer `c` times), measure the
+  observable at each scale, and extrapolate to the zero-noise limit (linear/Richardson
+  or exponential). Verified on a depolarized Bell state where `<ZZ>` decays exactly
+  geometrically — the exponential fit recovers the ideal to 1e-9 (raw error 0.19),
+  linear extrapolation beats the raw value, and the amplified values decrease
+  monotonically with noise scale. Complements the mitigation suite: readout, virtual
+  distillation, symmetry verification, PEC, and now ZNE.
 - **Probabilistic error cancellation (PEC)** (`algorithms.invert_pauli_channel`,
   `pec_mitigate`, `depolarizing_coeffs`, `apply_pauli_channel`) — invert a noise
   channel as a signed quasi-probability over Paulis (`N^{-1} = sum b_i P_i . P_i`,
