@@ -163,6 +163,14 @@ from .error_detection import (
 from .mbqc import cluster_pair, mbqc_rotation
 from .weak_values import weak_value, weak_measurement_shift, weak_value_demo
 from .petz import petz_recovery, petz_code_recovery
+from .jordan_wigner import (
+    jw_annihilation,
+    jw_creation,
+    jw_number,
+    jw_total_number,
+    hopping_hamiltonian,
+    anticommutation_error,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -333,6 +341,12 @@ __all__ = [
     "weak_value_demo",
     "petz_recovery",
     "petz_code_recovery",
+    "jw_annihilation",
+    "jw_creation",
+    "jw_number",
+    "jw_total_number",
+    "hopping_hamiltonian",
+    "anticommutation_error",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

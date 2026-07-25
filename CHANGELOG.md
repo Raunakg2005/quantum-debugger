@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Jordan-Wigner transformation** (`algorithms.jw_annihilation`, `jw_creation`,
+  `jw_number`, `jw_total_number`, `hopping_hamiltonian`, `anticommutation_error`) —
+  the bridge from fermions to qubits that makes quantum chemistry simulable. Mode
+  `j` maps to `(prod_{k<j} Z_k) sigma_j^-`; verified that the operators satisfy the
+  fermionic algebra `{a_i, a_j} = 0`, `{a_i, a_j^dagger} = delta_ij` exactly, that
+  number operators are {0,1} projectors, that `(a^dagger)^2 = 0` (Pauli exclusion),
+  and that the tight-binding hopping Hamiltonian reproduces the exact band
+  `-2t cos(k)` (open chain and ring) while conserving particle number.
 
 ## [0.8.0]
 

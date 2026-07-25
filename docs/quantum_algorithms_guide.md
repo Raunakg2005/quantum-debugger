@@ -1107,3 +1107,28 @@ coupled to `A` actually registers, verified here by running the coupling
 `exp(-i g A x Y/2)` and post-selecting. As the pre- and post-selection approach
 orthogonality the value blows up: weak-value amplification, used to sense tiny
 couplings. (The unbounded shift costs post-selection probability — no free lunch.)
+
+## Jordan-Wigner: Fermions on a Quantum Computer
+
+Quantum chemistry and the Hubbard model are written with fermionic operators, which
+anticommute. The Jordan-Wigner map turns them into qubit operators while preserving
+that algebra:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    jw_annihilation, jw_number, hopping_hamiltonian, anticommutation_error,
+)
+
+anticommutation_error(4)          # ~1e-16 -- {a_i, a_j^dag} = delta_ij, exactly
+
+# Tight-binding chain: eigenvalues are the exact band -2t cos(k).
+H = hopping_hamiltonian(n_modes=4, t=1.0)
+# (single-particle sector eigenvalues) == -2 cos(k pi / 5)
+```
+
+Mode `j` becomes `(Z_0 ... Z_{j-1}) sigma_j^-` — the trailing `Z` string encodes the
+fermionic exchange sign. The number operator `a_j^dagger a_j` has eigenvalues 0/1
+(occupied or empty), `(a_j^dagger)^2 = 0` enforces Pauli exclusion, and the hopping
+Hamiltonian conserves particle number. These are the building blocks for encoding a
+molecular Hamiltonian and finding its ground state with VQE.
