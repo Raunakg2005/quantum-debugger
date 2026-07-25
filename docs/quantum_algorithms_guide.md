@@ -1683,3 +1683,31 @@ Projecting `rho -> P rho P / Tr(P rho)` with `P = (I + ZZ)/2` removes every erro
 left the `+1` eigenspace, for free — at the cost of the rejected fraction. It is the
 cheapest error-mitigation technique when a natural symmetry exists (and the reason
 error *detecting* codes like `[[4,2,2]]` are so useful).
+
+## Probabilistic Error Cancellation (PEC)
+
+A noise channel's inverse isn't physical — but it's a *signed* combination of physical
+operations, which PEC samples:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    depolarizing_coeffs, invert_pauli_channel, apply_pauli_channel, pec_mitigate,
+)
+
+a = depolarizing_coeffs(0.2)                 # the noise, as Pauli coefficients
+inv = invert_pauli_channel(a)
+inv["quasi_probabilities"]                   # [1.19, -0.06, -0.06, -0.06], sums to 1
+inv["overhead"]                              # gamma = 1.375 -- the sampling cost
+
+# Applying the inverse cancels the noise exactly:
+psi = np.array([0.6, 0.8j]); rho = np.outer(psi, psi.conj())
+noisy = apply_pauli_channel(rho, a)
+Z = np.array([[1, 0], [0, -1]])
+pec_mitigate(noisy, a, Z, ideal_state=psi)["mitigated_error"]   # ~0
+```
+
+`N^{-1} = sum_i b_i P_i . P_i` with `sum b_i = 1` and some `b_i < 0`. On hardware you
+sample operation `P_i` with probability `|b_i|/gamma` and weight by `sign(b_i)*gamma`,
+giving an unbiased noise-free estimate at the cost of a `gamma^2` variance blow-up —
+which is why the overhead, growing with the noise, is the quantity that limits PEC.

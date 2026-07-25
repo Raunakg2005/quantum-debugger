@@ -250,6 +250,12 @@ from .symmetry_verification import (
     symmetry_project,
     symmetry_verified_expectation,
 )
+from .pec import (
+    invert_pauli_channel,
+    depolarizing_coeffs,
+    apply_pauli_channel,
+    pec_mitigate,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -260,6 +266,10 @@ __all__ = [
     "distillation_report",
     "symmetry_project",
     "symmetry_verified_expectation",
+    "invert_pauli_channel",
+    "depolarizing_coeffs",
+    "apply_pauli_channel",
+    "pec_mitigate",
     # QFT
     "qft",
     "apply_qft",

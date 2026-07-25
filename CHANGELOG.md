@@ -14,6 +14,14 @@ verification, virtual distillation, and probabilistic error cancellation — eac
 verified to recover the noise-free expectation value.
 
 ### Added
+- **Probabilistic error cancellation (PEC)** (`algorithms.invert_pauli_channel`,
+  `pec_mitigate`, `depolarizing_coeffs`, `apply_pauli_channel`) — invert a noise
+  channel as a signed quasi-probability over Paulis (`N^{-1} = sum b_i P_i . P_i`,
+  `sum b_i = 1`, some `b_i < 0`) with the sampling overhead `gamma = sum |b_i|`.
+  Verified: the inverse exactly cancels depolarizing noise at every strength (recovering
+  the density matrix and the noise-free expectation to 1e-9), the quasi-probabilities
+  sum to 1, the overhead is `>= 1` and grows with the noise (the `gamma^2` variance
+  cost), and zero noise gives the identity inverse.
 - **Symmetry verification** (`algorithms.symmetry_project`,
   `symmetry_verified_expectation`) — post-select onto the symmetry sector the ideal
   state belongs to, discarding runs where an error broke the symmetry:
