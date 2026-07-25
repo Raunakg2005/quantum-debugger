@@ -53,6 +53,8 @@ from .hamiltonian_simulation import (
     hamiltonian_matrix,
     pauli_term_matrix,
     pauli_decompose,
+    trotter_unitary,
+    trotter_error_scaling,
 )
 from .decomposition import (
     zyz_decompose,
@@ -234,6 +236,8 @@ __all__ = [
     "hamiltonian_matrix",
     "pauli_term_matrix",
     "pauli_decompose",
+    "trotter_unitary",
+    "trotter_error_scaling",
     # Gate decomposition
     "zyz_decompose",
     "abc_decomposition",

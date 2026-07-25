@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Trotter error scaling** (`algorithms.trotter_unitary`,
+  `trotter_error_scaling`) — assemble the full Trotterized evolution operator and
+  measure how its error `|| U_trotter - exp(-iHt) ||` shrinks with the step count.
+  Verified against the theoretical rates: the first-order formula converges as
+  `~ t^2/n` (measured log-log slope -1.03) and the symmetric second-order Suzuki
+  formula as `~ t^3/n^2` (slope -2.02) on TFIM and Heisenberg Hamiltonians, with
+  second order strictly beating first at fixed step count — quantifying the accuracy
+  of Hamiltonian-simulation circuits.
 - **Imaginary-time evolution** (`algorithms.imaginary_time_evolution`) — cool any
   state to a Hamiltonian's ground state via normalized `e^{-tau H}`, the engine
   behind QITE and projector Monte Carlo — no optimizer, no local minima. Verified to

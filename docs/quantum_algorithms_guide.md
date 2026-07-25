@@ -711,6 +711,22 @@ trotter_evolve(H, time=1.0, steps=50, order=2)["fidelity"]   # ~1.0
 returns the raw gate list, and `hamiltonian_matrix(terms, n)` builds the dense
 operator if you want to inspect it.
 
+### Error scaling
+
+`trotter_error_scaling` quantifies the convergence directly — the operator error
+against the exact exponential, fit on a log-log scale:
+
+```python
+from quantum_debugger.algorithms import trotter_error_scaling
+
+trotter_error_scaling(H, order=1)["slope"]   # -1.03  (error ~ t^2 / n)
+trotter_error_scaling(H, order=2)["slope"]   # -2.02  (error ~ t^3 / n^2)
+```
+
+The measured slopes match the theoretical first- and second-order Trotter rates,
+so you can pick a step count for any target accuracy. `trotter_unitary(...)` returns
+the full assembled evolution operator behind the measurement.
+
 ## Repetition-Code Logical Error Rate
 
 The central promise of QEC in one experiment: below a noise threshold, encoding
