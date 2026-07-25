@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Fermi-Hubbard model** (`algorithms.fermi_hubbard_hamiltonian`,
+  `hubbard_ground_energy`, `hubbard_dimer_energy`) — interacting electrons on a
+  lattice, built on the Jordan-Wigner operators: hopping `t` vs on-site repulsion
+  `U`, two spin-orbitals per site. Verified: the Hamiltonian conserves total and
+  per-spin particle number, and the exactly-solvable half-filled two-site dimer
+  reproduces the analytic ground energy `(U - sqrt(U^2 + 16t^2))/2` at every `U`,
+  interpolating from the non-interacting `-2t` (`U = 0`) to the Heisenberg
+  antiferromagnet `-4t^2/U` (large `U`) — the Mott physics in miniature.
 - **Jordan-Wigner transformation** (`algorithms.jw_annihilation`, `jw_creation`,
   `jw_number`, `jw_total_number`, `hopping_hamiltonian`, `anticommutation_error`) —
   the bridge from fermions to qubits that makes quantum chemistry simulable. Mode

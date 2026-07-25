@@ -171,6 +171,11 @@ from .jordan_wigner import (
     hopping_hamiltonian,
     anticommutation_error,
 )
+from .hubbard import (
+    fermi_hubbard_hamiltonian,
+    hubbard_ground_energy,
+    hubbard_dimer_energy,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -347,6 +352,9 @@ __all__ = [
     "jw_total_number",
     "hopping_hamiltonian",
     "anticommutation_error",
+    "fermi_hubbard_hamiltonian",
+    "hubbard_ground_energy",
+    "hubbard_dimer_energy",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

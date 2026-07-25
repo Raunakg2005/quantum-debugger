@@ -1132,3 +1132,27 @@ fermionic exchange sign. The number operator `a_j^dagger a_j` has eigenvalues 0/
 (occupied or empty), `(a_j^dagger)^2 = 0` enforces Pauli exclusion, and the hopping
 Hamiltonian conserves particle number. These are the building blocks for encoding a
 molecular Hamiltonian and finding its ground state with VQE.
+
+## The Fermi-Hubbard Model
+
+The workhorse model of correlated electrons — hopping versus on-site repulsion —
+assembled from the Jordan-Wigner operators:
+
+```python
+from quantum_debugger.algorithms import hubbard_dimer_energy, hubbard_ground_energy
+
+# The exactly-solvable half-filled two-site dimer:
+r = hubbard_dimer_energy(t=1.0, u=4.0)
+r["ground_energy"]      # -1.123...
+r["analytic"]           # (U - sqrt(U^2 + 16 t^2)) / 2 -- matches exactly
+r["heisenberg_limit"]   # -4 t^2 / U, the large-U antiferromagnet it approaches
+
+hubbard_ground_energy(2, t=1.0, u=4.0, n_particles=2)   # same, via the spectrum
+```
+
+`H = -t sum (hopping) + U sum n_up n_down`. At `U = 0` the two electrons fill the
+bonding orbital (`-2t`); as `U` grows they localize to avoid the energy cost, and
+the ground energy crosses over to the Heisenberg exchange `-4t^2/U` — the
+metal-to-Mott-insulator transition on two sites. The model conserves total and
+per-spin electron number, which is exactly what makes particle-number-preserving
+VQE ansaetze the right tool for its larger cousins.
