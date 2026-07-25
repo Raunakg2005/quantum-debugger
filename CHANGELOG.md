@@ -5,12 +5,19 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.1.0.dev)
+## [1.1.0]
 
 Theme: QSVT & modern algorithm primitives — the unifying framework behind today's
-quantum algorithms. Block encodings, quantum signal processing, linear combination of
-unitaries (LCU), and quantum singular value transformation, each verified against the
-polynomial or matrix function it is supposed to implement.
+quantum algorithms, built bottom-up and verified at every layer. **Quantum Signal
+Processing** (designable polynomials of a scalar, Chebyshev at zero phase); the two
+input models — **block encoding** (a matrix in the corner of a unitary) and **LCU**
+(a Pauli sum via PREPARE/SELECT) — plus **qubitization** (matrix Chebyshev
+polynomials from a quantum walk); **QSVT** itself (verified to apply the same scalar
+function eigenvalue-by-eigenvalue — the theorem, to machine precision); and the
+headline applications built on it: **Hamiltonian simulation** `e^{-iHt}` and
+**quantum linear systems** `A^{-1}b`, each matching exact diagonalization. The single
+primitive from which amplitude amplification, Hamiltonian simulation, and quantum
+linear algebra all descend.
 
 ### Added
 - **Quantum linear systems via QSVT** (`algorithms.matrix_inverse_qsvt`,
