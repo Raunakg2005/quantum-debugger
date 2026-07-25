@@ -231,6 +231,11 @@ from .block_encoding import (
     qsvt_transform,
 )
 from .lcu import lcu_block_encoding, lcu_matrix
+from .matrix_functions import (
+    chebyshev_coefficients,
+    matrix_function_chebyshev,
+    hamiltonian_simulation_qsvt,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -458,6 +463,9 @@ __all__ = [
     "qsvt_transform",
     "lcu_block_encoding",
     "lcu_matrix",
+    "chebyshev_coefficients",
+    "matrix_function_chebyshev",
+    "hamiltonian_simulation_qsvt",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

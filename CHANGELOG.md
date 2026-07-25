@@ -13,6 +13,16 @@ unitaries (LCU), and quantum singular value transformation, each verified agains
 polynomial or matrix function it is supposed to implement.
 
 ### Added
+- **Matrix functions & Hamiltonian simulation via QSVT**
+  (`algorithms.matrix_function_chebyshev`, `hamiltonian_simulation_qsvt`,
+  `chebyshev_coefficients`) — the payoff of the QSVT machinery: approximate any smooth
+  `f(A)` by the Chebyshev series `sum_k c_k T_k(A)`, with each `T_k(A)` built from the
+  qubitization walk. Verified to converge to the exact matrix function (< 1e-8 by
+  degree 20 for cos/sin/exp, geometric convergence for a Gaussian, `f(x)=x` giving `A`
+  exactly). As the flagship application, `hamiltonian_simulation_qsvt` builds
+  `e^{-iHt}` from the expansion of `e^{-ixt}` — matching exact diagonalization to
+  < 1e-6, staying unitary, reducing to the identity at `t=0`, and needing higher
+  degree for longer times, exactly as the theory predicts.
 - **Quantum Singular Value Transformation (QSVT)** (`algorithms.qsvt_transform`,
   `qsvt_scalar_response`) — the capstone unifying QSP and block encoding: apply a QSP
   phase sequence to the qubitization walk of a Hermitian `A` and obtain the matrix

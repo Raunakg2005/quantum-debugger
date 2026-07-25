@@ -1561,3 +1561,28 @@ QSVT theorem, verified here to machine precision. Zero phases give the Chebyshev
 of the algorithmic zoo. This is the single primitive from which amplitude
 amplification, Hamiltonian simulation, and the quantum linear-systems algorithm all
 descend.
+
+## Matrix Functions & Hamiltonian Simulation via QSVT
+
+The payoff of QSVT/qubitization: any smooth function of a Hermitian matrix, built from
+its Chebyshev polynomials:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import matrix_function_chebyshev, hamiltonian_simulation_qsvt
+
+A = np.diag([0.3, -0.5, 0.6])                        # Hermitian, ||A|| <= 1
+
+matrix_function_chebyshev(A, np.cos, degree=20)      # cos(A), error < 1e-8
+
+# The headline application -- Hamiltonian simulation e^{-iHt}:
+r = hamiltonian_simulation_qsvt(A, time=1.0, degree=24)
+r["error"]              # < 1e-6 vs exact diagonalization
+r["unitarity_error"]    # ~0 -- the approximation is unitary
+```
+
+`f(A) ~= sum_k c_k T_k(A)` with `c_k` the classical Chebyshev coefficients of `f` and
+each `T_k(A)` from the qubitization walk (a linear combination of walk powers). The
+series converges geometrically for smooth `f`, so choosing `f(x) = e^{-ixt}` gives
+Hamiltonian simulation, `f(x) = 1/x` gives matrix inversion, and a smoothed step
+function gives a spectral projector — all from the single QSVT primitive.
