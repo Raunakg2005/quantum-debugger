@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **T1/T2 relaxation times** (`density_matrix.relaxation_times`) — extract a qubit's
+  datasheet numbers from exact Lindblad evolution (amplitude damping + pure
+  dephasing) and verify the fundamental relation `1/T2 = 1/(2 T1) + 1/T_phi`, hence
+  `T2 <= 2 T1` always, with equality iff there is no pure dephasing. Includes the
+  dephasing-dominated regime (`T2 < T1`).
 - **Quantum discord** (`density_matrix.quantum_discord`) — the quantum correlation
   that survives *without* entanglement: `D = S(B) - S(AB) + min_M sum p_k S(A|k)`,
   minimized over all projective measurements (grid-seeded Nelder-Mead). Verified: a

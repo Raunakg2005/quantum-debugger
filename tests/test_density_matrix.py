@@ -424,3 +424,33 @@ class TestQuantumDiscord:
         sv[0], sv[3] = np.cos(theta), np.sin(theta)
         dm = DensityMatrix(state_vector=sv)
         assert abs(quantum_discord(dm) - dm.entanglement_entropy([0])) < 1e-6
+
+
+class TestRelaxationTimes:
+    @pytest.mark.parametrize("g1,gphi", [(0.5, 0.0), (0.5, 0.3), (1.0, 0.8), (0.2, 2.0)])
+    def test_identity_holds(self, g1, gphi):
+        from quantum_debugger.density_matrix import relaxation_times
+
+        r = relaxation_times(g1, gphi)
+        assert r["identity_residual"] < 1e-9
+        assert r["t2_le_2t1"]
+        assert abs(r["T1"] - 1 / g1) < 1e-9
+
+    def test_no_dephasing_gives_t2_equals_2t1(self):
+        from quantum_debugger.density_matrix import relaxation_times
+
+        r = relaxation_times(0.7, 0.0)
+        assert abs(r["T2"] - 2 * r["T1"]) < 1e-9
+        assert r["T_phi"] == np.inf
+
+    def test_strong_dephasing_shortens_t2(self):
+        from quantum_debugger.density_matrix import relaxation_times
+
+        r = relaxation_times(0.5, 5.0)
+        assert r["T2"] < r["T1"]  # dephasing-dominated qubit
+
+    def test_invalid_gamma1_rejected(self):
+        from quantum_debugger.density_matrix import relaxation_times
+
+        with pytest.raises(ValueError):
+            relaxation_times(0.0)

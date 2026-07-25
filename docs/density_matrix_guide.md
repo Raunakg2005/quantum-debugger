@@ -228,3 +228,25 @@ quantum_discord(dm)            # 0.049 -- but genuinely quantum correlation!
 optimized over the Bloch sphere. Verified against Luo's closed form for
 Bell-diagonal states; for pure states it reduces exactly to the entanglement
 entropy, and for classical mixtures it vanishes.
+
+## T1, T2, and why T2 <= 2 T1
+
+Every real qubit's datasheet lists `T1` (energy relaxation) and `T2` (coherence).
+They are not independent:
+
+```python
+from quantum_debugger.density_matrix import relaxation_times
+
+r = relaxation_times(gamma1=0.5, gamma_phi=0.3)
+r["T1"]                  # 2.0     = 1/gamma1
+r["T2"]                  # 1.818   -- shorter than 2*T1
+r["identity_residual"]   # ~1e-16  : 1/T2 == 1/(2*T1) + 1/T_phi exactly
+r["t2_le_2t1"]           # True    -- always
+
+relaxation_times(0.5, 0.0)["T2"]   # 4.0 == 2*T1: no pure dephasing
+relaxation_times(0.5, 5.0)         # dephasing-dominated: T2 < T1
+```
+
+Both times are extracted from the exact Lindblad evolution (`evolve_lindblad`) —
+the excited population decays as `e^{-gamma1 t}` and the `|+>` coherence as
+`e^{-(gamma1/2 + gamma_phi) t}`, which is precisely the relation above.

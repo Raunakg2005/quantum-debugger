@@ -327,6 +327,59 @@ def phase_damping(gamma: float):
     ]
 
 
+# --- T1 / T2 relaxation -----------------------------------------------------
+
+
+def relaxation_times(gamma1: float, gamma_phi: float = 0.0, probe_time: float = 1.0) -> dict:
+    """
+    Extract the relaxation time ``T1`` and coherence time ``T2`` of a qubit evolving
+    under the Lindblad equation with amplitude damping (rate ``gamma1 > 0``, jump
+    operator ``sqrt(gamma1) sigma-``) and pure dephasing (rate ``gamma_phi``, jump
+    ``sqrt(gamma_phi/2) sigma_z``), by probing the exact exponential decays of the
+    excited population and the coherence of a ``|+>`` state.
+
+    Verifies the fundamental relation of every real qubit's datasheet:
+
+        1/T2 = 1/(2 T1) + 1/T_phi        (so T2 <= 2 T1 always),
+
+    with equality iff there is no pure dephasing.
+
+    Returns dict with ``T1``, ``T2``, ``T_phi`` (``inf`` if ``gamma_phi = 0``),
+    ``identity_residual`` (|1/T2 - 1/(2T1) - 1/T_phi|, ~0), and ``t2_le_2t1``.
+    """
+    if gamma1 <= 0:
+        raise ValueError("gamma1 must be > 0")
+
+    sm = np.array([[0, 1], [0, 0]], dtype=complex)  # sigma-: |1> -> |0>
+    cols = [np.sqrt(gamma1) * sm]
+    if gamma_phi > 0:
+        cols.append(np.sqrt(gamma_phi / 2) * _Z)
+    H0 = np.zeros((2, 2), dtype=complex)
+    t = probe_time
+
+    # T1 probe: |1> population decay.
+    dm = DensityMatrix(rho=np.array([[0, 0], [0, 1]], dtype=complex))
+    dm.evolve_lindblad(H0, cols, time=t)
+    p1 = float(np.real(dm.rho[1, 1]))
+    T1 = -t / np.log(p1)
+
+    # T2 probe: |+> coherence decay.
+    dm = DensityMatrix(state_vector=np.array([1, 1], dtype=complex) / np.sqrt(2))
+    dm.evolve_lindblad(H0, cols, time=t)
+    coh = float(2 * abs(dm.rho[0, 1]))
+    T2 = -t / np.log(coh)
+
+    T_phi = np.inf if gamma_phi == 0 else 1.0 / gamma_phi
+    residual = abs(1 / T2 - 1 / (2 * T1) - (0.0 if T_phi == np.inf else 1 / T_phi))
+    return {
+        "T1": T1,
+        "T2": T2,
+        "T_phi": T_phi,
+        "identity_residual": residual,
+        "t2_le_2t1": T2 <= 2 * T1 + 1e-9,
+    }
+
+
 # --- quantum discord --------------------------------------------------------
 
 
