@@ -222,3 +222,25 @@ exactly `X_L`. So the k-cycle fidelity has the closed form `(1 + (1-2q)^k)/2` â€
 and the simulation reproduces it to machine precision at every cycle. The gain
 exceeds 1 for every `p < 1/2` (the fixed point sits exactly at threshold), and a
 `|+_L>` codeword, being logical-X-invariant, never decays at all.
+
+## Detect and discard: the [[4,2,2]] code
+
+Correction is expensive; *detection* is cheap. The [[4,2,2]] code stores TWO
+logical qubits in four physical ones with just two stabilizers (`XXXX`, `ZZZZ`),
+and simply throws away any run whose syndrome trips:
+
+```python
+from quantum_debugger.algorithms import detect_single_errors, postselected_memory
+
+detect_single_errors()["all_detected"]      # True -- all 12 single-qubit errors
+
+r = postselected_memory(p=0.002)
+1 - r["postselected_fidelity"]   # 3.0e-6 -- vs 1.0e-3 bare: 330x better
+r["acceptance_probability"]      # 0.994  -- the price: ~0.6% of runs discarded
+```
+
+Distance 2 cannot tell *which* qubit erred, so it cannot correct â€” but every
+weight-1 error is caught, leaving only O(p^2) weight-2 events (some of which are
+exactly logical operators, e.g. `X0 X1 = X_L1`). Post-selection buys quadratic
+error suppression for linear rejection cost, which is why the [[4,2,2]] code
+anchors so many early fault-tolerance demonstrations.

@@ -155,6 +155,11 @@ from .geometric_phase import (
 )
 from .uncertainty import robertson_bound, entropic_uncertainty
 from .magic_measures import stabilizer_renyi_entropy, magic_of_t_states
+from .error_detection import (
+    four_two_two_codewords,
+    detect_single_errors,
+    postselected_memory,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -315,6 +320,9 @@ __all__ = [
     "entropic_uncertainty",
     "stabilizer_renyi_entropy",
     "magic_of_t_states",
+    "four_two_two_codewords",
+    "detect_single_errors",
+    "postselected_memory",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
