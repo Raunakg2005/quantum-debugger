@@ -5,6 +5,15 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (1.0.0.dev)
+
+Theme: scale & tensor networks — breaking the exponential state-vector wall. A
+matrix-product-state simulator for large, low-entanglement systems, and the
+large-scale tooling built around it. (The 1.0 milestone: from "simulate a handful of
+qubits exactly" to "simulate many qubits when entanglement allows.")
+
+### Added
+
 ## [0.9.0]
 
 Theme: quantum chemistry, many-body physics & advanced simulation. Fermionic systems
