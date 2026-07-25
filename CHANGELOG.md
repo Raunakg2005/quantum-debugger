@@ -5,6 +5,14 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (0.9.0.dev)
+
+Theme: quantum chemistry & advanced simulation — fermionic systems (Jordan-Wigner),
+molecular Hamiltonians, and the algorithms that run on them. (Open systems, noise,
+and fault tolerance largely landed in 0.8.0.)
+
+### Added
+
 ## [0.8.0]
 
 Theme: a comprehensive quantum-information-theory layer on the two simulation
