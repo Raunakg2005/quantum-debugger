@@ -250,3 +250,32 @@ relaxation_times(0.5, 5.0)         # dephasing-dominated: T2 < T1
 Both times are extracted from the exact Lindblad evolution (`evolve_lindblad`) —
 the excited population decays as `e^{-gamma1 t}` and the `|+>` coherence as
 `e^{-(gamma1/2 + gamma_phi) t}`, which is precisely the relation above.
+
+## Concurrence & entanglement of formation
+
+For two qubits, entanglement of a *mixed* state has an exact closed form
+(Wootters 1998), via the concurrence:
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import DensityMatrix
+from quantum_debugger.algorithms import werner_state
+
+bell = DensityMatrix(state_vector=np.array([1, 0, 0, 1]) / np.sqrt(2))
+bell.concurrence()                  # 1.0
+bell.entanglement_of_formation()    # 1.0 bit -- costs one Bell pair to make
+
+DensityMatrix(rho=werner_state(0.75)).concurrence()   # 0.5  == 2F - 1
+DensityMatrix(rho=werner_state(0.45)).concurrence()   # 0.0  -- separable
+```
+
+- `concurrence()` — `max(0, l1 - l2 - l3 - l4)` from the eigenvalues of the
+  spin-flipped matrix `rho (Y x Y) rho* (Y x Y)`; 0 iff separable, 1 for Bell states,
+  `2|ad - bc|` for pure states.
+- `entanglement_of_formation()` — `h((1 + sqrt(1 - C^2))/2)` in bits: the number of
+  Bell pairs per copy needed to prepare the state by LOCC. Reduces to the
+  entanglement entropy on pure states.
+
+Together with `negativity` (any dimensions, but only a bound) and
+`quantum_discord` (correlations beyond entanglement), this completes the
+two-qubit correlation toolbox.

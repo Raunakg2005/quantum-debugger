@@ -181,6 +181,38 @@ class DensityMatrix:
         s_diag = float(-np.sum(diag * np.log2(diag)))
         return s_diag - self.von_neumann_entropy()
 
+    def concurrence(self) -> float:
+        """
+        Wootters concurrence of a two-qubit state (exact, any mixed state):
+        ``C = max(0, l1 - l2 - l3 - l4)`` where ``l_i`` are the square roots of the
+        eigenvalues (descending) of ``rho (Y x Y) rho* (Y x Y)``. 0 iff separable,
+        1 for a Bell state; for a pure state ``C = 2|ad - bc|``.
+        """
+        if self.n != 2:
+            raise ValueError("concurrence is defined for two-qubit states")
+        yy = np.kron(_Y, _Y)
+        # Hermitian similar form sqrt(rho) (YY rho* YY) sqrt(rho): same eigenvalues
+        # as rho YY rho* YY, but computable with eigvalsh precision.
+        sqrt_rho = _matrix_sqrt(self.rho)
+        S = sqrt_rho @ (yy @ self.rho.conj() @ yy) @ sqrt_rho
+        vals = np.sort(np.linalg.eigvalsh(S).real)[::-1]
+        vals[vals < 1e-14] = 0.0  # numerical dust would inflate to ~1e-7 under sqrt
+        vals = np.sqrt(vals)
+        return float(max(0.0, vals[0] - vals[1] - vals[2] - vals[3]))
+
+    def entanglement_of_formation(self) -> float:
+        """
+        Entanglement of formation in bits (Wootters, PRL 80, 2245, 1998):
+        ``E = h((1 + sqrt(1 - C^2))/2)`` with ``h`` the binary entropy and ``C``
+        the concurrence -- the exact cost, in Bell pairs, of preparing the state.
+        0 iff separable, 1 for a Bell state.
+        """
+        C = self.concurrence()
+        x = (1 + np.sqrt(max(0.0, 1 - C**2))) / 2
+        if x <= 0 or x >= 1:
+            return 0.0
+        return float(-x * np.log2(x) - (1 - x) * np.log2(1 - x))
+
     def mutual_information(self, qubits) -> float:
         """
         Quantum mutual information ``I(A:B) = S(A) + S(B) - S(AB)`` in bits, where A is

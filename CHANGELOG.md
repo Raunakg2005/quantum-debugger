@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Wootters concurrence & entanglement of formation**
+  (`DensityMatrix.concurrence`, `entanglement_of_formation`) — the exact two-qubit
+  entanglement measure for ANY mixed state: `C = max(0, l1-l2-l3-l4)` from the
+  spin-flipped spectrum (computed in a Hermitian-similar form for eigvalsh
+  precision), and `E = h((1+sqrt(1-C^2))/2)` — the cost in Bell pairs of preparing
+  the state. Verified: pure states match `C = 2|ad-bc|` and EoF equals the
+  entanglement entropy; Bell-diagonal states match `C = max(0, 2 max(lam) - 1)`;
+  Werner states give `2F - 1` above the `F = 1/2` separability threshold and exactly
+  0 below it.
 - **CHSH nonlocality of mixed states — the Horodecki criterion**
   (`algorithms.chsh_maximum`, `chsh_maximum_optimized`, `correlation_matrix`,
   `werner_nonlocality`) — the exact maximal CHSH value of ANY two-qubit state:

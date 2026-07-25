@@ -454,3 +454,57 @@ class TestRelaxationTimes:
 
         with pytest.raises(ValueError):
             relaxation_times(0.0)
+
+
+class TestConcurrence:
+    def test_bell_state_is_one(self):
+        sv = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        dm = DensityMatrix(state_vector=sv)
+        assert abs(dm.concurrence() - 1.0) < 1e-9
+        assert abs(dm.entanglement_of_formation() - 1.0) < 1e-9
+
+    def test_product_state_is_zero(self):
+        dm = DensityMatrix(state_vector=np.array([1, 0, 0, 0], dtype=complex))
+        assert dm.concurrence() < 1e-9
+        assert dm.entanglement_of_formation() < 1e-9
+
+    @pytest.mark.parametrize("seed", range(5))
+    def test_pure_state_formula(self, seed):
+        # For pure a|00> + b|01> + c|10> + d|11>: C = 2|ad - bc|.
+        rng = np.random.default_rng(seed)
+        sv = rng.normal(size=4) + 1j * rng.normal(size=4)
+        sv = sv / np.linalg.norm(sv)
+        dm = DensityMatrix(state_vector=sv)
+        expected = 2 * abs(sv[0] * sv[3] - sv[1] * sv[2])
+        assert abs(dm.concurrence() - expected) < 1e-9
+
+    @pytest.mark.parametrize("seed", range(4))
+    def test_bell_diagonal_closed_form(self, seed):
+        # For Bell-diagonal states: C = max(0, 2*max(lam) - 1).
+        from quantum_debugger.algorithms import bell_diagonal_state
+
+        rng = np.random.default_rng(seed)
+        lams = rng.dirichlet([2, 1, 1, 1])
+        dm = DensityMatrix(rho=bell_diagonal_state(*lams))
+        expected = max(0.0, 2 * max(lams) - 1)
+        assert abs(dm.concurrence() - expected) < 1e-9
+
+    def test_werner_threshold_at_half(self):
+        from quantum_debugger.algorithms import werner_state
+
+        assert DensityMatrix(rho=werner_state(0.45)).concurrence() < 1e-12
+        c = DensityMatrix(rho=werner_state(0.75)).concurrence()
+        assert abs(c - (2 * 0.75 - 1)) < 1e-9  # 2F - 1 for Werner above 1/2
+
+    def test_partially_entangled_pure_state(self):
+        theta = 0.5
+        sv = np.zeros(4, dtype=complex)
+        sv[0], sv[3] = np.cos(theta), np.sin(theta)
+        dm = DensityMatrix(state_vector=sv)
+        assert abs(dm.concurrence() - np.sin(2 * theta)) < 1e-9
+        # EoF equals the entanglement entropy for pure states.
+        assert abs(dm.entanglement_of_formation() - dm.entanglement_entropy([0])) < 1e-9
+
+    def test_wrong_size_rejected(self):
+        with pytest.raises(ValueError):
+            DensityMatrix(1).concurrence()
