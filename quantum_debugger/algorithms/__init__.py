@@ -198,6 +198,11 @@ from .level_statistics import (
 )
 from .kitaev_chain import kitaev_chain_hamiltonian, kitaev_ground_degeneracy
 from .spin_squeezing import one_axis_twisting, best_squeezing
+from .classical_shadows import (
+    collect_shadows,
+    estimate_observable,
+    shadow_estimates,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -401,6 +406,9 @@ __all__ = [
     "kitaev_ground_degeneracy",
     "one_axis_twisting",
     "best_squeezing",
+    "collect_shadows",
+    "estimate_observable",
+    "shadow_estimates",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

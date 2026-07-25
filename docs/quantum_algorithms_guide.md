@@ -903,6 +903,32 @@ result["density_matrix"]   # reconstructed 4x4 rho
 result["fidelity"]          # ~1.0 vs the true Bell state
 ```
 
+## Classical Shadows
+
+Full tomography is exponentially expensive; classical shadows estimate *many*
+observables from *one* set of random measurements:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import shadow_estimates, collect_shadows, estimate_observable
+
+bell = np.array([1, 0, 0, 1]) / np.sqrt(2)
+
+r = shadow_estimates(bell, ["XX", "YY", "ZZ", "ZI"], shots=4000)
+r["estimates"]     # {'XX': 0.97, 'YY': -1.01, 'ZZ': 0.99, 'ZI': 0.02}  -- all from ONE dataset
+r["max_error"]     # shrinks with shot count
+
+# Or collect once, query any observable later:
+shadows = collect_shadows(bell, shots=3000)
+estimate_observable(shadows, "XX")     # ~1.0
+```
+
+Each shot measures every qubit in a random X/Y/Z basis and forms the unbiased
+snapshot `prod_q (3|b_q><b_q| - I)`; averaging gives `Tr(O rho_hat)` for any Pauli
+`O`. The number of measurements needed scales with the *locality* of the observables,
+not the dimension of the state — which is why shadows have become a workhorse for
+reading out near-term quantum devices.
+
 ## The Holevo Bound & Accessible Information
 
 Alice encodes classical data in quantum states; Bob measures. The **Holevo

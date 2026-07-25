@@ -12,6 +12,15 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Classical shadows** (`algorithms.collect_shadows`, `estimate_observable`,
+  `shadow_estimates`) — estimate many observables from few measurements
+  (Huang-Kueng-Preskill): measure each qubit in a random Pauli basis, build the
+  unbiased single-shot snapshot `prod_q (3|b_q><b_q| - I)`, and read off `<O> =
+  Tr(O rho_hat)` for *any* observable from the *same* dataset. Verified: Bell-pair
+  correlators (`<XX>=1`, `<YY>=-1`, `<ZZ>=1`, `<ZI>=0`) all recovered from one
+  collection, the error shrinks with shot count, `<I...I>=1` exactly per snapshot, and
+  a shadow set is reusable across observables — the cost set by observable locality,
+  not Hilbert-space dimension.
 - **Spin squeezing (one-axis twisting)** (`algorithms.one_axis_twisting`,
   `best_squeezing`) — metrologically useful entanglement that beats the standard
   quantum limit. Evolving a coherent spin state under `H = chi J_z^2` (Kitagawa-Ueda)
