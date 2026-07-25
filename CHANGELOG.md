@@ -12,6 +12,15 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Gibbs states & quantum thermodynamics** (`algorithms.gibbs_state`,
+  `partition_function`, `thermal_properties`) — finite-temperature physics of any
+  Hamiltonian: `rho(beta) = e^{-beta H}/Z` and its thermodynamic potentials. Verified
+  the full set of identities — `beta -> 0` gives the maximally mixed `I/d` (entropy
+  `ln d`), `beta -> infinity` projects onto the ground state (entropy 0), the
+  Helmholtz free energy satisfies `F = -ln Z / beta = E - S/beta` exactly, entropy is
+  monotone in temperature, heat capacity is non-negative, and a single spin
+  reproduces the analytic `<H> = -tanh(beta)`, `Z = 2 cosh(beta)`. Applied to the
+  Fermi-Hubbard Hamiltonian, this gives its thermal state directly.
 - **Pauli decomposition + chemistry-via-VQE**
   (`algorithms.pauli_decompose`) — decompose any Hermitian matrix into weighted
   Pauli strings (`c_P = Tr(P H)/2^n`), the step that turns a dense molecular or

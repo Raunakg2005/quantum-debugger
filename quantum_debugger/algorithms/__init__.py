@@ -177,6 +177,11 @@ from .hubbard import (
     hubbard_ground_energy,
     hubbard_dimer_energy,
 )
+from .thermal import (
+    gibbs_state,
+    partition_function,
+    thermal_properties,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -357,6 +362,9 @@ __all__ = [
     "fermi_hubbard_hamiltonian",
     "hubbard_ground_energy",
     "hubbard_dimer_energy",
+    "gibbs_state",
+    "partition_function",
+    "thermal_properties",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
