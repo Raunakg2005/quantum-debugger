@@ -5,6 +5,15 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (1.1.0.dev)
+
+Theme: QSVT & modern algorithm primitives — the unifying framework behind today's
+quantum algorithms. Block encodings, quantum signal processing, linear combination of
+unitaries (LCU), and quantum singular value transformation, each verified against the
+polynomial or matrix function it is supposed to implement.
+
+### Added
+
 ## [1.0.0]
 
 Theme: scale & tensor networks — breaking the exponential state-vector wall. The
