@@ -203,6 +203,29 @@ from quantum_debugger.algorithms import superdense_coding
 superdense_coding((1, 0))["decoded"]   # (1, 0) -- both bits recovered
 ```
 
+## Entanglement Distillation (BBPSSW)
+
+Real channels deliver *noisy* Bell pairs. Distillation converts two noisy pairs
+into one better pair using only local operations and classical communication —
+the primitive behind quantum repeaters:
+
+```python
+from quantum_debugger.algorithms import bbpssw_distill, distillation_rounds
+
+r = bbpssw_distill(0.7)        # two Werner pairs of fidelity 0.7
+r["fidelity"]                  # 0.7353 -- the kept pair is better
+r["success_probability"]       # 0.68   -- kept iff the two measurements agree
+r["analytic"]                  # matches the Bennett et al. closed form exactly
+
+distillation_rounds(0.7, 0.99)["rounds"]   # rounds of 2-to-1 to reach F = 0.99
+```
+
+Each party CNOTs their half of pair 1 onto their half of pair 2, both measure
+pair 2, and they keep pair 1 iff the outcomes agree. `F = 1/2` is the threshold:
+above it every round improves the pair, below it distillation only makes things
+worse — matching exactly the Werner state's entanglement threshold (checked via
+negativity).
+
 ## Shor's Algorithm -- Period Finding & Factoring
 
 Quantum phase estimation on the modular-multiplication unitary

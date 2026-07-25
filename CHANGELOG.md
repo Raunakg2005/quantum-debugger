@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Entanglement distillation (BBPSSW)** (`algorithms.bbpssw_distill`,
+  `werner_state`, `distillation_rounds`) — two noisy Werner pairs → one
+  higher-fidelity pair using only local CNOTs, measurement, and classical
+  communication, run as the exact 4-qubit density-matrix circuit. Verified to
+  machine precision against the Bennett et al. closed form
+  `F' = (F² + (1-F)²/9)/(F² + 2F(1-F)/3 + 5(1-F)²/9)` with success probability equal
+  to the denominator; `F = 1/2` is confirmed as the distillation threshold (fixed
+  point, degradation below, improvement above), and the Werner state's entanglement
+  threshold at `F > 1/2` is cross-checked via negativity. `distillation_rounds`
+  iterates the recurrence to a target fidelity (2^r pairs per output).
 - **Magic states & T-gate injection** (`algorithms.t_magic_state`,
   `inject_t_gate`) — how fault-tolerant computers get non-Clifford gates: the T gate
   enacted on data using only Clifford operations (CNOT, S, measurement) plus one

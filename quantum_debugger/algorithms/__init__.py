@@ -105,6 +105,7 @@ from .steane_code import (
     steane_transversal_cnot,
 )
 from .magic_state import t_magic_state, inject_t_gate
+from .distillation import werner_state, bbpssw_distill, distillation_rounds
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -220,6 +221,9 @@ __all__ = [
     "steane_transversal_cnot",
     "t_magic_state",
     "inject_t_gate",
+    "werner_state",
+    "bbpssw_distill",
+    "distillation_rounds",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
