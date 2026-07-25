@@ -14,6 +14,14 @@ verification, virtual distillation, and probabilistic error cancellation — eac
 verified to recover the noise-free expectation value.
 
 ### Added
+- **Symmetry verification** (`algorithms.symmetry_project`,
+  `symmetry_verified_expectation`) — post-select onto the symmetry sector the ideal
+  state belongs to, discarding runs where an error broke the symmetry:
+  `rho -> P rho P / Tr(P rho)`. Verified on a bit-flipped Bell state whose single-flip
+  errors leave the even-parity sector — post-selecting `ZZ = +1` restores the fidelity
+  from 0.745 to 1.0 (acceptance 0.745), the projected state is a valid density matrix
+  in the target sector, a perfect state is left untouched, and the wrong sector rejects
+  most of the population.
 - **Virtual distillation** (`algorithms.virtual_distillation`, `distillation_report`)
   — error mitigation by purification: the corrected expectation `Tr(O rho^m)/Tr(rho^m)`
   concentrates weight on the noisy state's dominant eigenvector, approaching the

@@ -1655,3 +1655,31 @@ r["distilled_error"]  # < r["raw_error"]
 `rho^m/Tr(rho^m)` converges to the projector onto `rho`'s largest eigenvector — the
 intended pure state. Higher `m` mitigates more (at the cost of more copies on
 hardware); here it is computed exactly on the density-matrix engine.
+
+## Symmetry Verification
+
+If the ideal state respects a symmetry (parity, particle number, a stabilizer), throw
+away the runs where an error broke it:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import symmetry_verified_expectation
+from quantum_debugger.density_matrix import DensityMatrix, bit_flip
+
+psi = np.array([1, 0, 0, 1]) / np.sqrt(2)          # |Phi+>, in the ZZ = +1 sector
+dm = DensityMatrix(state_vector=psi)
+for q in (0, 1):
+    dm.apply_channel(bit_flip(0.15), [q])           # single flips break ZZ parity
+
+ZZ = np.kron(np.diag([1, -1]), np.diag([1, -1]))
+fidelity = np.outer(psi, psi.conj())
+r = symmetry_verified_expectation(dm.rho, ZZ, fidelity, sector=1, ideal_state=psi)
+r["raw"]          # 0.745
+r["verified"]     # 1.0   -- single-flip errors discarded
+r["acceptance"]   # 0.745 -- fraction of runs kept
+```
+
+Projecting `rho -> P rho P / Tr(P rho)` with `P = (I + ZZ)/2` removes every error that
+left the `+1` eigenspace, for free — at the cost of the rejected fraction. It is the
+cheapest error-mitigation technique when a natural symmetry exists (and the reason
+error *detecting* codes like `[[4,2,2]]` are so useful).

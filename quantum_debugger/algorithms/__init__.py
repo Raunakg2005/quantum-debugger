@@ -246,6 +246,10 @@ from .readout_mitigation import (
     mitigate_expectation,
 )
 from .virtual_distillation import virtual_distillation, distillation_report
+from .symmetry_verification import (
+    symmetry_project,
+    symmetry_verified_expectation,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -254,6 +258,8 @@ __all__ = [
     "mitigate_expectation",
     "virtual_distillation",
     "distillation_report",
+    "symmetry_project",
+    "symmetry_verified_expectation",
     # QFT
     "qft",
     "apply_qft",
