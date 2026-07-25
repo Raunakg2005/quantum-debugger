@@ -157,6 +157,41 @@ class MPS:
         den = self._environment_scan({})
         return float(np.real(num / den))
 
+    def sample(self, shots: int, seed: int = 0) -> dict:
+        """
+        Draw ``shots`` computational-basis measurement outcomes from the MPS by exact
+        sequential conditional sampling -- ``O(shots * n * chi^2)``, with no dense
+        state. Returns a dict mapping bitstring (character ``i`` = qubit ``i``) to its
+        count; the distribution is the exact Born rule.
+        """
+        n = self.n
+        rng = np.random.default_rng(seed)
+        # Right environments R[i] = <tail_i|tail_i> as a (bond, bond) matrix.
+        R = [None] * (n + 1)
+        R[n] = np.ones((1, 1), dtype=complex)
+        for i in range(n - 1, -1, -1):
+            A = self.tensors[i]
+            R[i] = np.einsum("asr,rt,bst->ab", A, R[i + 1], np.conj(A))
+
+        counts = {}
+        for _ in range(shots):
+            left = np.ones(1, dtype=complex)  # ket boundary after the fixed prefix
+            bits = []
+            for i in range(n):
+                A = self.tensors[i]
+                amp0 = left @ A[:, 0, :]
+                amp1 = left @ A[:, 1, :]
+                p0 = float(np.real(np.conj(amp0) @ R[i + 1] @ amp0))
+                p1 = float(np.real(np.conj(amp1) @ R[i + 1] @ amp1))
+                if rng.random() < p0 / (p0 + p1):
+                    left, b = amp0, "0"
+                else:
+                    left, b = amp1, "1"
+                bits.append(b)
+            key = "".join(bits)
+            counts[key] = counts.get(key, 0) + 1
+        return counts
+
     def correlation(self, obs_a, qubit_a: int, obs_b, qubit_b: int) -> float:
         """
         Two-point correlation ``<psi| O_a O_b |psi>`` for single-qubit operators on

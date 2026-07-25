@@ -13,6 +13,13 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **MPS measurement sampling** (`MPS.sample`) — draw computational-basis shots from a
+  matrix product state by exact sequential conditional sampling with precomputed right
+  environments, `O(shots·n·chi^2)`, never forming the dense state. Verified: the
+  empirical distribution matches the dense Born rule to within shot noise on random
+  states, Bell/GHZ give only their correlated outcomes, a product state is
+  deterministic, and shot counts are conserved — measurement statistics from systems
+  far too large to store as a state vector.
 - **Imaginary-time TEBD ground states** (`algorithms.imaginary_tebd_ground_state`,
   `tfim_mps_energy`) — DMRG-style ground-state search on the MPS: apply imaginary-time
   bond gates `e^{-h dtau}` (cooling), renormalize, and settle into the ground state.

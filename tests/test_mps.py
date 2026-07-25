@@ -130,5 +130,49 @@ class TestTruncation:
         assert m.max_bond_dimension() <= 4
 
 
+class TestSampling:
+    def test_bell_only_correlated_outcomes(self):
+        m = MPS.zero_state(2)
+        m.apply_single(_H, 0)
+        m.apply_two(_CNOT, 0)
+        counts = m.sample(500, seed=1)
+        assert set(counts) <= {"00", "11"}
+        assert len(counts) == 2  # both appear
+
+    def test_ghz_all_zero_or_all_one(self):
+        n = 6
+        m = MPS.zero_state(n)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        counts = m.sample(300, seed=2)
+        assert set(counts) <= {"0" * n, "1" * n}
+
+    def test_matches_born_distribution(self):
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        psi = psi / np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        shots = 40000
+        counts = m.sample(shots, seed=1)
+        max_err = 0.0
+        for idx in range(2**n):
+            bs = "".join(str((idx >> q) & 1) for q in range(n))
+            emp = counts.get(bs, 0) / shots
+            max_err = max(max_err, abs(emp - abs(psi[idx]) ** 2))
+        assert max_err < 0.02  # within shot noise
+
+    def test_product_state_deterministic(self):
+        m = MPS.zero_state(3)
+        m.apply_single(_X, 1)  # |010>
+        assert m.sample(20, seed=0) == {"010": 20}
+
+    def test_total_shots_conserved(self):
+        m = MPS.zero_state(5)
+        m.apply_single(_H, 0)
+        assert sum(m.sample(137, seed=3).values()) == 137
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

@@ -47,6 +47,9 @@ mps.expectation(Z, 50)                      # 0.0 -- each qubit is unbiased
   to `max_bond` (the controlled approximation of DMRG/TEBD).
 - `expectation(O, qubit)`, `correlation(A, i, B, j)`, `norm()` — computed by
   `O(n * chi^3)` tensor contraction, never forming the dense state.
+- `sample(shots, seed)` — draw measurement outcomes by exact sequential conditional
+  sampling (right environments), `O(shots * n * chi^2)`; the distribution is the exact
+  Born rule, verified against the dense state for small systems.
 - `bond_dimensions()`, `max_bond_dimension()` — inspect the entanglement structure.
 - `to_statevector()` — contract back to a dense vector (small `n` only).
 
