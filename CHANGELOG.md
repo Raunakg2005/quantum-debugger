@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Channel coherent information & quantum capacity**
+  (`algorithms.coherent_information`, `amplitude_damping_capacity`) — quantum
+  Shannon theory from first principles: `I_c = S(N(rho)) - S(E)` computed by
+  genuinely purifying the input, sending the system half through the channel, and
+  reading the environment entropy off the joint output. Verified against the known
+  amplitude-damping closed form `h((1-g)p) - h(gp)` at every tested `(g, p)`, the
+  identity channel gives `I_c = S(rho)`, and the AD capacity behaves exactly as
+  Shannon theory demands: 1 at `g = 0`, monotone decreasing, and **exactly zero
+  from `g = 1/2`** — the antidegradable point where the environment learns as much
+  as the receiver (with the exact antisymmetry `I_c(g) = -I_c(1-g)` confirmed).
 - **Wootters concurrence & entanglement of formation**
   (`DensityMatrix.concurrence`, `entanglement_of_formation`) — the exact two-qubit
   entanglement measure for ANY mixed state: `C = max(0, l1-l2-l3-l4)` from the

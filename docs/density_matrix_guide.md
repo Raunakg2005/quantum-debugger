@@ -279,3 +279,27 @@ DensityMatrix(rho=werner_state(0.45)).concurrence()   # 0.0  -- separable
 Together with `negativity` (any dimensions, but only a bound) and
 `quantum_discord` (correlations beyond entanglement), this completes the
 two-qubit correlation toolbox.
+
+## Channel capacity: how much quantum information survives?
+
+The coherent information `I_c = S(N(rho)) - S(E)` measures the qubits-per-use a
+channel can protect — computed here from first principles (purify the input, send
+the system half through the channel, read off the environment entropy):
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import coherent_information, amplitude_damping_capacity
+from quantum_debugger.density_matrix import amplitude_damping
+
+coherent_information(amplitude_damping(0.1), np.diag([0.5, 0.5]))  # 0.706 bits
+
+amplitude_damping_capacity(0.0)["capacity"]    # 1.0  -- noiseless
+amplitude_damping_capacity(0.25)["capacity"]   # 0.47 -- degradable regime
+amplitude_damping_capacity(0.5)["capacity"]    # 0.0  -- EXACTLY zero from here on
+```
+
+The amplitude-damping results match the known closed form `h((1-g)p) - h(gp)`
+exactly. The vanishing at `g = 1/2` is forced by no-cloning: there the environment
+receives a copy of everything the receiver gets (the channel is antidegradable),
+so any surviving quantum capacity would clone. The antisymmetry
+`I_c(g) = -I_c(1-g)` is verified too.

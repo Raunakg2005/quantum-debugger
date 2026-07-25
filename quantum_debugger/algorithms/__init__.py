@@ -127,6 +127,7 @@ from .nonlocality import (
     chsh_maximum_optimized,
     werner_nonlocality,
 )
+from .channel_capacity import coherent_information, amplitude_damping_capacity
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -264,6 +265,8 @@ __all__ = [
     "chsh_maximum",
     "chsh_maximum_optimized",
     "werner_nonlocality",
+    "coherent_information",
+    "amplitude_damping_capacity",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
