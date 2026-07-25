@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Imaginary-time evolution** (`algorithms.imaginary_time_evolution`) — cool any
+  state to a Hamiltonian's ground state via normalized `e^{-tau H}`, the engine
+  behind QITE and projector Monte Carlo — no optimizer, no local minima. Verified to
+  converge to the exact ground energy (Fermi-Hubbard, TFIM, Heisenberg) with the
+  energy decreasing monotonically and the converged state a true ground eigenstate.
+  Honestly bounded: because the ground component decays slowest, even a start made
+  orthogonal to the ground state still cools *to* it (its ~1e-16 residual overlap is
+  re-amplified) — so plain ITE targets the ground state, never an excited level.
 - **Gibbs states & quantum thermodynamics** (`algorithms.gibbs_state`,
   `partition_function`, `thermal_properties`) — finite-temperature physics of any
   Hamiltonian: `rho(beta) = e^{-beta H}/Z` and its thermodynamic potentials. Verified

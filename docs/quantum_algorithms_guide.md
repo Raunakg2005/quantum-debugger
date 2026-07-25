@@ -1181,3 +1181,29 @@ Hermitian operator exactly and preserves its whole spectrum. Combined with
 `jordan_wigner` (fermions -> operators) and `variational_ground_state` (ground
 state on the RY+CNOT ansatz), this is the end-to-end path a real quantum-chemistry
 calculation follows.
+
+## Imaginary-Time Evolution (Cooling to the Ground State)
+
+Swap real time for imaginary time and unitary evolution becomes cooling: excited
+components decay exponentially, leaving the ground state. No optimizer, no local
+minima:
+
+```python
+from quantum_debugger.algorithms import (
+    imaginary_time_evolution, fermi_hubbard_hamiltonian,
+)
+
+H = fermi_hubbard_hamiltonian(2, t=1.0, u=3.0)
+r = imaginary_time_evolution(H, dtau=0.1, steps=200)
+
+r["energy"]              # -1.0, matching exact diagonalization
+r["error"]               # < 1e-6
+r["energy_trajectory"]   # monotonically decreasing toward the ground energy
+```
+
+`|psi(tau)> = e^{-tau H}|psi(0)> / norm`; because the ground component decays the
+slowest, the state converges to it whenever the start overlaps it — which a random
+start always does. It's the deterministic counterpart to `variational_ground_state`
+(no ansatz, no optimization), and the classical model of QITE. One honest caveat:
+plain imaginary-time evolution *cannot* target excited states — even a start made
+orthogonal to the ground state is pulled back to it by its residual overlap.

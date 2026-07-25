@@ -182,6 +182,7 @@ from .thermal import (
     partition_function,
     thermal_properties,
 )
+from .imaginary_time import imaginary_time_evolution
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -365,6 +366,7 @@ __all__ = [
     "gibbs_state",
     "partition_function",
     "thermal_properties",
+    "imaginary_time_evolution",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
