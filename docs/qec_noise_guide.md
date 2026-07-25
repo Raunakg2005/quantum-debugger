@@ -258,11 +258,12 @@ from quantum_debugger.algorithms import petz_code_recovery
 z0 = np.zeros(8); z0[0] = 1        # |0_L> = |000>
 z1 = np.zeros(8); z1[7] = 1        # |1_L> = |111>
 
+# `noise` is any list of Kraus operators on the 3 qubits (8x8 matrices).
 # Correctable (bit-flip) errors: Petz recovers PERFECTLY -- it *is* the decoder.
-petz_code_recovery(bitflip_channel(0.1), [z0, z1], 0.6, 0.8)["recovered_fidelity"]  # 1.0
+petz_code_recovery(bit_flip_noise, [z0, z1], 0.6, 0.8)["recovered_fidelity"]  # 1.0
 
-# Amplitude damping: not correctable, but Petz still helps.
-r = petz_code_recovery(amp_damping_channel(0.1), [z0, z1], 0.6, 0.8)
+# Amplitude damping on the 3 qubits: not correctable, but Petz still helps.
+r = petz_code_recovery(amp_damping_noise, [z0, z1], 0.6, 0.8)
 r["noisy_fidelity"]      # 0.82  -- no correction
 r["recovered_fidelity"]  # 0.93  -- approximate recovery
 ```
