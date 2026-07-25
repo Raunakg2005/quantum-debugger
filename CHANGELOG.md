@@ -13,6 +13,14 @@ unitaries (LCU), and quantum singular value transformation, each verified agains
 polynomial or matrix function it is supposed to implement.
 
 ### Added
+- **Block encoding & qubitization** (`algorithms.block_encode`, `is_block_encoding`,
+  `qubitization_walk`, `chebyshev_of_matrix`) — the input model of QSVT: hide a
+  Hermitian matrix `A` (`||A|| <= 1`) in the corner of a unitary
+  (`<0|U|0> = A`, verified unitary with the exact top-left block), then form the
+  qubitization walk `W = U(2Π-I)` and realize the Chebyshev polynomials of the
+  *matrix*: `<0|W^d|0> = T_d(A)`. Verified against the classical matrix function
+  `sum_i T_d(lambda_i)|v_i><v_i|` for degrees 1–6 (with `T_1(A)=A`, `T_2(A)=2A^2-I`,
+  and the diagonal case exact) — the quantum-walk route to matrix functions.
 - **Quantum Signal Processing** (`algorithms.qsp_unitary`, `qsp_response`,
   `chebyshev_via_qsp`, `signal_operator`) — the one-qubit engine of modern quantum
   algorithms: interleave a signal rotation `W(x)` with tunable `Z` rotations set by a

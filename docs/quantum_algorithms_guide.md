@@ -1489,3 +1489,28 @@ qsp_response([0.3, 0.5, -0.2, 0.7], xs)   # a degree-3 (odd) polynomial
 phases *are* the design knobs — choosing them to approximate `sign(x)`, `1/x`, or
 `e^{-i t x}` is what turns QSP (lifted to a block-encoded operator via QSVT) into
 amplitude amplification, quantum linear-system solving, or Hamiltonian simulation.
+
+## Block Encoding & Qubitization
+
+Quantum computers apply unitaries, but Hamiltonians and data matrices aren't unitary.
+A **block encoding** hides a matrix in the corner of a unitary, and **qubitization**
+turns it into a walk whose powers are matrix polynomials:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import block_encode, chebyshev_of_matrix
+
+A = np.diag([0.3, -0.5, 0.8])           # Hermitian, ||A|| <= 1
+
+U = block_encode(A)                      # <0|U|0> = A, U unitary
+
+chebyshev_of_matrix(A, 3)                # T_3(A) = <0|W^3|0>, W the qubitization walk
+# == diag(T_3(0.3), T_3(-0.5), T_3(0.8))
+```
+
+`U = [[A, sqrt(I-A^2)], [sqrt(I-A^2), -A]]` block-encodes `A`; the walk
+`W = U(2Π - I)` rotates by `arccos(lambda)` in each eigenspace, so `<0|W^d|0> = T_d(A)`
+exactly. Applying tunable phase rotations between walk steps (the QSVT generalization
+of the QSP phases above) turns this into *any* polynomial of `A` — the single
+framework behind amplitude amplification, Hamiltonian simulation, and quantum linear
+algebra.

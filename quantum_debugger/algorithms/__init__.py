@@ -221,6 +221,13 @@ from .qsp import (
     qsp_response,
     chebyshev_via_qsp,
 )
+from .block_encoding import (
+    block_encode,
+    top_left_block,
+    is_block_encoding,
+    qubitization_walk,
+    chebyshev_of_matrix,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -439,6 +446,11 @@ __all__ = [
     "qsp_unitary",
     "qsp_response",
     "chebyshev_via_qsp",
+    "block_encode",
+    "top_left_block",
+    "is_block_encoding",
+    "qubitization_walk",
+    "chebyshev_of_matrix",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
