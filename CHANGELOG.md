@@ -5,13 +5,18 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.2.0.dev)
+## [1.2.0]
 
-Theme: hardware realism & error mitigation — the NISQ capstone of the roadmap.
-Realistic device noise, and the mitigation techniques that squeeze signal out of
-noisy hardware: readout-error correction, zero-noise extrapolation, symmetry
-verification, virtual distillation, and probabilistic error cancellation — each
-verified to recover the noise-free expectation value.
+Theme: hardware realism & error mitigation — the NISQ capstone that completes the
+roadmap. The full toolbox for squeezing signal out of noisy hardware, each technique
+verified to recover the noise-free expectation on the density-matrix engine:
+**readout-error mitigation** (assignment-matrix inversion), **virtual distillation**
+(purification by `rho^m`), **symmetry verification** (post-selection onto the right
+sector), **probabilistic error cancellation** (quasi-probability channel inverse),
+**zero-noise extrapolation** (noise folding + extrapolation), **Pauli twirling**
+(tailoring coherent noise into stochastic form), and **Clifford Data Regression**
+(learning the correction from classically-simulable training circuits). With this,
+the original v0.8 → v1.2 roadmap is complete.
 
 ### Added
 - **Clifford Data Regression (CDR)** (`algorithms.cdr_mitigate`, `fit_cdr_model`,
