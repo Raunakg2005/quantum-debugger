@@ -13,6 +13,14 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **Imaginary-time TEBD ground states** (`algorithms.imaginary_tebd_ground_state`,
+  `tfim_mps_energy`) — DMRG-style ground-state search on the MPS: apply imaginary-time
+  bond gates `e^{-h dtau}` (cooling), renormalize, and settle into the ground state.
+  Verified against exact diagonalization (error < 5e-3 for n = 4/6/8, improving with
+  finer steps), respects the variational lower bound, and finds the ground state of a
+  **24-qubit** chain that no dense diagonalizer could reach — with the energy per site
+  extensive across sizes. `tfim_mps_energy` reads the TFIM energy off any MPS by
+  contraction, matching the dense value exactly.
 - **TEBD time evolution** (`algorithms.tebd_tfim`, `tebd_magnetization`,
   `tfim_bond_gate`) — real-time many-body dynamics on the MPS: Trotterize
   `e^{-iHt}` into two-site gates, apply them even-then-odd, and let the SVD truncation

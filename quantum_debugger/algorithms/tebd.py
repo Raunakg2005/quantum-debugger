@@ -58,6 +58,72 @@ def tebd_tfim(n: int, time: float, steps: int = 100, j_coupling: float = 1.0,
     return mps
 
 
+def tfim_mps_energy(mps: "MPS", j_coupling: float = 1.0, field: float = 1.0) -> float:
+    """
+    Energy ``<H>`` of the transverse-field Ising Hamiltonian
+    ``H = -J sum Z Z - h sum X`` for an MPS, from its bond correlations and site
+    expectations (contraction, no dense state).
+    """
+    n = mps.n
+    energy = 0.0
+    for i in range(n - 1):
+        energy += -j_coupling * mps.correlation(_Z, i, _Z, i + 1)
+    for i in range(n):
+        energy += -field * mps.expectation(_X, i)
+    return float(energy)
+
+
+def _imag_bond_gate(n, i, dtau, j_coupling, field):
+    hx_i = field * (0.5 if i > 0 else 1.0)
+    hx_j = field * (0.5 if i < n - 2 else 1.0)
+    h_local = (
+        -j_coupling * np.kron(_Z, _Z)
+        - hx_i * np.kron(_I, _X)
+        - hx_j * np.kron(_X, _I)
+    )
+    return expm(-h_local * dtau)  # imaginary time -> real exponential (cooling)
+
+
+def imaginary_tebd_ground_state(n: int, j_coupling: float = 1.0, field: float = 1.0,
+                                dtau: float = 0.05, steps: int = 300,
+                                max_bond: int = 16) -> dict:
+    """
+    Find the TFIM ground state of an ``n``-site chain by imaginary-time TEBD -- apply
+    ``e^{-h_{j,j+1} dtau}`` bond gates (cooling), renormalizing each step, until the
+    state settles into the ground state. Scales to chains far beyond the dense
+    simulator.
+
+    Returns dict with ``energy`` (variational ground energy), ``bond`` (bond dimension
+    reached), and -- when ``n`` is small enough to diagonalize -- ``exact_energy`` and
+    ``error``.
+    """
+    from ..core.gates import GateLibrary
+
+    mps = MPS.zero_state(n, max_bond=max_bond)
+    for q in range(n):  # start from |+...+> for good ground-state overlap
+        mps.apply_single(GateLibrary.H, q)
+
+    for _ in range(steps):
+        for i in range(0, n - 1, 2):
+            mps.apply_two(_imag_bond_gate(n, i, dtau, j_coupling, field), i)
+        for i in range(1, n - 1, 2):
+            mps.apply_two(_imag_bond_gate(n, i, dtau, j_coupling, field), i)
+        norm = mps.norm()
+        mps.tensors[0] = mps.tensors[0] / norm
+
+    energy = tfim_mps_energy(mps, j_coupling, field)
+    result = {"energy": energy, "bond": mps.max_bond_dimension()}
+    if n <= 12:
+        from .hamiltonian_simulation import hamiltonian_matrix
+        from .vqe_solver import tfim_hamiltonian
+
+        H = hamiltonian_matrix(tfim_hamiltonian(n, field, j_coupling), n)
+        exact = float(np.linalg.eigvalsh(H).real.min())
+        result["exact_energy"] = exact
+        result["error"] = abs(energy - exact)
+    return result
+
+
 def tebd_magnetization(n: int, time: float, steps: int = 100, j_coupling: float = 1.0,
                        field: float = 1.0, max_bond: int = 16) -> dict:
     """

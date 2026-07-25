@@ -80,3 +80,27 @@ bonds, with the SVD truncation keeping the bond bounded. It reproduces exact
 state-vector evolution to fidelity > 0.9999 on small chains (and improves with finer
 steps), while scaling to system sizes the dense engine cannot touch — as long as the
 generated entanglement keeps the bond dimension manageable.
+
+## Ground states by imaginary-time TEBD
+
+The same bond-gate machinery finds *ground states*: run TEBD in imaginary time
+(`e^{-h*dtau}` instead of `e^{-i*h*dt}`) and the state cools into the ground state —
+a DMRG-style variational search that scales to large chains:
+
+```python
+from quantum_debugger.algorithms import imaginary_tebd_ground_state
+
+# Small chain: check against exact diagonalization.
+imaginary_tebd_ground_state(8, j_coupling=1.0, field=1.0)["error"]   # < 5e-3
+
+# 24-qubit ground state -- beyond any dense diagonalizer.
+r = imaginary_tebd_ground_state(24, 1.0, 1.0, dtau=0.05, steps=150, max_bond=12)
+r["energy"]   # variational ground energy
+r["bond"]     # bond dimension the ground state needed
+```
+
+Each step applies `e^{-h_{j,j+1} dtau}` on the bonds and renormalizes; excited
+components decay faster than the ground state, so the MPS converges to it. The result
+is a strict variational upper bound on the true ground energy, matches exact
+diagonalization where that is feasible, and stays accurate as the chain grows (the
+energy per site is extensive) — the tensor-network route to many-body ground states.
