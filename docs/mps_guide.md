@@ -56,6 +56,9 @@ mps.expectation(Z, 50)                      # 0.0 -- each qubit is unbiased
   `norm()` — computed by `O(n * chi^3)` tensor contraction, never forming the dense
   state. `expectation_pauli` measures any multi-qubit Pauli observable (e.g. a
   20-qubit GHZ's `<X^20> = 1`).
+- `energy(terms)` — `<psi|H|psi>` for a Hamiltonian in `(coeff, pauli_string)` form
+  (the `pauli_decompose`/VQE format), so molecular, Fermi-Hubbard, or spin
+  Hamiltonians can be evaluated on a large MPS.
 - `sample(shots, seed)` — draw measurement outcomes by exact sequential conditional
   sampling (right environments), `O(shots * n * chi^2)`; the distribution is the exact
   Born rule, verified against the dense state for small systems.

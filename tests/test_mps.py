@@ -360,6 +360,41 @@ class TestPauliExpectation:
         m.apply_single(_H, 0)
         assert abs(m.expectation_pauli("IIII") - 1.0) < 1e-9
 
+class TestHamiltonianEnergy:
+    def test_tfim_energy_matches_dense(self):
+        from quantum_debugger.algorithms import hamiltonian_matrix, tfim_hamiltonian
+
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        psi = psi / np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        terms = tfim_hamiltonian(n, 1.0, 1.0)
+        dense = np.real(psi.conj() @ hamiltonian_matrix(terms, n) @ psi)
+        assert abs(m.energy(terms) - dense) < 1e-9
+
+    def test_hubbard_energy_via_pauli_decompose(self):
+        from quantum_debugger.algorithms import pauli_decompose, fermi_hubbard_hamiltonian
+
+        H = fermi_hubbard_hamiltonian(2, 1.0, 3.0)
+        terms = pauli_decompose(H)
+        rng = np.random.default_rng(1)
+        psi = rng.normal(size=16) + 1j * rng.normal(size=16)
+        psi = psi / np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        assert abs(m.energy(terms) - np.real(psi.conj() @ H @ psi)) < 1e-9
+
+    def test_ghz_tfim_energy(self):
+        # GHZ: <ZZ> = 1 per bond, <X> = 0, so E = -J*(n-1) for -J ZZ - h X.
+        from quantum_debugger.algorithms import tfim_hamiltonian
+
+        n = 10
+        m = MPS.zero_state(n)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        assert abs(m.energy(tfim_hamiltonian(n, 1.0, 1.0)) - (-(n - 1))) < 1e-9
+
 
 
 if __name__ == "__main__":

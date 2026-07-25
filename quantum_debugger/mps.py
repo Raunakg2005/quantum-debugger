@@ -311,6 +311,15 @@ class MPS:
         ops = {i: paulis[p] for i, p in enumerate(pauli_string) if p != "I"}
         return float(np.real(self._environment_scan(ops) / self._environment_scan({})))
 
+    def energy(self, terms) -> float:
+        """
+        Expectation ``<psi|H|psi>`` of a Hamiltonian given as ``(coefficient,
+        pauli_string)`` terms (the format of ``pauli_decompose`` / the VQE solver),
+        summed by contraction. Lets any Hamiltonian -- molecular, Fermi-Hubbard, spin
+        -- be evaluated on a large MPS.
+        """
+        return float(sum(coeff * self.expectation_pauli(p) for coeff, p in terms))
+
     def correlation(self, obs_a, qubit_a: int, obs_b, qubit_b: int) -> float:
         """
         Two-point correlation ``<psi| O_a O_b |psi>`` for single-qubit operators on

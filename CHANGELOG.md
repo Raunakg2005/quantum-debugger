@@ -13,6 +13,12 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **MPS Hamiltonian energy** (`MPS.energy`) — evaluate `<psi|H|psi>` for any
+  Hamiltonian given as `(coefficient, pauli_string)` terms (the `pauli_decompose` /
+  VQE format) on a matrix product state, summing Pauli-string expectations by
+  contraction. Verified against dense for TFIM and a Pauli-decomposed Fermi-Hubbard
+  Hamiltonian, and a GHZ gives the exact `-J(n-1)` — connecting the chemistry/spin
+  Hamiltonians of 0.9 to the large-scale MPS engine.
 - **MPS Pauli-string expectation** (`MPS.expectation_pauli`) — the expectation of any
   multi-qubit Pauli observable `<psi|P|psi>` on a matrix product state by
   `O(n·chi^3)` contraction. Verified against the dense value for all 256 Pauli strings
