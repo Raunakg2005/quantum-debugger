@@ -1465,3 +1465,27 @@ gapped ground state's spectrum decays fast — a few values hold almost all the 
 which is precisely the condition that lets a matrix product state represent it
 efficiently. A random (volume-law) state has a flat spectrum and cannot be
 compressed.
+
+## Quantum Signal Processing (QSP)
+
+The one-qubit primitive behind quantum singular value transformation and modern
+algorithm design: interleave a signal rotation with tunable phase rotations and the
+output is a *designable polynomial* of the signal.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import chebyshev_via_qsp, qsp_response
+
+xs = np.linspace(-1, 1, 50)
+
+# All-zero phases -> the Chebyshev polynomials T_d.
+chebyshev_via_qsp(3, xs)         # == cos(3 arccos x) = 4x^3 - 3x, to machine precision
+
+# A general phase sequence -> a degree-d polynomial (parity d mod 2, |P| <= 1).
+qsp_response([0.3, 0.5, -0.2, 0.7], xs)   # a degree-3 (odd) polynomial
+```
+
+`U(x) = R_z(phi_0) prod_k [W(x) R_z(phi_k)]`, and `<0|U(x)|0>` is the polynomial. The
+phases *are* the design knobs — choosing them to approximate `sign(x)`, `1/x`, or
+`e^{-i t x}` is what turns QSP (lifted to a block-encoded operator via QSVT) into
+amplitude amplification, quantum linear-system solving, or Hamiltonian simulation.

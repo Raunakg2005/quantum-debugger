@@ -13,6 +13,14 @@ unitaries (LCU), and quantum singular value transformation, each verified agains
 polynomial or matrix function it is supposed to implement.
 
 ### Added
+- **Quantum Signal Processing** (`algorithms.qsp_unitary`, `qsp_response`,
+  `chebyshev_via_qsp`, `signal_operator`) — the one-qubit engine of modern quantum
+  algorithms: interleave a signal rotation `W(x)` with tunable `Z` rotations set by a
+  phase sequence, and `<0|U(x)|0>` becomes a designable degree-`d` polynomial `P(x)`.
+  Verified: zero phases reproduce the Chebyshev polynomials `T_d` exactly (matching
+  `cos(d·arccos x)` and `2x^2-1` for `T_2`), a degree-`d` sequence yields a polynomial
+  of the correct parity (`d mod 2`) bounded by 1, and the QSP operator is unitary at
+  every signal value — the foundation the QSVT features build on.
 
 ## [1.0.0]
 

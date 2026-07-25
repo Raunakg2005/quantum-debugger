@@ -215,6 +215,12 @@ from .tebd import (
     tfim_mps_energy,
     imaginary_tebd_ground_state,
 )
+from .qsp import (
+    signal_operator,
+    qsp_unitary,
+    qsp_response,
+    chebyshev_via_qsp,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -429,6 +435,10 @@ __all__ = [
     "tebd_magnetization",
     "tfim_mps_energy",
     "imaginary_tebd_ground_state",
+    "signal_operator",
+    "qsp_unitary",
+    "qsp_response",
+    "chebyshev_via_qsp",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
