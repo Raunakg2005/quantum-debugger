@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Petz recovery map (approximate QEC)** (`algorithms.petz_recovery`,
+  `petz_code_recovery`) — the canonical "best-effort" recovery for noise that has no
+  perfect correction: `R_sigma(rho) = sigma^{1/2} N^dagger(N(sigma)^{-1/2} rho
+  N(sigma)^{-1/2}) sigma^{1/2}`. Verified on three fronts: it recovers *correctable*
+  errors perfectly (bit-flip errors on the 3-qubit code, fidelity 1.0 from 0.75 —
+  reproducing the syndrome decoder); it gives genuine *approximate* recovery for
+  uncorrectable amplitude damping (0.82 → 0.93, degrading with damping strength);
+  and it satisfies the defining identity `R_sigma(N(sigma)) = sigma` exactly while
+  preserving trace.
 - **Weak values (Aharonov-Albert-Vaidman)** (`algorithms.weak_value`,
   `weak_measurement_shift`, `weak_value_demo`) — pre- and post-selection let a
   weakly-measured observable read `A_w = <phi|A|psi>/<phi|psi>`, which can sit far

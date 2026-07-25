@@ -244,3 +244,32 @@ weight-1 error is caught, leaving only O(p^2) weight-2 events (some of which are
 exactly logical operators, e.g. `X0 X1 = X_L1`). Post-selection buys quadratic
 error suppression for linear rejection cost, which is why the [[4,2,2]] code
 anchors so many early fault-tolerance demonstrations.
+
+## When there's no perfect code: the Petz recovery map
+
+Amplitude damping and most real noise cannot be *perfectly* corrected by any code.
+The Petz map is the canonical near-optimal recovery — and it degrades gracefully
+from exact to approximate:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import petz_code_recovery
+
+z0 = np.zeros(8); z0[0] = 1        # |0_L> = |000>
+z1 = np.zeros(8); z1[7] = 1        # |1_L> = |111>
+
+# Correctable (bit-flip) errors: Petz recovers PERFECTLY -- it *is* the decoder.
+petz_code_recovery(bitflip_channel(0.1), [z0, z1], 0.6, 0.8)["recovered_fidelity"]  # 1.0
+
+# Amplitude damping: not correctable, but Petz still helps.
+r = petz_code_recovery(amp_damping_channel(0.1), [z0, z1], 0.6, 0.8)
+r["noisy_fidelity"]      # 0.82  -- no correction
+r["recovered_fidelity"]  # 0.93  -- approximate recovery
+```
+
+`R_sigma(rho) = sigma^{1/2} N^dagger(N(sigma)^{-1/2} rho N(sigma)^{-1/2}) sigma^{1/2}`,
+with reference `sigma` the maximally mixed code state. When the Knill-Laflamme
+conditions hold it reproduces the exact syndrome decoder; when they don't it gives
+the best approximate correction available — the same map that underlies
+approximate-QEC and quantum-memory theory. It also perfectly inverts the channel on
+its reference state (`R_sigma(N(sigma)) = sigma`).
