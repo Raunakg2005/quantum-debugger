@@ -146,6 +146,28 @@ class MPS:
         self.tensors[i + 1] = (np.diag(S) @ Vh).reshape(chi_new, 2, chi_r)
         return self
 
+    def apply_two_long_range(self, gate, qubit_a: int, qubit_b: int) -> "MPS":
+        """
+        Apply a two-qubit ``gate`` to any pair ``(qubit_a, qubit_b)``, not just
+        neighbours: SWAP the qubits together with a ladder of nearest-neighbour SWAPs,
+        apply the gate, then SWAP back. The gate is indexed on ``|qubit_a, qubit_b>``
+        with ``qubit_a`` the lower index (as for :meth:`apply_two`).
+        """
+        a, b = qubit_a, qubit_b
+        if a > b:
+            raise ValueError("qubit_a must be < qubit_b")
+        if b == a + 1:
+            return self.apply_two(gate, a)
+        swap = _SWAP
+        # Move qubit b down to a+1.
+        for i in range(b - 1, a, -1):
+            self.apply_two(swap, i)
+        self.apply_two(gate, a)
+        # Move it back.
+        for i in range(a + 1, b):
+            self.apply_two(swap, i)
+        return self
+
     def expectation(self, observable, qubit: int) -> float:
         """
         Expectation ``<psi|O|psi>`` of a single-qubit observable on ``qubit``, via
@@ -257,3 +279,6 @@ class MPS:
 # Convenience gate matrices (little-endian two-qubit gates).
 CNOT = GateLibrary.CNOT
 H = GateLibrary.H
+_SWAP = np.array(
+    [[1, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 1]], dtype=complex
+)

@@ -260,6 +260,40 @@ class TestOverlapFidelity:
         with pytest.raises(ValueError):
             MPS.zero_state(3).overlap(MPS.zero_state(4))
 
+class TestLongRangeGates:
+    @pytest.mark.parametrize("a,b", [(0, 2), (0, 4), (1, 3), (0, 3)])
+    def test_matches_state_vector(self, a, b):
+        from scipy.stats import unitary_group
+
+        rng = np.random.default_rng(a * 5 + b)
+        n = 5
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        psi = psi / np.linalg.norm(psi)
+        G = unitary_group.rvs(4, random_state=a * 5 + b)
+        m = MPS.from_statevector(psi, max_bond=64)
+        m.apply_two_long_range(G, a, b)
+        ref = apply_gate_tensor(np, psi, G, [a, b], n)
+        assert np.allclose(m.to_statevector(), ref, atol=1e-9)
+
+    def test_adjacent_delegates(self):
+        rng = np.random.default_rng(0)
+        psi = rng.normal(size=16) + 1j * rng.normal(size=16); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi)
+        m.apply_two_long_range(_CNOT, 1, 2)
+        ref = apply_gate_tensor(np, psi, _CNOT, [1, 2], 4)
+        assert np.allclose(m.to_statevector(), ref, atol=1e-9)
+
+    def test_long_range_bell(self):
+        n = 10
+        m = MPS.zero_state(n)
+        m.apply_single(_H, 0)
+        m.apply_two_long_range(_CNOT, 0, n - 1)
+        assert abs(m.correlation(_Z, 0, _Z, n - 1) - 1.0) < 1e-9
+
+    def test_reversed_order_rejected(self):
+        with pytest.raises(ValueError):
+            MPS.zero_state(4).apply_two_long_range(_CNOT, 3, 1)
+
 
 
 if __name__ == "__main__":

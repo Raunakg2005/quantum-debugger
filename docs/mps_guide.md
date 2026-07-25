@@ -45,6 +45,8 @@ mps.expectation(Z, 50)                      # 0.0 -- each qubit is unbiased
 - `apply_single(gate, qubit)` — exact single-qubit gate.
 - `apply_two(gate, qubit)` — neighbouring two-qubit gate, then SVD-truncate the bond
   to `max_bond` (the controlled approximation of DMRG/TEBD).
+- `apply_two_long_range(gate, a, b)` — a two-qubit gate on *any* pair, via a SWAP
+  ladder (swap together, apply, swap back), so arbitrary connectivity is supported.
 - `expectation(O, qubit)`, `correlation(A, i, B, j)`, `norm()` — computed by
   `O(n * chi^3)` tensor contraction, never forming the dense state.
 - `sample(shots, seed)` — draw measurement outcomes by exact sequential conditional

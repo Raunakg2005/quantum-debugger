@@ -13,6 +13,12 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **MPS long-range two-qubit gates** (`MPS.apply_two_long_range`) — apply a two-qubit
+  gate to *any* pair of qubits (not just neighbours) via a nearest-neighbour SWAP
+  ladder: swap the qubits together, apply the gate, swap back. Verified against the
+  state-vector simulator for all pairs and asymmetric random unitaries, correctly
+  delegating for adjacent qubits, and building a long-range Bell pair between qubits 0
+  and 9 — so arbitrary-connectivity circuits run on the MPS engine.
 - **MPS overlap & fidelity** (`MPS.overlap`, `MPS.fidelity`) — the inner product
   `<phi|psi>` of two matrix product states by the double-layer `O(n·chi^3)`
   contraction, and the state fidelity from it. Verified to match the dense inner
