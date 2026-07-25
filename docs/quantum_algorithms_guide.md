@@ -1081,3 +1081,29 @@ Without correction the ancilla holds `X^s H Rz(-alpha)|psi>` — the `X^s` bypro
 is the randomness measurement injects (verified against the exact law on 200
 random inputs). Feeding that outcome forward to condition later corrections is how
 the model chains steps into any circuit: measurement *is* computation.
+
+## Weak Values
+
+Measure gently, and pre- and post-select the state, and an observable can read a
+value far outside its own spectrum:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import weak_value, weak_value_demo
+
+Z = np.array([[1, 0], [0, -1]])           # eigenvalues +/- 1
+pre = np.array([1, 1]) / np.sqrt(2)       # pre-selection |+>
+post = np.array([np.cos(np.pi/4 + 0.05), -np.sin(np.pi/4 + 0.05)])  # nearly _|_ to pre
+
+weak_value(Z, pre, post)                  # ~ -20  (!!) -- outside [-1, 1]
+
+r = weak_value_demo(Z, pre, post)
+r["outside_spectrum"]                     # True
+r["pointer_shift_per_coupling"]           # matches Re(A_w): the measured shift
+```
+
+`A_w = <phi|A|psi>/<phi|psi>` is not an eigenvalue — it is what a pointer weakly
+coupled to `A` actually registers, verified here by running the coupling
+`exp(-i g A x Y/2)` and post-selecting. As the pre- and post-selection approach
+orthogonality the value blows up: weak-value amplification, used to sense tiny
+couplings. (The unbounded shift costs post-selection probability — no free lunch.)

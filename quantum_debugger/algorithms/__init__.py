@@ -161,6 +161,7 @@ from .error_detection import (
     postselected_memory,
 )
 from .mbqc import cluster_pair, mbqc_rotation
+from .weak_values import weak_value, weak_measurement_shift, weak_value_demo
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -326,6 +327,9 @@ __all__ = [
     "postselected_memory",
     "cluster_pair",
     "mbqc_rotation",
+    "weak_value",
+    "weak_measurement_shift",
+    "weak_value_demo",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

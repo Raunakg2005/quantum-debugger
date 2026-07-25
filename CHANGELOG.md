@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Weak values (Aharonov-Albert-Vaidman)** (`algorithms.weak_value`,
+  `weak_measurement_shift`, `weak_value_demo`) — pre- and post-selection let a
+  weakly-measured observable read `A_w = <phi|A|psi>/<phi|psi>`, which can sit far
+  outside its spectrum or be complex. Verified both ways: `A_w` reduces to the
+  eigenvalue/expectation in the appropriate limits, reaches ~ -20 for an observable
+  with eigenvalues +/-1 under near-orthogonal selection (the amplification effect),
+  and — running the actual pointer-qubit weak measurement `exp(-i g A x Y/2)` — the
+  post-selected pointer's `<X>/g` shift converges to `Re(A_w)` in the weak-coupling
+  limit.
 - **Quantum process tomography** (`density_matrix.process_tomography`) —
   reconstruct an unknown single-qubit channel's full Choi matrix from its
   input/output behavior alone: probe the black box on the four
