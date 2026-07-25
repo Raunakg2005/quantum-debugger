@@ -197,6 +197,7 @@ from .level_statistics import (
     classify_spectrum,
 )
 from .kitaev_chain import kitaev_chain_hamiltonian, kitaev_ground_degeneracy
+from .spin_squeezing import one_axis_twisting, best_squeezing
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -398,6 +399,8 @@ __all__ = [
     "classify_spectrum",
     "kitaev_chain_hamiltonian",
     "kitaev_ground_degeneracy",
+    "one_axis_twisting",
+    "best_squeezing",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

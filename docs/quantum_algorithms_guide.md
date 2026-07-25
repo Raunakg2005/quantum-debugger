@@ -482,6 +482,27 @@ r["delta_phi_ghz"]     # 0.25  (= 1/N)
 parity_signal(4, phi)  # cos(4*phi) -- the GHZ interferometer oscillates N x faster
 ```
 
+### Spin squeezing: entanglement for metrology
+
+A coherent spin state only reaches the standard quantum limit; entangling the spins
+via one-axis twisting squeezes the transverse noise and beats it:
+
+```python
+from quantum_debugger.algorithms import best_squeezing
+
+r = best_squeezing(n=8)
+r["sql"]                 # 1.0  -- coherent state, standard quantum limit
+r["best_xi2"]            # 0.354 -- squeezed below 1
+r["squeezing_dB"]        # -4.5 dB
+r["metrological_gain"]   # 2.82 -- phase sensitivity beats the SQL by this factor
+```
+
+`H = chi J_z^2` shears the coherent state's noise disk; the Wineland parameter
+`xi^2 = N min Var(J_perp)/|<J>|^2` (the smaller eigenvalue of the transverse
+covariance matrix) drops below 1, and `1/xi^2` is exactly the interferometric gain.
+The squeezing deepens with atom number — the same GHZ-vs-product story as the
+Heisenberg limit above, now with experimentally friendly states.
+
 ### Noisy probes: mixed-state QFI
 
 Real probes decohere. `qfi_mixed` gives the exact Fisher information of any mixed

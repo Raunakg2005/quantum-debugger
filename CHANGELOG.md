@@ -12,6 +12,14 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Spin squeezing (one-axis twisting)** (`algorithms.one_axis_twisting`,
+  `best_squeezing`) — metrologically useful entanglement that beats the standard
+  quantum limit. Evolving a coherent spin state under `H = chi J_z^2` (Kitagawa-Ueda)
+  redistributes the transverse noise; the Wineland parameter `xi^2 = N min Var(J_perp)
+  / |<J>|^2` (minimum variance computed in closed form from the 2x2 covariance matrix)
+  drops below 1. Verified: `xi^2 = 1` exactly at zero twisting (the SQL), squeezing
+  reaches -2.9 to -4.5 dB, improves with atom number, and `1/xi^2` gives the
+  phase-sensitivity gain — the interferometric payoff of the entanglement.
 - **Kitaev chain (topological superconductor)** (`algorithms.kitaev_chain_hamiltonian`,
   `kitaev_ground_degeneracy`) — the simplest model with Majorana edge modes, built on
   the Jordan-Wigner operators: `-mu sum n_j - t sum hopping + Delta sum pairing`.
