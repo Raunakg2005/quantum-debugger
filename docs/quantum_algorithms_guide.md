@@ -1741,3 +1741,26 @@ is measured at each scale and fit in `c`. Depolarizing noise decays geometricall
 the exponential fit is exact here; on real data a linear (Richardson) fit already
 removes the leading-order error. This is the density-matrix companion to the
 circuit-level ZNE in the mitigation package.
+
+## Pauli Twirling
+
+Coherent errors are the worst kind — they accumulate quadratically. Twirling converts
+them into benign stochastic Pauli noise:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import pauli_twirl, coherent_error_kraus
+
+# A coherent over-rotation Rx(0.3):
+r = pauli_twirl(coherent_error_kraus(0.3, "X"))
+r["is_pauli_channel"]        # True -- now a stochastic Pauli channel
+r["pauli_probabilities"]     # {'I': 0.978, 'X': 0.022, 'Y': 0, 'Z': 0}
+                             # == cos^2(0.15) I + sin^2(0.15) X
+r["average_fidelity"]        # unchanged from the coherent error
+```
+
+`N_twirled(rho) = (1/4^n) sum_P P† N(P rho P†) P`. The result is always diagonal in the
+Pauli basis, with the *same* average gate fidelity — twirling doesn't reduce the error,
+it *reshapes* coherent noise into the stochastic form that error correction and the
+other mitigation methods (ZNE, PEC) assume. It is why randomized compiling is standard
+on today's devices.

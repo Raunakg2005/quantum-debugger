@@ -14,6 +14,15 @@ verification, virtual distillation, and probabilistic error cancellation — eac
 verified to recover the noise-free expectation value.
 
 ### Added
+- **Pauli twirling** (`algorithms.pauli_twirl`, `coherent_error_kraus`) — tailor
+  hard-to-handle coherent noise into stochastic Pauli noise by averaging over
+  Pauli conjugations, `N_twirled = (1/4^n) sum_P P† N(P . P†) P`. Verified: the twirled
+  channel is always a Pauli channel (diagonal PTM) — a coherent `Rx(theta)`
+  over-rotation becomes exactly `cos^2(theta/2) I + sin^2(theta/2) X`, amplitude
+  damping becomes Pauli too — while the average gate fidelity is preserved, and an
+  already-Pauli channel (depolarizing) is a fixed point. Rounds out the mitigation
+  capstone: readout, virtual distillation, symmetry verification, PEC, ZNE, and now
+  noise tailoring.
 - **Zero-noise extrapolation (ZNE)** (`algorithms.zero_noise_extrapolation`,
   `extrapolate_zero_noise`, `fold_noise_expectation`) — the flagship mitigation
   method: amplify the noise by folding (apply the noise layer `c` times), measure the

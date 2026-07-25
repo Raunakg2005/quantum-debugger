@@ -261,6 +261,7 @@ from .zne import (
     extrapolate_zero_noise,
     zero_noise_extrapolation,
 )
+from .pauli_twirling import pauli_twirl, coherent_error_kraus
 
 __all__ = [
     "assignment_matrix",
@@ -278,6 +279,8 @@ __all__ = [
     "fold_noise_expectation",
     "extrapolate_zero_noise",
     "zero_noise_extrapolation",
+    "pauli_twirl",
+    "coherent_error_kraus",
     # QFT
     "qft",
     "apply_qft",
