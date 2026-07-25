@@ -235,3 +235,58 @@ class TestScaling:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestStabilizerEntanglementEntropy:
+    def test_bell_is_one_bit(self):
+        sim = StabilizerSimulator(2, seed=0)
+        sim.h(0)
+        sim.cnot(0, 1)
+        assert abs(sim.entanglement_entropy([0]) - 1.0) < 1e-12
+
+    def test_product_state_zero(self):
+        sim = StabilizerSimulator(3, seed=0)
+        sim.h(0)
+        sim.h(1)  # all product
+        assert abs(sim.entanglement_entropy([0, 1])) < 1e-12
+
+    def test_ghz_cut_is_one_bit(self):
+        sim = StabilizerSimulator(5, seed=0)
+        sim.h(0)
+        for q in range(4):
+            sim.cnot(0, q + 1)
+        # Any nontrivial cut of a GHZ state has exactly 1 bit of entanglement.
+        assert abs(sim.entanglement_entropy([0, 1]) - 1.0) < 1e-12
+        assert abs(sim.entanglement_entropy([0]) - 1.0) < 1e-12
+
+    @pytest.mark.parametrize("seed", range(8))
+    def test_matches_dense_entanglement_entropy(self, seed):
+        from quantum_debugger.density_matrix import DensityMatrix
+
+        n = 5
+        sim = StabilizerSimulator.random(n, depth=60, seed=seed)
+        dm = DensityMatrix(state_vector=sim.to_statevector())
+        for region in ([0], [0, 1], [0, 1, 2], [2, 4]):
+            tab = sim.entanglement_entropy(region)
+            dense = dm.entanglement_entropy(region)
+            assert abs(tab - dense) < 1e-9
+
+    def test_entropy_is_integer_bits(self):
+        sim = StabilizerSimulator.random(6, depth=80, seed=3)
+        for region in ([0], [0, 1, 2], [1, 3, 5]):
+            s = sim.entanglement_entropy(region)
+            assert abs(s - round(s)) < 1e-12
+
+    def test_scales_to_large_systems(self):
+        # 200-qubit GHZ: dense entanglement entropy is impossible; the tableau is instant.
+        n = 200
+        sim = StabilizerSimulator(n, seed=1)
+        sim.h(0)
+        for q in range(n - 1):
+            sim.cnot(0, q + 1)
+        assert abs(sim.entanglement_entropy(list(range(100))) - 1.0) < 1e-12
+
+    def test_full_and_empty_region(self):
+        sim = StabilizerSimulator.random(4, depth=40, seed=2)
+        assert abs(sim.entanglement_entropy([])) < 1e-12
+        assert abs(sim.entanglement_entropy([0, 1, 2, 3])) < 1e-12  # whole = pure

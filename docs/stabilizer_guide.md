@@ -76,6 +76,26 @@ sim.expectation_value("XZ")        # 0
 
 `s_dagger(q)` is also available (the inverse phase gate).
 
+## Entanglement entropy without a state vector
+
+The entanglement entropy across any bipartition is computable directly from the
+binary tableau in `O(n^3)` — so it scales to the hundreds of qubits the engine
+handles, where a `2^n` state vector is hopeless:
+
+```python
+sim = StabilizerSimulator(200, seed=1)
+sim.h(0)
+for q in range(199):
+    sim.cnot(0, q + 1)             # 200-qubit GHZ
+
+sim.entanglement_entropy(range(100))   # 1.0 bit -- instant, no state vector
+```
+
+The result is `S_A = rank_GF2(G_B) - |B|` (Fattal et al.), where `G_B` is the
+stabilizer check matrix restricted to the complementary region — always an integer
+number of bits, and verified against the dense density-matrix entropy on random
+Clifford states.
+
 ## When to use it
 
 Use the stabilizer simulator for stabilizer codes, GHZ/graph/cluster states,

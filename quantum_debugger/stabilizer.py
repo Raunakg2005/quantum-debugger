@@ -263,6 +263,52 @@ class StabilizerSimulator:
         psi = proj[:, col]
         return psi / np.linalg.norm(psi)
 
+    def entanglement_entropy(self, region) -> float:
+        """
+        Entanglement entropy (in bits) of a subset ``region`` of qubits, computed in
+        ``O(n^3)`` directly from the binary tableau -- no ``2^n`` state vector, so it
+        works for the hundreds of qubits the stabilizer engine reaches.
+
+        For a stabilizer state the entropy across the cut ``A = region`` vs the rest
+        ``B`` is ``S_A = rank_{GF(2)}(G_B) - |B|`` (Fattal et al., quant-ph/0406168),
+        where ``G_B`` is the ``n x 2|B|`` binary matrix of the stabilizer generators
+        restricted to the ``B`` qubits. Always an integer number of bits; 0 for a
+        product cut, up to ``min(|A|, |B|)`` for a maximally entangled one.
+        """
+        n = self.n
+        region = set(region)
+        b_qubits = [q for q in range(n) if q not in region]
+        if not b_qubits:
+            return 0.0
+        rows = []
+        for i in range(n, 2 * n):  # stabilizer generators
+            row = []
+            for q in b_qubits:
+                row.append(int(self.x[i, q]))
+                row.append(int(self.z[i, q]))
+            rows.append(row)
+        rank_b = _gf2_rank(np.array(rows, dtype=np.int8))
+        return float(rank_b - len(b_qubits))
+
+
+def _gf2_rank(M: np.ndarray) -> int:
+    """Rank of a binary matrix over GF(2) by Gaussian elimination."""
+    M = (M.copy() % 2).astype(np.int8)
+    rows, cols = M.shape
+    r = 0
+    for c in range(cols):
+        piv = next((i for i in range(r, rows) if M[i, c]), None)
+        if piv is None:
+            continue
+        M[[r, piv]] = M[[piv, r]]
+        for i in range(rows):
+            if i != r and M[i, c]:
+                M[i] ^= M[r]
+        r += 1
+        if r == rows:
+            break
+    return r
+
 
 def _g(x1, z1, x2, z2):
     """Phase exponent (mod 4) contributed by multiplying two single-qubit Paulis."""

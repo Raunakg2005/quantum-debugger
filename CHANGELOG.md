@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Stabilizer entanglement entropy from the tableau**
+  (`StabilizerSimulator.entanglement_entropy`) — the entropy across any cut of a
+  stabilizer state in `O(n^3)` directly from the binary tableau (Fattal et al.:
+  `S_A = rank_GF2(G_B) - |B|`), no `2^n` state vector — so it works on the hundreds
+  of qubits the Clifford engine reaches (verified on a 200-qubit GHZ cut, instant).
+  Matches the dense density-matrix entanglement entropy exactly on random Clifford
+  states across many cuts; always an integer number of bits; 1 bit for Bell/GHZ
+  cuts, 0 for product cuts.
 - **Stinespring dilation** (`density_matrix.stinespring_isometry`,
   `apply_channel_dilated`) — the constructive proof that all noise is entanglement
   with an environment: any Kraus channel `N(rho) = sum_k K_k rho K_k^dagger` is
