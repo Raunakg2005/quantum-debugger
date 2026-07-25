@@ -129,3 +129,26 @@ single global phase — invariant for every realization of the noise. The channe
 computed as a genuine ensemble average of unitaries (Gauss-Hermite quadrature),
 and all three behaviors match their closed forms exactly. Trapped-ion experiments
 use exactly this encoding against collective magnetic-field noise.
+
+## Dynamical decoupling: the Hahn spin echo
+
+The DFS exploited a *spatial* symmetry; the spin echo exploits a *temporal* one —
+noise that stays correlated across one shot:
+
+```python
+from quantum_debugger.algorithms import spin_echo
+
+r = spin_echo(sigma=1.5, static=True)   # quasi-static random detuning
+r["no_echo"]    # 0.325 == exp(-sigma^2/2) -- free evolution dephases
+r["echo"]       # 1.0   -- X pulse at mid-time refocuses the phase EXACTLY
+
+r = spin_echo(sigma=1.5, static=False)  # noise re-randomizes mid-shot
+r["echo"]       # 0.325 -- no advantage: nothing to refocus
+```
+
+Per shot, `U(phi/2) X U(phi/2) = X` for *every* realization `phi` — the phase
+accumulated after the flip cancels the phase before it, so the ensemble average
+is perfectly coherent. The failure case is just as instructive: when the two
+half-evolutions carry independent phases, the echoed coherence equals the free
+one exactly. **Noise correlation is the resource** — which is why real devices
+characterize their noise spectrum before choosing a decoupling sequence.

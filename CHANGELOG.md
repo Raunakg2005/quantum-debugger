@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Dynamical decoupling (Hahn spin echo)** (`algorithms.spin_echo`,
+  `echo_state_fidelity`) — the temporal counterpart to a DFS: under quasi-static
+  dephasing (random per-shot detuning, Gauss-Hermite ensemble of unitaries) a bare
+  `|+>` decays as `exp(-sigma^2/2)`, but an X pulse at mid-evolution refocuses the
+  phase (`U(phi/2) X U(phi/2) = X` shot by shot) and restores coherence to exactly 1
+  at any noise strength — for arbitrary input states. Crucially also verified where
+  the echo *fails*: if the noise re-randomizes between the two halves, the echoed
+  decay is exactly `exp(-sigma^2/2)` — no advantage. Noise *correlation* is the
+  resource dynamical decoupling consumes.
 - **Decoherence-free subspaces** (`algorithms.collective_dephasing`, `dfs_encode`,
   `dfs_protection`) — protection by symmetry instead of redundancy: under collective
   Gaussian dephasing (the same random Z phase on every qubit, computed as an exact
