@@ -1437,3 +1437,31 @@ the two ground states are split only exponentially in the chain length (the spli
 halves with every added site — a direct test of Majorana localization). That nonlocal,
 noise-protected degeneracy is exactly what a topological qubit would store its
 information in.
+
+## Schmidt Decomposition & the Area Law
+
+Every bipartite pure state factors as `sum lambda_i |i>_A |i>_B` — and how fast the
+`lambda_i` decay decides whether the state compresses to a tensor network:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    schmidt_decomposition, area_law_compressibility,
+    hamiltonian_matrix, tfim_hamiltonian,
+)
+
+# Bell state: two equal Schmidt values.
+schmidt_decomposition(np.array([1, 0, 0, 1]) / np.sqrt(2), [0])["schmidt_values"]  # [0.707, 0.707]
+
+# A gapped 1D ground state obeys the area law -> compresses to small bond dimension.
+gs = np.linalg.eigh(hamiltonian_matrix(tfim_hamiltonian(6, 1.0, 1.0), 6))[1][:, 0]
+area_law_compressibility(gs, region=[0, 1, 2], bond_dim=3)["truncation_fidelity"]  # > 0.99
+```
+
+The Schmidt values are the singular values of the state reshaped as an A-by-B matrix;
+their squares are the reduced density matrix's eigenvalues, so
+`S = -sum lambda_i^2 log2 lambda_i^2` reproduces the entanglement entropy exactly. A
+gapped ground state's spectrum decays fast — a few values hold almost all the weight,
+which is precisely the condition that lets a matrix product state represent it
+efficiently. A random (volume-law) state has a flat spectrum and cannot be
+compressed.

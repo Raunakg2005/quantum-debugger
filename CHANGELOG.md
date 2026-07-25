@@ -12,6 +12,15 @@ molecular Hamiltonians, and the algorithms that run on them. (Open systems, nois
 and fault tolerance largely landed in 0.8.0.)
 
 ### Added
+- **Schmidt decomposition & the area law** (`algorithms.schmidt_decomposition`,
+  `truncation_fidelity`, `area_law_compressibility`) — the tensor-network bridge:
+  write any bipartite pure state as `sum lambda_i |i>_A|i>_B` via SVD. Verified that a
+  Bell pair gives two equal Schmidt values (1 bit), a product state rank 1, the values
+  are normalized and descending, and the Schmidt entropy matches the density-matrix
+  entanglement entropy exactly. The headline result: a gapped 1D ground state (TFIM)
+  keeps > 99% of its weight in a handful of Schmidt values (area law → compressible to
+  a low-bond-dimension MPS), while a random volume-law state has a flat spectrum that
+  refuses to compress — exactly why matrix product states work.
 - **Classical shadows** (`algorithms.collect_shadows`, `estimate_observable`,
   `shadow_estimates`) — estimate many observables from few measurements
   (Huang-Kueng-Preskill): measure each qubit in a random Pauli basis, build the

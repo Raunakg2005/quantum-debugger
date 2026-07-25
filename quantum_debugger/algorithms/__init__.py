@@ -203,6 +203,11 @@ from .classical_shadows import (
     estimate_observable,
     shadow_estimates,
 )
+from .schmidt import (
+    schmidt_decomposition,
+    truncation_fidelity,
+    area_law_compressibility,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -409,6 +414,9 @@ __all__ = [
     "collect_shadows",
     "estimate_observable",
     "shadow_estimates",
+    "schmidt_decomposition",
+    "truncation_fidelity",
+    "area_law_compressibility",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
