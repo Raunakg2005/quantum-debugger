@@ -112,6 +112,7 @@ from .distillation import (
     entanglement_swap_noisy,
     repeater_chain,
 )
+from .decoherence_free import collective_dephasing, dfs_encode, dfs_protection
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -232,6 +233,9 @@ __all__ = [
     "distillation_rounds",
     "entanglement_swap_noisy",
     "repeater_chain",
+    "collective_dephasing",
+    "dfs_encode",
+    "dfs_protection",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

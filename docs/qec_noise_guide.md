@@ -106,3 +106,26 @@ The cycle, on 3 data + 2 ancilla qubits (density matrix):
 
 This reproduces the ideal-recovery fidelity `(1-p)^3 + 3p(1-p)^2` exactly — a direct
 check that the physical circuit implements the code, not just the abstract map.
+
+## Protecting qubits without QEC: decoherence-free subspaces
+
+Full error correction is not the only defense. When the noise has a *symmetry* —
+e.g. a fluctuating global field that adds the **same** random Z phase to every
+qubit — encoding in a symmetric subspace gives perfect protection with no
+syndrome measurements at all:
+
+```python
+from quantum_debugger.algorithms import dfs_protection
+
+r = dfs_protection(sigma=0.8)     # collective Gaussian dephasing, strength sigma
+r["dfs_fidelity"]                 # 1.0     -- a|01> + b|10> is untouched, ANY sigma
+r["bare_coherence"]               # 0.726   == exp(-sigma^2/2)  (a lone |+> qubit)
+r["antidfs_coherence"]            # 0.278   == exp(-2 sigma^2)  (a|00> + b|11>: worse!)
+```
+
+Under `U(phi) = exp(-i phi/2 sum Z_q)` a basis state's phase depends only on its
+excitation number, so the equal-excitation subspace `{|01>, |10>}` picks up a
+single global phase — invariant for every realization of the noise. The channel is
+computed as a genuine ensemble average of unitaries (Gauss-Hermite quadrature),
+and all three behaviors match their closed forms exactly. Trapped-ion experiments
+use exactly this encoding against collective magnetic-field noise.

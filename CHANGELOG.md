@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Decoherence-free subspaces** (`algorithms.collective_dephasing`, `dfs_encode`,
+  `dfs_protection`) — protection by symmetry instead of redundancy: under collective
+  Gaussian dephasing (the same random Z phase on every qubit, computed as an exact
+  Gauss-Hermite ensemble average of unitaries), a logical qubit encoded in
+  `span{|01>, |10>}` keeps fidelity exactly 1 at ANY noise strength, while a bare
+  `|+>` qubit's coherence dies as `exp(-sigma^2/2)` and an `a|00> + b|11>` qubit
+  decays four times faster (`exp(-2 sigma^2)`) — all three verified against their
+  closed forms.
 - **Noisy entanglement swapping & repeater chains**
   (`algorithms.entanglement_swap_noisy`, `repeater_chain`) — a Bell measurement at a
   middle node splices two noisy Werner pairs A-B, B-C into an A-C pair of fidelity
