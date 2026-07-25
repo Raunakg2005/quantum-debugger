@@ -136,6 +136,11 @@ from .discrimination import (
     unambiguous_discrimination,
 )
 from .cloning import universal_clone
+from .contextuality import (
+    mermin_peres_square,
+    classical_assignment_maximum,
+    quantum_context_measurement,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -283,6 +288,9 @@ __all__ = [
     "helstrom_measurement",
     "unambiguous_discrimination",
     "universal_clone",
+    "mermin_peres_square",
+    "classical_assignment_maximum",
+    "quantum_context_measurement",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

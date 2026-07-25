@@ -919,3 +919,31 @@ two clone marginals are each `5/6 |psi><psi| + 1/6 |psi_perp><psi_perp|` — the
 same fidelity for *every* input (universality, verified on random states). The
 gap between 5/6 (quantum) and 2/3 (classical) is another face of the Holevo/
 discrimination limits above; the gap between 5/6 and 1 is the no-cloning theorem.
+
+## Contextuality: the Peres-Mermin Magic Square
+
+A stronger statement than Bell violation — provable with operators alone, on
+*any* state:
+
+```python
+from quantum_debugger.algorithms import (
+    mermin_peres_square, classical_assignment_maximum, quantum_context_measurement,
+)
+
+mermin_peres_square()["square"]
+# [['XI', 'IX', 'XX'], ['IZ', 'ZI', 'ZZ'], ['XZ', 'ZX', 'YY']]
+# rows multiply to +I; columns to +I, +I, -I  (verified matrix-by-matrix)
+
+classical_assignment_maximum()["max_satisfied"]   # 5 of 6 -- for ALL 512 assignments
+
+import numpy as np
+r = quantum_context_measurement(np.array([1, 1j, -1, 0.5]), "col", 2)
+r["outcomes"]   # three +/-1 results (individually random)
+r["product"]    # -1 == expected_sign, deterministically, every time
+```
+
+The parity obstruction: the six constraints multiply to `-1`, yet each of the nine
+values appears in exactly two constraints — so no pre-assigned values can satisfy
+them all. Quantum measurements do, on every state, because what an observable
+"reveals" depends on which commuting context it is measured in. This is the
+Kochen-Specker theorem in its smallest, sharpest form.

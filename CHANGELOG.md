@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Quantum contextuality: the Peres-Mermin magic square**
+  (`algorithms.mermin_peres_square`, `classical_assignment_maximum`,
+  `quantum_context_measurement`) — a complete 2-qubit Kochen-Specker proof. The 3x3
+  grid of two-qubit Paulis is verified operator-by-operator (every row/column
+  mutually commutes; row products `+I,+I,+I`, column products `+I,+I,-I`);
+  brute-forcing all 512 non-contextual value assignments shows at most **5 of 6**
+  constraints can ever hold classically; yet sequential projective measurement of
+  any context on ANY state gives outcomes whose product equals the context's sign
+  deterministically — all 6 constraints at once, on 120 randomized context
+  measurements, with the individual outcomes still random. Measurement outcomes
+  cannot be pre-existing context-independent values.
 - **Optimal universal quantum cloning (Buzek-Hillery)**
   (`algorithms.universal_clone`) — no-cloning made quantitative: the exact 1 -> 2
   cloning machine (a verified 8x2 isometry with two clones + ancilla) copies ANY
