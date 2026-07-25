@@ -203,3 +203,28 @@ DensityMatrix(rho=rho).mutual_information([0])         # 1.0 bit
 A Bell pair carries 2 bits (twice its 1 bit of entanglement, reflecting both
 classical and quantum correlation); a classically correlated mixture carries 1 bit;
 a product state carries 0.
+
+## Quantum discord: correlation beyond entanglement
+
+Entanglement is not the whole story of quantum correlation. **Discord** measures
+the part of the mutual information that no local measurement can extract
+classically:
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import DensityMatrix, quantum_discord
+from quantum_debugger.algorithms import bell_diagonal_state
+
+bell = DensityMatrix(state_vector=np.array([1, 0, 0, 1]) / np.sqrt(2))
+quantum_discord(bell)          # 1.0 -- maximal
+
+# A SEPARABLE Werner state (F = 0.4, zero negativity):
+dm = DensityMatrix(rho=bell_diagonal_state(0.4, 0.2, 0.2, 0.2))
+dm.negativity([0])             # 0.0   -- no entanglement
+quantum_discord(dm)            # 0.049 -- but genuinely quantum correlation!
+```
+
+`D = S(B) - S(AB) + min over measurements of the average conditional entropy`,
+optimized over the Bloch sphere. Verified against Luo's closed form for
+Bell-diagonal states; for pure states it reduces exactly to the entanglement
+entropy, and for classical mixtures it vanishes.

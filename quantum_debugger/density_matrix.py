@@ -327,6 +327,62 @@ def phase_damping(gamma: float):
     ]
 
 
+# --- quantum discord --------------------------------------------------------
+
+
+def quantum_discord(dm: "DensityMatrix", measured_qubit: int = 1, grid: int = 6) -> float:
+    """
+    Quantum discord ``D_B(rho) = I(A:B) - J_B(rho)`` in bits: the part of the mutual
+    information that NO projective measurement on qubit ``measured_qubit`` (side B)
+    can extract classically,
+
+        D = S(B) - S(AB) + min_M sum_k p_k S(rho_A | k),
+
+    minimized over all Bloch-sphere projector pairs (grid-seeded Nelder-Mead).
+    Zero iff the state is classical-quantum; equals the entanglement entropy for
+    pure states; and can be *positive for separable states* -- quantum correlation
+    without entanglement (e.g. a Werner state below the F = 1/2 threshold).
+    """
+    from scipy.optimize import minimize as _minimize
+
+    n = dm.n
+    rest = [q for q in range(n) if q != measured_qubit]
+    s_b = dm.partial_trace([measured_qubit]).von_neumann_entropy()
+    s_ab = dm.von_neumann_entropy()
+
+    def avg_conditional_entropy(angles):
+        theta, phi = angles
+        nvec = (
+            np.sin(theta) * np.cos(phi),
+            np.sin(theta) * np.sin(phi),
+            np.cos(theta),
+        )
+        proj = (_I + nvec[0] * _X + nvec[1] * _Y + nvec[2] * _Z) / 2
+        total = 0.0
+        for P in (proj, _I - proj):
+            E = _embed(P, [measured_qubit], n)
+            branch = E @ dm.rho @ E
+            p = float(np.real(np.trace(branch)))
+            if p < 1e-12:
+                continue
+            rho_a = DensityMatrix(rho=branch / p).partial_trace(rest)
+            total += p * rho_a.von_neumann_entropy()
+        return total
+
+    best = np.inf
+    for theta in np.linspace(0.01, np.pi - 0.01, grid):
+        for phi in np.linspace(0.0, 2 * np.pi, grid, endpoint=False):
+            res = _minimize(
+                avg_conditional_entropy,
+                [theta, phi],
+                method="Nelder-Mead",
+                options={"xatol": 1e-9, "fatol": 1e-12, "maxiter": 300},
+            )
+            if res.fun < best:
+                best = float(res.fun)
+    return max(0.0, s_b - s_ab + best)
+
+
 # --- channel quality metrics ----------------------------------------------
 
 

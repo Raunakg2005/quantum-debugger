@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Quantum discord** (`density_matrix.quantum_discord`) — the quantum correlation
+  that survives *without* entanglement: `D = S(B) - S(AB) + min_M sum p_k S(A|k)`,
+  minimized over all projective measurements (grid-seeded Nelder-Mead). Verified: a
+  Bell state carries exactly 1 bit, classical and product states exactly 0, pure
+  states reduce to the entanglement entropy, random Bell-diagonal states match Luo's
+  closed form (PRA 77, 042303) to 1e-5 — and a *separable* Werner state (negativity
+  0) still has discord 0.049, quantum correlation with no entanglement at all.
 - **DEJMPS distillation** (`algorithms.dejmps_distill`, `bell_diagonal_state`,
   `dejmps_recurrence`, `dejmps_rounds`) — the protocol real repeaters use: works on
   *any* Bell-diagonal state (BBPSSW needs Werner) via local `Rx(±pi/2)` rotations

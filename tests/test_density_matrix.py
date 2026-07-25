@@ -353,3 +353,74 @@ class TestMutualInformation:
         rho[0, 0] = rho[3, 3] = 0.5
         dm = DensityMatrix(rho=rho)
         assert abs(dm.mutual_information([0]) - 1.0) < 1e-9
+
+
+class TestQuantumDiscord:
+    def _luo(self, l):
+        # Luo's closed form for Bell-diagonal states (PRA 77, 042303).
+        from quantum_debugger.algorithms import bell_diagonal_state
+
+        w1, w2, w3, w4 = l
+        c1 = w1 - w2 + w3 - w4
+        c2 = -w1 + w2 + w3 - w4
+        c3 = w1 + w2 - w3 - w4
+        c = max(abs(c1), abs(c2), abs(c3))
+        vals = np.linalg.eigvalsh(bell_diagonal_state(*l)).real
+        vals = vals[vals > 1e-12]
+        s_ab = float(-np.sum(vals * np.log2(vals)))
+        C = sum(
+            ((1 + s * c) / 2) * np.log2(1 + s * c)
+            for s in (+1, -1)
+            if 1 + s * c > 1e-12
+        )
+        return (2 - s_ab) - C
+
+    def test_bell_state_is_one_bit(self):
+        from quantum_debugger.density_matrix import quantum_discord
+
+        dm = DensityMatrix(state_vector=np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2))
+        assert abs(quantum_discord(dm) - 1.0) < 1e-6
+
+    def test_classical_state_is_zero(self):
+        from quantum_debugger.density_matrix import quantum_discord
+
+        rho = np.zeros((4, 4), dtype=complex)
+        rho[0, 0] = rho[3, 3] = 0.5
+        assert quantum_discord(DensityMatrix(rho=rho)) < 1e-6
+
+    def test_product_state_is_zero(self):
+        from quantum_debugger.density_matrix import quantum_discord
+
+        dm = DensityMatrix(state_vector=np.array([1, 1, 1, 1], dtype=complex) / 2)
+        assert quantum_discord(dm) < 1e-6
+
+    @pytest.mark.parametrize("seed", range(3))
+    def test_matches_luo_closed_form(self, seed):
+        from quantum_debugger.density_matrix import quantum_discord
+        from quantum_debugger.algorithms import bell_diagonal_state
+
+        rng = np.random.default_rng(seed)
+        l = tuple(rng.dirichlet([2, 1, 1, 1]))
+        dm = DensityMatrix(rho=bell_diagonal_state(*l))
+        assert abs(quantum_discord(dm) - self._luo(l)) < 1e-5
+
+    def test_separable_state_with_discord(self):
+        # Werner F = 0.4: zero negativity (separable), nonzero discord.
+        from quantum_debugger.density_matrix import quantum_discord
+        from quantum_debugger.algorithms import bell_diagonal_state
+
+        l = (0.4, 0.2, 0.2, 0.2)
+        dm = DensityMatrix(rho=bell_diagonal_state(*l))
+        assert dm.negativity([0]) < 1e-12
+        d = quantum_discord(dm)
+        assert d > 0.01
+        assert abs(d - self._luo(l)) < 1e-5
+
+    def test_pure_state_discord_equals_entanglement_entropy(self):
+        from quantum_debugger.density_matrix import quantum_discord
+
+        theta = 0.6
+        sv = np.zeros(4, dtype=complex)
+        sv[0], sv[3] = np.cos(theta), np.sin(theta)
+        dm = DensityMatrix(state_vector=sv)
+        assert abs(quantum_discord(dm) - dm.entanglement_entropy([0])) < 1e-6
