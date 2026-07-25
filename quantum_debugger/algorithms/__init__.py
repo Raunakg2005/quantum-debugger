@@ -160,6 +160,7 @@ from .error_detection import (
     detect_single_errors,
     postselected_memory,
 )
+from .mbqc import cluster_pair, mbqc_rotation
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -323,6 +324,8 @@ __all__ = [
     "four_two_two_codewords",
     "detect_single_errors",
     "postselected_memory",
+    "cluster_pair",
+    "mbqc_rotation",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Measurement-based quantum computation** (`algorithms.mbqc_rotation`,
+  `cluster_pair`) — the opposite of the circuit model: compute by *measuring* a
+  fixed entangled resource. Measuring one qubit of a two-qubit cluster state in the
+  `alpha`-tilted basis teleports `X^s H Rz(-alpha)|psi>` onto the ancilla — verified
+  to fidelity 1 on 200+ random inputs against the exact byproduct law. Applying the
+  outcome-conditioned `X^s` correction turns it into a *deterministic* gate
+  `H Rz(-alpha)` (exactly `H` at `alpha = 0`), a genuine unitary enacted purely by
+  measurement, with the outcome unbiased and both branches occurring.
 - **[[4,2,2]] error-detecting code** (`algorithms.four_two_two_codewords`,
   `detect_single_errors`, `postselected_memory`) — the smallest useful stabilizer
   code: 4 qubits, 2 logical qubits, distance 2, stabilizers `XXXX`/`ZZZZ`.

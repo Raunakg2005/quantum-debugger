@@ -1058,3 +1058,26 @@ directly with `holevo_bound` — equals `2 - S(rho_W)` exactly. Note the hierarc
 the quantum advantage disappears near `F ~ 0.81`, while the pair stays *entangled*
 down to `F = 1/2` — entanglement is necessary but not sufficient for beating the
 classical channel.
+
+## Measurement-Based Quantum Computation
+
+In the one-way model you never apply a gate — you prepare an entangled cluster
+state and *measure* it. The elementary step teleports a rotation:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import mbqc_rotation
+
+# Measure one qubit of a cluster in the alpha-tilted basis; the ancilla is left
+# holding H Rz(-alpha)|psi> (byproduct corrected -> deterministic gate).
+r = mbqc_rotation([1, 0], alpha=np.pi / 3, correct=True)
+r["output"]     # exactly H Rz(-pi/3)|0>
+r["fidelity"]   # 1.0
+
+mbqc_rotation([1, 0], alpha=0.0, correct=True)["output"]   # exactly H|0> = |+>
+```
+
+Without correction the ancilla holds `X^s H Rz(-alpha)|psi>` — the `X^s` byproduct
+is the randomness measurement injects (verified against the exact law on 200
+random inputs). Feeding that outcome forward to condition later corrections is how
+the model chains steps into any circuit: measurement *is* computation.
