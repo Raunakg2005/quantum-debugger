@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Stinespring dilation** (`density_matrix.stinespring_isometry`,
+  `apply_channel_dilated`) — the constructive proof that all noise is entanglement
+  with an environment: any Kraus channel `N(rho) = sum_k K_k rho K_k^dagger` is
+  realized as an isometry `V|psi> = sum_k K_k|psi>|k>_env` followed by discarding
+  the environment. Verified that `Tr_env(V rho V^dagger)` reproduces every standard
+  channel exactly, that `V^dagger V = I` (trace preservation), that a unitary
+  channel dilates to itself (env dimension 1), and that the dilated global state is
+  pure — the environment *purifies* the noise.
 - **Measurement-based quantum computation** (`algorithms.mbqc_rotation`,
   `cluster_pair`) — the opposite of the circuit model: compute by *measuring* a
   fixed entangled resource. Measuring one qubit of a two-qubit cluster state in the

@@ -508,3 +508,50 @@ class TestConcurrence:
     def test_wrong_size_rejected(self):
         with pytest.raises(ValueError):
             DensityMatrix(1).concurrence()
+
+
+class TestStinespringDilation:
+    @pytest.mark.parametrize("channel", ["depol", "ad", "pd", "bf", "phaseflip"])
+    def test_dilation_reproduces_channel(self, channel):
+        from quantum_debugger.density_matrix import (
+            apply_channel_dilated, depolarizing, amplitude_damping,
+            phase_damping, bit_flip, phase_flip,
+        )
+
+        kr = {
+            "depol": depolarizing(0.3), "ad": amplitude_damping(0.4),
+            "pd": phase_damping(0.5), "bf": bit_flip(0.25), "phaseflip": phase_flip(0.15),
+        }[channel]
+        rho = np.array([[0.7, 0.3 - 0.2j], [0.3 + 0.2j, 0.3]], dtype=complex)
+        direct = DensityMatrix(rho=rho.copy())
+        direct.apply_channel(kr, [0])
+        assert np.allclose(apply_channel_dilated(kr, rho), direct.rho, atol=1e-12)
+
+    @pytest.mark.parametrize("channel", ["depol", "ad", "pd"])
+    def test_isometry_is_trace_preserving(self, channel):
+        from quantum_debugger.density_matrix import (
+            stinespring_isometry, depolarizing, amplitude_damping, phase_damping,
+        )
+
+        kr = {"depol": depolarizing(0.3), "ad": amplitude_damping(0.4),
+              "pd": phase_damping(0.5)}[channel]
+        V = stinespring_isometry(kr)
+        assert np.allclose(V.conj().T @ V, np.eye(2), atol=1e-12)
+
+    def test_unitary_dilation_rank_one(self):
+        # A unitary channel dilates to itself (env dimension 1).
+        from quantum_debugger.density_matrix import stinespring_isometry
+
+        H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)
+        V = stinespring_isometry([H])
+        assert V.shape == (2, 2)
+        assert np.allclose(V, H)
+
+    def test_purification_view(self):
+        # The dilated global state is pure (an environment purifies the noise).
+        from quantum_debugger.density_matrix import stinespring_isometry, depolarizing
+
+        psi = np.array([1, 0], dtype=complex)
+        V = stinespring_isometry(depolarizing(0.5))
+        big = np.outer(V @ psi, (V @ psi).conj())
+        assert abs(np.trace(big @ big).real - 1.0) < 1e-9  # purity 1

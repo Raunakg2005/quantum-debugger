@@ -303,3 +303,28 @@ exactly. The vanishing at `g = 1/2` is forced by no-cloning: there the environme
 receives a copy of everything the receiver gets (the channel is antidegradable),
 so any surviving quantum capacity would clone. The antisymmetry
 `I_c(g) = -I_c(1-g)` is verified too.
+
+## Stinespring dilation: all noise is an environment
+
+Every channel in this module can be written as a *unitary* interaction with an
+extra environment that is then thrown away — Stinespring's theorem, made
+constructive:
+
+```python
+import numpy as np
+from quantum_debugger.density_matrix import (
+    stinespring_isometry, apply_channel_dilated, depolarizing,
+)
+
+V = stinespring_isometry(depolarizing(0.3))   # isometry V: system -> system x env
+V.conj().T @ V                                # identity -- trace preserving
+
+rho = np.array([[0.7, 0.3], [0.3, 0.3]], dtype=complex)
+apply_channel_dilated(depolarizing(0.3), rho) # == dm.apply_channel(depolarizing(0.3))
+```
+
+`V|psi> = sum_k K_k|psi>|k>_env`; tracing out the environment gives back the Kraus
+channel exactly (verified for every built-in channel). The dilated global state is
+*pure* — decoherence of the system is nothing but entanglement with the
+environment, and "measuring" that environment is what the Kraus operators secretly
+describe.

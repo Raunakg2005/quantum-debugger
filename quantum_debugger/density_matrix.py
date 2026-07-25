@@ -550,3 +550,44 @@ def kraus_rank(kraus_ops, atol: float = 1e-9) -> int:
     """
     eigs = np.linalg.eigvalsh(choi_matrix(kraus_ops)).real
     return int(np.sum(eigs > atol))
+
+
+def stinespring_isometry(kraus_ops) -> np.ndarray:
+    """
+    Stinespring dilation of a Kraus channel: the isometry ``V`` (shape
+    ``(d * m, d)``, ``m`` = environment dimension padded to the Kraus count) with
+
+        V |psi> = sum_k (K_k |psi>) x |k>_env,
+
+    so that the channel is ``N(rho) = Tr_env(V rho V-dagger)``. Stinespring's theorem:
+    every physical channel is a unitary interaction with an environment that is then
+    discarded. ``V-dagger V = sum_k K_k-dagger K_k = I`` exactly when the channel is
+    trace preserving. See :func:`apply_channel_dilated`.
+    """
+    K = [np.asarray(k, dtype=complex) for k in kraus_ops]
+    d = K[0].shape[0]
+    m = 1
+    while m < len(K):
+        m *= 2
+    V = np.zeros((m * d, d), dtype=complex)
+    for k, Kk in enumerate(K):
+        V[k * d : (k + 1) * d, :] = Kk
+    return V
+
+
+def apply_channel_dilated(kraus_ops, rho) -> np.ndarray:
+    """
+    Apply a Kraus channel the "dilated" way -- via its Stinespring isometry followed
+    by tracing out the environment -- and return the output density matrix. Equals
+    :meth:`DensityMatrix.apply_channel` exactly; this is the constructive proof that
+    the Kraus and system-environment pictures of noise coincide.
+    """
+    rho = np.asarray(rho, dtype=complex)
+    V = stinespring_isometry(kraus_ops)
+    d = rho.shape[0]
+    m = V.shape[0] // d
+    big = V @ rho @ V.conj().T
+    out = np.zeros((d, d), dtype=complex)
+    for e in range(m):
+        out += big[e * d : (e + 1) * d, e * d : (e + 1) * d]
+    return out
