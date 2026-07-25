@@ -245,12 +245,15 @@ from .readout_mitigation import (
     mitigate_readout,
     mitigate_expectation,
 )
+from .virtual_distillation import virtual_distillation, distillation_report
 
 __all__ = [
     "assignment_matrix",
     "apply_readout_noise",
     "mitigate_readout",
     "mitigate_expectation",
+    "virtual_distillation",
+    "distillation_report",
     # QFT
     "qft",
     "apply_qft",

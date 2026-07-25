@@ -14,6 +14,13 @@ verification, virtual distillation, and probabilistic error cancellation — eac
 verified to recover the noise-free expectation value.
 
 ### Added
+- **Virtual distillation** (`algorithms.virtual_distillation`, `distillation_report`)
+  — error mitigation by purification: the corrected expectation `Tr(O rho^m)/Tr(rho^m)`
+  concentrates weight on the noisy state's dominant eigenvector, approaching the
+  noise-free value without any error correction. Verified on a depolarized Bell state
+  (`<ZZ>` error 0.36 raw → 0.058 at `m=2` → 0.008 at `m=3`), higher order reducing the
+  error further and converging to the dominant-eigenvector expectation, `m=1`
+  recovering the raw value, and a pure state left unchanged.
 - **Readout error mitigation** (`algorithms.assignment_matrix`, `mitigate_readout`,
   `mitigate_expectation`, `apply_readout_noise`) — undo measurement bit-flips: build
   the readout assignment matrix from single-qubit flip probabilities and correct a

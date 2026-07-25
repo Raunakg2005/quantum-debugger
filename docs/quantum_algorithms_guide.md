@@ -1628,3 +1628,30 @@ The assignment matrix `A[measured, true]` is the tensor product of the single-qu
 flip matrices; solving `A p_true = p_measured` (then clipping and renormalizing)
 undoes the readout noise. `mitigate_expectation` applies the same correction to a
 diagonal observable — the standard first line of defense on NISQ hardware.
+
+## Virtual Distillation
+
+Error mitigation without error correction: raise the noisy state to a power and its
+dominant (intended) component takes over.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import distillation_report
+from quantum_debugger.density_matrix import DensityMatrix, depolarizing
+
+psi = np.array([1, 0, 0, 1]) / np.sqrt(2)          # ideal Bell state
+dm = DensityMatrix(state_vector=psi)
+for q in (0, 1):
+    dm.apply_channel(depolarizing(0.2), [q])        # noisy
+
+Z = np.diag([1, -1]); ZZ = np.kron(Z, Z)
+r = distillation_report(dm.rho, ZZ, ideal_state=psi, m=2)
+r["raw"]              # 0.64  (noisy <ZZ>)
+r["distilled"]        # 0.94  (m=2)  -- much closer to the ideal 1.0
+r["distilled_error"]  # < r["raw_error"]
+```
+
+`<O>_m = Tr(O rho^m) / Tr(rho^m)` suppresses the error components because
+`rho^m/Tr(rho^m)` converges to the projector onto `rho`'s largest eigenvector — the
+intended pure state. Higher `m` mitigates more (at the cost of more copies on
+hardware); here it is computed exactly on the density-matrix engine.
