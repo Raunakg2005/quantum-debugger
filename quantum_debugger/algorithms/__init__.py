@@ -239,8 +239,18 @@ from .matrix_functions import (
     solve_linear_system_qsvt,
 )
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
+from .readout_mitigation import (
+    assignment_matrix,
+    apply_readout_noise,
+    mitigate_readout,
+    mitigate_expectation,
+)
 
 __all__ = [
+    "assignment_matrix",
+    "apply_readout_noise",
+    "mitigate_readout",
+    "mitigate_expectation",
     # QFT
     "qft",
     "apply_qft",

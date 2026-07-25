@@ -1608,3 +1608,23 @@ r["fidelity"]     # ~1.0
 ill-conditioned and the required degree grows with the condition number — the same
 `1/kappa` cost that appears in HHL. Together with `hamiltonian_simulation_qsvt`, this
 shows the two canonical quantum algorithms falling out of the single QSVT primitive.
+
+## Readout Error Mitigation
+
+Real measurements flip bits; readout mitigation characterizes the flips and inverts
+them:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import apply_readout_noise, mitigate_readout
+
+true = np.zeros(8); true[0] = true[7] = 0.5           # GHZ populations
+measured = apply_readout_noise(true, p01=0.05, p10=0.08)   # what a noisy device reports
+
+mitigate_readout(measured, 0.05, 0.08)                # recovers [0.5, 0, ..., 0, 0.5] exactly
+```
+
+The assignment matrix `A[measured, true]` is the tensor product of the single-qubit
+flip matrices; solving `A p_true = p_measured` (then clipping and renormalizing)
+undoes the readout noise. `mitigate_expectation` applies the same correction to a
+diagonal observable — the standard first line of defense on NISQ hardware.

@@ -14,6 +14,14 @@ verification, virtual distillation, and probabilistic error cancellation — eac
 verified to recover the noise-free expectation value.
 
 ### Added
+- **Readout error mitigation** (`algorithms.assignment_matrix`, `mitigate_readout`,
+  `mitigate_expectation`, `apply_readout_noise`) — undo measurement bit-flips: build
+  the readout assignment matrix from single-qubit flip probabilities and correct a
+  noisy histogram by solving `A p_true = p_measured` (then clip + renormalize).
+  Verified to recover the exact noise-free distribution (a GHZ readout mitigated to
+  0 error vs 0.11 uncorrected), always beat the uncorrected distribution, return a
+  valid probability distribution, and reduce to the identity when there is no noise;
+  `mitigate_expectation` corrects a diagonal observable's value likewise.
 
 ## [1.1.0]
 
