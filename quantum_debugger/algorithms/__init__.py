@@ -114,6 +114,7 @@ from .distillation import (
 )
 from .decoherence_free import collective_dephasing, dfs_encode, dfs_protection
 from .dynamical_decoupling import spin_echo, echo_state_fidelity
+from .zeno import quantum_zeno, zeno_postselected
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -239,6 +240,8 @@ __all__ = [
     "dfs_protection",
     "spin_echo",
     "echo_state_fidelity",
+    "quantum_zeno",
+    "zeno_postselected",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

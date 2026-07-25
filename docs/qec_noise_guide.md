@@ -152,3 +152,27 @@ is perfectly coherent. The failure case is just as instructive: when the two
 half-evolutions carry independent phases, the echoed coherence equals the free
 one exactly. **Noise correlation is the resource** — which is why real devices
 characterize their noise spectrum before choosing a decoupling sequence.
+
+## The quantum Zeno effect
+
+The third protection mechanism is the strangest: **measurement itself**. A watched
+qubit cannot Rabi-flip:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import quantum_zeno, zeno_postselected
+
+quantum_zeno(np.pi, 1)["survival"]      # 0.0   -- a free pi-pulse fully inverts
+quantum_zeno(np.pi, 50)["survival"]     # 0.953 -- 50 unread measurements freeze it
+quantum_zeno(np.pi, 2000)["survival"]   # 0.9988 -- N -> infinity: never leaves |0>
+
+r = zeno_postselected(np.pi / 2, 100)   # demand outcome 0 at every check
+r["survival_probability"]               # 0.9938 == cos^200(pi/400)
+r["state_fidelity"]                     # 1.0 -- the survivor is still exactly |0>
+```
+
+Each unread measurement is the exact channel `rho -> P0 rho P0 + P1 rho P1`; the
+final `|0>` population is exactly `1/2 + cos^N(wT/N)/2`. Post-selecting outcome 0
+each time survives with probability `cos^{2N}(wT/2N) -> 1`. Together with the DFS
+(symmetry) and the spin echo (correlation), this completes the trio of ways to
+protect a qubit *without* the overhead of full error correction.

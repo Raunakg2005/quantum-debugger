@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Quantum Zeno effect** (`algorithms.quantum_zeno`, `zeno_postselected`) —
+  frequent measurement freezes coherent evolution. A Rabi drive interrupted by N
+  unread projective measurements (exact measurement channels on the density matrix)
+  leaves `|0>` population exactly `1/2 + cos^N(wT/N)/2`; demanding outcome 0 every
+  time survives with probability exactly `cos^{2N}(wT/2N)` with the state pinned at
+  `|0>`. Both verified against their closed forms, monotone in N, tending to 1 —
+  while a free pi-pulse fully inverts the qubit (survival 0), 50 interleaved
+  measurements keep it above 0.95.
 - **Dynamical decoupling (Hahn spin echo)** (`algorithms.spin_echo`,
   `echo_state_fidelity`) — the temporal counterpart to a DFS: under quasi-static
   dephasing (random per-shot detuning, Gauss-Hermite ensemble of unitaries) a bare
