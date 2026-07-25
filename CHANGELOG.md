@@ -13,6 +13,15 @@ unitaries (LCU), and quantum singular value transformation, each verified agains
 polynomial or matrix function it is supposed to implement.
 
 ### Added
+- **Linear Combination of Unitaries (LCU)** (`algorithms.lcu_block_encoding`,
+  `lcu_matrix`) — block-encode a weighted sum `H = sum alpha_i U_i` from its PREPARE
+  (amplitude-loading) and SELECT (controlled-unitary) pieces:
+  `PREPARE† SELECT PREPARE` has top-left block `H / lambda` with `lambda = sum alpha_i`.
+  Verified the encoding is unitary and its block equals `H/lambda` exactly for Pauli
+  sums, multi-qubit operators, and non-power-of-two term counts (ancilla padded with
+  identity); the subnormalization equals the coefficient sum, a single term encodes
+  its unitary directly, and negative coefficients are rejected — the standard way to
+  feed a Hamiltonian into qubitization/QSVT.
 - **Block encoding & qubitization** (`algorithms.block_encode`, `is_block_encoding`,
   `qubitization_walk`, `chebyshev_of_matrix`) — the input model of QSVT: hide a
   Hermitian matrix `A` (`||A|| <= 1`) in the corner of a unitary

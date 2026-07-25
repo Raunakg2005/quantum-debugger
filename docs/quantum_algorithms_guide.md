@@ -1514,3 +1514,27 @@ exactly. Applying tunable phase rotations between walk steps (the QSVT generaliz
 of the QSP phases above) turns this into *any* polynomial of `A` — the single
 framework behind amplitude amplification, Hamiltonian simulation, and quantum linear
 algebra.
+
+## Linear Combination of Unitaries (LCU)
+
+Hamiltonians usually arrive as a weighted sum of Paulis; LCU block-encodes such a sum
+using PREPARE and SELECT:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import lcu_block_encoding, lcu_matrix
+
+X = np.array([[0, 1], [1, 0]]); Y = np.array([[0, -1j], [1j, 0]]); Z = np.array([[1, 0], [0, -1]])
+coeffs, Us = [0.5, 0.3, 0.2], [X, Z, Y]      # H = 0.5 X + 0.3 Z + 0.2 Y
+
+r = lcu_block_encoding(coeffs, Us)
+r["subnormalization"]                         # lambda = 1.0 (sum of coeffs)
+top = r["unitary"][:2, :2]
+np.allclose(top, lcu_matrix(coeffs, Us) / r["subnormalization"])   # True
+```
+
+PREPARE loads `sqrt(alpha_i)` amplitudes on the ancilla, SELECT applies `U_i`
+controlled on ancilla state `i`, and `PREPARE† SELECT PREPARE` leaves `H/lambda` in the
+top-left block. Together with `block_encode` and `qubitization_walk`, this completes
+the input side of QSVT: any Pauli-sum Hamiltonian becomes a block encoding you can
+transform.
