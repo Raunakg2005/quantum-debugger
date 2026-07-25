@@ -42,6 +42,11 @@ mps.expectation(Z, 50)                      # 0.0 -- each qubit is unbiased
 
 - `MPS.zero_state(n, max_bond)` / `MPS.from_statevector(psi, max_bond)` — construct
   (the latter by exact sequential SVD).
+- `MPS.from_circuit(circuit, max_bond)` — run a `QuantumCircuit` on the MPS engine
+  (1- and 2-qubit gates, any connectivity via SWAPs). Matches the state-vector result
+  exactly; decompose 3+ qubit gates first. Driving the `MPS` directly (rather than
+  through a `QuantumCircuit`, which allocates a dense state) is how you exceed ~25
+  qubits.
 - `apply_single(gate, qubit)` — exact single-qubit gate.
 - `apply_two(gate, qubit)` — neighbouring two-qubit gate, then SVD-truncate the bond
   to `max_bond` (the controlled approximation of DMRG/TEBD).

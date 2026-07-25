@@ -294,6 +294,43 @@ class TestLongRangeGates:
         with pytest.raises(ValueError):
             MPS.zero_state(4).apply_two_long_range(_CNOT, 3, 1)
 
+class TestFromCircuit:
+    def test_matches_state_vector(self):
+        from quantum_debugger.core.circuit import QuantumCircuit
+
+        qc = QuantumCircuit(5)
+        qc.h(0); qc.cnot(0, 1); qc.cnot(3, 1); qc.x(2)
+        qc.cnot(4, 2); qc.h(3); qc.cnot(2, 0)
+        m = MPS.from_circuit(qc, max_bond=32)
+        assert np.allclose(m.to_statevector(), qc.get_statevector().state_vector, atol=1e-9)
+
+    def test_reversed_cnot(self):
+        from quantum_debugger.core.circuit import QuantumCircuit
+
+        qc = QuantumCircuit(3)
+        qc.x(2); qc.cnot(2, 0)  # control > target
+        m = MPS.from_circuit(qc)
+        assert np.allclose(m.to_statevector(), qc.get_statevector().state_vector, atol=1e-9)
+
+    def test_ghz_circuit_bond_two(self):
+        from quantum_debugger.core.circuit import QuantumCircuit
+
+        n = 8
+        qc = QuantumCircuit(n)
+        qc.h(0)
+        for q in range(n - 1):
+            qc.cnot(q, q + 1)
+        m = MPS.from_circuit(qc, max_bond=4)
+        assert m.max_bond_dimension() == 2
+
+    def test_three_qubit_gate_rejected(self):
+        from quantum_debugger.core.circuit import QuantumCircuit
+
+        qc = QuantumCircuit(3)
+        qc.toffoli(0, 1, 2)  # 8x8 gate -- must be decomposed first
+        with pytest.raises(NotImplementedError):
+            MPS.from_circuit(qc)
+
 
 
 if __name__ == "__main__":

@@ -13,6 +13,14 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **Circuit → MPS runner** (`MPS.from_circuit`) — run an existing `QuantumCircuit` on
+  the tensor-network engine: single-qubit gates applied exactly, two-qubit gates via
+  the long-range SWAP path (either control/target ordering handled by re-indexing the
+  4x4 matrix), three-plus-qubit gates rejected with a clear message to decompose first.
+  Verified to reproduce the state-vector result exactly on mixed random circuits and
+  reversed-control CNOTs, with a GHZ circuit staying at bond dimension 2. (Note: the
+  scale ceiling here is the `QuantumCircuit` object itself, which allocates a dense
+  state; to exceed it, drive the `MPS` directly.)
 - **MPS long-range two-qubit gates** (`MPS.apply_two_long_range`) — apply a two-qubit
   gate to *any* pair of qubits (not just neighbours) via a nearest-neighbour SWAP
   ladder: swap the qubits together, apply the gate, swap back. Verified against the

@@ -44,6 +44,36 @@ class MPS:
         return cls(tensors, max_bond)
 
     @classmethod
+    def from_circuit(cls, circuit, max_bond: int = None) -> "MPS":
+        """
+        Run a :class:`QuantumCircuit` on the MPS engine, starting from ``|0...0>``.
+        Single-qubit gates are applied exactly; two-qubit gates use the long-range
+        SWAP path (any connectivity), truncating the bond to ``max_bond``. Three-or-more
+        qubit gates must be decomposed first (e.g. via ``toffoli_gates`` / ``mcx_gates``).
+
+        For low-entanglement circuits this runs at scales the dense simulator cannot.
+        """
+        mps = cls.zero_state(circuit.num_qubits, max_bond=max_bond)
+        for gate in circuit.gates:
+            qubits = list(gate.qubits)
+            if len(qubits) == 1:
+                mps.apply_single(gate.matrix, qubits[0])
+            elif len(qubits) == 2:
+                a, b = qubits
+                G = np.asarray(gate.matrix, dtype=complex)
+                if a < b:
+                    mps.apply_two_long_range(G, a, b)
+                else:
+                    # Gate indexed on |a, b> = |higher, lower>; re-index to |lower, higher>.
+                    mps.apply_two_long_range(_SWAP @ G @ _SWAP, b, a)
+            else:
+                raise NotImplementedError(
+                    "MPS.from_circuit handles 1- and 2-qubit gates; decompose larger "
+                    "gates first (e.g. toffoli_gates / mcx_gates)."
+                )
+        return mps
+
+    @classmethod
     def from_statevector(cls, state_vector, max_bond: int = None, tol: float = 1e-12) -> "MPS":
         """
         Exact MPS for a dense ``state_vector`` via sequential SVD (truncated to
