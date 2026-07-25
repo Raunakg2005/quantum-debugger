@@ -1017,3 +1017,25 @@ trivial 0; the Maassen-Uffink bound `H(A) + H(B) >= -log2 c` depends only on the
 *bases* — for mutually unbiased qubit measurements it guarantees one full bit of
 combined ignorance no matter the state, which is exactly the complementarity that
 BB84 turns into security.
+
+## Magic: the Stabilizer Renyi Entropy
+
+Clifford circuits are classically simulable — **magic** is what takes a
+computation beyond them, and it is directly measurable:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import stabilizer_renyi_entropy, magic_of_t_states
+
+stabilizer_renyi_entropy(np.array([1, 0]))                  # 0.0 -- stabilizer state
+t = np.array([1, np.exp(1j*np.pi/4)]) / np.sqrt(2)          # the T-magic state
+stabilizer_renyi_entropy(t)                                 # 0.415 = log2(4/3)
+
+magic_of_t_states(3)["computed"]                            # 3 * log2(4/3): additive
+```
+
+`M_2 = -log2(sum_P <P>^4 / d)` over all Pauli strings: zero exactly on stabilizer
+states (verified on random Clifford orbits from the tableau engine), invariant
+under every Clifford gate (H, S, CNOT — verified), and additive. Each T state
+carries `log2(4/3) ~ 0.415` of magic — the quantity that magic-state distillation
+concentrates and `inject_t_gate` spends, one T gate per state.

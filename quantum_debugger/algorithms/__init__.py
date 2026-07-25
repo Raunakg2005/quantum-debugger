@@ -149,6 +149,7 @@ from .geometric_phase import (
     berry_phase_triangle,
 )
 from .uncertainty import robertson_bound, entropic_uncertainty
+from .magic_measures import stabilizer_renyi_entropy, magic_of_t_states
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -306,6 +307,8 @@ __all__ = [
     "berry_phase_triangle",
     "robertson_bound",
     "entropic_uncertainty",
+    "stabilizer_renyi_entropy",
+    "magic_of_t_states",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

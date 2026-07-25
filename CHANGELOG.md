@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Magic measures: stabilizer Renyi entropy**
+  (`algorithms.stabilizer_renyi_entropy`, `magic_of_t_states`) — quantify the
+  resource that takes computation beyond classically-simulable Clifford circuits:
+  `M_2 = -log2(sum_P <P>^4 / d)` over all `4^n` Pauli strings (Leone et al., PRL
+  128, 050402). Verified: exactly 0 on all six single-qubit stabilizer states,
+  Bell, GHZ, and random Clifford-orbit states (via the stabilizer engine's
+  `to_statevector`); exactly `log2(4/3)` on the T-magic state; invariant under H,
+  S, and entangling CNOT (Clifford invariance); and exactly additive over parallel
+  T states — connecting the magic-state injection arc to a measurable resource.
 - **Mixed-state quantum Fisher information** (`algorithms.qfi_mixed`) — precision
   metrology for realistic (noisy) probes: the SLD spectral formula
   `F_Q = 2 sum (l_i-l_j)^2/(l_i+l_j) |<i|G|j>|^2`. Triple-verified: reduces to
