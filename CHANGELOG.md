@@ -13,6 +13,13 @@ large-scale tooling built around it. (The 1.0 milestone: from "simulate a handfu
 qubits exactly" to "simulate many qubits when entanglement allows.")
 
 ### Added
+- **MPS entanglement entropy** (`MPS.bond_entropies`, `MPS.entanglement_entropy`) —
+  the entanglement entropy across every bond, read from the Schmidt spectrum by
+  canonicalizing the network (right-to-left then left-to-right SVD sweeps), scaling to
+  large `n` with no dense state. Verified to match the dense density-matrix
+  entanglement entropy exactly at every cut; a product state gives 0, a GHZ exactly 1
+  bit across every bond — including a 60-qubit GHZ whose full entropy profile is
+  computed instantly.
 - **MPS measurement sampling** (`MPS.sample`) — draw computational-basis shots from a
   matrix product state by exact sequential conditional sampling with precomputed right
   environments, `O(shots·n·chi^2)`, never forming the dense state. Verified: the

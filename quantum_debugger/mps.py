@@ -157,6 +157,39 @@ class MPS:
         den = self._environment_scan({})
         return float(np.real(num / den))
 
+    def bond_entropies(self) -> list:
+        """
+        Entanglement entropy (bits) across each of the ``n-1`` bonds, from the Schmidt
+        spectrum obtained by canonicalizing the MPS (a right-to-left SVD sweep to
+        right-canonical form, then a left-to-right SVD sweep reading off the singular
+        values). Scales to large ``n`` -- no dense state. The maximum over bonds is the
+        state's peak bipartite entanglement.
+        """
+        T = [t.copy() for t in self.tensors]
+        n = len(T)
+        for i in range(n - 1, 0, -1):
+            chi_l, d, chi_r = T[i].shape
+            U, S, Vh = np.linalg.svd(T[i].reshape(chi_l, d * chi_r), full_matrices=False)
+            T[i] = Vh.reshape(len(S), d, chi_r)
+            T[i - 1] = np.tensordot(T[i - 1], U * S, axes=(2, 0))
+
+        entropies = []
+        carry = T[0]
+        for i in range(n - 1):
+            chi_l, d, chi_r = carry.shape
+            U, S, Vh = np.linalg.svd(carry.reshape(chi_l * d, chi_r), full_matrices=False)
+            S = S / np.linalg.norm(S)
+            s2 = S**2
+            s2 = s2[s2 > 1e-14]
+            entropies.append(float(-np.sum(s2 * np.log2(s2))))
+            carry = np.tensordot(np.diag(S) @ Vh, T[i + 1], axes=(1, 0))
+        return entropies
+
+    def entanglement_entropy(self, bond: int) -> float:
+        """Entanglement entropy (bits) across ``bond`` (the cut between sites
+        ``0..bond`` and ``bond+1..n-1``)."""
+        return self.bond_entropies()[bond]
+
     def sample(self, shots: int, seed: int = 0) -> dict:
         """
         Draw ``shots`` computational-basis measurement outcomes from the MPS by exact

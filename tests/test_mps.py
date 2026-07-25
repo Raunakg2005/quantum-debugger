@@ -174,5 +174,52 @@ class TestSampling:
         assert sum(m.sample(137, seed=3).values()) == 137
 
 
+
+class TestEntanglementEntropy:
+    def test_matches_dense(self):
+        from quantum_debugger.density_matrix import DensityMatrix
+
+        rng = np.random.default_rng(0)
+        n = 6
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        psi = psi / np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=64)
+        dm = DensityMatrix(state_vector=psi)
+        ent = m.bond_entropies()
+        for i in range(n - 1):
+            assert abs(ent[i] - dm.entanglement_entropy(list(range(i + 1)))) < 1e-9
+
+    def test_product_state_zero_entropy(self):
+        m = MPS.zero_state(5)
+        assert all(abs(s) < 1e-12 for s in m.bond_entropies())
+
+    def test_ghz_one_bit_every_bond(self):
+        n = 6
+        m = MPS.zero_state(n)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        assert all(abs(s - 1.0) < 1e-9 for s in m.bond_entropies())
+
+    def test_single_bond_accessor(self):
+        m = MPS.zero_state(4)
+        m.apply_single(_H, 0)
+        m.apply_two(_CNOT, 0)
+        m.apply_two(_CNOT, 1)
+        m.apply_two(_CNOT, 2)  # GHZ
+        assert abs(m.entanglement_entropy(1) - 1.0) < 1e-9
+
+    def test_large_ghz_entropy_profile(self):
+        # A 60-qubit GHZ has exactly 1 bit across every cut -- instant, no dense state.
+        n = 60
+        m = MPS.zero_state(n, max_bond=4)
+        m.apply_single(_H, 0)
+        for q in range(n - 1):
+            m.apply_two(_CNOT, q)
+        ent = m.bond_entropies()
+        assert len(ent) == n - 1
+        assert all(abs(s - 1.0) < 1e-9 for s in ent)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

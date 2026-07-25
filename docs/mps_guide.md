@@ -50,6 +50,9 @@ mps.expectation(Z, 50)                      # 0.0 -- each qubit is unbiased
 - `sample(shots, seed)` — draw measurement outcomes by exact sequential conditional
   sampling (right environments), `O(shots * n * chi^2)`; the distribution is the exact
   Born rule, verified against the dense state for small systems.
+- `bond_entropies()` / `entanglement_entropy(bond)` — the entanglement entropy across
+  each cut, from the Schmidt spectrum after canonicalization; matches the dense value
+  exactly and scales to large systems (a 60-qubit GHZ's profile is instant).
 - `bond_dimensions()`, `max_bond_dimension()` — inspect the entanglement structure.
 - `to_statevector()` — contract back to a dense vector (small `n` only).
 
