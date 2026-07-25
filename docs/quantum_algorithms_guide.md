@@ -692,6 +692,30 @@ Hamming weight ≡ 3 mod 4), and the tests confirm the transversal S matches log
 S-dagger and *not* logical S. The missing gate is T — no distance-3 CSS code has a
 transversal T, which is why magic-state distillation exists.
 
+### Magic states & T-gate injection
+
+The missing T gate is supplied by **gate teleportation**: consume one pre-prepared
+magic state `|A> = T|+>` using only Clifford operations, and the non-Clifford T
+happens on the data:
+
+```python
+from quantum_debugger.algorithms import t_magic_state, inject_t_gate
+
+t_magic_state()               # (|0> + e^{i pi/4}|1>)/sqrt(2)
+
+r = inject_t_gate(0.6, 0.8j)  # data |psi>, CNOT to |A>, measure, Clifford fix-up
+r["fidelity"]                 # 1.0 -- data is exactly T|psi>
+r["probability"]              # 0.5 -- either measurement outcome, for ANY input
+r["correction"]               # 'S' if outcome was 1 (since S T-dagger = T), else None
+```
+
+The circuit: CNOT (control data, target magic), measure the magic qubit. Outcome 0
+leaves the data in `T|psi>` directly; outcome 1 leaves `T-dagger|psi>`, fixed by the
+Clifford `S`. Both outcomes occur with probability exactly 1/2 — the measurement
+reveals nothing about the data. This is why "distilling" high-fidelity `|A>` states
+is the dominant cost of universal fault-tolerant quantum computing: every T gate in
+an algorithm consumes one.
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated

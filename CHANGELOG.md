@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Magic states & T-gate injection** (`algorithms.t_magic_state`,
+  `inject_t_gate`) — how fault-tolerant computers get non-Clifford gates: the T gate
+  enacted on data using only Clifford operations (CNOT, S, measurement) plus one
+  consumed magic state `T|+>`, via gate teleportation. Verified exactly: both
+  measurement branches deliver `T|psi>` at fidelity 1 for arbitrary inputs (outcome 1
+  needing the `S T-dagger = T` fix-up, and demonstrably wrong without it), and each
+  outcome occurs with probability exactly 1/2 — the measurement reveals nothing about
+  the data.
 - **Transversal logical gates on the Steane code** (`algorithms.steane_transversal`,
   `steane_transversal_cnot`) — fault tolerance's defining property, demonstrated
   exactly: applying a physical gate to all 7 qubits enacts the *logical* gate without
