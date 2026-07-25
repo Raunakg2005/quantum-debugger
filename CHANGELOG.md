@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] (0.8.0.dev)
 
 ### Added
+- **Uncertainty relations** (`algorithms.robertson_bound`,
+  `entropic_uncertainty`) — Heisenberg made precise, twice. Robertson:
+  `dA dB >= |<[A,B]>|/2`, verified on random observables/states and *tight* on a Z
+  eigenstate for (X, Y); its weakness — the bound degenerating to zero on an X
+  eigenstate — is demonstrated too. Maassen-Uffink entropic form:
+  `H(A) + H(B) >= -log2 max|<a_i|b_j>|^2` = exactly 1 bit for the mutually
+  unbiased X/Z pair on ANY state, with equality precisely on the eigenstates —
+  complementarity that never degenerates.
 - **Geometric (Pancharatnam-Berry) phase** (`algorithms.berry_phase_triangle`,
   `pancharatnam_phase`, `bloch_spinor`, `solid_angle`) — the phase that depends
   only on the path: transporting a qubit around a geodesic Bloch triangle gives

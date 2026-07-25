@@ -967,3 +967,30 @@ any state, nothing changes), flips sign with loop orientation, and vanishes for
 degenerate loops. Because it depends on the path and not the timing, it is
 naturally robust — the working principle behind holonomic (geometric) quantum
 gates.
+
+## Uncertainty Relations
+
+Two rigorous faces of Heisenberg's principle:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import robertson_bound, entropic_uncertainty
+
+X = np.array([[0, 1], [1, 0]]); Y = np.array([[0, -1j], [1j, 0]])
+Z = np.array([[1, 0], [0, -1]])
+
+r = robertson_bound(X, Y, [1, 0])       # X, Y on |0>
+r["product"], r["bound"]                # 1.0, 1.0 -- TIGHT
+
+robertson_bound(X, Y, [1, 1])["bound"]  # 0.0 -- Robertson can degenerate...
+
+e = entropic_uncertainty(X, Z, [1, 0])  # ...the entropic bound cannot:
+e["bound"]                              # 1.0 bit for X/Z on ANY state
+e["sum"]                                # 1.0 -- equality on an eigenstate
+```
+
+Robertson's `dA dB >= |<[A,B]>|/2` is state-dependent and can collapse to a
+trivial 0; the Maassen-Uffink bound `H(A) + H(B) >= -log2 c` depends only on the
+*bases* — for mutually unbiased qubit measurements it guarantees one full bit of
+combined ignorance no matter the state, which is exactly the complementarity that
+BB84 turns into security.

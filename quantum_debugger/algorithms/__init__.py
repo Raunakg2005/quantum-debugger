@@ -147,6 +147,7 @@ from .geometric_phase import (
     solid_angle,
     berry_phase_triangle,
 )
+from .uncertainty import robertson_bound, entropic_uncertainty
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -301,6 +302,8 @@ __all__ = [
     "pancharatnam_phase",
     "solid_angle",
     "berry_phase_triangle",
+    "robertson_bound",
+    "entropic_uncertainty",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
