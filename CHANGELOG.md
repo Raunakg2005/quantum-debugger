@@ -5,6 +5,14 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (1.3.0.dev)
+
+Theme: topological codes & scalable QEC — beyond the original roadmap. The surface /
+toric code family on the stabilizer engine: lattice stabilizers, logical operators,
+syndrome extraction, and decoding, verified against the code's known properties.
+
+### Added
+
 ## [1.2.0]
 
 Theme: hardware realism & error mitigation — the NISQ capstone that completes the
