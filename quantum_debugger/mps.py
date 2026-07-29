@@ -579,6 +579,22 @@ class MPS:
         sv = self.to_statevector()
         return MPS.from_statevector(sv, max_bond=max_bond)
 
+    def truncation_error(self, max_bond: int) -> float:
+        """
+        Weight lost when the MPS is compressed to bond dimension ``max_bond``:
+        ``1 - |<compressed|self>|^2``. Zero when the state already fits (a GHZ at
+        ``max_bond >= 2``); grows as more of the entanglement spectrum is discarded.
+        """
+        return float(max(0.0, 1.0 - self.fidelity(self.compress(max_bond))))
+
+    def normalize(self) -> "MPS":
+        """Rescale the MPS to unit norm in place (folding the scale into the first
+        tensor). Returns ``self``."""
+        nrm = self.norm()
+        if nrm > 1e-300:
+            self.tensors[0] = self.tensors[0] / nrm
+        return self
+
     # --- readout extensions ------------------------------------------------
 
     def magnetization_profile(self, observable) -> list:

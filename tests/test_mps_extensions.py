@@ -275,6 +275,33 @@ class TestTwoQubitCorrelations:
         m = MPS.from_statevector(psi, max_bond=16)
         assert np.allclose(m.two_qubit_rdm(1, 3), m.two_qubit_rdm(3, 1))
 
+class TestTruncationAndNorm:
+    def test_ghz_no_truncation_error_at_bond_two(self):
+        g = _ghz(6)
+        assert g.truncation_error(2) < 1e-9
+
+    def test_truncation_error_decreases_with_bond(self):
+        m = MPS.random(6, bond=8, seed=1)
+        assert m.truncation_error(4) < m.truncation_error(2)
+
+    def test_truncation_error_in_unit_interval(self):
+        m = MPS.random(5, bond=6, seed=2)
+        e = m.truncation_error(2)
+        assert 0 <= e <= 1
+
+    def test_normalize(self):
+        u = MPS.random(4, bond=4, seed=2)
+        u.tensors[0] = u.tensors[0] * 3.7
+        assert abs(u.normalize().norm() - 1.0) < 1e-9
+
+    def test_normalize_preserves_direction(self):
+        rng = np.random.default_rng(3)
+        psi = rng.normal(size=2**4) + 1j * rng.normal(size=2**4); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        m.tensors[0] = m.tensors[0] * 2.5
+        m.normalize()
+        assert abs(np.vdot(psi, m.to_statevector())) ** 2 > 1 - 1e-9
+
 
 
 if __name__ == "__main__":

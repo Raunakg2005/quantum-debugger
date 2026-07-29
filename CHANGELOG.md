@@ -22,6 +22,10 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **MPS truncation error & normalization** (`MPS.truncation_error`, `MPS.normalize`) —
+  the weight lost when compressing to a target bond dimension (`1 - fidelity`, exactly
+  0 for a GHZ at bond ≥ 2, decreasing as the bond grows) and in-place unit
+  normalization — the diagnostics that make bond-dimension choices principled.
 - **MPS two-qubit correlations** (`MPS.two_qubit_rdm`, `MPS.mutual_information`,
   `MPS.concurrence`) — the reduced density matrix of any qubit pair assembled from
   their 16 two-qubit Pauli expectations (scalable, matching the dense partial trace),
