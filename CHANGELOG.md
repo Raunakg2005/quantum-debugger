@@ -22,6 +22,22 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **MPS construction helpers** (`MPS.from_product`, `MPS.random`) — build a product
+  state from per-qubit amplitudes (bond dimension 1) or a reproducible random MPS at a
+  target bond dimension; verified normalized with the expected structure.
+- **MPS linear algebra** (`MPS.add`, `MPS.compress`) — sum two MPS by the
+  direct-sum-of-bonds construction (matching the dense `(a+b)`), and recompress to a
+  smaller bond dimension (a GHZ compresses to bond 2 losslessly, fidelity 1).
+- **MPS magnetization & correlation profiles** (`MPS.magnetization_profile`,
+  `MPS.correlation_profile`) — `<O_i>` on every site and the spatial correlation
+  function `<O_a(ref) O_b(j)>` by contraction; a GHZ gives zero magnetization and unit
+  correlation across the chain.
+- **MPS energy variance** (`MPS.variance`) — `<H^2> - <H>^2` of a Pauli-sum
+  Hamiltonian, exactly 0 on an eigenstate and positive off it — the convergence check
+  for tensor-network ground-state methods.
+- **MPS Renyi entanglement entropy** (`MPS.renyi_entropy`) — Renyi-`alpha` entropy
+  across any bond from the canonicalized Schmidt spectrum (`alpha=1` recovers von
+  Neumann, `alpha=2` the collision entropy), verified non-increasing in `alpha`.
 - **MPS Hamiltonian energy** (`MPS.energy`) — evaluate `<psi|H|psi>` for any
   Hamiltonian given as `(coefficient, pauli_string)` terms (the `pauli_decompose` /
   VQE format) on a matrix product state, summing Pauli-string expectations by
