@@ -38,6 +38,32 @@ def tfim_mpo(n: int, j_coupling: float = 1.0, field: float = 1.0) -> list:
     return tensors
 
 
+def heisenberg_mpo(n: int, j_coupling: float = 1.0) -> list:
+    """
+    Bond-dimension-5 MPO for the Heisenberg Hamiltonian
+    ``H = J sum (X X + Y Y + Z Z)`` on ``n`` sites.
+    """
+    Y = np.array([[0, -1j], [1j, 0]], dtype=complex)
+    W = np.zeros((5, 2, 2, 5), dtype=complex)
+    W[0, :, :, 0] = _I
+    W[4, :, :, 4] = _I
+    W[1, :, :, 0] = _X
+    W[2, :, :, 0] = Y
+    W[3, :, :, 0] = _Z
+    W[4, :, :, 1] = j_coupling * _X
+    W[4, :, :, 2] = j_coupling * Y
+    W[4, :, :, 3] = j_coupling * _Z
+    tensors = []
+    for i in range(n):
+        if i == 0:
+            tensors.append(W[4:5, :, :, :])
+        elif i == n - 1:
+            tensors.append(W[:, :, :, 0:1])
+        else:
+            tensors.append(W)
+    return tensors
+
+
 def mpo_expectation(mps, mpo) -> float:
     """
     Expectation ``<psi|H|psi>`` of an MPO ``mpo`` for a matrix product state ``mps``, by

@@ -377,6 +377,51 @@ class MPS:
         """
         return np.sqrt(np.sort(self._schmidt_squared(bond))[::-1])
 
+    def schmidt_gap(self, bond: int) -> float:
+        """
+        Gap between the two largest squared Schmidt values across ``bond`` -- an order
+        parameter that closes at a quantum phase transition. 1 for a product cut.
+        """
+        s2 = np.sort(self._schmidt_squared(bond))[::-1]
+        return float(s2[0] - (s2[1] if len(s2) > 1 else 0.0))
+
+    def bloch_vector(self, qubit: int) -> np.ndarray:
+        """Bloch vector ``(<X>, <Y>, <Z>)`` of one ``qubit`` (contraction, no dense state)."""
+        paulis = {
+            "X": np.array([[0, 1], [1, 0]], dtype=complex),
+            "Y": np.array([[0, -1j], [1j, 0]], dtype=complex),
+            "Z": np.array([[1, 0], [0, -1]], dtype=complex),
+        }
+        return np.array([self.expectation(P, qubit) for P in paulis.values()])
+
+    def purity_profile(self) -> list:
+        """Single-qubit purity ``Tr(rho_i^2)`` on every site (1 = pure, 0.5 = maximally
+        mixed) -- a local measure of how entangled each qubit is with the rest."""
+        out = []
+        for q in range(self.n):
+            r = self.single_qubit_rdm(q)
+            out.append(float(np.real(np.trace(r @ r))))
+        return out
+
+    def total_magnetization(self, observable) -> float:
+        """Sum of ``<O_i>`` over all qubits for a single-qubit ``observable``."""
+        return float(sum(self.magnetization_profile(observable)))
+
+    def structure_factor(self, observable, momentum: float) -> float:
+        """
+        Static structure factor ``S(k) = (1/n) sum_{i,j} e^{i k (i-j)} <O_i O_j>`` at
+        wavevector ``momentum`` -- the Fourier transform of the spatial correlations,
+        peaking at the ordering wavevector.
+        """
+        O = np.asarray(observable, dtype=complex)
+        n = self.n
+        total = 0.0 + 0j
+        for i in range(n):
+            for j in range(n):
+                cij = self.expectation(O @ O, i) if i == j else self.correlation(O, i, O, j)
+                total += np.exp(1j * momentum * (i - j)) * cij
+        return float(np.real(total) / n)
+
     # --- construction helpers ----------------------------------------------
 
     @classmethod

@@ -22,6 +22,18 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **Heisenberg MPO** (`mpo.heisenberg_mpo`) — the bond-dimension-5 matrix product
+  operator for `H = J sum (XX + YY + ZZ)`, verified to contract to the exact dense
+  Heisenberg Hamiltonian.
+- **MPS Bloch vectors & purity profile** (`MPS.bloch_vector`, `MPS.purity_profile`) —
+  each qubit's `(<X>,<Y>,<Z>)` and its purity `Tr(rho_i^2)` (a GHZ giving zero Bloch
+  vectors and 0.5 purity everywhere, a product state giving unit purity) — a local
+  read of how entangled each site is.
+- **MPS structure factor & magnetization** (`MPS.structure_factor`,
+  `MPS.total_magnetization`, `MPS.schmidt_gap`) — the static structure factor
+  `S(k) = (1/n) sum e^{ik(i-j)} <O_i O_j>` (verified against the dense computation and
+  peaking at `S(0)=n` for a ferromagnet), the summed magnetization, and the
+  entanglement-spectrum Schmidt gap (an order parameter that closes at a transition).
 - **Apply an MPO to an MPS** (`MPS.apply_mpo`, `MPS.expectation_mpo`) — compute
   `H|psi>` by contracting a matrix product operator into the state (bond dimensions
   multiply, optionally recompressed), verified to match the dense `H·psi`; plus a

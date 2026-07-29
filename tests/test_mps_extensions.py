@@ -150,6 +150,63 @@ class TestOperatorsAndRDM:
         m = MPS.from_statevector(psi, max_bond=32)
         assert abs(np.sum(m.entanglement_spectrum(2) ** 2) - 1.0) < 1e-9
 
+class TestCondensedMatterObservables:
+    def test_heisenberg_mpo_matches_dense(self):
+        from quantum_debugger.mpo import heisenberg_mpo, mpo_to_matrix
+        from quantum_debugger.algorithms import hamiltonian_matrix, heisenberg_hamiltonian
+
+        M = mpo_to_matrix(heisenberg_mpo(4, 1.0))
+        H = hamiltonian_matrix(heisenberg_hamiltonian(4), 4)
+        assert np.allclose(M, H, atol=1e-9)
+
+    def test_bloch_vector_ghz_is_zero(self):
+        assert np.allclose(_ghz(4).bloch_vector(0), [0, 0, 0], atol=1e-9)
+
+    def test_bloch_vector_plus_state(self):
+        m = MPS.from_product([[1, 1]])  # |+>
+        assert np.allclose(m.bloch_vector(0), [1, 0, 0], atol=1e-9)
+
+    def test_purity_profile_ghz(self):
+        assert all(abs(p - 0.5) < 1e-9 for p in _ghz(4).purity_profile())
+
+    def test_purity_profile_product(self):
+        assert all(abs(p - 1.0) < 1e-9 for p in MPS.zero_state(4).purity_profile())
+
+    def test_schmidt_gap_product_is_one(self):
+        assert abs(MPS.zero_state(4).schmidt_gap(1) - 1.0) < 1e-9
+
+    def test_schmidt_gap_ghz_is_zero(self):
+        assert abs(_ghz(4).schmidt_gap(1)) < 1e-9
+
+    def test_total_magnetization(self):
+        Z = np.diag([1, -1]).astype(complex)
+        m = MPS.zero_state(5)  # |00000>: each <Z> = 1
+        assert abs(m.total_magnetization(Z) - 5.0) < 1e-9
+
+    def test_structure_factor_ferromagnet(self):
+        # |0...0>: fully correlated, S(k=0) = n.
+        Z = np.diag([1, -1]).astype(complex)
+        assert abs(MPS.zero_state(4).structure_factor(Z, 0.0) - 4.0) < 1e-9
+
+    def test_structure_factor_matches_dense(self):
+        from quantum_debugger.density_matrix import DensityMatrix
+
+        Z = np.diag([1, -1]).astype(complex)
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        k = 0.7
+        # dense reference
+        def zop(i):
+            o = np.array([[1]], dtype=complex)
+            for q in range(n):
+                o = np.kron(Z if q == i else np.eye(2), o)
+            return o
+        s = sum(np.exp(1j * k * (i - j)) * (psi.conj() @ zop(i) @ zop(j) @ psi)
+                for i in range(n) for j in range(n)) / n
+        assert abs(m.structure_factor(Z, k) - np.real(s)) < 1e-9
+
 
 
 if __name__ == "__main__":
