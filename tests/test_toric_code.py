@@ -140,6 +140,33 @@ class TestXDecoder:
         assert r["syndrome"] == []
         assert r["logical_error"]
 
+class TestCombinedDecoder:
+    @pytest.mark.parametrize("L", [3, 4])
+    def test_all_single_qubit_pauli_errors(self, L):
+        code = ToricCode(L)
+        for e in range(code.n):
+            for pauli in ("X", "Y", "Z"):
+                xe = np.zeros(code.n, dtype=int)
+                ze = np.zeros(code.n, dtype=int)
+                if pauli in ("X", "Y"):
+                    xe[e] = 1
+                if pauli in ("Z", "Y"):
+                    ze[e] = 1
+                assert code.decode_pauli(xe, ze)["success"]
+
+    def test_no_error(self):
+        code = ToricCode(3)
+        zero = np.zeros(code.n, dtype=int)
+        assert code.decode_pauli(zero, zero)["success"]
+
+    def test_y_error_triggers_both(self):
+        code = ToricCode(3)
+        x = np.zeros(code.n, dtype=int); x[0] = 1
+        z = np.zeros(code.n, dtype=int); z[0] = 1  # Y = X and Z on qubit 0
+        r = code.decode_pauli(x, z)
+        assert len(r["x"]["syndrome"]) == 2 and len(r["z"]["syndrome"]) == 2
+        assert r["success"]
+
 
 
 if __name__ == "__main__":

@@ -165,6 +165,20 @@ class ToricCode:
                 j = nj
         return c
 
+    def decode_pauli(self, x_error, z_error) -> dict:
+        """
+        Decode a general Pauli error given by its ``X`` part (``x_error``) and ``Z``
+        part (``z_error``) -- a ``Y`` on a qubit sets both. Because the toric code is
+        CSS, the two error types decode independently through :meth:`decode_x` and
+        :meth:`decode_z`.
+
+        Returns dict with ``x`` / ``z`` (the two sub-decodings) and ``success`` (neither
+        produced a logical error).
+        """
+        rx = self.decode_x(x_error)
+        rz = self.decode_z(z_error)
+        return {"x": rx, "z": rz, "success": rx["success"] and rz["success"]}
+
     def x_syndrome(self, x_error) -> list:
         """
         Plaquette (face) defects lit by an ``X``-error pattern: the plaquettes whose

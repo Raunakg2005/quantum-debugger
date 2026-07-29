@@ -12,6 +12,11 @@ toric code family on the stabilizer engine: lattice stabilizers, logical operato
 syndrome extraction, and decoding, verified against the code's known properties.
 
 ### Added
+- **Combined CSS decoder** (`ToricCode.decode_pauli`) — decode a general Pauli error
+  (its `X` and `Z` parts, a `Y` setting both) by running the independent `X` and `Z`
+  decoders, as the CSS structure allows. Verified to correct every single-qubit
+  Pauli error (X, Y, Z on any qubit) for L = 3, 4 (54/54, 96/96), with a `Y` error
+  correctly triggering both the star and plaquette syndromes.
 - **Toric-code X-error decoder** (`ToricCode.x_syndrome`, `decode_x`) — the dual of
   the Z decoder: `X` errors light up plaquette (face) defects, matched on the dual
   lattice, with logical `X` flips detected against the logical `Z` loop. Verified to
