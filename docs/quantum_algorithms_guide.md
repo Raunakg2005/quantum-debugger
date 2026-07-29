@@ -1817,3 +1817,22 @@ and plaquette operators `B_p = prod Z` (edges of a face) are the stabilizers. Th
 2 logical qubits, one per non-contractible loop of the torus. Because a logical
 operator must wrap the whole torus, the smallest has weight `L`: the distance grows
 with the lattice, which is what makes the surface-code family scalable.
+
+### Decoding
+
+A `Z` error lights up the star defects at the endpoints of its error string; the
+decoder pairs them by minimum-weight matching and applies the shortest recovery:
+
+```python
+import numpy as np
+code = ToricCode(3)
+
+z = np.zeros(code.n, dtype=int); z[5] = 1     # a single Z error on edge 5
+r = code.decode_z(z)
+r["syndrome"]         # the two lit stars
+r["success"]          # True -- corrected without a logical flip
+```
+
+Every weight-1 error is corrected (verified for L = 3, 4, 5); a full logical loop, by
+contrast, produces no syndrome yet flips the logical qubit — the uncorrectable case
+that the distance-`L` bound is all about.

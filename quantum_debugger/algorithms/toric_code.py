@@ -103,6 +103,92 @@ class ToricCode:
         )
         return commute and _symplectic(self.logical_x, self.logical_z) == 1
 
+    # --- syndrome decoding (Z errors) ---------------------------------------
+
+    def _star_pos(self, idx):
+        return (idx // self.L, idx % self.L)
+
+    def z_syndrome(self, z_error) -> list:
+        """
+        Star (vertex) defects lit by a ``Z``-error pattern (a length-``n`` binary vector):
+        the stars whose ``X``-stabilizer anticommutes with the error. Defects appear at
+        the endpoints of every Z-error string, always in even number.
+        """
+        z = np.asarray(z_error, dtype=int)
+        return [idx for idx, (x, _) in enumerate(self.stars) if int(np.dot(x, z)) % 2]
+
+    def _torus_distance(self, a, b):
+        L = self.L
+        return min((a[0] - b[0]) % L, (b[0] - a[0]) % L) + min(
+            (a[1] - b[1]) % L, (b[1] - a[1]) % L
+        )
+
+    def _min_weight_matching(self, defects):
+        """Exact minimum-weight perfect matching of defects (brute force -- small n)."""
+        best = {"pairs": None, "weight": float("inf")}
+
+        def recurse(remaining, acc, weight):
+            if not remaining:
+                if weight < best["weight"]:
+                    best.update(pairs=list(acc), weight=weight)
+                return
+            a = remaining[0]
+            for k in range(1, len(remaining)):
+                b = remaining[k]
+                d = self._torus_distance(self._star_pos(a), self._star_pos(b))
+                recurse(remaining[1:k] + remaining[k + 1:], acc + [(a, b)], weight + d)
+
+        recurse(list(defects), [], 0)
+        return best["pairs"] or []
+
+    def _correction_path(self, a, b):
+        """Z-correction edges along a shortest torus path between star vertices a, b."""
+        L = self.L
+        c = np.zeros(self.n, dtype=int)
+        (ai, aj), (bi, bj) = self._star_pos(a), self._star_pos(b)
+        i, j = ai, aj
+        while i != bi:
+            if (bi - i) % L <= (i - bi) % L:
+                c[self._v(i, j)] ^= 1
+                i = (i + 1) % L
+            else:
+                ni = (i - 1) % L
+                c[self._v(ni, j)] ^= 1
+                i = ni
+        while j != bj:
+            if (bj - j) % L <= (j - bj) % L:
+                c[self._h(i, j)] ^= 1
+                j = (j + 1) % L
+            else:
+                nj = (j - 1) % L
+                c[self._h(i, nj)] ^= 1
+                j = nj
+        return c
+
+    def decode_z(self, z_error) -> dict:
+        """
+        Decode a ``Z``-error pattern by minimum-weight perfect matching of its star
+        defects, then check whether error + correction is a harmless stabilizer or a
+        logical error.
+
+        Returns dict with ``correction`` (the recovery Z pattern), ``syndrome`` (the lit
+        stars), ``logical_error`` (whether a logical Z-flip survived), and ``success``
+        (no logical error).
+        """
+        z = np.asarray(z_error, dtype=int)
+        defects = self.z_syndrome(z)
+        correction = np.zeros(self.n, dtype=int)
+        for a, b in self._min_weight_matching(defects):
+            correction ^= self._correction_path(a, b)
+        residual = z ^ correction
+        logical = int(np.dot(self.logical_x[0], residual)) % 2 == 1
+        return {
+            "correction": correction,
+            "syndrome": defects,
+            "logical_error": logical,
+            "success": not logical,
+        }
+
 
 def _symplectic(a, b) -> int:
     (x1, z1), (x2, z2) = a, b

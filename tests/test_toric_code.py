@@ -66,5 +66,51 @@ class TestValidation:
         assert code.check_matrix().shape == (2 * L * L, 2 * code.n)
 
 
+
+class TestDecoder:
+    @pytest.mark.parametrize("L", [3, 4, 5])
+    def test_corrects_all_weight_one_errors(self, L):
+        code = ToricCode(L)
+        for e in range(code.n):
+            z = np.zeros(code.n, dtype=int)
+            z[e] = 1
+            assert code.decode_z(z)["success"]
+
+    def test_no_error_trivial_syndrome(self):
+        code = ToricCode(3)
+        r = code.decode_z(np.zeros(code.n, dtype=int))
+        assert r["syndrome"] == []
+        assert r["success"]
+
+    def test_syndrome_even_number_of_defects(self):
+        code = ToricCode(3)
+        rng = np.random.default_rng(0)
+        for _ in range(10):
+            z = rng.integers(0, 2, code.n)
+            assert len(code.z_syndrome(z)) % 2 == 0
+
+    def test_single_error_two_defects(self):
+        code = ToricCode(3)
+        z = np.zeros(code.n, dtype=int)
+        z[0] = 1
+        assert len(code.z_syndrome(z)) == 2
+
+    def test_stabilizer_error_no_syndrome(self):
+        # Applying a whole plaquette (a Z-stabilizer) triggers no star defects.
+        code = ToricCode(3)
+        _, zplaq = code.plaquettes[4]
+        assert code.z_syndrome(zplaq) == []
+        assert code.decode_z(zplaq)["success"]
+
+    def test_logical_error_detected_for_half_loop(self):
+        # A Z string along a full logical loop is uncorrectable (it IS a logical op):
+        # its syndrome is trivial but it flips the logical qubit.
+        code = ToricCode(3)
+        _, zlog = code.logical_z
+        r = code.decode_z(zlog)
+        assert r["syndrome"] == []          # no defects to see
+        assert r["logical_error"]           # but it is a logical flip
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

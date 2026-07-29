@@ -12,6 +12,14 @@ toric code family on the stabilizer engine: lattice stabilizers, logical operato
 syndrome extraction, and decoding, verified against the code's known properties.
 
 ### Added
+- **Toric-code decoder** (`ToricCode.z_syndrome`, `decode_z`) — the practical heart of
+  surface-code QEC: a `Z`-error lights up the star defects at its string endpoints
+  (always an even number); the decoder pairs them by exact minimum-weight perfect
+  matching on the torus and applies the shortest-path recovery, then checks whether
+  error + correction is a harmless stabilizer or a logical flip. Verified: **every**
+  weight-1 error is corrected for L = 3, 4, 5 (18/18, 32/32, 50/50), a stabilizer
+  (whole plaquette) triggers no syndrome, and a full logical loop is correctly flagged
+  as an uncorrectable logical error with a trivial syndrome.
 - **Toric code** (`algorithms.ToricCode`) — Kitaev's topological code on an `L x L`
   periodic lattice (`2L^2` edge qubits): local star (`X`) and plaquette (`Z`)
   stabilizers, built from the binary symplectic check matrix. Verified against the
