@@ -91,6 +91,66 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **MPS two-site expectation** (`MPS.two_site_expectation`) — the expectation of any
+  two-qubit operator (4x4) via the two-qubit reduced density matrix `Tr(O rho_ab)`,
+  matching the dense value and `<ZZ>` correlations — the primitive for bond energies.
+- **MPS truncation error & normalization** (`MPS.truncation_error`, `MPS.normalize`) —
+  the weight lost when compressing to a target bond dimension (`1 - fidelity`, exactly
+  0 for a GHZ at bond ≥ 2, decreasing as the bond grows) and in-place unit
+  normalization — the diagnostics that make bond-dimension choices principled.
+- **MPS two-qubit correlations** (`MPS.two_qubit_rdm`, `MPS.mutual_information`,
+  `MPS.concurrence`) — the reduced density matrix of any qubit pair assembled from
+  their 16 two-qubit Pauli expectations (scalable, matching the dense partial trace),
+  and the pairwise mutual information and Wootters concurrence from it (a Bell pair
+  giving 2 bits and concurrence 1, a product pair giving 0).
+- **MPS amplitudes & basis states** (`MPS.amplitude`, `MPS.probability`,
+  `MPS.from_bitstring`, `MPS.most_probable`) — the amplitude `<bits|psi>` of any
+  computational-basis string by contracting fixed-bit tensor slices (`O(n·chi^2)`,
+  matching the dense value, probabilities summing to 1), a basis-state constructor,
+  and the most-probable outcome from sampling (a GHZ returning `0000`/`1111` at
+  probability 0.5).
+- **Heisenberg MPO** (`mpo.heisenberg_mpo`) — the bond-dimension-5 matrix product
+  operator for `H = J sum (XX + YY + ZZ)`, verified to contract to the exact dense
+  Heisenberg Hamiltonian.
+- **MPS Bloch vectors & purity profile** (`MPS.bloch_vector`, `MPS.purity_profile`) —
+  each qubit's `(<X>,<Y>,<Z>)` and its purity `Tr(rho_i^2)` (a GHZ giving zero Bloch
+  vectors and 0.5 purity everywhere, a product state giving unit purity) — a local
+  read of how entangled each site is.
+- **MPS structure factor & magnetization** (`MPS.structure_factor`,
+  `MPS.total_magnetization`, `MPS.schmidt_gap`) — the static structure factor
+  `S(k) = (1/n) sum e^{ik(i-j)} <O_i O_j>` (verified against the dense computation and
+  peaking at `S(0)=n` for a ferromagnet), the summed magnetization, and the
+  entanglement-spectrum Schmidt gap (an order parameter that closes at a transition).
+- **Apply an MPO to an MPS** (`MPS.apply_mpo`, `MPS.expectation_mpo`) — compute
+  `H|psi>` by contracting a matrix product operator into the state (bond dimensions
+  multiply, optionally recompressed), verified to match the dense `H·psi`; plus a
+  convenience `expectation_mpo` matching `MPS.energy`.
+- **MPS reduced density matrix & entanglement spectrum** (`MPS.single_qubit_rdm`,
+  `MPS.entanglement_spectrum`) — a qubit's reduced density matrix from its Pauli
+  expectations (scalable, matching the dense partial trace) and the full Schmidt
+  spectrum across any bond (a Bell cut giving `[0.707, 0.707]`, squares summing to 1).
+- **Matrix Product Operators** (`quantum_debugger.mpo`: `tfim_mpo`, `mpo_expectation`,
+  `mpo_to_matrix`) — the operator analogue of an MPS: a Hamiltonian as a chain of
+  rank-4 tensors (the TFIM needs only bond dimension 3), so `<psi|H|psi>` on a large
+  MPS costs `O(n·chi^2·D^2)` with no dense operator. Verified: the MPO contracts to the
+  exact dense TFIM Hamiltonian, its expectation matches both the dense and the
+  `MPS.energy` value, and a 30-qubit GHZ gives the exact `-J(n-1)`.
+- **MPS construction helpers** (`MPS.from_product`, `MPS.random`) — build a product
+  state from per-qubit amplitudes (bond dimension 1) or a reproducible random MPS at a
+  target bond dimension; verified normalized with the expected structure.
+- **MPS linear algebra** (`MPS.add`, `MPS.compress`) — sum two MPS by the
+  direct-sum-of-bonds construction (matching the dense `(a+b)`), and recompress to a
+  smaller bond dimension (a GHZ compresses to bond 2 losslessly, fidelity 1).
+- **MPS magnetization & correlation profiles** (`MPS.magnetization_profile`,
+  `MPS.correlation_profile`) — `<O_i>` on every site and the spatial correlation
+  function `<O_a(ref) O_b(j)>` by contraction; a GHZ gives zero magnetization and unit
+  correlation across the chain.
+- **MPS energy variance** (`MPS.variance`) — `<H^2> - <H>^2` of a Pauli-sum
+  Hamiltonian, exactly 0 on an eigenstate and positive off it — the convergence check
+  for tensor-network ground-state methods.
+- **MPS Renyi entanglement entropy** (`MPS.renyi_entropy`) — Renyi-`alpha` entropy
+  across any bond from the canonicalized Schmidt spectrum (`alpha=1` recovers von
+  Neumann, `alpha=2` the collision entropy), verified non-increasing in `alpha`.
 - **MPS Hamiltonian energy** (`MPS.energy`) — evaluate `<psi|H|psi>` for any
   Hamiltonian given as `(coefficient, pauli_string)` terms (the `pauli_decompose` /
   VQE format) on a matrix product state, summing Pauli-string expectations by
