@@ -22,6 +22,9 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **MPS two-site expectation** (`MPS.two_site_expectation`) — the expectation of any
+  two-qubit operator (4x4) via the two-qubit reduced density matrix `Tr(O rho_ab)`,
+  matching the dense value and `<ZZ>` correlations — the primitive for bond energies.
 - **MPS truncation error & normalization** (`MPS.truncation_error`, `MPS.normalize`) —
   the weight lost when compressing to a target bond dimension (`1 - fidelity`, exactly
   0 for a GHZ at bond ≥ 2, decreasing as the bond grows) and in-place unit

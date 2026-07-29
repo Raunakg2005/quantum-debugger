@@ -302,6 +302,24 @@ class TestTruncationAndNorm:
         m.normalize()
         assert abs(np.vdot(psi, m.to_statevector())) ** 2 > 1 - 1e-9
 
+class TestTwoSiteExpectation:
+    def test_matches_correlation(self):
+        Z = np.diag([1, -1]).astype(complex)
+        ZZ = np.kron(Z, Z)
+        g = _ghz(4)
+        assert abs(g.two_site_expectation(ZZ, 0, 1) - g.correlation(Z, 0, Z, 1)) < 1e-9
+
+    def test_matches_dense(self):
+        from scipy.stats import unitary_group
+        from quantum_debugger.core.quantum_state import apply_gate_tensor
+
+        rng = np.random.default_rng(0)
+        psi = rng.normal(size=16) + 1j * rng.normal(size=16); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        Op = unitary_group.rvs(4, random_state=1); Op = (Op + Op.conj().T) / 2
+        dense = np.vdot(psi, apply_gate_tensor(np, psi, Op, [0, 1], 4))
+        assert abs(m.two_site_expectation(Op, 0, 1) - np.real(dense)) < 1e-9
+
 
 
 if __name__ == "__main__":

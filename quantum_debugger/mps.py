@@ -404,6 +404,15 @@ class MPS:
                 rho = rho + c * np.kron(Q, P)
         return rho / 4
 
+    def two_site_expectation(self, operator, qubit_a: int, qubit_b: int) -> float:
+        """
+        Expectation of a two-qubit ``operator`` (4x4, indexed on ``|a, b>`` little-endian)
+        via the two-qubit reduced density matrix: ``Tr(O rho_ab)`` -- for bond energies
+        and general two-site observables.
+        """
+        O = np.asarray(operator, dtype=complex)
+        return float(np.real(np.trace(O @ self.two_qubit_rdm(qubit_a, qubit_b))))
+
     def mutual_information(self, qubit_a: int, qubit_b: int) -> float:
         """
         Quantum mutual information ``I(a:b) = S(a) + S(b) - S(ab)`` between two qubits
