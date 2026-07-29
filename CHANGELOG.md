@@ -22,6 +22,11 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **MPS two-qubit correlations** (`MPS.two_qubit_rdm`, `MPS.mutual_information`,
+  `MPS.concurrence`) — the reduced density matrix of any qubit pair assembled from
+  their 16 two-qubit Pauli expectations (scalable, matching the dense partial trace),
+  and the pairwise mutual information and Wootters concurrence from it (a Bell pair
+  giving 2 bits and concurrence 1, a product pair giving 0).
 - **MPS amplitudes & basis states** (`MPS.amplitude`, `MPS.probability`,
   `MPS.from_bitstring`, `MPS.most_probable`) — the amplitude `<bits|psi>` of any
   computational-basis string by contracting fixed-bit tensor slices (`O(n·chi^2)`,

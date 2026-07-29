@@ -377,6 +377,57 @@ class MPS:
         """
         return np.sqrt(np.sort(self._schmidt_squared(bond))[::-1])
 
+    def two_qubit_rdm(self, qubit_a: int, qubit_b: int) -> np.ndarray:
+        """
+        Reduced density matrix of two qubits, assembled from their 16 two-qubit Pauli
+        expectations ``(1/4) sum_{P,Q} <P_a Q_b> P (x) Q`` -- scalable, matching the
+        dense partial trace. The pair is returned in sorted (little-endian) order.
+        """
+        a, b = (qubit_a, qubit_b) if qubit_a < qubit_b else (qubit_b, qubit_a)
+        paulis = [
+            np.eye(2, dtype=complex),
+            np.array([[0, 1], [1, 0]], dtype=complex),
+            np.array([[0, -1j], [1j, 0]], dtype=complex),
+            np.array([[1, 0], [0, -1]], dtype=complex),
+        ]
+        rho = np.zeros((4, 4), dtype=complex)
+        for pi, P in enumerate(paulis):
+            for qi, Q in enumerate(paulis):
+                if pi == 0 and qi == 0:
+                    c = 1.0
+                elif pi == 0:
+                    c = self.expectation(Q, b)
+                elif qi == 0:
+                    c = self.expectation(P, a)
+                else:
+                    c = self.correlation(P, a, Q, b)
+                rho = rho + c * np.kron(Q, P)
+        return rho / 4
+
+    def mutual_information(self, qubit_a: int, qubit_b: int) -> float:
+        """
+        Quantum mutual information ``I(a:b) = S(a) + S(b) - S(ab)`` between two qubits
+        (bits), from their reduced density matrices -- total correlation across the pair.
+        """
+        def vn(rho):
+            vals = np.linalg.eigvalsh(rho).real
+            vals = vals[vals > 1e-12]
+            return float(-np.sum(vals * np.log2(vals)))
+
+        s_a = vn(self.single_qubit_rdm(qubit_a))
+        s_b = vn(self.single_qubit_rdm(qubit_b))
+        s_ab = vn(self.two_qubit_rdm(qubit_a, qubit_b))
+        return s_a + s_b - s_ab
+
+    def concurrence(self, qubit_a: int, qubit_b: int) -> float:
+        """
+        Wootters concurrence between two qubits (from their reduced density matrix) --
+        the pairwise entanglement, 0 for a product pair and 1 for a Bell pair.
+        """
+        from .density_matrix import DensityMatrix
+
+        return DensityMatrix(rho=self.two_qubit_rdm(qubit_a, qubit_b)).concurrence()
+
     def schmidt_gap(self, bond: int) -> float:
         """
         Gap between the two largest squared Schmidt values across ``bond`` -- an order

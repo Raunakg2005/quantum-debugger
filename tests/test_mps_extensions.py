@@ -240,6 +240,41 @@ class TestAmplitudesAndBasis:
         assert abs(b.amplitude([0, 1, 1, 0]) - 1.0) < 1e-9
         assert abs(b.amplitude([0, 0, 0, 0])) < 1e-12
 
+class TestTwoQubitCorrelations:
+    def test_two_qubit_rdm_matches_dense(self):
+        from quantum_debugger.density_matrix import DensityMatrix
+
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        dm = DensityMatrix(state_vector=psi)
+        for a in range(n):
+            for b in range(n):
+                if a != b:
+                    assert np.allclose(m.two_qubit_rdm(a, b), dm.partial_trace([a, b]).rho, atol=1e-9)
+
+    def test_bell_mutual_information(self):
+        b = MPS.zero_state(2)
+        b.apply_single(_H, 0); b.apply_two(_CNOT, 0)
+        assert abs(b.mutual_information(0, 1) - 2.0) < 1e-9
+
+    def test_bell_concurrence(self):
+        b = MPS.zero_state(2)
+        b.apply_single(_H, 0); b.apply_two(_CNOT, 0)
+        assert abs(b.concurrence(0, 1) - 1.0) < 1e-9
+
+    def test_product_no_correlation(self):
+        m = MPS.zero_state(3)
+        assert abs(m.mutual_information(0, 1)) < 1e-9
+        assert abs(m.concurrence(0, 1)) < 1e-9
+
+    def test_rdm_symmetric_in_arguments(self):
+        rng = np.random.default_rng(2)
+        psi = rng.normal(size=2**4) + 1j * rng.normal(size=2**4); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        assert np.allclose(m.two_qubit_rdm(1, 3), m.two_qubit_rdm(3, 1))
+
 
 
 if __name__ == "__main__":
