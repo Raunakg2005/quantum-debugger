@@ -165,6 +165,76 @@ class ToricCode:
                 j = nj
         return c
 
+    def x_syndrome(self, x_error) -> list:
+        """
+        Plaquette (face) defects lit by an ``X``-error pattern: the plaquettes whose
+        ``Z``-stabilizer anticommutes with the error. Dual to :meth:`z_syndrome`.
+        """
+        x = np.asarray(x_error, dtype=int)
+        return [idx for idx, (_, z) in enumerate(self.plaquettes) if int(np.dot(z, x)) % 2]
+
+    def _plaq_pos(self, idx):
+        return (idx // self.L, idx % self.L)
+
+    def _min_weight_matching_generic(self, defects, posf):
+        best = {"pairs": None, "weight": float("inf")}
+
+        def recurse(remaining, acc, weight):
+            if not remaining:
+                if weight < best["weight"]:
+                    best.update(pairs=list(acc), weight=weight)
+                return
+            a = remaining[0]
+            for k in range(1, len(remaining)):
+                b = remaining[k]
+                d = self._torus_distance(posf(a), posf(b))
+                recurse(remaining[1:k] + remaining[k + 1:], acc + [(a, b)], weight + d)
+
+        recurse(list(defects), [], 0)
+        return best["pairs"] or []
+
+    def _x_correction_path(self, a, b):
+        """X-correction edges along a shortest dual-lattice path between plaquettes."""
+        L = self.L
+        c = np.zeros(self.n, dtype=int)
+        (ai, aj), (bi, bj) = self._plaq_pos(a), self._plaq_pos(b)
+        i, j = ai, aj
+        while i != bi:
+            if (bi - i) % L <= (i - bi) % L:
+                c[self._h((i + 1) % L, j)] ^= 1
+                i = (i + 1) % L
+            else:
+                c[self._h(i, j)] ^= 1
+                i = (i - 1) % L
+        while j != bj:
+            if (bj - j) % L <= (j - bj) % L:
+                c[self._v(i, (j + 1) % L)] ^= 1
+                j = (j + 1) % L
+            else:
+                c[self._v(i, j)] ^= 1
+                j = (j - 1) % L
+        return c
+
+    def decode_x(self, x_error) -> dict:
+        """
+        Decode an ``X``-error pattern by minimum-weight matching of its plaquette
+        defects (the dual of :meth:`decode_z`). Returns the same dict shape, with
+        ``logical_error`` flagging a surviving logical ``X`` flip.
+        """
+        x = np.asarray(x_error, dtype=int)
+        defects = self.x_syndrome(x)
+        correction = np.zeros(self.n, dtype=int)
+        for a, b in self._min_weight_matching_generic(defects, self._plaq_pos):
+            correction ^= self._x_correction_path(a, b)
+        residual = x ^ correction
+        logical = int(np.dot(self.logical_z[1], residual)) % 2 == 1
+        return {
+            "correction": correction,
+            "syndrome": defects,
+            "logical_error": logical,
+            "success": not logical,
+        }
+
     def decode_z(self, z_error) -> dict:
         """
         Decode a ``Z``-error pattern by minimum-weight perfect matching of its star

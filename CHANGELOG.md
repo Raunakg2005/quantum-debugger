@@ -12,6 +12,12 @@ toric code family on the stabilizer engine: lattice stabilizers, logical operato
 syndrome extraction, and decoding, verified against the code's known properties.
 
 ### Added
+- **Toric-code X-error decoder** (`ToricCode.x_syndrome`, `decode_x`) — the dual of
+  the Z decoder: `X` errors light up plaquette (face) defects, matched on the dual
+  lattice, with logical `X` flips detected against the logical `Z` loop. Verified to
+  correct every weight-1 `X` error for L = 3, 4, 5, with a whole star (X-stabilizer)
+  giving no syndrome and a logical loop correctly flagged — completing correction for
+  both error types.
 - **Toric-code decoder** (`ToricCode.z_syndrome`, `decode_z`) — the practical heart of
   surface-code QEC: a `Z`-error lights up the star defects at its string endpoints
   (always an even number); the decoder pairs them by exact minimum-weight perfect

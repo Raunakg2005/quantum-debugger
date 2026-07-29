@@ -111,6 +111,36 @@ class TestDecoder:
         assert r["syndrome"] == []          # no defects to see
         assert r["logical_error"]           # but it is a logical flip
 
+class TestXDecoder:
+    @pytest.mark.parametrize("L", [3, 4, 5])
+    def test_corrects_all_weight_one_x_errors(self, L):
+        code = ToricCode(L)
+        for e in range(code.n):
+            x = np.zeros(code.n, dtype=int)
+            x[e] = 1
+            assert code.decode_x(x)["success"]
+
+    def test_x_single_error_two_defects(self):
+        code = ToricCode(3)
+        x = np.zeros(code.n, dtype=int)
+        x[0] = 1
+        assert len(code.x_syndrome(x)) == 2
+
+    def test_x_stabilizer_no_syndrome(self):
+        # A whole star (X-stabilizer) triggers no plaquette defects.
+        code = ToricCode(3)
+        xstar, _ = code.stars[4]
+        assert code.x_syndrome(xstar) == []
+        assert code.decode_x(xstar)["success"]
+
+    def test_x_logical_loop_is_logical_error(self):
+        code = ToricCode(3)
+        xlog, _ = code.logical_x
+        r = code.decode_x(xlog)
+        assert r["syndrome"] == []
+        assert r["logical_error"]
+
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
