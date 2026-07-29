@@ -407,6 +407,28 @@ class MPS:
         """Sum of ``<O_i>`` over all qubits for a single-qubit ``observable``."""
         return float(sum(self.magnetization_profile(observable)))
 
+    def amplitude(self, bits) -> complex:
+        """The amplitude ``<bits|psi>`` for a computational-basis string (qubit ``i`` =
+        ``bits[i]``), by contracting the fixed-bit tensor slices -- ``O(n·chi^2)``, no
+        dense state."""
+        v = np.ones(1, dtype=complex)
+        for i, b in enumerate(bits):
+            v = v @ self.tensors[i][:, int(b), :]
+        return complex(v[0])
+
+    def probability(self, bits) -> float:
+        """Born probability ``|<bits|psi>|^2`` of a computational-basis outcome."""
+        return float(abs(self.amplitude(bits)) ** 2)
+
+    def most_probable(self, shots: int = 2000, seed: int = 0):
+        """
+        The most probable computational-basis outcome, estimated from ``shots`` samples
+        (returns the bitstring and its exact Born probability).
+        """
+        counts = self.sample(shots, seed)
+        best = max(counts, key=counts.get)
+        return {"bitstring": best, "probability": self.probability([int(c) for c in best])}
+
     def structure_factor(self, observable, momentum: float) -> float:
         """
         Static structure factor ``S(k) = (1/n) sum_{i,j} e^{i k (i-j)} <O_i O_j>`` at
@@ -435,6 +457,17 @@ class MPS:
             v = np.asarray(s, dtype=complex)
             v = v / np.linalg.norm(v)
             tensors.append(v.reshape(1, 2, 1))
+        return cls(tensors, max_bond)
+
+    @classmethod
+    def from_bitstring(cls, bits, max_bond: int = None) -> "MPS":
+        """Computational-basis-state MPS ``|bits>`` from a bit sequence (qubit ``i`` =
+        ``bits[i]``, little-endian). All bond dimensions 1."""
+        tensors = []
+        for b in bits:
+            t = np.zeros((1, 2, 1), dtype=complex)
+            t[0, int(b), 0] = 1.0
+            tensors.append(t)
         return cls(tensors, max_bond)
 
     @classmethod

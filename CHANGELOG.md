@@ -22,6 +22,12 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **MPS amplitudes & basis states** (`MPS.amplitude`, `MPS.probability`,
+  `MPS.from_bitstring`, `MPS.most_probable`) — the amplitude `<bits|psi>` of any
+  computational-basis string by contracting fixed-bit tensor slices (`O(n·chi^2)`,
+  matching the dense value, probabilities summing to 1), a basis-state constructor,
+  and the most-probable outcome from sampling (a GHZ returning `0000`/`1111` at
+  probability 0.5).
 - **Heisenberg MPO** (`mpo.heisenberg_mpo`) — the bond-dimension-5 matrix product
   operator for `H = J sum (XX + YY + ZZ)`, verified to contract to the exact dense
   Heisenberg Hamiltonian.

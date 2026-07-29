@@ -207,6 +207,39 @@ class TestCondensedMatterObservables:
                 for i in range(n) for j in range(n)) / n
         assert abs(m.structure_factor(Z, k) - np.real(s)) < 1e-9
 
+class TestAmplitudesAndBasis:
+    def test_amplitude_matches_dense(self):
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        for idx in range(2**n):
+            bits = [(idx >> q) & 1 for q in range(n)]
+            assert abs(m.amplitude(bits) - psi[idx]) < 1e-9
+
+    def test_probabilities_sum_to_one(self):
+        rng = np.random.default_rng(1)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        total = sum(m.probability([(i >> q) & 1 for q in range(n)]) for i in range(2**n))
+        assert abs(total - 1.0) < 1e-9
+
+    def test_from_bitstring(self):
+        b = MPS.from_bitstring([1, 0, 1])
+        assert np.argmax(np.abs(b.to_statevector())) == 0b101
+        assert b.max_bond_dimension() == 1
+
+    def test_most_probable_ghz(self):
+        r = _ghz(4).most_probable(300, seed=0)
+        assert r["bitstring"] in ("0000", "1111")
+        assert abs(r["probability"] - 0.5) < 1e-9
+
+    def test_amplitude_of_basis_state(self):
+        b = MPS.from_bitstring([0, 1, 1, 0])
+        assert abs(b.amplitude([0, 1, 1, 0]) - 1.0) < 1e-9
+        assert abs(b.amplitude([0, 0, 0, 0])) < 1e-12
+
 
 
 if __name__ == "__main__":
