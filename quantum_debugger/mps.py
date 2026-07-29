@@ -329,6 +329,344 @@ class MPS:
                qubit_b: np.asarray(obs_b, dtype=complex)}
         return float(np.real(self._environment_scan(ops) / self._environment_scan({})))
 
+    # --- operators & reduced states ----------------------------------------
+
+    def apply_mpo(self, mpo, max_bond: int = None) -> "MPS":
+        """
+        Apply a matrix product operator ``mpo`` (list of rank-4 ``W`` tensors) to this
+        MPS, returning ``H|psi>`` as a new MPS whose bond dimension is multiplied by the
+        MPO bond dimension (optionally recompressed to ``max_bond``).
+        """
+        tensors = []
+        for A, W in zip(self.tensors, mpo):
+            cl, _, cr = A.shape
+            Dl, _, _, Dr = W.shape
+            T = np.einsum("lir,DoiE->lDorE", A, np.asarray(W, dtype=complex))
+            tensors.append(T.reshape(cl * Dl, 2, cr * Dr))
+        result = MPS(tensors, max_bond)
+        if max_bond is not None:
+            result = result.compress(max_bond)
+        return result
+
+    def expectation_mpo(self, mpo) -> float:
+        """``<psi|H|psi>`` for an MPO, delegating to :func:`quantum_debugger.mpo.mpo_expectation`."""
+        from .mpo import mpo_expectation
+
+        return mpo_expectation(self, mpo)
+
+    def single_qubit_rdm(self, qubit: int) -> np.ndarray:
+        """
+        Reduced density matrix of one ``qubit`` -- built from its Pauli expectations
+        ``rho = (I + <X>X + <Y>Y + <Z>Z)/2`` by contraction, so it scales to large
+        systems with no dense state.
+        """
+        paulis = {
+            "X": np.array([[0, 1], [1, 0]], dtype=complex),
+            "Y": np.array([[0, -1j], [1j, 0]], dtype=complex),
+            "Z": np.array([[1, 0], [0, -1]], dtype=complex),
+        }
+        rho = np.eye(2, dtype=complex)
+        for lab, P in paulis.items():
+            rho = rho + self.expectation(P, qubit) * P
+        return rho / 2
+
+    def entanglement_spectrum(self, bond: int) -> np.ndarray:
+        """
+        The Schmidt coefficients (singular values, descending) across ``bond`` -- the
+        full entanglement spectrum, of which :meth:`entanglement_entropy` is a summary.
+        """
+        return np.sqrt(np.sort(self._schmidt_squared(bond))[::-1])
+
+    def two_qubit_rdm(self, qubit_a: int, qubit_b: int) -> np.ndarray:
+        """
+        Reduced density matrix of two qubits, assembled from their 16 two-qubit Pauli
+        expectations ``(1/4) sum_{P,Q} <P_a Q_b> P (x) Q`` -- scalable, matching the
+        dense partial trace. The pair is returned in sorted (little-endian) order.
+        """
+        a, b = (qubit_a, qubit_b) if qubit_a < qubit_b else (qubit_b, qubit_a)
+        paulis = [
+            np.eye(2, dtype=complex),
+            np.array([[0, 1], [1, 0]], dtype=complex),
+            np.array([[0, -1j], [1j, 0]], dtype=complex),
+            np.array([[1, 0], [0, -1]], dtype=complex),
+        ]
+        rho = np.zeros((4, 4), dtype=complex)
+        for pi, P in enumerate(paulis):
+            for qi, Q in enumerate(paulis):
+                if pi == 0 and qi == 0:
+                    c = 1.0
+                elif pi == 0:
+                    c = self.expectation(Q, b)
+                elif qi == 0:
+                    c = self.expectation(P, a)
+                else:
+                    c = self.correlation(P, a, Q, b)
+                rho = rho + c * np.kron(Q, P)
+        return rho / 4
+
+    def two_site_expectation(self, operator, qubit_a: int, qubit_b: int) -> float:
+        """
+        Expectation of a two-qubit ``operator`` (4x4, indexed on ``|a, b>`` little-endian)
+        via the two-qubit reduced density matrix: ``Tr(O rho_ab)`` -- for bond energies
+        and general two-site observables.
+        """
+        O = np.asarray(operator, dtype=complex)
+        return float(np.real(np.trace(O @ self.two_qubit_rdm(qubit_a, qubit_b))))
+
+    def mutual_information(self, qubit_a: int, qubit_b: int) -> float:
+        """
+        Quantum mutual information ``I(a:b) = S(a) + S(b) - S(ab)`` between two qubits
+        (bits), from their reduced density matrices -- total correlation across the pair.
+        """
+        def vn(rho):
+            vals = np.linalg.eigvalsh(rho).real
+            vals = vals[vals > 1e-12]
+            return float(-np.sum(vals * np.log2(vals)))
+
+        s_a = vn(self.single_qubit_rdm(qubit_a))
+        s_b = vn(self.single_qubit_rdm(qubit_b))
+        s_ab = vn(self.two_qubit_rdm(qubit_a, qubit_b))
+        return s_a + s_b - s_ab
+
+    def concurrence(self, qubit_a: int, qubit_b: int) -> float:
+        """
+        Wootters concurrence between two qubits (from their reduced density matrix) --
+        the pairwise entanglement, 0 for a product pair and 1 for a Bell pair.
+        """
+        from .density_matrix import DensityMatrix
+
+        return DensityMatrix(rho=self.two_qubit_rdm(qubit_a, qubit_b)).concurrence()
+
+    def schmidt_gap(self, bond: int) -> float:
+        """
+        Gap between the two largest squared Schmidt values across ``bond`` -- an order
+        parameter that closes at a quantum phase transition. 1 for a product cut.
+        """
+        s2 = np.sort(self._schmidt_squared(bond))[::-1]
+        return float(s2[0] - (s2[1] if len(s2) > 1 else 0.0))
+
+    def bloch_vector(self, qubit: int) -> np.ndarray:
+        """Bloch vector ``(<X>, <Y>, <Z>)`` of one ``qubit`` (contraction, no dense state)."""
+        paulis = {
+            "X": np.array([[0, 1], [1, 0]], dtype=complex),
+            "Y": np.array([[0, -1j], [1j, 0]], dtype=complex),
+            "Z": np.array([[1, 0], [0, -1]], dtype=complex),
+        }
+        return np.array([self.expectation(P, qubit) for P in paulis.values()])
+
+    def purity_profile(self) -> list:
+        """Single-qubit purity ``Tr(rho_i^2)`` on every site (1 = pure, 0.5 = maximally
+        mixed) -- a local measure of how entangled each qubit is with the rest."""
+        out = []
+        for q in range(self.n):
+            r = self.single_qubit_rdm(q)
+            out.append(float(np.real(np.trace(r @ r))))
+        return out
+
+    def total_magnetization(self, observable) -> float:
+        """Sum of ``<O_i>`` over all qubits for a single-qubit ``observable``."""
+        return float(sum(self.magnetization_profile(observable)))
+
+    def amplitude(self, bits) -> complex:
+        """The amplitude ``<bits|psi>`` for a computational-basis string (qubit ``i`` =
+        ``bits[i]``), by contracting the fixed-bit tensor slices -- ``O(n·chi^2)``, no
+        dense state."""
+        v = np.ones(1, dtype=complex)
+        for i, b in enumerate(bits):
+            v = v @ self.tensors[i][:, int(b), :]
+        return complex(v[0])
+
+    def probability(self, bits) -> float:
+        """Born probability ``|<bits|psi>|^2`` of a computational-basis outcome."""
+        return float(abs(self.amplitude(bits)) ** 2)
+
+    def most_probable(self, shots: int = 2000, seed: int = 0):
+        """
+        The most probable computational-basis outcome, estimated from ``shots`` samples
+        (returns the bitstring and its exact Born probability).
+        """
+        counts = self.sample(shots, seed)
+        best = max(counts, key=counts.get)
+        return {"bitstring": best, "probability": self.probability([int(c) for c in best])}
+
+    def structure_factor(self, observable, momentum: float) -> float:
+        """
+        Static structure factor ``S(k) = (1/n) sum_{i,j} e^{i k (i-j)} <O_i O_j>`` at
+        wavevector ``momentum`` -- the Fourier transform of the spatial correlations,
+        peaking at the ordering wavevector.
+        """
+        O = np.asarray(observable, dtype=complex)
+        n = self.n
+        total = 0.0 + 0j
+        for i in range(n):
+            for j in range(n):
+                cij = self.expectation(O @ O, i) if i == j else self.correlation(O, i, O, j)
+                total += np.exp(1j * momentum * (i - j)) * cij
+        return float(np.real(total) / n)
+
+    # --- construction helpers ----------------------------------------------
+
+    @classmethod
+    def from_product(cls, single_qubit_states, max_bond: int = None) -> "MPS":
+        """
+        Product-state MPS from a list of single-qubit amplitude pairs ``[a, b]`` per
+        qubit (each normalized). All bond dimensions are 1.
+        """
+        tensors = []
+        for s in single_qubit_states:
+            v = np.asarray(s, dtype=complex)
+            v = v / np.linalg.norm(v)
+            tensors.append(v.reshape(1, 2, 1))
+        return cls(tensors, max_bond)
+
+    @classmethod
+    def from_bitstring(cls, bits, max_bond: int = None) -> "MPS":
+        """Computational-basis-state MPS ``|bits>`` from a bit sequence (qubit ``i`` =
+        ``bits[i]``, little-endian). All bond dimensions 1."""
+        tensors = []
+        for b in bits:
+            t = np.zeros((1, 2, 1), dtype=complex)
+            t[0, int(b), 0] = 1.0
+            tensors.append(t)
+        return cls(tensors, max_bond)
+
+    @classmethod
+    def random(cls, n: int, bond: int = 4, seed: int = 0, max_bond: int = None) -> "MPS":
+        """
+        A random MPS on ``n`` qubits with bond dimension ``bond`` (bonds taper to 1 at
+        the ends). Normalized. Useful for testing and benchmarking.
+        """
+        rng = np.random.default_rng(seed)
+        tensors = []
+        chi_left = 1
+        for i in range(n):
+            chi_right = 1 if i == n - 1 else min(bond, 2 ** (i + 1), 2 ** (n - i - 1))
+            t = rng.normal(size=(chi_left, 2, chi_right)) + 1j * rng.normal(
+                size=(chi_left, 2, chi_right)
+            )
+            tensors.append(t)
+            chi_left = chi_right
+        m = cls(tensors, max_bond)
+        m.tensors[0] = m.tensors[0] / m.norm()
+        return m
+
+    # --- linear algebra on MPS ---------------------------------------------
+
+    def add(self, other: "MPS", normalize: bool = True) -> "MPS":
+        """
+        Sum of two MPS by the direct-sum-of-bonds construction: the result represents
+        ``|self> + |other>`` (normalized by default). Bond dimensions add.
+        """
+        if other.n != self.n:
+            raise ValueError("MPS add requires equal qubit counts")
+        n = self.n
+        tensors = []
+        for k in range(n):
+            A, B = self.tensors[k], other.tensors[k]
+            al, _, ar = A.shape
+            bl, _, br = B.shape
+            if k == 0:
+                T = np.concatenate([A, B], axis=2)
+            elif k == n - 1:
+                T = np.concatenate([A, B], axis=0)
+            else:
+                T = np.zeros((al + bl, 2, ar + br), dtype=complex)
+                T[:al, :, :ar] = A
+                T[al:, :, ar:] = B
+            tensors.append(T)
+        result = MPS(tensors, self.max_bond)
+        if normalize:
+            result.tensors[0] = result.tensors[0] / result.norm()
+        return result
+
+    def compress(self, max_bond: int) -> "MPS":
+        """
+        Recompress the MPS to bond dimension ``max_bond`` by an SVD roundtrip
+        (canonicalize, truncate). Returns a new MPS; the truncation fidelity to the
+        original is ``|<compressed|self>|^2``.
+        """
+        sv = self.to_statevector()
+        return MPS.from_statevector(sv, max_bond=max_bond)
+
+    def truncation_error(self, max_bond: int) -> float:
+        """
+        Weight lost when the MPS is compressed to bond dimension ``max_bond``:
+        ``1 - |<compressed|self>|^2``. Zero when the state already fits (a GHZ at
+        ``max_bond >= 2``); grows as more of the entanglement spectrum is discarded.
+        """
+        return float(max(0.0, 1.0 - self.fidelity(self.compress(max_bond))))
+
+    def normalize(self) -> "MPS":
+        """Rescale the MPS to unit norm in place (folding the scale into the first
+        tensor). Returns ``self``."""
+        nrm = self.norm()
+        if nrm > 1e-300:
+            self.tensors[0] = self.tensors[0] / nrm
+        return self
+
+    # --- readout extensions ------------------------------------------------
+
+    def magnetization_profile(self, observable) -> list:
+        """``<O_i>`` on every qubit for a single-qubit ``observable`` (e.g. Z)."""
+        O = np.asarray(observable, dtype=complex)
+        return [self.expectation(O, q) for q in range(self.n)]
+
+    def correlation_profile(self, obs_a, obs_b, ref: int = 0) -> list:
+        """``<O_a(ref) O_b(j)>`` versus site ``j`` -- a spatial correlation function."""
+        A = np.asarray(obs_a, dtype=complex)
+        B = np.asarray(obs_b, dtype=complex)
+        out = []
+        for j in range(self.n):
+            if j == ref:
+                out.append(self.expectation(A @ B, j))
+            else:
+                out.append(self.correlation(A, ref, B, j))
+        return out
+
+    def variance(self, terms) -> float:
+        """
+        Energy variance ``<H^2> - <H>^2`` of a Pauli-sum Hamiltonian ``terms`` -- zero
+        iff the MPS is an exact eigenstate (a convergence check for DMRG/imaginary TEBD).
+        """
+        from .algorithms.hamiltonian_simulation import hamiltonian_matrix, pauli_decompose
+
+        H = hamiltonian_matrix(terms, self.n)
+        H2_terms = pauli_decompose(H @ H)
+        e = self.energy(terms)
+        return float(self.energy(H2_terms) - e**2)
+
+    def renyi_entropy(self, bond: int, alpha: float = 2.0) -> float:
+        """
+        Renyi-``alpha`` entanglement entropy across ``bond`` (bits). ``alpha -> 1`` is the
+        von Neumann entropy (:meth:`entanglement_entropy`); ``alpha = 2`` is the
+        collision entropy ``-log2 sum lambda^4``.
+        """
+        # Recover the Schmidt values on this bond from the canonicalized entropy sweep.
+        lam2 = self._schmidt_squared(bond)
+        lam2 = lam2[lam2 > 1e-14]
+        if abs(alpha - 1.0) < 1e-9:
+            return float(-np.sum(lam2 * np.log2(lam2)))
+        return float(np.log2(np.sum(lam2**alpha)) / (1 - alpha))
+
+    def _schmidt_squared(self, bond: int) -> np.ndarray:
+        """Squared Schmidt coefficients across ``bond`` (from canonicalization)."""
+        T = [t.copy() for t in self.tensors]
+        n = len(T)
+        for i in range(n - 1, 0, -1):
+            chi_l, d, chi_r = T[i].shape
+            U, S, Vh = np.linalg.svd(T[i].reshape(chi_l, d * chi_r), full_matrices=False)
+            T[i] = Vh.reshape(len(S), d, chi_r)
+            T[i - 1] = np.tensordot(T[i - 1], U * S, axes=(2, 0))
+        carry = T[0]
+        for i in range(n - 1):
+            chi_l, d, chi_r = carry.shape
+            U, S, Vh = np.linalg.svd(carry.reshape(chi_l * d, chi_r), full_matrices=False)
+            S = S / np.linalg.norm(S)
+            if i == bond:
+                return S**2
+            carry = np.tensordot(np.diag(S) @ Vh, T[i + 1], axes=(1, 0))
+        return np.array([1.0])
+
 
 # Convenience gate matrices (little-endian two-qubit gates).
 CNOT = GateLibrary.CNOT
