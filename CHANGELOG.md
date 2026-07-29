@@ -20,6 +20,67 @@ primitive from which amplitude amplification, Hamiltonian simulation, and quantu
 linear algebra all descend.
 
 ### Added
+- **QSVT matrix functions on a sub-interval** (`algorithms.matrix_function_on_interval`)
+  — the interval-aware companion to the `[-1,1]` fit: for a function analytic only on a
+  positive sub-interval `[a,b]` (roots, log), rescale to `y = (2A-(a+b)I)/(b-a)` and fit
+  there so the Chebyshev series stays on the analytic region and converges geometrically.
+  Verified against the exact matrix function.
+- **Matrix sign function** (`algorithms.matrix_sign_qsvt`) — `sign(A)` (`+1`/`-1` on the
+  positive/negative eigenspaces) via an erf-smoothed sign whose sharpness matches the
+  spectral gap; verified against the exact sign on gapped spectra (`~1e-5`).
+- **Spectral projectors & eigenvalue thresholding** (`algorithms.spectral_projector_qsvt`)
+  — `(I ± sign(A - threshold))/2`, the projector onto eigenvalues above/below a cut;
+  verified idempotent and equal to the exact spectral projector.
+- **Matrix square root & inverse square root** (`algorithms.matrix_sqrt_qsvt`,
+  `matrix_inverse_sqrt_qsvt`) — `sqrt(A)` (with `sqrt(A)^2 = A`) and the whitening
+  `A^{-1/2}` (`A^{-1/2} A A^{-1/2} = I`), interval-rescaled; machine-precision against
+  `scipy.linalg.sqrtm`.
+- **General matrix power** (`algorithms.matrix_power_qsvt`) — `A^p` for any real exponent
+  (integer, fractional, negative) of a positive-definite `A`; verified against
+  `sum_i lambda_i^p |v_i><v_i|`.
+- **Regularized pseudo-inverse** (`algorithms.pseudo_inverse_qsvt`) — the Moore-Penrose
+  inverse via the Tikhonov QSVT filter `x/(x^2+eps)`, which annihilates the kernel
+  instead of blowing up. The QSVT construction reproduces the regularized filter to
+  `< 1e-9`, and the regularized inverse converges to `numpy.linalg.pinv` as `eps -> 0`
+  (condition-number-limited, exactly like the QSVT matrix inverse — documented).
+- **Real matrix exponential** (`algorithms.matrix_exp_qsvt`) — `exp(A)`, the imaginary-time
+  sibling of `e^{-iHt}`; machine-precision against `scipy.linalg.expm`.
+- **Matrix logarithm** (`algorithms.matrix_log_qsvt`) — `log(A)` of a positive-definite
+  `A`; verified against `scipy.linalg.logm`.
+- **Gibbs (thermal) states** (`algorithms.gibbs_state_qsvt`) — `rho = e^{-beta H}/Z` built
+  from the QSVT Chebyshev series and trace-normalized; verified against the exact Gibbs
+  state, reducing to the maximally mixed state at `beta = 0`.
+- **Ground-state projection & filtering** (`algorithms.ground_state_projector_qsvt`) — the
+  low-energy spectral filter that projects onto the ground space; applied to (almost) any
+  state it yields the ground state. Verified against the exact projector.
+- **Gaussian spectral bandpass filter** (`algorithms.bandpass_filter_qsvt`) — a smooth
+  window `exp(-((A-center)/width)^2)` keeping the eigenspaces near `center` — eigenstate
+  filtering / windowed phase estimation; verified against the exact windowed spectrum.
+- **Chebyshev spectral moments** (`algorithms.spectral_moments`) — `mu_k = Tr T_k(A) =
+  sum_i T_k(lambda_i)`, the raw data of the Kernel Polynomial Method, each `T_k(A)` from
+  the qubitization walk; machine-precision against the spectrum.
+- **Trace of a matrix function** (`algorithms.trace_of_function`) — `Tr f(A) = sum_k c_k
+  mu_k` from the Chebyshev moments, never forming `f(A)` densely; verified against
+  `sum_i f(lambda_i)`.
+- **Thermal partition function** (`algorithms.partition_function_qsvt`) — `Z = Tr e^{-beta
+  H} = sum_i e^{-beta lambda_i}` from the moments; verified against the exact spectral sum.
+- **Density of states (Kernel Polynomial Method)** (`algorithms.density_of_states_kpm`) —
+  the spectral density expanded in Jackson-damped Chebyshev moments; verified to integrate
+  to the dimension and to peak at the true eigenvalues.
+- **Eigenvalue counting in an interval** (`algorithms.eigenvalue_count_in_interval`) — the
+  number of eigenvalues in `(a,b)` as the trace of a smoothed spectral window; rounds to
+  the exact integer count without diagonalizing.
+- **Amplitude amplification as scalar QSVT** (`algorithms.amplitude_amplification_qsvt`) —
+  the amplitude `sin((2k+1)theta)` after `k` Grover steps (an odd Chebyshev polynomial of
+  the initial amplitude) plus the optimal step count; verified to machine precision against
+  an explicit two-dimensional reflection simulation.
+- **Chebyshev (near-minimax) approximation** (`algorithms.chebyshev_approximation`) — the
+  classical polynomial a QSP phase sequence realizes and QSVT applies to a matrix, with its
+  max-norm error; verified to converge geometrically for analytic functions.
+- **QSP completion identity** (`algorithms.qsp_complementary_response`) — the achievable
+  polynomial `P` and its complement `Q` with `|P(x)|^2 + (1-x^2)|Q(x)|^2 = 1`, the
+  algebraic condition deciding which polynomials a phase sequence can realize; verified to
+  machine precision.
 - **Quantum linear systems via QSVT** (`algorithms.matrix_inverse_qsvt`,
   `solve_linear_system_qsvt`) — the other headline QSVT application: approximate
   `A^{-1}` by fitting `1/x` over the spectral support and building the Chebyshev series

@@ -59,3 +59,26 @@ def chebyshev_via_qsp(degree: int, xs) -> np.ndarray:
     """
     phases = [0.0] * (degree + 1)
     return qsp_response(phases, xs)
+
+
+def qsp_complementary_response(phases, xs):
+    """
+    The QSP achievable polynomial ``P(x) = <0|U(x)|0>`` together with its *complementary*
+    partner ``Q(x)`` defined by ``<0|U(x)|1> = i sqrt(1-x^2) Q(x)``. The two obey the QSP
+    completion identity
+
+        |P(x)|^2 + (1 - x^2) |Q(x)|^2 = 1     for all x in [-1, 1],
+
+    the algebraic condition that decides exactly which polynomials a phase sequence can
+    realize (and the constraint a QSP-phase solver must satisfy). Returns ``(P, Q)`` as
+    complex arrays over ``xs``; the tests verify the identity holds to machine precision.
+    """
+    xs = np.asarray(xs, dtype=float)
+    P = np.empty(len(xs), dtype=complex)
+    Q = np.empty(len(xs), dtype=complex)
+    for i, x in enumerate(xs):
+        U = qsp_unitary(phases, x)
+        P[i] = U[0, 0]
+        root = np.sqrt(max(1 - x**2, 0.0))
+        Q[i] = U[0, 1] / (1j * root) if root > 1e-12 else 0.0
+    return P, Q

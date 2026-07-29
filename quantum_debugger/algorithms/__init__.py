@@ -220,6 +220,7 @@ from .qsp import (
     qsp_unitary,
     qsp_response,
     chebyshev_via_qsp,
+    qsp_complementary_response,
 )
 from .block_encoding import (
     block_encode,
@@ -237,6 +238,32 @@ from .matrix_functions import (
     hamiltonian_simulation_qsvt,
     matrix_inverse_qsvt,
     solve_linear_system_qsvt,
+)
+from .qsvt_applications import (
+    matrix_function_on_interval,
+    matrix_sign_qsvt,
+    spectral_projector_qsvt,
+    matrix_sqrt_qsvt,
+    matrix_inverse_sqrt_qsvt,
+    matrix_power_qsvt,
+    pseudo_inverse_qsvt,
+    bandpass_filter_qsvt,
+    matrix_exp_qsvt,
+    matrix_log_qsvt,
+    gibbs_state_qsvt,
+    ground_state_projector_qsvt,
+)
+from .chebyshev_spectral import (
+    spectral_moments,
+    trace_of_function,
+    partition_function_qsvt,
+    density_of_states_kpm,
+    eigenvalue_count_in_interval,
+)
+from .qsvt_amplification import (
+    amplitude_amplification_qsvt,
+    grover_amplitude_simulated,
+    chebyshev_approximation,
 )
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
@@ -456,6 +483,7 @@ __all__ = [
     "qsp_unitary",
     "qsp_response",
     "chebyshev_via_qsp",
+    "qsp_complementary_response",
     "block_encode",
     "top_left_block",
     "is_block_encoding",
@@ -470,6 +498,26 @@ __all__ = [
     "hamiltonian_simulation_qsvt",
     "matrix_inverse_qsvt",
     "solve_linear_system_qsvt",
+    "matrix_function_on_interval",
+    "matrix_sign_qsvt",
+    "spectral_projector_qsvt",
+    "matrix_sqrt_qsvt",
+    "matrix_inverse_sqrt_qsvt",
+    "matrix_power_qsvt",
+    "pseudo_inverse_qsvt",
+    "bandpass_filter_qsvt",
+    "matrix_exp_qsvt",
+    "matrix_log_qsvt",
+    "gibbs_state_qsvt",
+    "ground_state_projector_qsvt",
+    "spectral_moments",
+    "trace_of_function",
+    "partition_function_qsvt",
+    "density_of_states_kpm",
+    "eigenvalue_count_in_interval",
+    "amplitude_amplification_qsvt",
+    "grover_amplitude_simulated",
+    "chebyshev_approximation",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
