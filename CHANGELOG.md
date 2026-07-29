@@ -22,6 +22,12 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **Matrix Product Operators** (`quantum_debugger.mpo`: `tfim_mpo`, `mpo_expectation`,
+  `mpo_to_matrix`) — the operator analogue of an MPS: a Hamiltonian as a chain of
+  rank-4 tensors (the TFIM needs only bond dimension 3), so `<psi|H|psi>` on a large
+  MPS costs `O(n·chi^2·D^2)` with no dense operator. Verified: the MPO contracts to the
+  exact dense TFIM Hamiltonian, its expectation matches both the dense and the
+  `MPS.energy` value, and a 30-qubit GHZ gives the exact `-J(n-1)`.
 - **MPS construction helpers** (`MPS.from_product`, `MPS.random`) — build a product
   state from per-qubit amplitudes (bond dimension 1) or a reproducible random MPS at a
   target bond dimension; verified normalized with the expected structure.
