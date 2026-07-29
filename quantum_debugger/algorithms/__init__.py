@@ -103,6 +103,7 @@ from .qec_noise import (
     repeated_qec_cycles,
 )
 from .perfect_code import five_qubit_code, five_qubit_stabilizers
+from .toric_code import ToricCode
 from .steane_code import (
     steane_code,
     steane_stabilizers,
@@ -396,6 +397,7 @@ __all__ = [
     "repeated_qec_cycles",
     "five_qubit_code",
     "five_qubit_stabilizers",
+    "ToricCode",
     "steane_code",
     "steane_stabilizers",
     "steane_transversal",

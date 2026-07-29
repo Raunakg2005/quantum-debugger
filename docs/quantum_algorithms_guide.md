@@ -1795,3 +1795,25 @@ Fit `ideal = slope*noisy + intercept` on the training pairs, then apply it to th
 target's noisy value. For global depolarizing the map is a pure rescaling and CDR is
 exact; for structured noise the linear fit removes the dominant error — all without
 ever characterizing the noise channel.
+
+## The Toric Code (Topological QEC)
+
+Kitaev's toric code — the ancestor of the surface code — stores logical qubits in the
+*global* topology of a lattice, where no local error can reach them:
+
+```python
+from quantum_debugger.algorithms import ToricCode
+
+code = ToricCode(L=3)                 # 3x3 lattice, 18 edge qubits
+code.num_logical_qubits()             # 2  -- always, regardless of L
+code.distance()                       # 3  -- = L
+code.all_commute()                    # True
+code.logicals_valid()                 # True -- loops commute with stabilizers
+```
+
+Qubits live on the lattice edges; star operators `A_v = prod X` (edges at a vertex)
+and plaquette operators `B_p = prod Z` (edges of a face) are the stabilizers. There are
+`2L^2` of them but two product constraints, leaving `2L^2 - 2` independent — so exactly
+2 logical qubits, one per non-contractible loop of the torus. Because a logical
+operator must wrap the whole torus, the smallest has weight `L`: the distance grows
+with the lattice, which is what makes the surface-code family scalable.

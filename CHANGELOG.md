@@ -12,6 +12,14 @@ toric code family on the stabilizer engine: lattice stabilizers, logical operato
 syndrome extraction, and decoding, verified against the code's known properties.
 
 ### Added
+- **Toric code** (`algorithms.ToricCode`) — Kitaev's topological code on an `L x L`
+  periodic lattice (`2L^2` edge qubits): local star (`X`) and plaquette (`Z`)
+  stabilizers, built from the binary symplectic check matrix. Verified against the
+  code's defining properties for L = 2, 3, 4: every stabilizer commutes, the two
+  product constraints reduce the rank to `2L^2 - 2` so the code always encodes exactly
+  **2 logical qubits**, the logical operators (non-contractible loops) commute with all
+  stabilizers but anticommute with each other, and the code distance equals `L` — the
+  foundation of surface-code fault tolerance.
 
 ## [1.2.0]
 
