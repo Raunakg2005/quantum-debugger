@@ -329,6 +329,54 @@ class MPS:
                qubit_b: np.asarray(obs_b, dtype=complex)}
         return float(np.real(self._environment_scan(ops) / self._environment_scan({})))
 
+    # --- operators & reduced states ----------------------------------------
+
+    def apply_mpo(self, mpo, max_bond: int = None) -> "MPS":
+        """
+        Apply a matrix product operator ``mpo`` (list of rank-4 ``W`` tensors) to this
+        MPS, returning ``H|psi>`` as a new MPS whose bond dimension is multiplied by the
+        MPO bond dimension (optionally recompressed to ``max_bond``).
+        """
+        tensors = []
+        for A, W in zip(self.tensors, mpo):
+            cl, _, cr = A.shape
+            Dl, _, _, Dr = W.shape
+            T = np.einsum("lir,DoiE->lDorE", A, np.asarray(W, dtype=complex))
+            tensors.append(T.reshape(cl * Dl, 2, cr * Dr))
+        result = MPS(tensors, max_bond)
+        if max_bond is not None:
+            result = result.compress(max_bond)
+        return result
+
+    def expectation_mpo(self, mpo) -> float:
+        """``<psi|H|psi>`` for an MPO, delegating to :func:`quantum_debugger.mpo.mpo_expectation`."""
+        from .mpo import mpo_expectation
+
+        return mpo_expectation(self, mpo)
+
+    def single_qubit_rdm(self, qubit: int) -> np.ndarray:
+        """
+        Reduced density matrix of one ``qubit`` -- built from its Pauli expectations
+        ``rho = (I + <X>X + <Y>Y + <Z>Z)/2`` by contraction, so it scales to large
+        systems with no dense state.
+        """
+        paulis = {
+            "X": np.array([[0, 1], [1, 0]], dtype=complex),
+            "Y": np.array([[0, -1j], [1j, 0]], dtype=complex),
+            "Z": np.array([[1, 0], [0, -1]], dtype=complex),
+        }
+        rho = np.eye(2, dtype=complex)
+        for lab, P in paulis.items():
+            rho = rho + self.expectation(P, qubit) * P
+        return rho / 2
+
+    def entanglement_spectrum(self, bond: int) -> np.ndarray:
+        """
+        The Schmidt coefficients (singular values, descending) across ``bond`` -- the
+        full entanglement spectrum, of which :meth:`entanglement_entropy` is a summary.
+        """
+        return np.sqrt(np.sort(self._schmidt_squared(bond))[::-1])
+
     # --- construction helpers ----------------------------------------------
 
     @classmethod

@@ -22,6 +22,14 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **Apply an MPO to an MPS** (`MPS.apply_mpo`, `MPS.expectation_mpo`) — compute
+  `H|psi>` by contracting a matrix product operator into the state (bond dimensions
+  multiply, optionally recompressed), verified to match the dense `H·psi`; plus a
+  convenience `expectation_mpo` matching `MPS.energy`.
+- **MPS reduced density matrix & entanglement spectrum** (`MPS.single_qubit_rdm`,
+  `MPS.entanglement_spectrum`) — a qubit's reduced density matrix from its Pauli
+  expectations (scalable, matching the dense partial trace) and the full Schmidt
+  spectrum across any bond (a Bell cut giving `[0.707, 0.707]`, squares summing to 1).
 - **Matrix Product Operators** (`quantum_debugger.mpo`: `tfim_mpo`, `mpo_expectation`,
   `mpo_to_matrix`) — the operator analogue of an MPS: a Hamiltonian as a chain of
   rank-4 tensors (the TFIM needs only bond dimension 3), so `<psi|H|psi>` on a large

@@ -100,6 +100,57 @@ class TestReadout:
         # Renyi-2 <= von Neumann (Renyi is non-increasing in alpha).
         assert m.renyi_entropy(2, 2.0) <= m.renyi_entropy(2, 1.0) + 1e-9
 
+class TestOperatorsAndRDM:
+    def test_apply_mpo_matches_dense(self):
+        from quantum_debugger.mpo import tfim_mpo, mpo_to_matrix
+
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=64)
+        Hpsi = m.apply_mpo(tfim_mpo(n, 1.0, 0.7)).to_statevector()
+        assert np.allclose(Hpsi, mpo_to_matrix(tfim_mpo(n, 1.0, 0.7)) @ psi, atol=1e-9)
+
+    def test_expectation_mpo_matches_energy(self):
+        from quantum_debugger.mpo import tfim_mpo
+        from quantum_debugger.algorithms import tfim_hamiltonian
+
+        rng = np.random.default_rng(1)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=16)
+        assert abs(m.expectation_mpo(tfim_mpo(n, 1.0, 0.7))
+                   - m.energy(tfim_hamiltonian(n, 0.7, 1.0))) < 1e-9
+
+    def test_single_qubit_rdm_matches_dense(self):
+        from quantum_debugger.density_matrix import DensityMatrix
+
+        rng = np.random.default_rng(0)
+        n = 4
+        psi = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=64)
+        dm = DensityMatrix(state_vector=psi)
+        for q in range(n):
+            assert np.allclose(m.single_qubit_rdm(q), dm.partial_trace([q]).rho, atol=1e-9)
+
+    def test_rdm_is_valid_density_matrix(self):
+        rdm = _ghz(4).single_qubit_rdm(0)
+        assert abs(np.trace(rdm).real - 1.0) < 1e-9
+        assert np.linalg.eigvalsh(rdm).min() > -1e-9
+
+    def test_entanglement_spectrum_bell(self):
+        b = MPS.zero_state(2)
+        b.apply_single(_H, 0)
+        b.apply_two(_CNOT, 0)
+        assert np.allclose(b.entanglement_spectrum(0), [1 / np.sqrt(2)] * 2, atol=1e-9)
+
+    def test_spectrum_squares_sum_to_one(self):
+        rng = np.random.default_rng(2)
+        psi = rng.normal(size=2**5) + 1j * rng.normal(size=2**5); psi /= np.linalg.norm(psi)
+        m = MPS.from_statevector(psi, max_bond=32)
+        assert abs(np.sum(m.entanglement_spectrum(2) ** 2) - 1.0) < 1e-9
+
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
