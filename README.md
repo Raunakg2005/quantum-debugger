@@ -1,15 +1,46 @@
 # Quantum Debugger
 
-**The Most Comprehensive Quantum Machine Learning Library with AutoML**
+**A comprehensive quantum simulation & debugging toolkit — four engines, a large verified algorithm library, error correction, QSVT, and quantum machine learning.**
 
 [![PyPI version](https://badge.fury.io/py/quantum-debugger.svg)](https://pypi.org/project/quantum-debugger/)
-[![Tests](https://img.shields.io/badge/tests-384%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
+[![Tests](https://img.shields.io/badge/tests-2000%2B%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
 [![CI](https://github.com/Raunakg2005/quantum-debugger/workflows/Tests/badge.svg)](https://github.com/Raunakg2005/quantum-debugger/actions)
-[![Codecov](https://codecov.io/gh/Raunakg2005/quantum-debugger/branch/main/graph/badge.svg)](https://codecov.io/gh/Raunakg2005/quantum-debugger)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and quantum machine learning. From basic circuits to QML with one-line AutoML.
+A Python library for quantum circuit debugging, state inspection, and simulation across **four engines** — dense state-vector, Clifford/stabilizer (hundreds of qubits), density-matrix (open systems), and matrix-product-state (tensor networks) — plus a large, individually-verified quantum-algorithms library and quantum machine learning.
+
+## What's New (v0.8 → v1.3, in development)
+
+The library grew from a state-vector simulator into a full quantum-computing stack.
+Every routine below is verified against a closed form, an exact computation, or the
+state-vector engine.
+
+- **Four simulation engines** — dense state-vector; **Clifford/stabilizer** (CHP
+  tableau, hundred-qubit circuits, tableau entanglement entropy); **density-matrix**
+  (Kraus channels, Lindblad evolution, Choi/CPTP, process tomography, discord,
+  negativity, concurrence); and a **matrix-product-state** engine (`quantum_debugger.mps`)
+  that holds a 100-qubit GHZ in a handful of tensors, with TEBD real- and
+  imaginary-time evolution.
+- **Quantum error correction** — the `[[5,1,3]]`, Steane `[[7,1,3]]` (with transversal
+  gates), `[[4,2,2]]`, and 9-qubit Shor codes; QEC under continuous noise with exact
+  syndrome recovery; the **toric code** with a minimum-weight-matching decoder; magic
+  states, distillation, and the Petz recovery map.
+- **Chemistry & many-body** — Jordan-Wigner, Fermi-Hubbard, the Kitaev topological
+  chain; ground states by VQE, imaginary-time, and Krylov/Lanczos; Gibbs states and
+  thermodynamics; quench dynamics (Loschmidt echo, OTOC scrambling, entanglement
+  growth) and quantum-chaos level statistics.
+- **QSVT & modern primitives** — quantum signal processing, block encoding, LCU, and
+  Quantum Singular Value Transformation, with **Hamiltonian simulation** and **quantum
+  linear systems** falling out of the one framework.
+- **Error mitigation** — readout mitigation, zero-noise extrapolation, probabilistic
+  error cancellation, virtual distillation, symmetry verification, Pauli twirling, and
+  Clifford Data Regression.
+- **Foundations** — Bell/CHSH & Horodecki nonlocality, contextuality, geometric phase,
+  uncertainty relations, weak values, Holevo bound, channel capacity, state
+  discrimination, no-cloning, magic measures, and quantum metrology.
+
+See [CHANGELOG.md](CHANGELOG.md) for the full, per-version list.
 
 ## What's New in v0.7.0 (in development)
 
@@ -367,8 +398,8 @@ pytest tests/ --cov=quantum_debugger --cov-report=html
 
 See [FINAL_TEST_SUMMARY.md](tests/FINAL_TEST_SUMMARY.md) for detailed test information.
 
-**Test Statistics (v0.7.0):**
-- ~1400 tests passing (`pytest tests/ -m "not aws"`)
+**Test Statistics (v1.3.0-dev):**
+- 2000+ core tests passing (`pytest tests/ -m "not aws" --ignore=tests/qml`), plus ~400 QML tests
 - GPU-hardware tests require a working CUDA + CuPy install; they skip otherwise
 - A few tests are performance/timing based and may vary by machine
 
@@ -415,5 +446,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0-dev (in development)  
+**Version:** 0.7.1 (on PyPI) · 0.8.0 → 1.3.0 (in development, staged for release)  
 **Last Updated:** July 2026
