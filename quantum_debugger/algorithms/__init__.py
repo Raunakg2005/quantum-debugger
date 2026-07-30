@@ -104,6 +104,27 @@ from .qec_noise import (
 )
 from .perfect_code import five_qubit_code, five_qubit_stabilizers
 from .toric_code import ToricCode
+from .css_code import (
+    CSSCode,
+    gf2_rank,
+    gf2_nullspace,
+    gf2_rref,
+    css_from_classical,
+    hypergraph_product,
+)
+from .surface_code import (
+    repetition_check_matrix,
+    hamming_check_matrix,
+    planar_surface_code,
+    surface_code_parameters,
+    corrects_all_errors_up_to,
+)
+from .color_code import (
+    steane_color_code,
+    is_self_dual_css,
+    transversal_hadamard_valid,
+    transversal_cnot_valid,
+)
 from .steane_code import (
     steane_code,
     steane_stabilizers,
@@ -486,6 +507,21 @@ __all__ = [
     "five_qubit_code",
     "five_qubit_stabilizers",
     "ToricCode",
+    "CSSCode",
+    "gf2_rank",
+    "gf2_nullspace",
+    "gf2_rref",
+    "css_from_classical",
+    "hypergraph_product",
+    "repetition_check_matrix",
+    "hamming_check_matrix",
+    "planar_surface_code",
+    "surface_code_parameters",
+    "corrects_all_errors_up_to",
+    "steane_color_code",
+    "is_self_dual_css",
+    "transversal_hadamard_valid",
+    "transversal_cnot_valid",
     "steane_code",
     "steane_stabilizers",
     "steane_transversal",

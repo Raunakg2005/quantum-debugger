@@ -273,6 +273,48 @@ class ToricCode:
             "success": not logical,
         }
 
+    # --- code structure & logical bookkeeping -------------------------------
+
+    def code_parameters(self) -> dict:
+        """
+        The ``[[n, k, d]]`` parameters of the ``L x L`` toric code: ``n = 2 L^2`` physical
+        qubits, ``k = 2`` logical qubits (the two independent non-contractible loops), and
+        distance ``d = L``.
+        """
+        return {"n": self.n, "k": self.num_logical_qubits(), "d": self.distance()}
+
+    def logical_operators(self) -> dict:
+        """
+        The tracked anticommuting logical pair as ``(x_bits, z_bits)`` symplectic vectors:
+        ``Xbar`` a non-contractible X-loop and ``Zbar`` the crossing Z-loop. They commute
+        with every stabilizer and anticommute with each other (see :meth:`logicals_valid`).
+        """
+        return {"X": self.logical_x, "Z": self.logical_z}
+
+    def logical_class(self, x_error, z_error) -> str:
+        """
+        Classify a *syndrome-free* Pauli error (one that commutes with all stabilizers) by
+        its logical action: ``"I"`` (a harmless stabilizer), ``"X"``, ``"Z"``, or ``"Y"``.
+        Computed from the symplectic overlap of the error with the logical operators --
+        ``Xbar`` detects a logical Z, ``Zbar`` a logical X. This is the test for whether a
+        decoder *succeeded* (class ``"I"``) or introduced a logical fault.
+        """
+        err = (np.asarray(x_error, dtype=int), np.asarray(z_error, dtype=int))
+        has_x = _symplectic(err, self.logical_z)  # anticommutes with Zbar -> logical X
+        has_z = _symplectic(err, self.logical_x)  # anticommutes with Xbar -> logical Z
+        return {(0, 0): "I", (1, 0): "X", (0, 1): "Z", (1, 1): "Y"}[(has_x, has_z)]
+
+    def decode_z_class(self, z_error) -> str:
+        """
+        Decode a ``Z`` error and return the *logical class* of the residual
+        (error + correction): ``"I"`` on success, ``"Z"`` if the matching closed the wrong
+        non-contractible loop and flipped the logical qubit. The class-aware companion to
+        :meth:`decode_z`.
+        """
+        result = self.decode_z(z_error)
+        residual_z = (np.asarray(z_error, dtype=int) ^ result["correction"])
+        return self.logical_class(np.zeros(self.n, dtype=int), residual_z)
+
 
 def _symplectic(a, b) -> int:
     (x1, z1), (x2, z2) = a, b

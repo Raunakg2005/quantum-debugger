@@ -12,6 +12,67 @@ toric code family on the stabilizer engine: lattice stabilizers, logical operato
 syndrome extraction, and decoding, verified against the code's known properties.
 
 ### Added
+- **General CSS code constructor** (`algorithms.CSSCode`) — a code from any pair of
+  classical checks `Hx, Hz` with `Hx Hz^T = 0`; computes `all_commute`, the parameters
+  `k = n - rank(Hx) - rank(Hz)`, and validates the CSS condition. Verified on the Steane
+  `[[7,1,3]]` and `[[4,2,2]]` codes.
+- **GF(2) linear algebra** (`algorithms.gf2_rank`, `gf2_nullspace`, `gf2_rref`) — binary
+  row reduction, rank, and null-space bases — the engine under every stabilizer-code
+  computation; verified `M v = 0` for null-space vectors.
+- **CSS logical operators** (`CSSCode.logical_operators`) — representative `Xbar`/`Zbar`
+  from the GF(2) kernels modulo the stabilizer row space; verified to anticommute in
+  pairs and commute with all stabilizers.
+- **CSS code distance** (`CSSCode.distance`) — the minimum weight of a nontrivial logical
+  operator by exhaustive kernel search; verified `d = 3` for Steane, `d = 2` for
+  `[[4,2,2]]`.
+- **CSS syndromes** (`CSSCode.x_syndrome`, `z_syndrome`) — X errors detected by the
+  Z-checks and vice versa, splitting decoding into two classical problems.
+- **Minimum-weight CSS decoder** (`CSSCode.decode_min_weight`) — the lowest-weight error
+  matching a syndrome within a search radius (optimal within it); verified to correct
+  every error up to `(d-1)//2`.
+- **CSS syndrome lookup table** (`CSSCode.decode_lookup`) — the full minimum-weight
+  syndrome→correction table for small codes, the reference optimal decoder.
+- **Self-dual CSS from a classical code** (`algorithms.css_from_classical`) — builds
+  `Hx = Hz = H` from a weakly self-dual `H` (`H H^T = 0`); the family with a transversal
+  Hadamard (Steane / color codes), verified to reproduce Steane.
+- **Hypergraph-product codes** (`algorithms.hypergraph_product`) — the Tillich-Zemor
+  construction turning any two classical codes into a quantum LDPC code, CSS by
+  construction; verified `Hx Hz^T = 0` and used to build the surface code.
+- **Repetition & Hamming check matrices** (`algorithms.repetition_check_matrix`,
+  `hamming_check_matrix`) — the classical seeds of the surface (repetition) and color
+  (Hamming) codes.
+- **Planar surface code** (`algorithms.planar_surface_code`) — the distance-`d`
+  `[[d^2+(d-1)^2, 1, d]]` code as the hypergraph product of two repetition codes;
+  verified to have exactly the advertised parameters (`[[13,1,3]]`, `[[41,1,5]]`) and CSS
+  commutation.
+- **Surface-code parameters** (`algorithms.surface_code_parameters`) — the closed-form
+  `[[n, k, d]]` of the distance-`d` planar code.
+- **Weight-`t` correction proof** (`algorithms.corrects_all_errors_up_to`) — exhaustively
+  verifies a code's minimum-weight decoder returns every error up to a given weight to
+  the code space with no residual logical — the operational meaning of the distance.
+- **Steane color code** (`algorithms.steane_color_code`) — the `[[7,1,3]]` code as the
+  smallest 2D (triangular) color code, a self-dual CSS code.
+- **Self-duality test** (`algorithms.is_self_dual_css`) — checks `rowspace(Hx) =
+  rowspace(Hz)`, the exact condition for a transversal Hadamard; verified true for the
+  color code and false for the surface code.
+- **Transversal Hadamard verification** (`algorithms.transversal_hadamard_valid`) —
+  confirms `H^{⊗n}` preserves the stabilizer group and exchanges `Xbar <-> Zbar` on a
+  self-dual code — the color code's headline advantage.
+- **Transversal CNOT verification** (`algorithms.transversal_cnot_valid`) — confirms the
+  transversal CNOT between two blocks preserves the joint stabilizer group (true for
+  every CSS code), checked via GF(2) row-space membership.
+- **Toric code parameters** (`ToricCode.code_parameters`) — the `[[2L^2, 2, L]]`
+  parameters of the `L x L` toric code; verified for `L = 3, 4, 5`.
+- **Toric logical operators** (`ToricCode.logical_operators`) — the tracked
+  non-contractible `Xbar`/`Zbar` loop pair, commuting with the stabilizers and
+  anticommuting with each other.
+- **Logical-error classification** (`ToricCode.logical_class`) — classifies a syndrome-free
+  residual as `I / X / Y / Z` from its symplectic overlap with the logical operators;
+  verified that a stabilizer maps to `I` and each logical to its own class.
+- **Class-aware decoding** (`ToricCode.decode_z_class`) — decodes a `Z` error and reports
+  the logical class of the residual — the direct test of decoder *success* (`I`) versus a
+  logical fault; verified that every weight-1 error decodes to `I` and a pure logical
+  loop is detected as a fault.
 - **Combined CSS decoder** (`ToricCode.decode_pauli`) — decode a general Pauli error
   (its `X` and `Z` parts, a `Y` setting both) by running the independent `X` and `Z`
   decoders, as the CSS structure allows. Verified to correct every single-qubit
