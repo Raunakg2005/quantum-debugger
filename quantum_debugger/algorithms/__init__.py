@@ -124,7 +124,16 @@ from .distillation import (
     dejmps_rounds,
 )
 from .decoherence_free import collective_dephasing, dfs_encode, dfs_protection
-from .dynamical_decoupling import spin_echo, echo_state_fidelity
+from .dynamical_decoupling import (
+    spin_echo,
+    echo_state_fidelity,
+    cpmg_sequence,
+    xy4_sequence,
+    udd_sequence,
+    switching_function_moments,
+    suppression_order,
+    dd_coherence,
+)
 from .zeno import quantum_zeno, zeno_postselected
 from .loss_robustness import loss_robustness
 from .nonlocality import (
@@ -221,6 +230,7 @@ from .qsp import (
     qsp_unitary,
     qsp_response,
     chebyshev_via_qsp,
+    qsp_complementary_response,
 )
 from .block_encoding import (
     block_encode,
@@ -238,6 +248,32 @@ from .matrix_functions import (
     hamiltonian_simulation_qsvt,
     matrix_inverse_qsvt,
     solve_linear_system_qsvt,
+)
+from .qsvt_applications import (
+    matrix_function_on_interval,
+    matrix_sign_qsvt,
+    spectral_projector_qsvt,
+    matrix_sqrt_qsvt,
+    matrix_inverse_sqrt_qsvt,
+    matrix_power_qsvt,
+    pseudo_inverse_qsvt,
+    bandpass_filter_qsvt,
+    matrix_exp_qsvt,
+    matrix_log_qsvt,
+    gibbs_state_qsvt,
+    ground_state_projector_qsvt,
+)
+from .chebyshev_spectral import (
+    spectral_moments,
+    trace_of_function,
+    partition_function_qsvt,
+    density_of_states_kpm,
+    eigenvalue_count_in_interval,
+)
+from .qsvt_amplification import (
+    amplitude_amplification_qsvt,
+    grover_amplitude_simulated,
+    chebyshev_approximation,
 )
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
@@ -264,6 +300,33 @@ from .zne import (
 )
 from .pauli_twirling import pauli_twirl, coherent_error_kraus
 from .cdr import fit_cdr_model, apply_cdr, cdr_mitigate
+from .zne_extrapolation import (
+    richardson_extrapolate,
+    polynomial_extrapolate,
+    exponential_extrapolate,
+    adaptive_extrapolate,
+)
+from .unitary_folding import (
+    fold_global,
+    noise_scale_factor,
+    fold_gate_sequence,
+    folded_channel_expectation,
+)
+from .readout_advanced import (
+    tensored_assignment_matrix,
+    tensored_mitigate,
+    iterative_bayesian_unfolding,
+    constrained_readout_mitigate,
+    calibrate_assignment_matrix,
+)
+from .pec_ptm import (
+    channel_ptm,
+    invert_channel_ptm,
+    pauli_quasiprobabilities,
+    pec_sampling_overhead,
+    depolarizing_overhead,
+    pec_mitigate_ptm,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -286,6 +349,31 @@ __all__ = [
     "fit_cdr_model",
     "apply_cdr",
     "cdr_mitigate",
+    "richardson_extrapolate",
+    "polynomial_extrapolate",
+    "exponential_extrapolate",
+    "adaptive_extrapolate",
+    "fold_global",
+    "noise_scale_factor",
+    "fold_gate_sequence",
+    "folded_channel_expectation",
+    "tensored_assignment_matrix",
+    "tensored_mitigate",
+    "iterative_bayesian_unfolding",
+    "constrained_readout_mitigate",
+    "calibrate_assignment_matrix",
+    "channel_ptm",
+    "invert_channel_ptm",
+    "pauli_quasiprobabilities",
+    "pec_sampling_overhead",
+    "depolarizing_overhead",
+    "pec_mitigate_ptm",
+    "cpmg_sequence",
+    "xy4_sequence",
+    "udd_sequence",
+    "switching_function_moments",
+    "suppression_order",
+    "dd_coherence",
     # QFT
     "qft",
     "apply_qft",
@@ -502,6 +590,7 @@ __all__ = [
     "qsp_unitary",
     "qsp_response",
     "chebyshev_via_qsp",
+    "qsp_complementary_response",
     "block_encode",
     "top_left_block",
     "is_block_encoding",
@@ -516,6 +605,26 @@ __all__ = [
     "hamiltonian_simulation_qsvt",
     "matrix_inverse_qsvt",
     "solve_linear_system_qsvt",
+    "matrix_function_on_interval",
+    "matrix_sign_qsvt",
+    "spectral_projector_qsvt",
+    "matrix_sqrt_qsvt",
+    "matrix_inverse_sqrt_qsvt",
+    "matrix_power_qsvt",
+    "pseudo_inverse_qsvt",
+    "bandpass_filter_qsvt",
+    "matrix_exp_qsvt",
+    "matrix_log_qsvt",
+    "gibbs_state_qsvt",
+    "ground_state_projector_qsvt",
+    "spectral_moments",
+    "trace_of_function",
+    "partition_function_qsvt",
+    "density_of_states_kpm",
+    "eigenvalue_count_in_interval",
+    "amplitude_amplification_qsvt",
+    "grover_amplitude_simulated",
+    "chebyshev_approximation",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

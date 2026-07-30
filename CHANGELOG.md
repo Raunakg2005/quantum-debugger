@@ -54,6 +54,70 @@ sector), **probabilistic error cancellation** (quasi-probability channel inverse
 the original v0.8 → v1.2 roadmap is complete.
 
 ### Added
+- **Richardson extrapolation for ZNE** (`algorithms.richardson_extrapolate`) — the
+  degree-`(n-1)` polynomial through `n` noise-scaled points evaluated at zero noise
+  (Lagrange at 0); recovers the `lambda=0` value of any polynomial of matching degree
+  exactly.
+- **Least-squares polynomial ZNE** (`algorithms.polynomial_extrapolate`) — an
+  over-determined polynomial fit for noisy data, exact for a polynomial of the fitted
+  degree.
+- **Exponential ZNE** (`algorithms.exponential_extrapolate`) — fits
+  `A + B e^{-c lambda}`, the geometric decay of a depolarizing-like channel, and returns
+  the zero-noise value; inverts the ansatz exactly.
+- **Adaptive ZNE model selection** (`algorithms.adaptive_extrapolate`) — scores the
+  linear/quadratic/exponential fits by leave-one-out error and returns the best, so the
+  extrapolation model is chosen by the data instead of assumed.
+- **Global unitary folding** (`algorithms.fold_global`, `noise_scale_factor`) — the noise
+  amplifier `G -> G (G† G)^k` that scales error by the odd factor `2k+1` while leaving the
+  ideal action untouched (verified equal to `G` to machine precision) — the front end ZNE
+  extrapolates over.
+- **Local gate folding** (`algorithms.fold_gate_sequence`) — folds individual gates
+  (`G -> G, G†, G`) for fine-grained, non-integer noise scaling; verified to preserve the
+  overall unitary.
+- **Folded noisy-layer model** (`algorithms.folded_channel_expectation`) — the
+  density-matrix expectation with the noise channel applied `2k+1` times, the data ZNE
+  fits; verified to reproduce the geometric noise amplification.
+- **Tensored readout calibration** (`algorithms.tensored_assignment_matrix`,
+  `tensored_mitigate`) — factorized per-qubit calibration `⊗_q A_q` inverted as a product
+  of `2x2` inverses (never forming the exponential full matrix); recovers the true
+  distribution exactly for independent readout noise.
+- **Iterative Bayesian unfolding** (`algorithms.iterative_bayesian_unfolding`) — an
+  expectation-maximization readout corrector that stays a valid probability vector
+  (nonnegative, normalized) at every step, unlike a raw matrix inverse; converges to the
+  true distribution.
+- **Constrained least-squares readout** (`algorithms.constrained_readout_mitigate`) —
+  readout correction as non-negative least squares with a normalization constraint,
+  always returning a physical distribution; recovers the exact input.
+- **Readout calibration from data** (`algorithms.calibrate_assignment_matrix`) — builds
+  the assignment matrix column-by-column from prepare-and-measure calibration data;
+  recovers the true matrix exactly.
+- **Channel Pauli transfer matrix** (`algorithms.channel_ptm`, `invert_channel_ptm`) — the
+  real `4x4` PTM of a single-qubit channel from its Kraus operators and its inverse (the
+  quasiprobability cancellation map); verified `N^{-1} N = I`.
+- **PEC sampling overhead** (`algorithms.pec_sampling_overhead`,
+  `pauli_quasiprobabilities`, `depolarizing_overhead`) — the one-norm `gamma = sum_i|c_i|`
+  of the inverse channel's Pauli-quasiprobability decomposition (the shot-cost of
+  cancelling the noise), `1` for the identity and matching the closed form
+  `(1+p/2)/(1-p)` for depolarizing.
+- **PEC by inverse-PTM cancellation** (`algorithms.pec_mitigate_ptm`) — applies the
+  inverse PTM to the noisy state's Pauli vector to recover an observable's exact noiseless
+  expectation; verified against the ideal value.
+- **CPMG dynamical decoupling** (`algorithms.cpmg_sequence`) — `n` equally spaced
+  pi-pulses that refocus quasi-static dephasing (zero-mean switching function) and, by
+  repetition, noise with a finite correlation time.
+- **XY4 dynamical decoupling** (`algorithms.xy4_sequence`) — alternating `X, Y, X, Y`
+  pulses that decouple a *general* single-qubit system-bath coupling and are robust to
+  pulse errors — the hardware workhorse.
+- **Uhrig dynamical decoupling (UDD)** (`algorithms.udd_sequence`) — the optimal pulse
+  timings `sin^2(pi j/(2n+2))` that cancel the first `n` moments of the dephasing,
+  suppressing decay to order `T^{n+1}` — verified to achieve decoupling order exactly `n`.
+- **DD switching-function analysis** (`algorithms.switching_function_moments`,
+  `suppression_order`) — the moments `M_m = ∫ s(t) t^m dt` whose leading zeros give a
+  sequence's decoupling order, the closed-form test behind the UDD/CPMG verification.
+- **DD coherence model** (`algorithms.dd_coherence`) — the ensemble-averaged `|+>`
+  coherence after a sequence under quasi-static dephasing; equals 1 when the sequence
+  refocuses (`M_0=0`) and `exp(-(sigma M_0)^2/2)` otherwise, verified against the closed
+  form.
 - **Clifford Data Regression (CDR)** (`algorithms.cdr_mitigate`, `fit_cdr_model`,
   `apply_cdr`) — learning-based mitigation that needs no noise model: because
   near-Clifford circuits are classically simulable, fit `ideal ~= slope*noisy +
@@ -127,6 +191,67 @@ primitive from which amplitude amplification, Hamiltonian simulation, and quantu
 linear algebra all descend.
 
 ### Added
+- **QSVT matrix functions on a sub-interval** (`algorithms.matrix_function_on_interval`)
+  — the interval-aware companion to the `[-1,1]` fit: for a function analytic only on a
+  positive sub-interval `[a,b]` (roots, log), rescale to `y = (2A-(a+b)I)/(b-a)` and fit
+  there so the Chebyshev series stays on the analytic region and converges geometrically.
+  Verified against the exact matrix function.
+- **Matrix sign function** (`algorithms.matrix_sign_qsvt`) — `sign(A)` (`+1`/`-1` on the
+  positive/negative eigenspaces) via an erf-smoothed sign whose sharpness matches the
+  spectral gap; verified against the exact sign on gapped spectra (`~1e-5`).
+- **Spectral projectors & eigenvalue thresholding** (`algorithms.spectral_projector_qsvt`)
+  — `(I ± sign(A - threshold))/2`, the projector onto eigenvalues above/below a cut;
+  verified idempotent and equal to the exact spectral projector.
+- **Matrix square root & inverse square root** (`algorithms.matrix_sqrt_qsvt`,
+  `matrix_inverse_sqrt_qsvt`) — `sqrt(A)` (with `sqrt(A)^2 = A`) and the whitening
+  `A^{-1/2}` (`A^{-1/2} A A^{-1/2} = I`), interval-rescaled; machine-precision against
+  `scipy.linalg.sqrtm`.
+- **General matrix power** (`algorithms.matrix_power_qsvt`) — `A^p` for any real exponent
+  (integer, fractional, negative) of a positive-definite `A`; verified against
+  `sum_i lambda_i^p |v_i><v_i|`.
+- **Regularized pseudo-inverse** (`algorithms.pseudo_inverse_qsvt`) — the Moore-Penrose
+  inverse via the Tikhonov QSVT filter `x/(x^2+eps)`, which annihilates the kernel
+  instead of blowing up. The QSVT construction reproduces the regularized filter to
+  `< 1e-9`, and the regularized inverse converges to `numpy.linalg.pinv` as `eps -> 0`
+  (condition-number-limited, exactly like the QSVT matrix inverse — documented).
+- **Real matrix exponential** (`algorithms.matrix_exp_qsvt`) — `exp(A)`, the imaginary-time
+  sibling of `e^{-iHt}`; machine-precision against `scipy.linalg.expm`.
+- **Matrix logarithm** (`algorithms.matrix_log_qsvt`) — `log(A)` of a positive-definite
+  `A`; verified against `scipy.linalg.logm`.
+- **Gibbs (thermal) states** (`algorithms.gibbs_state_qsvt`) — `rho = e^{-beta H}/Z` built
+  from the QSVT Chebyshev series and trace-normalized; verified against the exact Gibbs
+  state, reducing to the maximally mixed state at `beta = 0`.
+- **Ground-state projection & filtering** (`algorithms.ground_state_projector_qsvt`) — the
+  low-energy spectral filter that projects onto the ground space; applied to (almost) any
+  state it yields the ground state. Verified against the exact projector.
+- **Gaussian spectral bandpass filter** (`algorithms.bandpass_filter_qsvt`) — a smooth
+  window `exp(-((A-center)/width)^2)` keeping the eigenspaces near `center` — eigenstate
+  filtering / windowed phase estimation; verified against the exact windowed spectrum.
+- **Chebyshev spectral moments** (`algorithms.spectral_moments`) — `mu_k = Tr T_k(A) =
+  sum_i T_k(lambda_i)`, the raw data of the Kernel Polynomial Method, each `T_k(A)` from
+  the qubitization walk; machine-precision against the spectrum.
+- **Trace of a matrix function** (`algorithms.trace_of_function`) — `Tr f(A) = sum_k c_k
+  mu_k` from the Chebyshev moments, never forming `f(A)` densely; verified against
+  `sum_i f(lambda_i)`.
+- **Thermal partition function** (`algorithms.partition_function_qsvt`) — `Z = Tr e^{-beta
+  H} = sum_i e^{-beta lambda_i}` from the moments; verified against the exact spectral sum.
+- **Density of states (Kernel Polynomial Method)** (`algorithms.density_of_states_kpm`) —
+  the spectral density expanded in Jackson-damped Chebyshev moments; verified to integrate
+  to the dimension and to peak at the true eigenvalues.
+- **Eigenvalue counting in an interval** (`algorithms.eigenvalue_count_in_interval`) — the
+  number of eigenvalues in `(a,b)` as the trace of a smoothed spectral window; rounds to
+  the exact integer count without diagonalizing.
+- **Amplitude amplification as scalar QSVT** (`algorithms.amplitude_amplification_qsvt`) —
+  the amplitude `sin((2k+1)theta)` after `k` Grover steps (an odd Chebyshev polynomial of
+  the initial amplitude) plus the optimal step count; verified to machine precision against
+  an explicit two-dimensional reflection simulation.
+- **Chebyshev (near-minimax) approximation** (`algorithms.chebyshev_approximation`) — the
+  classical polynomial a QSP phase sequence realizes and QSVT applies to a matrix, with its
+  max-norm error; verified to converge geometrically for analytic functions.
+- **QSP completion identity** (`algorithms.qsp_complementary_response`) — the achievable
+  polynomial `P` and its complement `Q` with `|P(x)|^2 + (1-x^2)|Q(x)|^2 = 1`, the
+  algebraic condition deciding which polynomials a phase sequence can realize; verified to
+  machine precision.
 - **Quantum linear systems via QSVT** (`algorithms.matrix_inverse_qsvt`,
   `solve_linear_system_qsvt`) — the other headline QSVT application: approximate
   `A^{-1}` by fitting `1/x` over the spectral support and building the Chebyshev series
@@ -198,6 +323,66 @@ to "hundreds of qubits when entanglement allows." (The major-version bump the
 tensor-network capability earns.)
 
 ### Added
+- **MPS two-site expectation** (`MPS.two_site_expectation`) — the expectation of any
+  two-qubit operator (4x4) via the two-qubit reduced density matrix `Tr(O rho_ab)`,
+  matching the dense value and `<ZZ>` correlations — the primitive for bond energies.
+- **MPS truncation error & normalization** (`MPS.truncation_error`, `MPS.normalize`) —
+  the weight lost when compressing to a target bond dimension (`1 - fidelity`, exactly
+  0 for a GHZ at bond ≥ 2, decreasing as the bond grows) and in-place unit
+  normalization — the diagnostics that make bond-dimension choices principled.
+- **MPS two-qubit correlations** (`MPS.two_qubit_rdm`, `MPS.mutual_information`,
+  `MPS.concurrence`) — the reduced density matrix of any qubit pair assembled from
+  their 16 two-qubit Pauli expectations (scalable, matching the dense partial trace),
+  and the pairwise mutual information and Wootters concurrence from it (a Bell pair
+  giving 2 bits and concurrence 1, a product pair giving 0).
+- **MPS amplitudes & basis states** (`MPS.amplitude`, `MPS.probability`,
+  `MPS.from_bitstring`, `MPS.most_probable`) — the amplitude `<bits|psi>` of any
+  computational-basis string by contracting fixed-bit tensor slices (`O(n·chi^2)`,
+  matching the dense value, probabilities summing to 1), a basis-state constructor,
+  and the most-probable outcome from sampling (a GHZ returning `0000`/`1111` at
+  probability 0.5).
+- **Heisenberg MPO** (`mpo.heisenberg_mpo`) — the bond-dimension-5 matrix product
+  operator for `H = J sum (XX + YY + ZZ)`, verified to contract to the exact dense
+  Heisenberg Hamiltonian.
+- **MPS Bloch vectors & purity profile** (`MPS.bloch_vector`, `MPS.purity_profile`) —
+  each qubit's `(<X>,<Y>,<Z>)` and its purity `Tr(rho_i^2)` (a GHZ giving zero Bloch
+  vectors and 0.5 purity everywhere, a product state giving unit purity) — a local
+  read of how entangled each site is.
+- **MPS structure factor & magnetization** (`MPS.structure_factor`,
+  `MPS.total_magnetization`, `MPS.schmidt_gap`) — the static structure factor
+  `S(k) = (1/n) sum e^{ik(i-j)} <O_i O_j>` (verified against the dense computation and
+  peaking at `S(0)=n` for a ferromagnet), the summed magnetization, and the
+  entanglement-spectrum Schmidt gap (an order parameter that closes at a transition).
+- **Apply an MPO to an MPS** (`MPS.apply_mpo`, `MPS.expectation_mpo`) — compute
+  `H|psi>` by contracting a matrix product operator into the state (bond dimensions
+  multiply, optionally recompressed), verified to match the dense `H·psi`; plus a
+  convenience `expectation_mpo` matching `MPS.energy`.
+- **MPS reduced density matrix & entanglement spectrum** (`MPS.single_qubit_rdm`,
+  `MPS.entanglement_spectrum`) — a qubit's reduced density matrix from its Pauli
+  expectations (scalable, matching the dense partial trace) and the full Schmidt
+  spectrum across any bond (a Bell cut giving `[0.707, 0.707]`, squares summing to 1).
+- **Matrix Product Operators** (`quantum_debugger.mpo`: `tfim_mpo`, `mpo_expectation`,
+  `mpo_to_matrix`) — the operator analogue of an MPS: a Hamiltonian as a chain of
+  rank-4 tensors (the TFIM needs only bond dimension 3), so `<psi|H|psi>` on a large
+  MPS costs `O(n·chi^2·D^2)` with no dense operator. Verified: the MPO contracts to the
+  exact dense TFIM Hamiltonian, its expectation matches both the dense and the
+  `MPS.energy` value, and a 30-qubit GHZ gives the exact `-J(n-1)`.
+- **MPS construction helpers** (`MPS.from_product`, `MPS.random`) — build a product
+  state from per-qubit amplitudes (bond dimension 1) or a reproducible random MPS at a
+  target bond dimension; verified normalized with the expected structure.
+- **MPS linear algebra** (`MPS.add`, `MPS.compress`) — sum two MPS by the
+  direct-sum-of-bonds construction (matching the dense `(a+b)`), and recompress to a
+  smaller bond dimension (a GHZ compresses to bond 2 losslessly, fidelity 1).
+- **MPS magnetization & correlation profiles** (`MPS.magnetization_profile`,
+  `MPS.correlation_profile`) — `<O_i>` on every site and the spatial correlation
+  function `<O_a(ref) O_b(j)>` by contraction; a GHZ gives zero magnetization and unit
+  correlation across the chain.
+- **MPS energy variance** (`MPS.variance`) — `<H^2> - <H>^2` of a Pauli-sum
+  Hamiltonian, exactly 0 on an eigenstate and positive off it — the convergence check
+  for tensor-network ground-state methods.
+- **MPS Renyi entanglement entropy** (`MPS.renyi_entropy`) — Renyi-`alpha` entropy
+  across any bond from the canonicalized Schmidt spectrum (`alpha=1` recovers von
+  Neumann, `alpha=2` the collision entropy), verified non-increasing in `alpha`.
 - **MPS Hamiltonian energy** (`MPS.energy`) — evaluate `<psi|H|psi>` for any
   Hamiltonian given as `(coefficient, pauli_string)` terms (the `pauli_decompose` /
   VQE format) on a matrix product state, summing Pauli-string expectations by
