@@ -208,6 +208,29 @@ from .schmidt import (
     truncation_fidelity,
     area_law_compressibility,
 )
+from .ssh_model import (
+    ssh_hamiltonian,
+    ssh_winding_number,
+    ssh_zero_modes,
+    ssh_edge_polarization,
+)
+from .quantum_phase_transition import (
+    ground_state_fidelity,
+    fidelity_susceptibility,
+    tfim_critical_field,
+)
+from .many_body_correlations import (
+    connected_correlation,
+    correlation_length,
+    structure_factor,
+    expectation,
+)
+from .entanglement_negativity import (
+    partial_transpose,
+    negativity,
+    logarithmic_negativity,
+    is_entangled_ppt,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -417,6 +440,25 @@ __all__ = [
     "schmidt_decomposition",
     "truncation_fidelity",
     "area_law_compressibility",
+    # SSH topological insulator
+    "ssh_hamiltonian",
+    "ssh_winding_number",
+    "ssh_zero_modes",
+    "ssh_edge_polarization",
+    # Quantum phase transitions (fidelity)
+    "ground_state_fidelity",
+    "fidelity_susceptibility",
+    "tfim_critical_field",
+    # Many-body correlations
+    "connected_correlation",
+    "correlation_length",
+    "structure_factor",
+    "expectation",
+    # Entanglement negativity
+    "partial_transpose",
+    "negativity",
+    "logarithmic_negativity",
+    "is_entangled_ppt",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
