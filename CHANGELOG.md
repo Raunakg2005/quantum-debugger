@@ -19,6 +19,70 @@ sector), **probabilistic error cancellation** (quasi-probability channel inverse
 the original v0.8 → v1.2 roadmap is complete.
 
 ### Added
+- **Richardson extrapolation for ZNE** (`algorithms.richardson_extrapolate`) — the
+  degree-`(n-1)` polynomial through `n` noise-scaled points evaluated at zero noise
+  (Lagrange at 0); recovers the `lambda=0` value of any polynomial of matching degree
+  exactly.
+- **Least-squares polynomial ZNE** (`algorithms.polynomial_extrapolate`) — an
+  over-determined polynomial fit for noisy data, exact for a polynomial of the fitted
+  degree.
+- **Exponential ZNE** (`algorithms.exponential_extrapolate`) — fits
+  `A + B e^{-c lambda}`, the geometric decay of a depolarizing-like channel, and returns
+  the zero-noise value; inverts the ansatz exactly.
+- **Adaptive ZNE model selection** (`algorithms.adaptive_extrapolate`) — scores the
+  linear/quadratic/exponential fits by leave-one-out error and returns the best, so the
+  extrapolation model is chosen by the data instead of assumed.
+- **Global unitary folding** (`algorithms.fold_global`, `noise_scale_factor`) — the noise
+  amplifier `G -> G (G† G)^k` that scales error by the odd factor `2k+1` while leaving the
+  ideal action untouched (verified equal to `G` to machine precision) — the front end ZNE
+  extrapolates over.
+- **Local gate folding** (`algorithms.fold_gate_sequence`) — folds individual gates
+  (`G -> G, G†, G`) for fine-grained, non-integer noise scaling; verified to preserve the
+  overall unitary.
+- **Folded noisy-layer model** (`algorithms.folded_channel_expectation`) — the
+  density-matrix expectation with the noise channel applied `2k+1` times, the data ZNE
+  fits; verified to reproduce the geometric noise amplification.
+- **Tensored readout calibration** (`algorithms.tensored_assignment_matrix`,
+  `tensored_mitigate`) — factorized per-qubit calibration `⊗_q A_q` inverted as a product
+  of `2x2` inverses (never forming the exponential full matrix); recovers the true
+  distribution exactly for independent readout noise.
+- **Iterative Bayesian unfolding** (`algorithms.iterative_bayesian_unfolding`) — an
+  expectation-maximization readout corrector that stays a valid probability vector
+  (nonnegative, normalized) at every step, unlike a raw matrix inverse; converges to the
+  true distribution.
+- **Constrained least-squares readout** (`algorithms.constrained_readout_mitigate`) —
+  readout correction as non-negative least squares with a normalization constraint,
+  always returning a physical distribution; recovers the exact input.
+- **Readout calibration from data** (`algorithms.calibrate_assignment_matrix`) — builds
+  the assignment matrix column-by-column from prepare-and-measure calibration data;
+  recovers the true matrix exactly.
+- **Channel Pauli transfer matrix** (`algorithms.channel_ptm`, `invert_channel_ptm`) — the
+  real `4x4` PTM of a single-qubit channel from its Kraus operators and its inverse (the
+  quasiprobability cancellation map); verified `N^{-1} N = I`.
+- **PEC sampling overhead** (`algorithms.pec_sampling_overhead`,
+  `pauli_quasiprobabilities`, `depolarizing_overhead`) — the one-norm `gamma = sum_i|c_i|`
+  of the inverse channel's Pauli-quasiprobability decomposition (the shot-cost of
+  cancelling the noise), `1` for the identity and matching the closed form
+  `(1+p/2)/(1-p)` for depolarizing.
+- **PEC by inverse-PTM cancellation** (`algorithms.pec_mitigate_ptm`) — applies the
+  inverse PTM to the noisy state's Pauli vector to recover an observable's exact noiseless
+  expectation; verified against the ideal value.
+- **CPMG dynamical decoupling** (`algorithms.cpmg_sequence`) — `n` equally spaced
+  pi-pulses that refocus quasi-static dephasing (zero-mean switching function) and, by
+  repetition, noise with a finite correlation time.
+- **XY4 dynamical decoupling** (`algorithms.xy4_sequence`) — alternating `X, Y, X, Y`
+  pulses that decouple a *general* single-qubit system-bath coupling and are robust to
+  pulse errors — the hardware workhorse.
+- **Uhrig dynamical decoupling (UDD)** (`algorithms.udd_sequence`) — the optimal pulse
+  timings `sin^2(pi j/(2n+2))` that cancel the first `n` moments of the dephasing,
+  suppressing decay to order `T^{n+1}` — verified to achieve decoupling order exactly `n`.
+- **DD switching-function analysis** (`algorithms.switching_function_moments`,
+  `suppression_order`) — the moments `M_m = ∫ s(t) t^m dt` whose leading zeros give a
+  sequence's decoupling order, the closed-form test behind the UDD/CPMG verification.
+- **DD coherence model** (`algorithms.dd_coherence`) — the ensemble-averaged `|+>`
+  coherence after a sequence under quasi-static dephasing; equals 1 when the sequence
+  refocuses (`M_0=0`) and `exp(-(sigma M_0)^2/2)` otherwise, verified against the closed
+  form.
 - **Clifford Data Regression (CDR)** (`algorithms.cdr_mitigate`, `fit_cdr_model`,
   `apply_cdr`) — learning-based mitigation that needs no noise model: because
   near-Clifford circuits are classically simulable, fit `ideal ~= slope*noisy +

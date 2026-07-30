@@ -123,7 +123,16 @@ from .distillation import (
     dejmps_rounds,
 )
 from .decoherence_free import collective_dephasing, dfs_encode, dfs_protection
-from .dynamical_decoupling import spin_echo, echo_state_fidelity
+from .dynamical_decoupling import (
+    spin_echo,
+    echo_state_fidelity,
+    cpmg_sequence,
+    xy4_sequence,
+    udd_sequence,
+    switching_function_moments,
+    suppression_order,
+    dd_coherence,
+)
 from .zeno import quantum_zeno, zeno_postselected
 from .loss_robustness import loss_robustness
 from .nonlocality import (
@@ -290,6 +299,33 @@ from .zne import (
 )
 from .pauli_twirling import pauli_twirl, coherent_error_kraus
 from .cdr import fit_cdr_model, apply_cdr, cdr_mitigate
+from .zne_extrapolation import (
+    richardson_extrapolate,
+    polynomial_extrapolate,
+    exponential_extrapolate,
+    adaptive_extrapolate,
+)
+from .unitary_folding import (
+    fold_global,
+    noise_scale_factor,
+    fold_gate_sequence,
+    folded_channel_expectation,
+)
+from .readout_advanced import (
+    tensored_assignment_matrix,
+    tensored_mitigate,
+    iterative_bayesian_unfolding,
+    constrained_readout_mitigate,
+    calibrate_assignment_matrix,
+)
+from .pec_ptm import (
+    channel_ptm,
+    invert_channel_ptm,
+    pauli_quasiprobabilities,
+    pec_sampling_overhead,
+    depolarizing_overhead,
+    pec_mitigate_ptm,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -312,6 +348,31 @@ __all__ = [
     "fit_cdr_model",
     "apply_cdr",
     "cdr_mitigate",
+    "richardson_extrapolate",
+    "polynomial_extrapolate",
+    "exponential_extrapolate",
+    "adaptive_extrapolate",
+    "fold_global",
+    "noise_scale_factor",
+    "fold_gate_sequence",
+    "folded_channel_expectation",
+    "tensored_assignment_matrix",
+    "tensored_mitigate",
+    "iterative_bayesian_unfolding",
+    "constrained_readout_mitigate",
+    "calibrate_assignment_matrix",
+    "channel_ptm",
+    "invert_channel_ptm",
+    "pauli_quasiprobabilities",
+    "pec_sampling_overhead",
+    "depolarizing_overhead",
+    "pec_mitigate_ptm",
+    "cpmg_sequence",
+    "xy4_sequence",
+    "udd_sequence",
+    "switching_function_moments",
+    "suppression_order",
+    "dd_coherence",
     # QFT
     "qft",
     "apply_qft",
