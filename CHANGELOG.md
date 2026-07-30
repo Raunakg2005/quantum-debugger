@@ -170,6 +170,38 @@ area law). Every routine verified against a closed form or an independent
 computation. (Open systems, noise, and fault tolerance landed in 0.8.0.)
 
 ### Added
+- **SSH topological insulator** (`algorithms.ssh_hamiltonian`) — the Su-Schrieffer-Heeger
+  chain with alternating hoppings `v, w`, the textbook 1D topological insulator; the
+  single-particle Hamiltonian is exactly diagonalized and verified to have a
+  chiral-symmetric spectrum.
+- **SSH winding number** (`algorithms.ssh_winding_number`) — the bulk `Z` invariant of the
+  chiral class BDI: `1` (topological) when `|w| > |v|`, `0` (trivial) otherwise.
+- **SSH edge modes** (`algorithms.ssh_zero_modes`, `ssh_edge_polarization`) — the
+  bulk-boundary correspondence made concrete: `2` protected zero-energy modes localized on
+  the ends in the topological phase, `0` in the trivial phase, verified against the exact
+  spectrum and eigenvectors.
+- **Ground-state fidelity** (`algorithms.ground_state_fidelity`) — the overlap
+  `|<psi(lambda)|psi(lambda+dlambda)>|` between neighbouring ground states, near 1 inside a
+  phase and dipping sharply at a quantum phase transition.
+- **Fidelity susceptibility** (`algorithms.fidelity_susceptibility`, `tfim_critical_field`)
+  — the intensive response `chi_F = 2(1-F)/dlambda^2` that peaks at a critical point;
+  verified to locate the transverse-field Ising transition, its finite-size peak drifting
+  toward the exact `h_c = 1` as the system grows.
+- **Connected correlation functions** (`algorithms.connected_correlation`) —
+  `<O_i O_j> - <O_i><O_j>`, the probe of correlations beyond mean field; verified `1` on a
+  GHZ state and `0` on a product state.
+- **Correlation length** (`algorithms.correlation_length`) — `xi` from the exponential
+  decay of the connected correlator; verified `0` for a product state and growing toward
+  criticality for the TFIM ground state.
+- **Static structure factor** (`algorithms.structure_factor`) — `S(k)` from the spatial
+  correlations, the Fourier probe of order; verified to Bragg-peak at `k=0` for a
+  ferromagnet and `k=pi` for an antiferromagnet.
+- **Entanglement negativity** (`algorithms.negativity`, `logarithmic_negativity`) — the
+  computable mixed-state entanglement measure from the partial transpose; verified
+  `E_N = 1` for a Bell pair, `0` for a product state.
+- **Peres-Horodecki (PPT) criterion** (`algorithms.partial_transpose`, `is_entangled_ppt`)
+  — the partial transpose and its negative-eigenvalue entanglement witness; verified to
+  reproduce the Werner-state entanglement threshold `p > 1/3`.
 - **Schmidt decomposition & the area law** (`algorithms.schmidt_decomposition`,
   `truncation_fidelity`, `area_law_compressibility`) — the tensor-network bridge:
   write any bipartite pure state as `sum lambda_i |i>_A|i>_B` via SVD. Verified that a
