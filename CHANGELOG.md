@@ -53,9 +53,10 @@ metric verified against exact channels and closed forms.
   Pauli-sampling fidelity estimator, verified equal to ``<psi|rho|psi>`` for a pure target.
 - **Choi matrix** (`algorithms.choi_matrix`) — the channel-state dual, verified positive with
   trace ``d``.
-- **Entanglement & average gate fidelity** (`algorithms.entanglement_fidelity`,
-  `average_gate_fidelity`) — closeness of a channel to a target unitary, verified 1 for an
-  exact gate.
+- **Entanglement fidelity** (`algorithms.entanglement_fidelity`) — ``(1/d^2) sum |Tr(U†K)|^2``,
+  the channel-to-unitary closeness, verified 1 for an exact gate.
+- **Average gate fidelity** (`algorithms.average_gate_fidelity`) — the Haar-averaged
+  ``(d F_e + 1)/(d+1)`` fidelity, verified 1 for an exact gate.
 - **Pauli transfer matrix** (`algorithms.pauli_transfer_matrix`) — the real Pauli-basis
   representation of a channel.
 - **Unitarity** (`algorithms.unitarity`) — the coherence of a channel from the PTM, verified
