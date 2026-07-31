@@ -52,8 +52,10 @@ verified to preserve the circuit's unitary.
   against the gate it replaces.
 - **Makhlin invariants** (`algorithms.makhlin_invariants`) — the local invariants ``(G1,G2)``
   of a two-qubit gate.
-- **Local-gate detection** (`algorithms.is_local`, `locally_equivalent`) — recognize
-  tensor-product gates and local equivalence (CNOT ~ CZ, not ~ SWAP), verified.
+- **Local-gate detection** (`algorithms.is_local`) — recognize tensor-product (zero-CNOT)
+  two-qubit gates via the Makhlin invariants, verified.
+- **Local equivalence** (`algorithms.locally_equivalent`) — decide whether two gates differ
+  only by single-qubit gates (CNOT ~ CZ, not ~ SWAP), verified.
 - **Optimal CNOT count** (`algorithms.cnot_count`) — the minimal CNOTs (0-3) for a two-qubit
   gate from its magic-basis spectrum, verified local=0, CNOT/CZ=1, iSWAP=2, SWAP/generic=3.
 - **ASAP scheduling** (`algorithms.asap_layers`, `flatten_layers`) — the earliest-layer
