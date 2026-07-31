@@ -25,20 +25,26 @@ metric verified against exact channels and closed forms.
   number.
 - **Interleaved RB** (`algorithms.interleaved_rb_gate_error`) — isolate a single gate's error
   from the reference/interleaved decays, verified against a planted error.
-- **Porter-Thomas distribution** (`algorithms.porter_thomas_pdf`, `porter_thomas_samples`) —
-  the ``D e^{-D p}`` speckle law of random-circuit outputs, verified normalized with mean
-  ``1/D``.
+- **Porter-Thomas density** (`algorithms.porter_thomas_pdf`) — the ``D e^{-D p}`` speckle law
+  of random-circuit outputs, verified normalized with mean ``1/D``.
+- **Porter-Thomas sampling** (`algorithms.porter_thomas_samples`) — random probability
+  vectors from the PT distribution, a stand-in for random-circuit outputs.
 - **Linear XEB fidelity** (`algorithms.linear_xeb_fidelity`) — cross-entropy benchmarking
   ``D <p_ideal> - 1``, verified ~1 for ideal sampling and ~0 for uniform.
 - **Speckle purity** (`algorithms.speckle_purity`) — the collision-probability shape check,
   ``~2`` for Porter-Thomas.
 - **Cross-entropy fidelity** (`algorithms.cross_entropy_fidelity`) — the distribution-level
   XEB estimator, verified 1 (ideal) / 0 (uniform).
-- **Heavy outputs** (`algorithms.heavy_outputs`, `heavy_output_probability`) — the
-  above-median outcomes and their probability, the quantum-volume observable.
-- **Quantum-volume test** (`algorithms.quantum_volume_pass`, `ideal_heavy_output_probability`,
-  `quantum_volume`) — the ``HOP > 2/3`` criterion, the ideal ``(1+ln2)/2`` asymptote, and the
-  ``2^n`` volume.
+- **Heavy outputs** (`algorithms.heavy_outputs`) — the above-median outcomes a device must
+  reproduce.
+- **Heavy-output probability** (`algorithms.heavy_output_probability`) — the HOP observable,
+  the quantum-volume metric.
+- **Quantum-volume pass** (`algorithms.quantum_volume_pass`) — the ``HOP > 2/3`` pass
+  criterion.
+- **Ideal HOP asymptote** (`algorithms.ideal_heavy_output_probability`) — the ``(1+ln2)/2``
+  value a perfect device approaches, verified.
+- **Quantum volume** (`algorithms.quantum_volume`) — the ``2^n`` volume of the largest passing
+  width.
 - **Pauli expectations** (`algorithms.pauli_expectations`) — the full tomographic data set of
   a state.
 - **State tomography** (`algorithms.state_tomography`, `is_physical_density_matrix`) — linear
