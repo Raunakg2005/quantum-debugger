@@ -28,8 +28,9 @@ closed form.
 - **Error propagation** (`algorithms.error_propagation`) — ``sqrt(Var S)/|dS/dtheta|``, the
   operational precision of a measured signal, verified Heisenberg for a GHZ fringe.
 - **Collective Jz** (`algorithms.collective_jz`) — the interferometer phase generator.
-- **Product & GHZ probes** (`algorithms.product_probe`, `ghz_probe`) — the SQL and Heisenberg
-  reference probe states.
+- **Product probe** (`algorithms.product_probe`) — the uncorrelated ``|+>^n`` SQL reference
+  probe.
+- **GHZ probe** (`algorithms.ghz_probe`) — the entangled Heisenberg-limit reference probe.
 - **Probe QFI** (`algorithms.probe_qfi`) — the QFI of a probe under ``J_z``.
 - **Product-probe QFI** (`algorithms.product_probe_qfi`) — verified equal to ``n`` (SQL).
 - **GHZ-probe QFI** (`algorithms.ghz_probe_qfi`) — verified equal to ``n^2`` (Heisenberg).
@@ -44,8 +45,9 @@ closed form.
   squeezing generator.
 - **Wineland squeezing parameter** (`algorithms.wineland_squeezing_parameter`) — ``xi_R^2``,
   verified 1 for the coherent state and ``< 1`` when squeezed.
-- **Metrological gain** (`algorithms.metrological_gain`, `is_squeezed`) — the ``1/xi^2`` variance
-  gain and the sub-SQL squeezing test.
+- **Metrological gain** (`algorithms.metrological_gain`) — the ``1/xi^2`` variance gain of a
+  squeezed state.
+- **Squeezing test** (`algorithms.is_squeezed`) — the sub-SQL (``xi^2 < 1``) check.
 - **Best twisting squeezing** (`algorithms.best_twisting_squeezing`) — the optimal
   one-axis-twisting squeezing, verified below 1.
 - **QFI matrix** (`algorithms.qfi_matrix`) — the multiparameter Fisher matrix, verified
@@ -54,8 +56,12 @@ closed form.
   ``F^{-1}`` covariance bound and its trace.
 - **Parameter incompatibility** (`algorithms.parameter_incompatibility`) — the mean-commutator
   measure of joint-estimation incompatibility, verified 0 for commuting generators.
-- **Signal-to-noise & precision** (`algorithms.signal_to_noise`, `phase_precision`,
-  `frequency_precision`) — the sensing figures from the QFI.
+- **Signal-to-noise ratio** (`algorithms.signal_to_noise`) — ``sqrt(shots F_Q)``, the sensing
+  SNR.
+- **Phase precision** (`algorithms.phase_precision`) — the Cramér-Rao phase error ``1/sqrt(shots
+  F_Q)``.
+- **Frequency precision** (`algorithms.frequency_precision`) — the phase error per interrogation
+  time.
 - **Entanglement gain** (`algorithms.entanglement_gain`) — the ``sqrt(n)`` precision gain of an
   entangled probe.
 - **QFI per particle** (`algorithms.qfi_per_particle`) — ``F_Q/n``, 1 at the SQL and ``n`` at
