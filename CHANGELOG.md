@@ -15,9 +15,10 @@ PageRank, and phase-estimation variants (Kitaev, robust) — verified against ex
 evolution and closed forms.
 
 ### Added
-- **Continuous-time quantum walk** (`algorithms.continuous_time_walk_operator`,
-  `ctqw_distribution`) — evolution ``e^{-iAt}`` on a graph, verified unitary and
-  probability-conserving.
+- **Continuous-time walk propagator** (`algorithms.continuous_time_walk_operator`) — the
+  unitary ``e^{-iAt}`` on a graph adjacency, verified unitary.
+- **CTQW distribution** (`algorithms.ctqw_distribution`) — the walker's position
+  probabilities, verified to conserve total probability.
 - **Ballistic spreading** (`algorithms.position_variance`) — the walk's position variance,
   verified to grow as ``t^2`` (quadratically faster than the classical ``t``).
 - **Path-graph adjacency** (`algorithms.line_adjacency`) — the line graph the walks run on.
@@ -36,8 +37,10 @@ evolution and closed forms.
   to the true amplitude at the Heisenberg limit.
 - **Canonical AE** (`algorithms.canonical_qae`) — phase-estimation amplitude estimation,
   verified to reach ``O(2^-bits)`` precision.
-- **Estimation-error scalings** (`algorithms.classical_monte_carlo_error`,
-  `heisenberg_scaling_error`) — the ``1/sqrt(M)`` vs ``1/M`` rates, the quadratic speedup.
+- **Classical estimation error** (`algorithms.classical_monte_carlo_error`) — the
+  ``1/sqrt(M)`` Monte-Carlo baseline rate.
+- **Heisenberg-limited error** (`algorithms.heisenberg_scaling_error`) — the ``1/M`` quantum
+  rate, the quadratic improvement.
 - **Stochastic-matrix check** (`algorithms.is_stochastic`) — verifies non-negativity and
   unit line sums.
 - **Stationary distribution** (`algorithms.stationary_distribution`) — the Perron
