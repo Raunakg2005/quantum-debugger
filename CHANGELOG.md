@@ -5,7 +5,70 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.7.0.dev)
+## [Unreleased] (1.8.0.dev)
+
+Theme: continuous-variable & bosonic quantum computing — qubits are not the only way.
+The Gaussian formalism (covariance matrices, symplectic transforms, Williamson
+eigenvalues, purity and entropy), the Fock-space operators (creation/annihilation,
+displacement, squeezing, coherent states), Wigner quasiprobability and its negativity,
+bosonic error-correcting cat codes, and boson sampling (the matrix permanent, Hong-Ou-
+Mandel interference) — verified against the closed forms of the harmonic oscillator.
+
+### Added
+- **Vacuum covariance** (`algorithms.vacuum_covariance`) — the identity covariance of the
+  vacuum/coherent states, the reference for the ``sigma >= I`` uncertainty bound.
+- **Squeezed covariance** (`algorithms.squeezed_covariance`) — squeezed-vacuum covariance
+  ``diag(e^{-2r}, e^{2r})``, verified pure (symplectic eigenvalue 1).
+- **Thermal covariance** (`algorithms.thermal_covariance`) — ``(2 n_bar + 1) I``, verified
+  symplectic eigenvalue ``2 n_bar + 1`` and purity ``1/(2 n_bar + 1)``.
+- **Symplectic eigenvalues** (`algorithms.symplectic_eigenvalues`) — the Williamson
+  invariants from ``i Omega sigma``, the physicality and entropy inputs.
+- **Physicality test** (`algorithms.is_physical_covariance`) — checks all symplectic
+  eigenvalues ``>= 1`` (the uncertainty principle); rejects sub-vacuum noise.
+- **Gaussian purity & entropy** (`algorithms.purity_gaussian`, `gaussian_entropy`) — the
+  purity ``1/prod nu`` and von Neumann entropy from the symplectic spectrum, verified 1/0
+  for pure states.
+- **Symplectic check** (`algorithms.is_symplectic`) — verifies ``S Omega S^T = Omega`` for a
+  Gaussian transform.
+- **Phase & squeeze symplectics** (`algorithms.phase_rotation_symplectic`,
+  `squeezing_symplectic`) — the passive rotation and active single-mode squeezer, verified
+  symplectic.
+- **Beamsplitter symplectic** (`algorithms.beamsplitter_symplectic`) — the two-mode passive
+  mixer, verified symplectic.
+- **Two-mode squeezing** (`algorithms.two_mode_squeezing_symplectic`, `apply_symplectic`) —
+  the entangling EPR transform and covariance update, verified to create cross-mode
+  correlations while staying physical.
+- **Ladder operators** (`algorithms.annihilation_operator`, `creation_operator`,
+  `number_operator_fock`) — the truncated Fock operators, verified ``[a,a^dagger]=I`` and
+  ``N=a^dagger a``.
+- **Coherent states** (`algorithms.coherent_state_fock`, `mean_photon_number`) — eigenstates
+  of ``a`` with Poissonian statistics, verified ``a|alpha>=alpha|alpha>`` and
+  ``<n>=|alpha|^2``.
+- **Displacement operator** (`algorithms.displacement_operator`) — ``exp(alpha a^dagger -
+  alpha^* a)``, verified to map the vacuum to ``|alpha>``.
+- **Squeeze operator** (`algorithms.squeeze_operator`) — ``exp((r/2)(a^2 - a^{dagger 2}))``,
+  verified to produce even-photon squeezed vacuum.
+- **Wigner function** (`algorithms.wigner_point`, `wigner_grid`) — the displaced-parity
+  quasiprobability, verified to match the analytic vacuum Gaussian.
+- **Wigner normalization** (`algorithms.wigner_integral`) — the phase-space integral,
+  verified to equal 1.
+- **Wigner negativity** (`algorithms.wigner_negativity`) — the non-classicality witness,
+  verified ~0 for the vacuum and positive for a cat state.
+- **Husimi Q** (`algorithms.husimi_q`) — the non-negative coherent-state quasiprobability,
+  verified ``1/pi`` at the vacuum peak.
+- **Matrix permanent** (`algorithms.permanent`) — Ryser's #P-hard permanent, verified
+  ``perm(ones_n)=n!`` and ``perm(I)=1``.
+- **Boson-sampling probabilities** (`algorithms.boson_sampling_probability`,
+  `beamsplitter_unitary`) — the ``|perm|^2`` output distribution, verified to normalize to 1.
+- **Hong-Ou-Mandel effect** (`algorithms.hong_ou_mandel`) — two-photon interference,
+  verified to bunch (coincidence 0) at the 50:50 beamsplitter.
+- **Cat states** (`algorithms.cat_state`, `parity_operator`, `parity_expectation`) — even/odd
+  Schrödinger cats, verified parity eigenstates of ``(-1)^N``.
+- **Cat code** (`algorithms.cat_code_words`, `photon_loss`, `loss_flips_parity`) — the
+  bosonic logical code words, verified orthogonal with photon loss flipping the parity (a
+  detectable error).
+
+## [1.7.0]
 
 Theme: advanced quantum algorithms — the primitives beyond the textbook set. Quantum
 walks (continuous- and discrete-time, Szegedy quantization) with their ballistic

@@ -488,6 +488,54 @@ from .quantum_mean_estimation import (
     quantum_samples_for_precision,
     monte_carlo_speedup,
 )
+from .gaussian_states import (
+    omega,
+    vacuum_covariance,
+    squeezed_covariance,
+    thermal_covariance,
+    symplectic_eigenvalues,
+    is_physical_covariance,
+    purity_gaussian,
+    gaussian_entropy,
+)
+from .symplectic import (
+    is_symplectic,
+    phase_rotation_symplectic,
+    squeezing_symplectic,
+    beamsplitter_symplectic,
+    apply_symplectic,
+    two_mode_squeezing_symplectic,
+)
+from .fock_space import (
+    annihilation_operator,
+    creation_operator,
+    number_operator_fock,
+    coherent_state_fock,
+    displacement_operator,
+    squeeze_operator,
+    mean_photon_number,
+)
+from .wigner import (
+    wigner_point,
+    wigner_grid,
+    wigner_negativity,
+    wigner_integral,
+    husimi_q,
+)
+from .boson_sampling import (
+    permanent,
+    boson_sampling_probability,
+    beamsplitter_unitary,
+    hong_ou_mandel,
+)
+from .bosonic_codes import (
+    cat_state,
+    parity_operator,
+    parity_expectation,
+    cat_code_words,
+    photon_loss,
+    loss_flips_parity,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1022,6 +1070,48 @@ __all__ = [
     "classical_samples_for_precision",
     "quantum_samples_for_precision",
     "monte_carlo_speedup",
+    # Continuous variable — Gaussian states
+    "omega",
+    "vacuum_covariance",
+    "squeezed_covariance",
+    "thermal_covariance",
+    "symplectic_eigenvalues",
+    "is_physical_covariance",
+    "purity_gaussian",
+    "gaussian_entropy",
+    # Continuous variable — symplectic transforms
+    "is_symplectic",
+    "phase_rotation_symplectic",
+    "squeezing_symplectic",
+    "beamsplitter_symplectic",
+    "apply_symplectic",
+    "two_mode_squeezing_symplectic",
+    # Continuous variable — Fock space
+    "annihilation_operator",
+    "creation_operator",
+    "number_operator_fock",
+    "coherent_state_fock",
+    "displacement_operator",
+    "squeeze_operator",
+    "mean_photon_number",
+    # Continuous variable — Wigner
+    "wigner_point",
+    "wigner_grid",
+    "wigner_negativity",
+    "wigner_integral",
+    "husimi_q",
+    # Continuous variable — boson sampling
+    "permanent",
+    "boson_sampling_probability",
+    "beamsplitter_unitary",
+    "hong_ou_mandel",
+    # Continuous variable — bosonic codes
+    "cat_state",
+    "parity_operator",
+    "parity_expectation",
+    "cat_code_words",
+    "photon_loss",
+    "loss_flips_parity",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
