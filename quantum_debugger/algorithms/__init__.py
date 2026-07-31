@@ -620,6 +620,50 @@ from .scheduling import (
     flatten_layers,
     critical_path_length,
 )
+from .qubo import (
+    qubo_energy,
+    ising_energy,
+    qubo_to_ising,
+    ising_hamiltonian,
+    brute_force_ising,
+    brute_force_qubo,
+    max_cut_qubo,
+    number_partition_qubo,
+    vertex_cover_qubo,
+)
+from .qaoa_theory import (
+    cost_diagonal,
+    cost_layer,
+    mixer_layer,
+    qaoa_state,
+    qaoa_expectation,
+    optimize_qaoa_p1,
+    qaoa_landscape,
+)
+from .adiabatic_optimization import (
+    transverse_field_driver,
+    interpolating_hamiltonian,
+    instantaneous_gap,
+    minimum_gap,
+    adiabatic_evolve,
+    adiabatic_success_probability,
+    landau_zener_probability,
+    adiabatic_runtime_bound,
+)
+from .quantum_annealing import (
+    anneal_hamiltonian,
+    anneal,
+    annealing_success_probability,
+    annealed_solution,
+    spectral_gap_at,
+)
+from .grover_optimization import (
+    threshold_marked,
+    durr_hoyer_minimize,
+    grover_adaptive_search,
+    quantum_minimum_queries,
+    classical_minimum_queries,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1267,6 +1311,45 @@ __all__ = [
     "circuit_parallelism",
     "flatten_layers",
     "critical_path_length",
+    # Optimization — QUBO / Ising
+    "qubo_energy",
+    "ising_energy",
+    "qubo_to_ising",
+    "ising_hamiltonian",
+    "brute_force_ising",
+    "brute_force_qubo",
+    "max_cut_qubo",
+    "number_partition_qubo",
+    "vertex_cover_qubo",
+    # Optimization — QAOA theory
+    "cost_diagonal",
+    "cost_layer",
+    "mixer_layer",
+    "qaoa_state",
+    "qaoa_expectation",
+    "optimize_qaoa_p1",
+    "qaoa_landscape",
+    # Optimization — adiabatic
+    "transverse_field_driver",
+    "interpolating_hamiltonian",
+    "instantaneous_gap",
+    "minimum_gap",
+    "adiabatic_evolve",
+    "adiabatic_success_probability",
+    "landau_zener_probability",
+    "adiabatic_runtime_bound",
+    # Optimization — annealing
+    "anneal_hamiltonian",
+    "anneal",
+    "annealing_success_probability",
+    "annealed_solution",
+    "spectral_gap_at",
+    # Optimization — Grover-based
+    "threshold_marked",
+    "durr_hoyer_minimize",
+    "grover_adaptive_search",
+    "quantum_minimum_queries",
+    "classical_minimum_queries",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

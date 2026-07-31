@@ -5,7 +5,67 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.0.0.dev)
+## [Unreleased] (2.1.0.dev)
+
+Theme: quantum optimization & QAOA theory — encoding hard problems as ground states and
+solving them. QUBO/Ising encodings of MaxCut, number partitioning, and vertex cover; the
+QAOA ansatz with its exact expectation and landscape; adiabatic optimization with the
+minimum-gap and adiabatic-runtime bounds; Landau-Zener transitions; transverse-field
+annealing; and Grover-based (Dürr-Høyer) minimization — every optimum verified against
+brute force and every formula against its closed form.
+
+### Added
+- **QUBO objective** (`algorithms.qubo_energy`) — the ``x^T Q x`` binary objective.
+- **Ising energy** (`algorithms.ising_energy`) — the spin energy ``sum h s + sum J s s``.
+- **QUBO↔Ising conversion** (`algorithms.qubo_to_ising`) — the ``x=(1-s)/2`` map with offset,
+  verified energy-equivalent over all assignments.
+- **Ising Hamiltonian** (`algorithms.ising_hamiltonian`) — the diagonal quantum Hamiltonian
+  whose ground state is the optimizer, verified against brute force.
+- **Brute-force solvers** (`algorithms.brute_force_ising`, `brute_force_qubo`) — exact
+  minimizers by enumeration, the verification oracle.
+- **MaxCut encoding** (`algorithms.max_cut_qubo`) — the QUBO whose ground state is a maximum
+  cut, verified against the true max cut.
+- **Number-partition encoding** (`algorithms.number_partition_qubo`) — the balanced-partition
+  QUBO, verified to yield an equal-sum split.
+- **Vertex-cover encoding** (`algorithms.vertex_cover_qubo`) — the penalty-constrained minimum
+  vertex cover, verified to produce a valid cover.
+- **QAOA cost diagonal** (`algorithms.cost_diagonal`) — the MaxCut cost operator's diagonal
+  (cut counts).
+- **QAOA cost layer** (`algorithms.cost_layer`) — the ``e^{-i gamma C}`` phase-separation
+  unitary.
+- **QAOA mixer layer** (`algorithms.mixer_layer`) — the transverse-field mixer
+  ``e^{-i beta sum X}``, verified norm-preserving.
+- **QAOA state** (`algorithms.qaoa_state`) — the ``p``-layer ansatz state, normalized.
+- **QAOA expectation** (`algorithms.qaoa_expectation`) — the exact cost expectation ``<C>``.
+- **QAOA p=1 optimizer** (`algorithms.optimize_qaoa_p1`) — grid-searched best angles and
+  approximation ratio, verified to beat random guessing (the ~0.75 ring ratio).
+- **QAOA landscape** (`algorithms.qaoa_landscape`) — the ``(gamma, beta)`` energy surface.
+- **Transverse-field driver** (`algorithms.transverse_field_driver`) — the ``H0 = -sum X``
+  easy Hamiltonian with ground state ``|+>^n``.
+- **Interpolating Hamiltonian** (`algorithms.interpolating_hamiltonian`) — the adiabatic path
+  ``(1-s)H0 + s H1``.
+- **Instantaneous & minimum gap** (`algorithms.instantaneous_gap`, `minimum_gap`) — the
+  spectral gap along the path and its bottleneck, verified positive.
+- **Adiabatic evolution** (`algorithms.adiabatic_evolve`, `adiabatic_success_probability`) —
+  the time-dependent sweep and its success probability, verified to approach 1 as the runtime
+  grows.
+- **Landau-Zener probability** (`algorithms.landau_zener_probability`) — the closed-form
+  diabatic transition ``exp(-pi gap^2/4v)``, verified against a two-level sweep simulation.
+- **Adiabatic runtime bound** (`algorithms.adiabatic_runtime_bound`) — the ``1/gap_min^2``
+  cost scaling.
+- **Anneal Hamiltonian** (`algorithms.anneal_hamiltonian`, `spectral_gap_at`) — the
+  ``A(s)(-sum X) + B(s) H`` schedule and its instantaneous gap.
+- **Quantum anneal** (`algorithms.anneal`, `annealing_success_probability`,
+  `annealed_solution`) — the linear-schedule anneal, verified to recover the exact Ising
+  ground state for a slow enough anneal.
+- **Threshold oracle** (`algorithms.threshold_marked`) — the marked set ``f(x) < best`` of
+  Dürr-Høyer.
+- **Dürr-Høyer minimization** (`algorithms.durr_hoyer_minimize`, `grover_adaptive_search`) —
+  Grover-based minimum finding, verified to reach the global optimum with high success.
+- **Optimization query scaling** (`algorithms.quantum_minimum_queries`,
+  `classical_minimum_queries`) — the ``O(sqrt N)`` vs ``O(N)`` query counts.
+
+## [2.0.0]
 
 Theme: quantum compilation & circuit optimization — the milestone 2.0 release. The
 transpiler stack that turns an abstract circuit into one a real device can run: a circuit
