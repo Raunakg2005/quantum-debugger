@@ -451,6 +451,43 @@ from .clifford_t_synthesis import (
     synthesize_rz,
     is_clifford_t_word,
 )
+from .quantum_walks import (
+    continuous_time_walk_operator,
+    ctqw_distribution,
+    position_variance,
+    line_adjacency,
+    discrete_time_walk_line,
+    szegedy_walk_operator,
+    spatial_search_ctqw,
+)
+from .amplitude_estimation_advanced import (
+    grover_probability,
+    maximum_likelihood_ae,
+    iterative_ae,
+    canonical_qae,
+    classical_monte_carlo_error,
+    heisenberg_scaling_error,
+)
+from .quantum_markov import (
+    is_stochastic,
+    stationary_distribution,
+    google_matrix,
+    classical_pagerank,
+    detailed_balance,
+    quantum_pagerank,
+)
+from .phase_estimation_variants import (
+    kitaev_phase_estimation,
+    robust_phase_estimation,
+    phase_estimation_error,
+)
+from .quantum_mean_estimation import (
+    mean_amplitude,
+    quantum_mean_estimation,
+    classical_samples_for_precision,
+    quantum_samples_for_precision,
+    monte_carlo_speedup,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -953,6 +990,38 @@ __all__ = [
     "synthesize",
     "synthesize_rz",
     "is_clifford_t_word",
+    # Advanced algorithms — quantum walks
+    "continuous_time_walk_operator",
+    "ctqw_distribution",
+    "position_variance",
+    "line_adjacency",
+    "discrete_time_walk_line",
+    "szegedy_walk_operator",
+    "spatial_search_ctqw",
+    # Advanced algorithms — amplitude estimation
+    "grover_probability",
+    "maximum_likelihood_ae",
+    "iterative_ae",
+    "canonical_qae",
+    "classical_monte_carlo_error",
+    "heisenberg_scaling_error",
+    # Advanced algorithms — Markov & PageRank
+    "is_stochastic",
+    "stationary_distribution",
+    "google_matrix",
+    "classical_pagerank",
+    "detailed_balance",
+    "quantum_pagerank",
+    # Advanced algorithms — phase estimation variants
+    "kitaev_phase_estimation",
+    "robust_phase_estimation",
+    "phase_estimation_error",
+    # Advanced algorithms — mean estimation
+    "mean_amplitude",
+    "quantum_mean_estimation",
+    "classical_samples_for_precision",
+    "quantum_samples_for_precision",
+    "monte_carlo_speedup",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

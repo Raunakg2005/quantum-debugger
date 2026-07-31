@@ -5,7 +5,66 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.6.0.dev)
+## [Unreleased] (1.7.0.dev)
+
+Theme: advanced quantum algorithms — the primitives beyond the textbook set. Quantum
+walks (continuous- and discrete-time, Szegedy quantization) with their ballistic
+spreading and spatial search, amplitude estimation without phase estimation (maximum
+likelihood and iterative) at Heisenberg scaling, Markov-chain quantization and quantum
+PageRank, and phase-estimation variants (Kitaev, robust) — verified against exact
+evolution and closed forms.
+
+### Added
+- **Continuous-time quantum walk** (`algorithms.continuous_time_walk_operator`,
+  `ctqw_distribution`) — evolution ``e^{-iAt}`` on a graph, verified unitary and
+  probability-conserving.
+- **Ballistic spreading** (`algorithms.position_variance`) — the walk's position variance,
+  verified to grow as ``t^2`` (quadratically faster than the classical ``t``).
+- **Path-graph adjacency** (`algorithms.line_adjacency`) — the line graph the walks run on.
+- **Discrete-time quantum walk** (`algorithms.discrete_time_walk_line`) — the coined walk on
+  a line, verified to give the ballistic twin-peaked distribution.
+- **Szegedy walk** (`algorithms.szegedy_walk_operator`) — the unitary quantization of a
+  Markov chain, verified unitary.
+- **Spatial search** (`algorithms.spatial_search_ctqw`) — CTQW search for a marked vertex,
+  verified to reach high success on the complete graph (the quadratic speedup).
+- **Grover signal** (`algorithms.grover_probability`) — the ``sin^2((2m+1)theta)`` good-state
+  probability that amplitude estimation fits.
+- **Maximum-likelihood AE** (`algorithms.maximum_likelihood_ae`) — MLQAE without a
+  phase-estimation register, verified to recover the amplitude with error shrinking as more
+  Grover powers are added.
+- **Iterative AE** (`algorithms.iterative_ae`) — branch-refining IQAE, verified to converge
+  to the true amplitude at the Heisenberg limit.
+- **Canonical AE** (`algorithms.canonical_qae`) — phase-estimation amplitude estimation,
+  verified to reach ``O(2^-bits)`` precision.
+- **Estimation-error scalings** (`algorithms.classical_monte_carlo_error`,
+  `heisenberg_scaling_error`) — the ``1/sqrt(M)`` vs ``1/M`` rates, the quadratic speedup.
+- **Stochastic-matrix check** (`algorithms.is_stochastic`) — verifies non-negativity and
+  unit line sums.
+- **Stationary distribution** (`algorithms.stationary_distribution`) — the Perron
+  eigenvector of a Markov chain, verified a fixed point summing to 1.
+- **PageRank Google matrix** (`algorithms.google_matrix`) — the damped-surfer transition
+  matrix, verified row-stochastic.
+- **Classical PageRank** (`algorithms.classical_pagerank`) — node importance as the Google
+  matrix's stationary distribution.
+- **Detailed balance** (`algorithms.detailed_balance`) — the Markov-chain reversibility
+  test.
+- **Quantum PageRank** (`algorithms.quantum_pagerank`) — the Szegedy-walk (Paparo-Martin-
+  Delgado) ranking, verified a valid distribution ranking the same top node as classical.
+- **Kitaev phase estimation** (`algorithms.kitaev_phase_estimation`) — single-ancilla
+  bit-by-bit phase readout, verified exact for dyadic phases and ``2^-bits``-precise.
+- **Robust phase estimation** (`algorithms.robust_phase_estimation`) — two-basis
+  generational estimation with branch unwrapping, verified to recover a known phase.
+- **Phase-estimation resolution** (`algorithms.phase_estimation_error`) — the ``2^-bits``
+  Heisenberg-limited precision.
+- **Mean-encoding amplitude** (`algorithms.mean_amplitude`) — ``sqrt(E[f])``, the amplitude
+  whose square is the expectation.
+- **Quantum mean estimation** (`algorithms.quantum_mean_estimation`) — Monte-Carlo
+  expectation via amplitude estimation, verified to recover the mean at Heisenberg scaling.
+- **Monte-Carlo speedup** (`algorithms.classical_samples_for_precision`,
+  `quantum_samples_for_precision`, `monte_carlo_speedup`) — the ``1/eps^2`` vs ``1/eps``
+  sample counts and their quadratic ratio.
+
+## [1.6.0]
 
 Theme: fault tolerance & logical compilation — turning noisy physical qubits into
 reliable logical ones. Magic-state distillation and its cubic error suppression,
