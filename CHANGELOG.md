@@ -41,22 +41,30 @@ local strategies and every quantum value against its closed form.
 - **Mermin operator** (`algorithms.mermin_operator`) — the recursively built Mermin-Klyshko
   operator.
 - **Mermin value** (`algorithms.mermin_value`) — a state's Mermin expectation.
-- **Mermin quantum maximum** (`algorithms.mermin_optimal_value`, `mermin_quantum_bound`) — the
-  largest eigenvalue, verified equal to ``2^{(n-1)/2}``.
+- **Mermin optimal value** (`algorithms.mermin_optimal_value`) — the largest eigenvalue of the
+  Mermin operator, the quantum maximum.
+- **Mermin quantum bound** (`algorithms.mermin_quantum_bound`) — the closed form ``2^{(n-1)/2}``,
+  verified equal to the optimal value.
 - **Mermin classical bound** (`algorithms.mermin_classical_bound`) — ``1``, from brute force over
   local strategies.
 - **Mermin violation ratio** (`algorithms.mermin_violation_ratio`) — the ``2^{(n-1)/2}``
   exponentially growing multiparty nonlocality.
-- **Steering value** (`algorithms.steering_value`, `steering_bound`) — the three-setting linear
-  steering witness and its unsteerable bound, ``sqrt3`` for a Bell state.
+- **Steering value** (`algorithms.steering_value`) — the three-setting linear steering witness,
+  ``sqrt3`` for a Bell state.
+- **Steering bound** (`algorithms.steering_bound`) — the unsteerable (local-hidden-state) bound
+  of ``1``.
 - **Steerability test** (`algorithms.is_steerable`) — verified True for a Bell state, False for a
   separable state.
-- **Werner state & steering threshold** (`steering.werner_state`,
-  `algorithms.werner_steering_threshold`) — the ``p = 1/sqrt3`` steering boundary, verified.
+- **Werner state** (`steering.werner_state`) — the ``p|Phi+><Phi+| + (1-p)I/4`` family probing
+  the steering boundary.
+- **Werner steering threshold** (`algorithms.werner_steering_threshold`) — the ``p = 1/sqrt3``
+  steering boundary, verified.
 - **Guessing probability** (`algorithms.guessing_probability`) — the device-independent adversary
   bound ``1/2 + (1/2)sqrt(2 - S^2/4)``, verified 1 at ``S=2`` and 1/2 at Tsirelson.
-- **Certified randomness** (`algorithms.certified_randomness`, `is_randomness_certified`) — the
-  ``-log2 P_guess`` bits per run, verified 0 (classical) to 1 (Tsirelson).
+- **Certified randomness** (`algorithms.certified_randomness`) — the ``-log2 P_guess`` bits per
+  run, verified 0 (classical) to 1 (Tsirelson).
+- **Randomness certification test** (`algorithms.is_randomness_certified`) — verifies a violation
+  (``S > 2``) certifies some randomness.
 - **DI key rate** (`algorithms.di_key_rate`) — a device-independent key-rate proxy from the CHSH
   value.
 - **Randomness vs. violation** (`algorithms.randomness_vs_violation`) — the certified randomness
