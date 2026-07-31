@@ -21,8 +21,10 @@ brute force and every formula against its closed form.
   verified energy-equivalent over all assignments.
 - **Ising Hamiltonian** (`algorithms.ising_hamiltonian`) — the diagonal quantum Hamiltonian
   whose ground state is the optimizer, verified against brute force.
-- **Brute-force solvers** (`algorithms.brute_force_ising`, `brute_force_qubo`) — exact
-  minimizers by enumeration, the verification oracle.
+- **Brute-force Ising** (`algorithms.brute_force_ising`) — the exact spin minimizer by
+  enumeration, the verification oracle.
+- **Brute-force QUBO** (`algorithms.brute_force_qubo`) — the exact binary minimizer by
+  enumeration.
 - **MaxCut encoding** (`algorithms.max_cut_qubo`) — the QUBO whose ground state is a maximum
   cut, verified against the true max cut.
 - **Number-partition encoding** (`algorithms.number_partition_qubo`) — the balanced-partition
@@ -44,24 +46,32 @@ brute force and every formula against its closed form.
   easy Hamiltonian with ground state ``|+>^n``.
 - **Interpolating Hamiltonian** (`algorithms.interpolating_hamiltonian`) — the adiabatic path
   ``(1-s)H0 + s H1``.
-- **Instantaneous & minimum gap** (`algorithms.instantaneous_gap`, `minimum_gap`) — the
-  spectral gap along the path and its bottleneck, verified positive.
-- **Adiabatic evolution** (`algorithms.adiabatic_evolve`, `adiabatic_success_probability`) —
-  the time-dependent sweep and its success probability, verified to approach 1 as the runtime
-  grows.
+- **Instantaneous gap** (`algorithms.instantaneous_gap`) — the ground-to-excited gap at a
+  path point.
+- **Minimum gap** (`algorithms.minimum_gap`) — the bottleneck gap along the path, verified
+  positive for a non-crossing path.
+- **Adiabatic evolution** (`algorithms.adiabatic_evolve`) — the time-dependent Schrödinger
+  sweep of the ground state.
+- **Adiabatic success probability** (`algorithms.adiabatic_success_probability`) — the final
+  overlap with the target ground state, verified to approach 1 as the runtime grows.
 - **Landau-Zener probability** (`algorithms.landau_zener_probability`) — the closed-form
   diabatic transition ``exp(-pi gap^2/4v)``, verified against a two-level sweep simulation.
 - **Adiabatic runtime bound** (`algorithms.adiabatic_runtime_bound`) — the ``1/gap_min^2``
   cost scaling.
-- **Anneal Hamiltonian** (`algorithms.anneal_hamiltonian`, `spectral_gap_at`) — the
-  ``A(s)(-sum X) + B(s) H`` schedule and its instantaneous gap.
-- **Quantum anneal** (`algorithms.anneal`, `annealing_success_probability`,
-  `annealed_solution`) — the linear-schedule anneal, verified to recover the exact Ising
-  ground state for a slow enough anneal.
+- **Anneal Hamiltonian** (`algorithms.anneal_hamiltonian`) — the ``A(s)(-sum X) + B(s) H``
+  schedule.
+- **Anneal gap** (`algorithms.spectral_gap_at`) — the instantaneous gap along the anneal.
+- **Quantum anneal** (`algorithms.anneal`) — the linear-schedule anneal evolution.
+- **Annealing success** (`algorithms.annealing_success_probability`) — the ground-state
+  probability, verified to rise with anneal time.
+- **Annealed solution** (`algorithms.annealed_solution`) — the most probable spin
+  configuration, verified to match the exact Ising ground state for a slow anneal.
 - **Threshold oracle** (`algorithms.threshold_marked`) — the marked set ``f(x) < best`` of
   Dürr-Høyer.
-- **Dürr-Høyer minimization** (`algorithms.durr_hoyer_minimize`, `grover_adaptive_search`) —
-  Grover-based minimum finding, verified to reach the global optimum with high success.
+- **Dürr-Høyer minimization** (`algorithms.durr_hoyer_minimize`) — Grover-based minimum
+  finding, verified to reach the global optimum with high success.
+- **Grover adaptive search** (`algorithms.grover_adaptive_search`) — Dürr-Høyer applied to a
+  function oracle, verified to reach the true minimum.
 - **Optimization query scaling** (`algorithms.quantum_minimum_queries`,
   `classical_minimum_queries`) — the ``O(sqrt N)`` vs ``O(N)`` query counts.
 
