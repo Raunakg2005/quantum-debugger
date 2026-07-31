@@ -5,7 +5,73 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.2.0.dev)
+## [Unreleased] (2.3.0.dev)
+
+Theme: Hamiltonian simulation & product formulas — the algorithmic core of digital quantum
+simulation. First-, second-, and fourth-order Trotter-Suzuki formulas with their exact
+error scaling (``t^2/r``, ``t^3/r^2``, ``t^5/r^4``), commutator error bounds, the randomized
+qDRIFT protocol (gate count independent of the number of terms), and Taylor-series /
+truncation-order simulation — every approximation verified against the exact ``e^{-iHt}``.
+
+### Added
+- **Exact evolution** (`algorithms.exact_evolution`) — the reference propagator ``e^{-iHt}``
+  every product formula is compared to.
+- **First-order Trotter** (`algorithms.first_order_trotter`) — the Lie-Trotter product formula,
+  error ``O(t^2/r)``.
+- **Second-order Trotter** (`algorithms.second_order_trotter`) — the symmetric Strang formula,
+  error ``O(t^3/r^2)``.
+- **Fourth-order Suzuki** (`algorithms.fourth_order_suzuki`) — the recursive Suzuki formula,
+  error ``O(t^5/r^4)``.
+- **Trotter error** (`algorithms.trotter_error`) — the spectral-norm error of a product formula
+  against the exact evolution.
+- **State simulation** (`algorithms.simulate_state`) — a product-formula evolution's fidelity to
+  the exact state, verified to approach 1 with more steps.
+- **Order-scaling slope** (`algorithms.error_scaling_slope`) — the log-log error-vs-steps slope,
+  verified ``~ -1/-2/-4`` for orders 1/2/4.
+- **Commutator** (`algorithms.commutator`) — ``[A,B]=AB-BA``, the source of Trotter error.
+- **Spectral norm** (`algorithms.spectral_norm`) — the operator norm used in the bounds.
+- **Commutator sum** (`algorithms.commutator_sum`) — ``sum_{i<j}||[H_i,H_j]||`` controlling the
+  first-order error.
+- **First-order error bound** (`algorithms.first_order_error_bound`) — ``(t^2/2)sum||[H_i,H_j]||``,
+  verified to upper-bound the actual error.
+- **Second-order error bound** (`algorithms.second_order_error_bound`) — the nested-commutator
+  cubic-in-``t`` bound, verified.
+- **Commuting-terms test** (`algorithms.terms_commute`) — verifies the formula is exact when all
+  terms commute.
+- **qDRIFT distribution** (`algorithms.qdrift_probabilities`) — the importance-sampling
+  ``p_k=|c_k|/lambda`` and the ``lambda`` normalization.
+- **qDRIFT sample** (`algorithms.qdrift_sample_unitary`) — one random product of ``N`` sampled
+  term-rotations.
+- **qDRIFT channel** (`algorithms.qdrift_channel`) — the Monte-Carlo-averaged randomized
+  evolution.
+- **qDRIFT error** (`algorithms.qdrift_error`) — the trace-distance error, verified to decrease
+  with the step count ``N``.
+- **qDRIFT gate count** (`algorithms.qdrift_gate_count`) — ``~2 lambda^2 t^2/eps``, independent of
+  the number of terms.
+- **Taylor-series propagator** (`algorithms.taylor_series_unitary`) — the truncated
+  ``sum (-iHt)^k/k!`` expansion.
+- **Taylor error** (`algorithms.taylor_error`) — the truncation error, verified to fall
+  factorially with the order.
+- **Taylor truncation order** (`algorithms.taylor_truncation_order`) — the order for precision
+  ``eps``, verified to bound the actual error.
+- **Hamiltonian assembly** (`algorithms.hamiltonian_from_terms`) — the dense matrix from Pauli
+  terms.
+- **Series convergence** (`algorithms.series_convergence`) — the Taylor error across truncation
+  orders, verified strictly decreasing.
+- **Trotter step count** (`algorithms.trotter_first_order_steps`) — the steps for first-order
+  precision from the error bound.
+- **First-order gate count** (`algorithms.trotter_first_order_gate_count`) — steps times terms,
+  the full first-order cost.
+- **Second-order step count** (`algorithms.trotter_second_order_steps`) — the ``sqrt`` step count
+  of the symmetric formula.
+- **Taylor gate count** (`algorithms.taylor_gate_count`) — the ``log(1/eps)`` truncation order,
+  exponentially better in precision.
+- **qDRIFT-vs-Trotter crossover** (`algorithms.qdrift_beats_trotter`) — verifies qDRIFT wins for
+  Hamiltonians with many terms.
+- **Method selector** (`algorithms.cheapest_method`) — picks the lowest-gate-count method, e.g.
+  Taylor at high precision.
+
+## [2.2.0]
 
 Theme: variational algorithms & QML theory — why (and when) parametrized quantum circuits
 train. Exact parameter-shift gradients and Hessians, the barren-plateau phenomenon

@@ -706,6 +706,45 @@ from .quantum_natural_gradient import (
     fubini_study_distance,
     effective_quantum_dimension,
 )
+from .product_formulas import (
+    exact_evolution,
+    first_order_trotter,
+    second_order_trotter,
+    fourth_order_suzuki,
+    trotter_error,
+    simulate_state,
+    error_scaling_slope,
+)
+from .trotter_bounds import (
+    commutator,
+    spectral_norm,
+    commutator_sum,
+    first_order_error_bound,
+    second_order_error_bound,
+    terms_commute,
+)
+from .qdrift import (
+    qdrift_probabilities,
+    qdrift_sample_unitary,
+    qdrift_channel,
+    qdrift_error,
+    qdrift_gate_count,
+)
+from .taylor_simulation import (
+    taylor_series_unitary,
+    taylor_error,
+    taylor_truncation_order,
+    hamiltonian_from_terms,
+    series_convergence,
+)
+from .simulation_complexity import (
+    trotter_first_order_steps,
+    trotter_first_order_gate_count,
+    trotter_second_order_steps,
+    taylor_gate_count,
+    qdrift_beats_trotter,
+    cheapest_method,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1428,6 +1467,40 @@ __all__ = [
     "natural_gradient",
     "fubini_study_distance",
     "effective_quantum_dimension",
+    # Hamiltonian simulation — product formulas
+    "exact_evolution",
+    "first_order_trotter",
+    "second_order_trotter",
+    "fourth_order_suzuki",
+    "trotter_error",
+    "simulate_state",
+    "error_scaling_slope",
+    # Hamiltonian simulation — commutator bounds
+    "commutator",
+    "spectral_norm",
+    "commutator_sum",
+    "first_order_error_bound",
+    "second_order_error_bound",
+    "terms_commute",
+    # Hamiltonian simulation — qDRIFT
+    "qdrift_probabilities",
+    "qdrift_sample_unitary",
+    "qdrift_channel",
+    "qdrift_error",
+    "qdrift_gate_count",
+    # Hamiltonian simulation — Taylor series
+    "taylor_series_unitary",
+    "taylor_error",
+    "taylor_truncation_order",
+    "hamiltonian_from_terms",
+    "series_convergence",
+    # Hamiltonian simulation — complexity
+    "trotter_first_order_steps",
+    "trotter_first_order_gate_count",
+    "trotter_second_order_steps",
+    "taylor_gate_count",
+    "qdrift_beats_trotter",
+    "cheapest_method",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
