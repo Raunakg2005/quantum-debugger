@@ -536,6 +536,45 @@ from .bosonic_codes import (
     photon_loss,
     loss_flips_parity,
 )
+from .randomized_benchmarking_advanced import (
+    rb_survival,
+    fit_rb_decay,
+    average_gate_fidelity_from_rb,
+    error_per_clifford,
+    interleaved_rb_gate_error,
+)
+from .xeb import (
+    porter_thomas_pdf,
+    porter_thomas_samples,
+    linear_xeb_fidelity,
+    speckle_purity,
+    cross_entropy_fidelity,
+)
+from .quantum_volume import (
+    heavy_outputs,
+    heavy_output_probability,
+    quantum_volume_pass,
+    ideal_heavy_output_probability,
+    quantum_volume,
+)
+from .tomography_dfe import (
+    pauli_expectations,
+    state_tomography,
+    is_physical_density_matrix,
+    direct_fidelity_estimation,
+)
+from .channel_metrics import (
+    choi_matrix,
+    entanglement_fidelity,
+    average_gate_fidelity,
+    pauli_transfer_matrix,
+    unitarity,
+)
+from .mirror_benchmarking import (
+    mirror_survival,
+    depolarizing_layer,
+    mirror_fidelity_decay,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1112,6 +1151,39 @@ __all__ = [
     "cat_code_words",
     "photon_loss",
     "loss_flips_parity",
+    # Benchmarking — randomized benchmarking
+    "rb_survival",
+    "fit_rb_decay",
+    "average_gate_fidelity_from_rb",
+    "error_per_clifford",
+    "interleaved_rb_gate_error",
+    # Benchmarking — cross-entropy
+    "porter_thomas_pdf",
+    "porter_thomas_samples",
+    "linear_xeb_fidelity",
+    "speckle_purity",
+    "cross_entropy_fidelity",
+    # Benchmarking — quantum volume
+    "heavy_outputs",
+    "heavy_output_probability",
+    "quantum_volume_pass",
+    "ideal_heavy_output_probability",
+    "quantum_volume",
+    # Benchmarking — tomography & DFE
+    "pauli_expectations",
+    "state_tomography",
+    "is_physical_density_matrix",
+    "direct_fidelity_estimation",
+    # Benchmarking — channel metrics
+    "choi_matrix",
+    "entanglement_fidelity",
+    "average_gate_fidelity",
+    "pauli_transfer_matrix",
+    "unitarity",
+    # Benchmarking — mirror benchmarking
+    "mirror_survival",
+    "depolarizing_layer",
+    "mirror_fidelity_decay",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

@@ -5,7 +5,61 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.8.0.dev)
+## [Unreleased] (1.9.0.dev)
+
+Theme: characterization & benchmarking — measuring how good a quantum device really is.
+Randomized benchmarking (and interleaved RB for per-gate error), cross-entropy
+benchmarking with the Porter-Thomas distribution, quantum volume via heavy outputs,
+state tomography and direct fidelity estimation, channel metrics (average-gate /
+entanglement fidelity, unitarity, Choi matrices), and mirror benchmarking — every
+metric verified against exact channels and closed forms.
+
+### Added
+- **RB survival model** (`algorithms.rb_survival`) — the ``A p^m + B`` randomized-benchmarking
+  decay with SPAM factored out.
+- **RB decay fit** (`algorithms.fit_rb_decay`) — recover the decay rate ``p`` from
+  (length, survival) data, verified to match a planted rate.
+- **Average gate fidelity from RB** (`algorithms.average_gate_fidelity_from_rb`) —
+  ``1 - (1-p)(d-1)/d`` from the decay rate.
+- **Error per Clifford** (`algorithms.error_per_clifford`) — the ``(1-p)(d-1)/d`` headline RB
+  number.
+- **Interleaved RB** (`algorithms.interleaved_rb_gate_error`) — isolate a single gate's error
+  from the reference/interleaved decays, verified against a planted error.
+- **Porter-Thomas distribution** (`algorithms.porter_thomas_pdf`, `porter_thomas_samples`) —
+  the ``D e^{-D p}`` speckle law of random-circuit outputs, verified normalized with mean
+  ``1/D``.
+- **Linear XEB fidelity** (`algorithms.linear_xeb_fidelity`) — cross-entropy benchmarking
+  ``D <p_ideal> - 1``, verified ~1 for ideal sampling and ~0 for uniform.
+- **Speckle purity** (`algorithms.speckle_purity`) — the collision-probability shape check,
+  ``~2`` for Porter-Thomas.
+- **Cross-entropy fidelity** (`algorithms.cross_entropy_fidelity`) — the distribution-level
+  XEB estimator, verified 1 (ideal) / 0 (uniform).
+- **Heavy outputs** (`algorithms.heavy_outputs`, `heavy_output_probability`) — the
+  above-median outcomes and their probability, the quantum-volume observable.
+- **Quantum-volume test** (`algorithms.quantum_volume_pass`, `ideal_heavy_output_probability`,
+  `quantum_volume`) — the ``HOP > 2/3`` criterion, the ideal ``(1+ln2)/2`` asymptote, and the
+  ``2^n`` volume.
+- **Pauli expectations** (`algorithms.pauli_expectations`) — the full tomographic data set of
+  a state.
+- **State tomography** (`algorithms.state_tomography`, `is_physical_density_matrix`) — linear
+  inversion ``rho = (1/2^n) sum <P> P``, verified to recover a random state exactly.
+- **Direct fidelity estimation** (`algorithms.direct_fidelity_estimation`) — the
+  Pauli-sampling fidelity estimator, verified equal to ``<psi|rho|psi>`` for a pure target.
+- **Choi matrix** (`algorithms.choi_matrix`) — the channel-state dual, verified positive with
+  trace ``d``.
+- **Entanglement & average gate fidelity** (`algorithms.entanglement_fidelity`,
+  `average_gate_fidelity`) — closeness of a channel to a target unitary, verified 1 for an
+  exact gate.
+- **Pauli transfer matrix** (`algorithms.pauli_transfer_matrix`) — the real Pauli-basis
+  representation of a channel.
+- **Unitarity** (`algorithms.unitarity`) — the coherence of a channel from the PTM, verified
+  1 for unitaries and ``decay^2`` for depolarizing.
+- **Mirror benchmarking** (`algorithms.mirror_survival`, `depolarizing_layer`) — the
+  circuit-then-inverse survival probability, verified 1 noiseless and decaying under noise.
+- **Mirror decay curve** (`algorithms.mirror_fidelity_decay`) — the survival vs. depth curve,
+  verified monotonically decreasing.
+
+## [1.8.0]
 
 Theme: continuous-variable & bosonic quantum computing — qubits are not the only way.
 The Gaussian formalism (covariance matrices, symplectic transforms, Williamson
