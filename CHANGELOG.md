@@ -5,7 +5,86 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.3.0.dev)
+## [Unreleased] (1.4.0.dev)
+
+Theme: quantum chemistry & electronic structure — the flagship near-term application.
+Fermion-to-qubit mappings (Jordan-Wigner, parity, Bravyi-Kitaev), second-quantized
+molecular Hamiltonians with published STO-3G integrals, particle-number-conserving
+ansätze (Hartree-Fock, Givens rotations, UCCSD), Z2 qubit tapering and measurement
+grouping, and excited-state / adaptive solvers (SSVQE, ADAPT-VQE) — every energy
+verified against exact diagonalization or published FCI values.
+
+### Added
+- **Jordan-Wigner mapping** (`algorithms.jordan_wigner_annihilation`,
+  `fock_annihilation`) — the fermionic annihilation operator with its parity-``Z`` string,
+  verified to satisfy the canonical anticommutation relations.
+- **Parity mapping** (`algorithms.parity_annihilation`, `parity_matrix`) — the
+  partial-sum encoding, verified to satisfy the CAR and give an identical spectrum to
+  Jordan-Wigner.
+- **Bravyi-Kitaev mapping** (`algorithms.bravyi_kitaev_annihilation`,
+  `bravyi_kitaev_matrix`) — the Fenwick-tree encoding, verified to satisfy the CAR, match
+  the spectrum, and reduce operator locality (Pauli weight) versus Jordan-Wigner.
+- **General fermion encoding** (`algorithms.encoded_annihilation`) — any invertible
+  GF(2) encoding matrix ``beta`` as a basis change of the physical operators.
+- **CAR verification** (`algorithms.satisfies_car`) — checks
+  ``{a_i, a_j^dagger} = delta_ij`` and ``{a_i, a_j} = 0`` for a set of operators.
+- **Operator locality** (`algorithms.pauli_weight`) — the maximum Pauli weight of an
+  operator, the metric behind the Bravyi-Kitaev locality improvement.
+- **Second-quantized molecular Hamiltonian** (`algorithms.molecular_hamiltonian`) —
+  assemble ``sum h_pq a_p^d a_q + sum h_pqrs a_p^d a_q^d a_r a_s`` on qubits under any
+  mapping; verified against the non-interacting closed form (sum of lowest orbital
+  energies) and the Hubbard dimer.
+- **Particle-number operator** (`algorithms.number_operator`) — ``N = sum a_j^d a_j``,
+  used to project onto electron-number sectors.
+- **Full-CI ground energy** (`algorithms.fci_energy`) — the exact lowest eigenvalue in a
+  fixed particle-number sector; matches the analytic Hubbard-dimer energy
+  ``(U - sqrt(U^2+16t^2))/2`` to machine precision across all three mappings.
+- **Hartree-Fock energy** (`algorithms.hartree_fock_energy`) — the mean-field (single
+  determinant) energy, verified to be a variational upper bound on FCI.
+- **Hubbard dimer** (`algorithms.hubbard_dimer_hamiltonian`) — the two-site
+  closed-form-solvable model that anchors the molecular-builder verification.
+- **Hartree-Fock reference state** (`algorithms.hartree_fock_state`) — the occupation
+  determinant with the lowest orbitals filled; verified at the right electron count.
+- **Givens rotations** (`algorithms.givens_rotation`) — orbital-rotation single
+  excitations ``exp(theta(a_p^d a_q - h.c.))``, verified unitary and particle-conserving.
+- **UCCSD ansatz** (`algorithms.uccsd_operator`) — the unitary coupled-cluster
+  singles-and-doubles operator ``exp(T - T^dagger)``, verified unitary and
+  number-conserving on a Hartree-Fock input.
+- **Ansatz symmetry checks** (`algorithms.conserves_particle_number`, `is_unitary`) — the
+  ``[U,N]=0`` and unitarity tests every chemistry ansatz must pass.
+- **One-particle RDM** (`algorithms.one_particle_rdm`) — ``D_pq = <a_p^d a_q>``, verified
+  Hermitian with trace equal to the particle number.
+- **Two-particle RDM** (`algorithms.two_particle_rdm`) — ``d_pqrs = <a_p^d a_q^d a_r a_s>``,
+  the source of the electron-repulsion energy.
+- **Energy from RDMs** (`algorithms.energy_from_rdm`) — reconstruct the molecular energy
+  from the one- and two-particle RDMs; verified equal to the direct expectation ``<H>``.
+- **Natural-orbital occupations** (`algorithms.natural_orbital_occupations`) — the 1-RDM
+  eigenvalues in ``[0,1]``, a correlation diagnostic (0/1 for a single determinant).
+- **Z2 symmetry finder** (`algorithms.z2_symmetry_generators`) — the Pauli symmetries of a
+  Hamiltonian from the GF(2) kernel of its term matrix; verified to commute with ``H`` and
+  square to the identity.
+- **Qubit tapering** (`algorithms.taper_energy`, `sector_projector`,
+  `spectrum_is_union_of_sectors`) — remove a qubit per Z2 symmetry by fixing a ``+/-1``
+  sector; verified that the full spectrum equals the union of sector spectra.
+- **Qubit-wise commuting groups** (`algorithms.qubit_wise_commuting_groups`) — partition
+  Pauli terms into single-rotation-measurable groups; verified valid and covering.
+- **General commuting groups** (`algorithms.commuting_groups`) — coarser commuting
+  partitions (never more groups than QWC), verified.
+- **Measurement reduction report** (`algorithms.measurement_reduction`,
+  `is_valid_grouping`) — terms vs. QWC vs. commuting settings, the shot-cost saving of
+  grouping.
+- **Folded-spectrum targeting** (`algorithms.folded_spectrum_operator`,
+  `nearest_eigenstate`) — reach an interior eigenstate by minimizing ``(H-omega)^2``;
+  verified to return the exact eigenpair nearest ``omega``.
+- **Rayleigh-Ritz subspace energies** (`algorithms.subspace_energies`) — variational
+  eigenvalue estimates from a trial subspace, exact on an invariant subspace (verified).
+- **SSVQE cost** (`algorithms.ssvqe_cost`) — the weighted-energy objective of
+  subspace-search VQE, verified minimized by the lowest eigenstates.
+- **Variational deflation** (`algorithms.deflation_hamiltonian`,
+  `excited_spectrum_by_deflation`) — penalize found states to reach the next excited one;
+  verified to recover the exact low-lying spectrum in order.
+
+## [1.3.0]
 
 Theme: topological codes & scalable QEC — beyond the original roadmap. The surface /
 toric code family on the stabilizer engine: lattice stabilizers, logical operators,

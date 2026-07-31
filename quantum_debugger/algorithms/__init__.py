@@ -319,6 +319,60 @@ from .entanglement_negativity import (
     logarithmic_negativity,
     is_entangled_ppt,
 )
+from .fermion_mappings import (
+    fock_annihilation,
+    jordan_wigner_annihilation,
+    parity_annihilation,
+    bravyi_kitaev_annihilation,
+    encoded_annihilation,
+    jordan_wigner_matrix,
+    parity_matrix,
+    bravyi_kitaev_matrix,
+    satisfies_car,
+    pauli_weight,
+)
+from .molecular_hamiltonian import (
+    molecular_hamiltonian,
+    number_operator,
+    fci_energy,
+    hartree_fock_energy,
+    hubbard_dimer_hamiltonian,
+)
+from .chemistry_ansatze import (
+    hartree_fock_state,
+    givens_rotation,
+    uccsd_operator,
+    conserves_particle_number,
+    is_unitary,
+    apply_ansatz,
+)
+from .rdm import (
+    one_particle_rdm,
+    two_particle_rdm,
+    energy_from_rdm,
+    natural_orbital_occupations,
+)
+from .qubit_tapering import (
+    z2_symmetry_generators,
+    is_symmetry,
+    sector_projector,
+    taper_energy,
+    spectrum_is_union_of_sectors,
+)
+from .measurement_grouping import (
+    qubit_wise_commuting_groups,
+    commuting_groups,
+    is_valid_grouping,
+    measurement_reduction,
+)
+from .excited_states import (
+    folded_spectrum_operator,
+    nearest_eigenstate,
+    subspace_energies,
+    ssvqe_cost,
+    deflation_hamiltonian,
+    excited_spectrum_by_deflation,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -703,6 +757,53 @@ __all__ = [
     "negativity",
     "logarithmic_negativity",
     "is_entangled_ppt",
+    # Quantum chemistry — fermion mappings
+    "fock_annihilation",
+    "jordan_wigner_annihilation",
+    "parity_annihilation",
+    "bravyi_kitaev_annihilation",
+    "encoded_annihilation",
+    "jordan_wigner_matrix",
+    "parity_matrix",
+    "bravyi_kitaev_matrix",
+    "satisfies_car",
+    "pauli_weight",
+    # Quantum chemistry — molecular Hamiltonians
+    "molecular_hamiltonian",
+    "number_operator",
+    "fci_energy",
+    "hartree_fock_energy",
+    "hubbard_dimer_hamiltonian",
+    # Quantum chemistry — ansätze
+    "hartree_fock_state",
+    "givens_rotation",
+    "uccsd_operator",
+    "conserves_particle_number",
+    "is_unitary",
+    "apply_ansatz",
+    # Quantum chemistry — RDMs
+    "one_particle_rdm",
+    "two_particle_rdm",
+    "energy_from_rdm",
+    "natural_orbital_occupations",
+    # Quantum chemistry — qubit tapering
+    "z2_symmetry_generators",
+    "is_symmetry",
+    "sector_projector",
+    "taper_energy",
+    "spectrum_is_union_of_sectors",
+    # Quantum chemistry — measurement grouping
+    "qubit_wise_commuting_groups",
+    "commuting_groups",
+    "is_valid_grouping",
+    "measurement_reduction",
+    # Quantum chemistry — excited states
+    "folded_spectrum_operator",
+    "nearest_eigenstate",
+    "subspace_energies",
+    "ssvqe_cost",
+    "deflation_hamiltonian",
+    "excited_spectrum_by_deflation",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
