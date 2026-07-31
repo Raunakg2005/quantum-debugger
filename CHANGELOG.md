@@ -15,15 +15,19 @@ capability (Meyer-Wallach), and the quantum geometric tensor / Fisher informatio
 quantum natural gradient — verified against finite-difference gradients and closed forms.
 
 ### Added
-- **Hardware-efficient ansatz** (`algorithms.hardware_efficient_ansatz`,
-  `ansatz_num_params`) — the ``Ry`` + CNOT-ladder variational circuit and its parameter count.
-- **Cost observable & expectation** (`algorithms.z_observable`, `ansatz_expectation`) — the
-  diagonal ``Z``-type cost and its expectation, the objective the theory acts on.
+- **Hardware-efficient ansatz** (`algorithms.hardware_efficient_ansatz`) — the ``Ry`` +
+  CNOT-ladder variational circuit.
+- **Ansatz parameter count** (`algorithms.ansatz_num_params`) — the ``n*layers`` parameter
+  count of the ansatz.
+- **Cost observable** (`algorithms.z_observable`) — the diagonal ``Z``-type cost operator.
+- **Ansatz expectation** (`algorithms.ansatz_expectation`) — the variational cost
+  ``<psi|O|psi>``, the objective the theory acts on.
 - **Random parameters** (`algorithms.random_parameters`) — a random point in the training
   landscape.
-- **Parameter-shift gradient** (`algorithms.parameter_shift_gradient`,
-  `parameter_shift_gradient_all`) — the exact analytic gradient from ``+/- pi/2`` shifts,
-  verified to match finite differences to machine precision.
+- **Parameter-shift gradient** (`algorithms.parameter_shift_gradient`) — the exact analytic
+  partial derivative from ``+/- pi/2`` shifts, verified against finite differences.
+- **Full shift-rule gradient** (`algorithms.parameter_shift_gradient_all`) — the whole
+  gradient vector, verified to match finite differences to machine precision.
 - **Finite-difference gradient** (`algorithms.finite_difference_gradient`) — the numerical
   reference for the shift rule.
 - **Parameter-shift Hessian** (`algorithms.parameter_shift_hessian_diagonal`) — the diagonal
@@ -34,28 +38,36 @@ quantum natural gradient — verified against finite-difference gradients and cl
   over random parameters, the barren-plateau diagnostic.
 - **Barren-plateau scaling** (`algorithms.barren_plateau_scaling`) — the global-cost gradient
   variance vs. qubit number, verified to shrink as the system grows.
-- **Local vs. global cost variance** (`algorithms.local_cost_gradient_variance`,
-  `global_cost_gradient_variance`) — the gradient variances for single-qubit and all-qubit
-  costs.
+- **Local-cost gradient variance** (`algorithms.local_cost_gradient_variance`) — the gradient
+  variance for a single-qubit cost.
+- **Global-cost gradient variance** (`algorithms.global_cost_gradient_variance`) — the
+  gradient variance for the all-qubit cost.
 - **Cost concentration** (`algorithms.cost_concentration`) — the variance of the cost value
   over random parameters, verified to decrease with system size.
-- **Haar fidelity density** (`algorithms.haar_fidelity_pdf`, `haar_mean_fidelity`) — the
-  ``(N-1)(1-F)^{N-2}`` reference distribution and its ``1/N`` mean.
+- **Haar fidelity density** (`algorithms.haar_fidelity_pdf`) — the ``(N-1)(1-F)^{N-2}``
+  reference distribution of Haar-random overlaps.
+- **Haar mean fidelity** (`algorithms.haar_mean_fidelity`) — the ``1/N`` frame-potential
+  target.
 - **Ansatz fidelity sampling** (`algorithms.sample_ansatz_fidelities`) — the empirical overlap
   distribution used for expressibility.
 - **Frame potential** (`algorithms.frame_potential`) — the average overlap, verified to
   approach the Haar value ``1/2^n`` for an expressive ansatz.
 - **Expressibility (KL)** (`algorithms.expressibility_kl`) — the KL divergence from the Haar
   distribution, verified to decrease as layers are added.
-- **Meyer-Wallach entanglement** (`algorithms.meyer_wallach`, `is_product_state`) — the global
+- **Meyer-Wallach entanglement** (`algorithms.meyer_wallach`) — the global multipartite
   entanglement measure, verified 0 for product states and 1 for GHZ.
-- **Entangling capability** (`algorithms.entangling_capability`, `average_entanglement`) — the
-  ansatz's average Meyer-Wallach entanglement, verified to grow with entangling layers.
+- **Product-state test** (`algorithms.is_product_state`) — the ``Q=0`` check for
+  non-entangled states.
+- **Entangling capability** (`algorithms.entangling_capability`) — the ansatz's average
+  Meyer-Wallach entanglement, verified to grow with entangling layers.
+- **Average entanglement** (`algorithms.average_entanglement`) — the mean Meyer-Wallach
+  entanglement over a set of states.
 - **Quantum geometric tensor** (`algorithms.quantum_geometric_tensor`) — the Fubini-Study
   metric of the ansatz, verified symmetric positive semi-definite.
-- **Quantum Fisher matrix** (`algorithms.quantum_fisher_matrix`,
-  `is_positive_semidefinite`) — four times the geometric tensor, the metric for natural
-  gradient and estimation.
+- **Quantum Fisher matrix** (`algorithms.quantum_fisher_matrix`) — four times the geometric
+  tensor, the metric for natural gradient and estimation.
+- **Positive-semidefinite check** (`algorithms.is_positive_semidefinite`) — the metric
+  validity test.
 - **Quantum natural gradient** (`algorithms.natural_gradient`) — the metric-preconditioned
   update, verified to reduce to the ordinary gradient at an identity metric.
 - **Fubini-Study distance** (`algorithms.fubini_study_distance`) — the geodesic distance
