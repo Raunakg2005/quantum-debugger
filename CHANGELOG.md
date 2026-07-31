@@ -21,42 +21,54 @@ verified against closed forms and by logical-action checks on real codewords.
   stabilizer state, a magic monotone; ``cos^2(pi/8)`` for the T state (verified).
 - **15-to-1 distillation error** (`algorithms.distillation_15to1_error`) — the analytic
   ``35 p^3`` output error, verified cubic and below-input for ``p < 1/sqrt(35)``.
-- **Distillation threshold & rounds** (`algorithms.distillation_threshold`,
-  `distillation_rounds_to_target`) — the ``1/sqrt(35)`` break-even point and the number of
-  rounds to reach a target error (or divergence above threshold).
+- **Distillation threshold** (`algorithms.distillation_threshold`) — the ``1/sqrt(35)``
+  break-even input error below which distillation converges.
+- **Distillation round count** (`algorithms.distillation_rounds_to_target`) — the number of
+  15-to-1 rounds to reach a target error (``-1`` above threshold).
 - **One-level concatenation** (`algorithms.one_level_logical_error`) — the ``A p^2`` map of
   a distance-3 code.
-- **Concatenated error** (`algorithms.concatenated_logical_error`,
-  `double_exponential_check`) — the recursive logical error, verified to match the closed
-  form ``p_th (p/p_th)^{2^L}`` (double-exponential suppression).
-- **Concatenation threshold & levels** (`algorithms.pseudothreshold`,
-  `levels_for_target`) — the ``1/A`` pseudothreshold and the levels needed for a target
-  error (``-1`` above threshold).
+- **Concatenated logical error** (`algorithms.concatenated_logical_error`) — the recursive
+  logical error after ``L`` levels of concatenation.
+- **Double-exponential check** (`algorithms.double_exponential_check`) — verifies the
+  recursion equals the closed form ``p_th (p/p_th)^{2^L}`` (the threshold theorem).
+- **Concatenation pseudothreshold** (`algorithms.pseudothreshold`) — the ``1/A`` crossover
+  below which errors shrink per level.
+- **Levels for a target** (`algorithms.levels_for_target`) — the concatenation depth needed
+  for a target error (``-1`` above threshold).
 - **Qubit overhead** (`algorithms.qubit_overhead`) — ``block^levels`` physical qubits per
   logical qubit under concatenation.
 - **Transversal gate builder** (`algorithms.transversal_gate`) — ``g^{⊗n}``, the fault-safe
   logical-gate form.
-- **Steane code words** (`algorithms.steane_codewords`, `preserves_code_space`,
-  `logical_action`) — the ``|0_L>, |1_L>`` basis from the stabilizer projector and the
-  read-off of a transversal gate's logical action.
-- **Transversal Clifford verification** (`algorithms.steane_transversal_hadamard_is_logical_h`,
-  `steane_transversal_s_is_logical_phase`) — confirms ``H^{⊗7}`` and ``S^{⊗7}`` enact the
-  logical Hadamard and phase gate on the Steane code words.
+- **Steane code words** (`algorithms.steane_codewords`) — the ``|0_L>, |1_L>`` logical basis
+  from the stabilizer projector.
+- **Code-space preservation** (`algorithms.preserves_code_space`) — checks a gate keeps the
+  logical subspace (prerequisite for being a logical operation).
+- **Logical action read-off** (`algorithms.logical_action`) — the ``2x2`` logical gate a
+  transversal operation enacts on the code words.
+- **Transversal Hadamard** (`algorithms.steane_transversal_hadamard_is_logical_h`) —
+  confirms ``H^{⊗7}`` enacts the logical Hadamard on the Steane code.
+- **Transversal phase gate** (`algorithms.steane_transversal_s_is_logical_phase`) — confirms
+  ``S^{⊗7}`` enacts a logical phase gate.
 - **Eastin-Knill obstruction** (`algorithms.eastin_knill_obstruction`) — demonstrates that
   ``T^{⊗7}`` leaves the Steane code space, so no transversal ``T`` exists (no universal
   transversal set).
-- **Gate teleportation** (`algorithms.gate_teleportation`, `resource_state`) — teleport a
-  Clifford gate via ``(I⊗U)|Phi+>`` and a Bell measurement, verified recoverable with a
-  Pauli correction (and correctly *not* for non-Clifford ``T``).
+- **Gate-teleportation resource** (`algorithms.resource_state`) — the ``(I⊗U)|Phi+>``
+  offline state that carries a gate onto the data.
+- **Gate teleportation** (`algorithms.gate_teleportation`) — teleport a Clifford gate via a
+  Bell measurement, verified recoverable with a Pauli correction (and correctly *not* for
+  non-Clifford ``T``).
 - **T-injection** (`algorithms.t_injection`) — inject a logical ``T`` from a magic state
-  with an adaptive ``S`` correction; verified to produce ``T|psi>`` on both branches — the
-  route to universality past Eastin-Knill.
-- **Clifford+T net** (`algorithms.enumerate_clifford_t`, `synthesize`, `synthesize_rz`) —
-  enumerate Clifford+T words (deduplicated up to phase) and find the best approximation of a
-  target; verified exact for ``pi/4`` multiples and any reachable gate.
-- **Gate distance & T-count** (`algorithms.gate_distance`, `t_count`, `is_clifford_t_word`,
-  `rz`) — the phase-invariant gate metric, the fault-tolerant ``T``-cost, and the gate-set
-  check underlying synthesis.
+  with an adaptive ``S`` correction; verified to produce ``T|psi>`` — the route to
+  universality past Eastin-Knill.
+- **Clifford+T net** (`algorithms.enumerate_clifford_t`) — enumerate Clifford+T words
+  deduplicated up to global phase, the finite Solovay-Kitaev net.
+- **Gate synthesis** (`algorithms.synthesize`, `synthesize_rz`) — the best Clifford+T
+  approximation of a target gate; verified exact for ``pi/4`` multiples and any reachable
+  gate.
+- **Gate distance** (`algorithms.gate_distance`) — the phase-invariant process-fidelity
+  metric between single-qubit gates.
+- **T-count & gate-set check** (`algorithms.t_count`, `is_clifford_t_word`, `rz`) — the
+  fault-tolerant ``T``-cost, the Clifford+T membership test, and the ``Rz`` target.
 
 ## [1.5.0]
 
