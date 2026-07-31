@@ -25,14 +25,16 @@ Mandel interference) — verified against the closed forms of the harmonic oscil
   invariants from ``i Omega sigma``, the physicality and entropy inputs.
 - **Physicality test** (`algorithms.is_physical_covariance`) — checks all symplectic
   eigenvalues ``>= 1`` (the uncertainty principle); rejects sub-vacuum noise.
-- **Gaussian purity & entropy** (`algorithms.purity_gaussian`, `gaussian_entropy`) — the
-  purity ``1/prod nu`` and von Neumann entropy from the symplectic spectrum, verified 1/0
-  for pure states.
+- **Gaussian purity** (`algorithms.purity_gaussian`) — ``1/prod nu`` from the symplectic
+  spectrum, verified 1 for pure states and ``1/(2 n_bar+1)`` for thermal.
+- **Gaussian entropy** (`algorithms.gaussian_entropy`) — the von Neumann entropy of a
+  Gaussian state, verified 0 for pure and positive for thermal.
 - **Symplectic check** (`algorithms.is_symplectic`) — verifies ``S Omega S^T = Omega`` for a
   Gaussian transform.
-- **Phase & squeeze symplectics** (`algorithms.phase_rotation_symplectic`,
-  `squeezing_symplectic`) — the passive rotation and active single-mode squeezer, verified
-  symplectic.
+- **Phase-rotation symplectic** (`algorithms.phase_rotation_symplectic`) — the passive phase
+  shifter, verified symplectic.
+- **Squeezing symplectic** (`algorithms.squeezing_symplectic`) — the active single-mode
+  squeezer, verified symplectic.
 - **Beamsplitter symplectic** (`algorithms.beamsplitter_symplectic`) — the two-mode passive
   mixer, verified symplectic.
 - **Two-mode squeezing** (`algorithms.two_mode_squeezing_symplectic`, `apply_symplectic`) —
