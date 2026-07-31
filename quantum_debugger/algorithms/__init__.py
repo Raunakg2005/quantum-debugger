@@ -416,6 +416,41 @@ from .entanglement_witness import (
     realignment_norm,
     realignment_criterion,
 )
+from .magic_states import (
+    t_state,
+    h_magic_state,
+    stabilizer_fidelity,
+    distillation_15to1_error,
+    distillation_threshold,
+    distillation_rounds_to_target,
+)
+from .concatenation import (
+    one_level_logical_error,
+    concatenated_logical_error,
+    pseudothreshold,
+    levels_for_target,
+    qubit_overhead,
+    double_exponential_check,
+)
+from .transversal_gates import (
+    transversal_gate,
+    steane_codewords,
+    preserves_code_space,
+    logical_action,
+    steane_transversal_hadamard_is_logical_h,
+    steane_transversal_s_is_logical_phase,
+    eastin_knill_obstruction,
+)
+from .gate_teleportation import resource_state, gate_teleportation, t_injection
+from .clifford_t_synthesis import (
+    rz,
+    gate_distance,
+    t_count,
+    enumerate_clifford_t,
+    synthesize,
+    synthesize_rz,
+    is_clifford_t_word,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -884,6 +919,40 @@ __all__ = [
     "realign",
     "realignment_norm",
     "realignment_criterion",
+    # Fault tolerance — magic states
+    "t_state",
+    "h_magic_state",
+    "stabilizer_fidelity",
+    "distillation_15to1_error",
+    "distillation_threshold",
+    "distillation_rounds_to_target",
+    # Fault tolerance — concatenation
+    "one_level_logical_error",
+    "concatenated_logical_error",
+    "pseudothreshold",
+    "levels_for_target",
+    "qubit_overhead",
+    "double_exponential_check",
+    # Fault tolerance — transversal gates
+    "transversal_gate",
+    "steane_codewords",
+    "preserves_code_space",
+    "logical_action",
+    "steane_transversal_hadamard_is_logical_h",
+    "steane_transversal_s_is_logical_phase",
+    "eastin_knill_obstruction",
+    # Fault tolerance — gate teleportation
+    "resource_state",
+    "gate_teleportation",
+    "t_injection",
+    # Fault tolerance — Clifford+T synthesis
+    "rz",
+    "gate_distance",
+    "t_count",
+    "enumerate_clifford_t",
+    "synthesize",
+    "synthesize_rz",
+    "is_clifford_t_word",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

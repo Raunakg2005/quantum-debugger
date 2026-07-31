@@ -5,7 +5,60 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.5.0.dev)
+## [Unreleased] (1.6.0.dev)
+
+Theme: fault tolerance & logical compilation — turning noisy physical qubits into
+reliable logical ones. Magic-state distillation and its cubic error suppression,
+gate teleportation and T-injection, transversal logical gates (and the Eastin-Knill
+obstruction to a universal transversal set), code concatenation with double-exponential
+error suppression below threshold, and Clifford+T / Solovay-Kitaev gate synthesis —
+verified against closed forms and by logical-action checks on real codewords.
+
+### Added
+- **T and H magic states** (`algorithms.t_state`, `h_magic_state`) — the non-stabilizer
+  resource states that inject non-Clifford gates.
+- **Stabilizer fidelity** (`algorithms.stabilizer_fidelity`) — the maximum overlap with a
+  stabilizer state, a magic monotone; ``cos^2(pi/8)`` for the T state (verified).
+- **15-to-1 distillation error** (`algorithms.distillation_15to1_error`) — the analytic
+  ``35 p^3`` output error, verified cubic and below-input for ``p < 1/sqrt(35)``.
+- **Distillation threshold & rounds** (`algorithms.distillation_threshold`,
+  `distillation_rounds_to_target`) — the ``1/sqrt(35)`` break-even point and the number of
+  rounds to reach a target error (or divergence above threshold).
+- **One-level concatenation** (`algorithms.one_level_logical_error`) — the ``A p^2`` map of
+  a distance-3 code.
+- **Concatenated error** (`algorithms.concatenated_logical_error`,
+  `double_exponential_check`) — the recursive logical error, verified to match the closed
+  form ``p_th (p/p_th)^{2^L}`` (double-exponential suppression).
+- **Concatenation threshold & levels** (`algorithms.pseudothreshold`,
+  `levels_for_target`) — the ``1/A`` pseudothreshold and the levels needed for a target
+  error (``-1`` above threshold).
+- **Qubit overhead** (`algorithms.qubit_overhead`) — ``block^levels`` physical qubits per
+  logical qubit under concatenation.
+- **Transversal gate builder** (`algorithms.transversal_gate`) — ``g^{⊗n}``, the fault-safe
+  logical-gate form.
+- **Steane code words** (`algorithms.steane_codewords`, `preserves_code_space`,
+  `logical_action`) — the ``|0_L>, |1_L>`` basis from the stabilizer projector and the
+  read-off of a transversal gate's logical action.
+- **Transversal Clifford verification** (`algorithms.steane_transversal_hadamard_is_logical_h`,
+  `steane_transversal_s_is_logical_phase`) — confirms ``H^{⊗7}`` and ``S^{⊗7}`` enact the
+  logical Hadamard and phase gate on the Steane code words.
+- **Eastin-Knill obstruction** (`algorithms.eastin_knill_obstruction`) — demonstrates that
+  ``T^{⊗7}`` leaves the Steane code space, so no transversal ``T`` exists (no universal
+  transversal set).
+- **Gate teleportation** (`algorithms.gate_teleportation`, `resource_state`) — teleport a
+  Clifford gate via ``(I⊗U)|Phi+>`` and a Bell measurement, verified recoverable with a
+  Pauli correction (and correctly *not* for non-Clifford ``T``).
+- **T-injection** (`algorithms.t_injection`) — inject a logical ``T`` from a magic state
+  with an adaptive ``S`` correction; verified to produce ``T|psi>`` on both branches — the
+  route to universality past Eastin-Knill.
+- **Clifford+T net** (`algorithms.enumerate_clifford_t`, `synthesize`, `synthesize_rz`) —
+  enumerate Clifford+T words (deduplicated up to phase) and find the best approximation of a
+  target; verified exact for ``pi/4`` multiples and any reachable gate.
+- **Gate distance & T-count** (`algorithms.gate_distance`, `t_count`, `is_clifford_t_word`,
+  `rz`) — the phase-invariant gate metric, the fault-tolerant ``T``-cost, and the gate-set
+  check underlying synthesis.
+
+## [1.5.0]
 
 Theme: quantum information & resource theories — how to *quantify* quantum resources.
 State-distinguishability (trace distance, Uhlmann fidelity, Bures metric, relative
