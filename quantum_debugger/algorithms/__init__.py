@@ -712,6 +712,7 @@ from .product_formulas import (
     second_order_trotter,
     fourth_order_suzuki,
     trotter_error,
+    randomized_trotter,
     simulate_state,
     error_scaling_slope,
 )
@@ -1473,6 +1474,7 @@ __all__ = [
     "second_order_trotter",
     "fourth_order_suzuki",
     "trotter_error",
+    "randomized_trotter",
     "simulate_state",
     "error_scaling_slope",
     # Hamiltonian simulation — commutator bounds

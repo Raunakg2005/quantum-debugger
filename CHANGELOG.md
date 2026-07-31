@@ -24,6 +24,9 @@ truncation-order simulation — every approximation verified against the exact `
   error ``O(t^5/r^4)``.
 - **Trotter error** (`algorithms.trotter_error`) — the spectral-norm error of a product formula
   against the exact evolution.
+- **Randomized Trotter** (`algorithms.randomized_trotter`) — first-order Trotter with a random
+  term ordering per step (leading-error cancellation in expectation), verified to approximate
+  the exact evolution.
 - **State simulation** (`algorithms.simulate_state`) — a product-formula evolution's fidelity to
   the exact state, verified to approach 1 with more steps.
 - **Order-scaling slope** (`algorithms.error_scaling_slope`) — the log-log error-vs-steps slope,
