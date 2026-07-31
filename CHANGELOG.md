@@ -5,7 +5,64 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.4.0.dev)
+## [Unreleased] (2.5.0.dev)
+
+Theme: quantum foundations & nonlocality — what makes quantum correlations impossible to
+explain classically. The CHSH inequality with its classical (2), Tsirelson (2√2), and
+algebraic (4) bounds; multiparty Mermin inequalities with exponential GHZ violation;
+Popescu-Rohrlich boxes (super-quantum but no-signaling); EPR steering; and device-independent
+randomness certified from the CHSH value — every classical bound checked by brute force over
+local strategies and every quantum value against its closed form.
+
+### Added
+- **CHSH measurement operator** (`algorithms.measurement_operator`) — the ``cos(a)Z + sin(a)X``
+  ``+/-1`` observable in the Bloch ``x-z`` plane.
+- **CHSH correlator** (`bell_inequalities.correlator`) — the two-party correlation ``E(a,b)``.
+- **CHSH value** (`bell_inequalities.chsh_value`) — the CHSH combination, verified ``2 sqrt2`` for
+  a Bell state.
+- **Classical CHSH bound** (`algorithms.classical_chsh_bound`) — ``2``, from brute force over all
+  deterministic local strategies.
+- **Tsirelson bound** (`algorithms.tsirelson_bound`) — the quantum maximum ``2 sqrt2``.
+- **Algebraic bound** (`algorithms.algebraic_bound`) — the no-signaling maximum ``4``.
+- **CHSH violation** (`algorithms.chsh_violation`) — the amount a state exceeds the classical
+  bound.
+- **Bell states** (`bell_inequalities.bell_state`) — the four maximally entangled states.
+- **PR-box correlations** (`algorithms.pr_box_correlations`) — the ``a XOR b = x AND y`` box.
+- **Behaviour correlator** (`algorithms.correlation_value`) — the ``E(x,y)`` of a behaviour.
+- **CHSH from a box** (`algorithms.chsh_from_box`) — the CHSH value of a correlation behaviour,
+  ``4`` for the PR box.
+- **No-signaling test** (`algorithms.is_no_signaling`) — verifies marginals are
+  setting-independent (True for the PR box).
+- **Local deterministic box** (`algorithms.local_deterministic_box`) — the classical-polytope
+  vertices (CHSH ``<= 2``).
+- **Super-quantum check** (`algorithms.pr_box_is_superquantum`) — verifies the PR box exceeds
+  Tsirelson's bound.
+- **GHZ state** (`mermin_multiparty.ghz_state`) — the ``n``-party maximally nonlocal state.
+- **Mermin operator** (`algorithms.mermin_operator`) — the recursively built Mermin-Klyshko
+  operator.
+- **Mermin value** (`algorithms.mermin_value`) — a state's Mermin expectation.
+- **Mermin quantum maximum** (`algorithms.mermin_optimal_value`, `mermin_quantum_bound`) — the
+  largest eigenvalue, verified equal to ``2^{(n-1)/2}``.
+- **Mermin classical bound** (`algorithms.mermin_classical_bound`) — ``1``, from brute force over
+  local strategies.
+- **Mermin violation ratio** (`algorithms.mermin_violation_ratio`) — the ``2^{(n-1)/2}``
+  exponentially growing multiparty nonlocality.
+- **Steering value** (`algorithms.steering_value`, `steering_bound`) — the three-setting linear
+  steering witness and its unsteerable bound, ``sqrt3`` for a Bell state.
+- **Steerability test** (`algorithms.is_steerable`) — verified True for a Bell state, False for a
+  separable state.
+- **Werner state & steering threshold** (`steering.werner_state`,
+  `algorithms.werner_steering_threshold`) — the ``p = 1/sqrt3`` steering boundary, verified.
+- **Guessing probability** (`algorithms.guessing_probability`) — the device-independent adversary
+  bound ``1/2 + (1/2)sqrt(2 - S^2/4)``, verified 1 at ``S=2`` and 1/2 at Tsirelson.
+- **Certified randomness** (`algorithms.certified_randomness`, `is_randomness_certified`) — the
+  ``-log2 P_guess`` bits per run, verified 0 (classical) to 1 (Tsirelson).
+- **DI key rate** (`algorithms.di_key_rate`) — a device-independent key-rate proxy from the CHSH
+  value.
+- **Randomness vs. violation** (`algorithms.randomness_vs_violation`) — the certified randomness
+  across CHSH values, verified monotonically increasing.
+
+## [2.4.0]
 
 Theme: quantum metrology & sensing — using entanglement to measure better. The quantum
 Fisher information and Cramér-Rao bound, the standard-quantum-limit vs. Heisenberg-limit

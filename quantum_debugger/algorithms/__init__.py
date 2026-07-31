@@ -788,6 +788,42 @@ from .sensing_protocols import (
     qfi_per_particle,
     is_heisenberg_scaling,
 )
+from .bell_inequalities import (
+    measurement_operator,
+    classical_chsh_bound,
+    tsirelson_bound,
+    algebraic_bound,
+    chsh_violation,
+)
+from .pr_box import (
+    pr_box_correlations,
+    correlation_value,
+    chsh_from_box,
+    is_no_signaling,
+    local_deterministic_box,
+    pr_box_is_superquantum,
+)
+from .mermin_multiparty import (
+    mermin_operator,
+    mermin_value,
+    mermin_optimal_value,
+    mermin_quantum_bound,
+    mermin_classical_bound,
+    mermin_violation_ratio,
+)
+from .steering import (
+    steering_value,
+    steering_bound,
+    is_steerable,
+    werner_steering_threshold,
+)
+from .device_independent import (
+    guessing_probability,
+    certified_randomness,
+    is_randomness_certified,
+    di_key_rate,
+    randomness_vs_violation,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1582,6 +1618,37 @@ __all__ = [
     "entanglement_gain",
     "qfi_per_particle",
     "is_heisenberg_scaling",
+    # Foundations — CHSH
+    "measurement_operator",
+    "classical_chsh_bound",
+    "tsirelson_bound",
+    "algebraic_bound",
+    "chsh_violation",
+    # Foundations — PR box
+    "pr_box_correlations",
+    "correlation_value",
+    "chsh_from_box",
+    "is_no_signaling",
+    "local_deterministic_box",
+    "pr_box_is_superquantum",
+    # Foundations — Mermin
+    "mermin_operator",
+    "mermin_value",
+    "mermin_optimal_value",
+    "mermin_quantum_bound",
+    "mermin_classical_bound",
+    "mermin_violation_ratio",
+    # Foundations — steering
+    "steering_value",
+    "steering_bound",
+    "is_steerable",
+    "werner_steering_threshold",
+    # Foundations — device-independent
+    "guessing_probability",
+    "certified_randomness",
+    "is_randomness_certified",
+    "di_key_rate",
+    "randomness_vs_violation",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
