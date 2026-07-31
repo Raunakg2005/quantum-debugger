@@ -746,6 +746,48 @@ from .simulation_complexity import (
     qdrift_beats_trotter,
     cheapest_method,
 )
+from .quantum_metrology import (
+    generator_variance,
+    qfi_pure,
+    cramer_rao_bound,
+    standard_quantum_limit,
+    heisenberg_limit,
+    metrological_advantage,
+    error_propagation,
+)
+from .interferometry import (
+    collective_jz,
+    product_probe,
+    ghz_probe,
+    probe_qfi,
+    product_probe_qfi,
+    ghz_probe_qfi,
+    noon_phase_qfi,
+    ramsey_signal,
+)
+from .spin_squeezing_metrology import (
+    collective_spin,
+    coherent_spin_state,
+    one_axis_twisting_state,
+    wineland_squeezing_parameter,
+    metrological_gain,
+    is_squeezed,
+    best_twisting_squeezing,
+)
+from .multiparameter_estimation import (
+    qfi_matrix,
+    cramer_rao_matrix,
+    parameter_incompatibility,
+    total_precision_bound,
+)
+from .sensing_protocols import (
+    signal_to_noise,
+    phase_precision,
+    frequency_precision,
+    entanglement_gain,
+    qfi_per_particle,
+    is_heisenberg_scaling,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1503,6 +1545,43 @@ __all__ = [
     "taylor_gate_count",
     "qdrift_beats_trotter",
     "cheapest_method",
+    # Metrology — quantum Fisher information
+    "generator_variance",
+    "qfi_pure",
+    "cramer_rao_bound",
+    "standard_quantum_limit",
+    "heisenberg_limit",
+    "metrological_advantage",
+    "error_propagation",
+    # Metrology — interferometry
+    "collective_jz",
+    "product_probe",
+    "ghz_probe",
+    "probe_qfi",
+    "product_probe_qfi",
+    "ghz_probe_qfi",
+    "noon_phase_qfi",
+    "ramsey_signal",
+    # Metrology — spin squeezing
+    "collective_spin",
+    "coherent_spin_state",
+    "one_axis_twisting_state",
+    "wineland_squeezing_parameter",
+    "metrological_gain",
+    "is_squeezed",
+    "best_twisting_squeezing",
+    # Metrology — multiparameter
+    "qfi_matrix",
+    "cramer_rao_matrix",
+    "parameter_incompatibility",
+    "total_precision_bound",
+    # Metrology — sensing protocols
+    "signal_to_noise",
+    "phase_precision",
+    "frequency_precision",
+    "entanglement_gain",
+    "qfi_per_particle",
+    "is_heisenberg_scaling",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

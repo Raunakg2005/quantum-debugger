@@ -5,7 +5,65 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.3.0.dev)
+## [Unreleased] (2.4.0.dev)
+
+Theme: quantum metrology & sensing — using entanglement to measure better. The quantum
+Fisher information and Cramér-Rao bound, the standard-quantum-limit vs. Heisenberg-limit
+scaling, entangled probe states (NOON, GHZ) that reach the Heisenberg limit, spin squeezing
+for sub-shot-noise sensing (the Wineland parameter and metrological gain), and multiparameter
+estimation (the QFI matrix and parameter incompatibility) — every bound verified against its
+closed form.
+
+### Added
+- **Generator variance** (`algorithms.generator_variance`) — ``<G^2>-<G>^2``, the core of the
+  pure-state QFI.
+- **Pure-state QFI** (`algorithms.qfi_pure`) — ``4 Var(G)``, the metrological resource.
+- **Cramér-Rao bound** (`algorithms.cramer_rao_bound`) — ``1/sqrt(m F_Q)``, the precision floor.
+- **Standard quantum limit** (`algorithms.standard_quantum_limit`) — ``1/sqrt(n)``, the
+  uncorrelated-probe precision.
+- **Heisenberg limit** (`algorithms.heisenberg_limit`) — ``1/n``, verified below the standard
+  quantum limit.
+- **Metrological advantage** (`algorithms.metrological_advantage`) — the ``sqrt(n)``
+  entanglement-enabled gain.
+- **Error propagation** (`algorithms.error_propagation`) — ``sqrt(Var S)/|dS/dtheta|``, the
+  operational precision of a measured signal, verified Heisenberg for a GHZ fringe.
+- **Collective Jz** (`algorithms.collective_jz`) — the interferometer phase generator.
+- **Product & GHZ probes** (`algorithms.product_probe`, `ghz_probe`) — the SQL and Heisenberg
+  reference probe states.
+- **Probe QFI** (`algorithms.probe_qfi`) — the QFI of a probe under ``J_z``.
+- **Product-probe QFI** (`algorithms.product_probe_qfi`) — verified equal to ``n`` (SQL).
+- **GHZ-probe QFI** (`algorithms.ghz_probe_qfi`) — verified equal to ``n^2`` (Heisenberg).
+- **NOON QFI** (`algorithms.noon_phase_qfi`) — the ``N^2`` phase sensitivity of a NOON state.
+- **Ramsey signal** (`algorithms.ramsey_signal`) — the interference fringe, ``n``-times faster
+  for a GHZ probe.
+- **Collective spin operators** (`algorithms.collective_spin`) — ``J_x, J_y, J_z`` on ``n``
+  qubits.
+- **Coherent spin state** (`algorithms.coherent_spin_state`) — the ``|+>^n`` SQL reference
+  (``xi^2 = 1``).
+- **One-axis twisting** (`algorithms.one_axis_twisting_state`) — the ``e^{-i chi t J_z^2}``
+  squeezing generator.
+- **Wineland squeezing parameter** (`algorithms.wineland_squeezing_parameter`) — ``xi_R^2``,
+  verified 1 for the coherent state and ``< 1`` when squeezed.
+- **Metrological gain** (`algorithms.metrological_gain`, `is_squeezed`) — the ``1/xi^2`` variance
+  gain and the sub-SQL squeezing test.
+- **Best twisting squeezing** (`algorithms.best_twisting_squeezing`) — the optimal
+  one-axis-twisting squeezing, verified below 1.
+- **QFI matrix** (`algorithms.qfi_matrix`) — the multiparameter Fisher matrix, verified
+  symmetric positive semi-definite.
+- **Matrix Cramér-Rao bound** (`algorithms.cramer_rao_matrix`, `total_precision_bound`) — the
+  ``F^{-1}`` covariance bound and its trace.
+- **Parameter incompatibility** (`algorithms.parameter_incompatibility`) — the mean-commutator
+  measure of joint-estimation incompatibility, verified 0 for commuting generators.
+- **Signal-to-noise & precision** (`algorithms.signal_to_noise`, `phase_precision`,
+  `frequency_precision`) — the sensing figures from the QFI.
+- **Entanglement gain** (`algorithms.entanglement_gain`) — the ``sqrt(n)`` precision gain of an
+  entangled probe.
+- **QFI per particle** (`algorithms.qfi_per_particle`) — ``F_Q/n``, 1 at the SQL and ``n`` at
+  Heisenberg.
+- **Heisenberg-scaling test** (`algorithms.is_heisenberg_scaling`) — verifies QFI scales as
+  ``n^2``, the quantum-advantage signature.
+
+## [2.3.0]
 
 Theme: Hamiltonian simulation & product formulas — the algorithmic core of digital quantum
 simulation. First-, second-, and fourth-order Trotter-Suzuki formulas with their exact
