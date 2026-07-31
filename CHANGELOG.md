@@ -5,7 +5,65 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.1.0.dev)
+## [Unreleased] (2.2.0.dev)
+
+Theme: variational algorithms & QML theory — why (and when) parametrized quantum circuits
+train. Exact parameter-shift gradients and Hessians, the barren-plateau phenomenon
+(gradient variance vanishing exponentially in qubit number, and the local-cost cure),
+ansatz expressibility (fidelity distributions vs. Haar, frame potentials) and entangling
+capability (Meyer-Wallach), and the quantum geometric tensor / Fisher information behind
+quantum natural gradient — verified against finite-difference gradients and closed forms.
+
+### Added
+- **Hardware-efficient ansatz** (`algorithms.hardware_efficient_ansatz`,
+  `ansatz_num_params`) — the ``Ry`` + CNOT-ladder variational circuit and its parameter count.
+- **Cost observable & expectation** (`algorithms.z_observable`, `ansatz_expectation`) — the
+  diagonal ``Z``-type cost and its expectation, the objective the theory acts on.
+- **Random parameters** (`algorithms.random_parameters`) — a random point in the training
+  landscape.
+- **Parameter-shift gradient** (`algorithms.parameter_shift_gradient`,
+  `parameter_shift_gradient_all`) — the exact analytic gradient from ``+/- pi/2`` shifts,
+  verified to match finite differences to machine precision.
+- **Finite-difference gradient** (`algorithms.finite_difference_gradient`) — the numerical
+  reference for the shift rule.
+- **Parameter-shift Hessian** (`algorithms.parameter_shift_hessian_diagonal`) — the diagonal
+  curvature from a second shift, verified against finite differences.
+- **Gradient norm** (`algorithms.gradient_norm`) — the scalar training signal (small in a
+  plateau).
+- **Gradient variance** (`algorithms.gradient_sample_variance`) — the variance of a gradient
+  over random parameters, the barren-plateau diagnostic.
+- **Barren-plateau scaling** (`algorithms.barren_plateau_scaling`) — the global-cost gradient
+  variance vs. qubit number, verified to shrink as the system grows.
+- **Local vs. global cost variance** (`algorithms.local_cost_gradient_variance`,
+  `global_cost_gradient_variance`) — the gradient variances for single-qubit and all-qubit
+  costs.
+- **Cost concentration** (`algorithms.cost_concentration`) — the variance of the cost value
+  over random parameters, verified to decrease with system size.
+- **Haar fidelity density** (`algorithms.haar_fidelity_pdf`, `haar_mean_fidelity`) — the
+  ``(N-1)(1-F)^{N-2}`` reference distribution and its ``1/N`` mean.
+- **Ansatz fidelity sampling** (`algorithms.sample_ansatz_fidelities`) — the empirical overlap
+  distribution used for expressibility.
+- **Frame potential** (`algorithms.frame_potential`) — the average overlap, verified to
+  approach the Haar value ``1/2^n`` for an expressive ansatz.
+- **Expressibility (KL)** (`algorithms.expressibility_kl`) — the KL divergence from the Haar
+  distribution, verified to decrease as layers are added.
+- **Meyer-Wallach entanglement** (`algorithms.meyer_wallach`, `is_product_state`) — the global
+  entanglement measure, verified 0 for product states and 1 for GHZ.
+- **Entangling capability** (`algorithms.entangling_capability`, `average_entanglement`) — the
+  ansatz's average Meyer-Wallach entanglement, verified to grow with entangling layers.
+- **Quantum geometric tensor** (`algorithms.quantum_geometric_tensor`) — the Fubini-Study
+  metric of the ansatz, verified symmetric positive semi-definite.
+- **Quantum Fisher matrix** (`algorithms.quantum_fisher_matrix`,
+  `is_positive_semidefinite`) — four times the geometric tensor, the metric for natural
+  gradient and estimation.
+- **Quantum natural gradient** (`algorithms.natural_gradient`) — the metric-preconditioned
+  update, verified to reduce to the ordinary gradient at an identity metric.
+- **Fubini-Study distance** (`algorithms.fubini_study_distance`) — the geodesic distance
+  between states, verified ``pi/4`` for product vs. GHZ.
+- **Effective quantum dimension** (`algorithms.effective_quantum_dimension`) — the rank of the
+  geometric tensor, the number of independent parameter directions.
+
+## [2.1.0]
 
 Theme: quantum optimization & QAOA theory — encoding hard problems as ground states and
 solving them. QUBO/Ising encodings of MaxCut, number partitioning, and vertex cover; the

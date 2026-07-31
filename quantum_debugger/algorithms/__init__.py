@@ -664,6 +664,48 @@ from .grover_optimization import (
     quantum_minimum_queries,
     classical_minimum_queries,
 )
+from .variational_ansatz import (
+    hardware_efficient_ansatz,
+    ansatz_num_params,
+    z_observable,
+    ansatz_expectation,
+    random_parameters,
+)
+from .parameter_shift import (
+    parameter_shift_gradient,
+    parameter_shift_gradient_all,
+    finite_difference_gradient,
+    parameter_shift_hessian_diagonal,
+    gradient_norm,
+)
+from .barren_plateaus import (
+    gradient_sample_variance,
+    barren_plateau_scaling,
+    local_cost_gradient_variance,
+    global_cost_gradient_variance,
+    cost_concentration,
+)
+from .expressibility import (
+    haar_fidelity_pdf,
+    haar_mean_fidelity,
+    sample_ansatz_fidelities,
+    frame_potential,
+    expressibility_kl,
+)
+from .entangling_capability import (
+    meyer_wallach,
+    entangling_capability,
+    average_entanglement,
+    is_product_state,
+)
+from .quantum_natural_gradient import (
+    quantum_geometric_tensor,
+    quantum_fisher_matrix,
+    is_positive_semidefinite,
+    natural_gradient,
+    fubini_study_distance,
+    effective_quantum_dimension,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1350,6 +1392,42 @@ __all__ = [
     "grover_adaptive_search",
     "quantum_minimum_queries",
     "classical_minimum_queries",
+    # VQA theory — ansatz
+    "hardware_efficient_ansatz",
+    "ansatz_num_params",
+    "z_observable",
+    "ansatz_expectation",
+    "random_parameters",
+    # VQA theory — parameter-shift gradients
+    "parameter_shift_gradient",
+    "parameter_shift_gradient_all",
+    "finite_difference_gradient",
+    "parameter_shift_hessian_diagonal",
+    "gradient_norm",
+    # VQA theory — barren plateaus
+    "gradient_sample_variance",
+    "barren_plateau_scaling",
+    "local_cost_gradient_variance",
+    "global_cost_gradient_variance",
+    "cost_concentration",
+    # VQA theory — expressibility
+    "haar_fidelity_pdf",
+    "haar_mean_fidelity",
+    "sample_ansatz_fidelities",
+    "frame_potential",
+    "expressibility_kl",
+    # VQA theory — entangling capability
+    "meyer_wallach",
+    "entangling_capability",
+    "average_entanglement",
+    "is_product_state",
+    # VQA theory — natural gradient
+    "quantum_geometric_tensor",
+    "quantum_fisher_matrix",
+    "is_positive_semidefinite",
+    "natural_gradient",
+    "fubini_study_distance",
+    "effective_quantum_dimension",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
