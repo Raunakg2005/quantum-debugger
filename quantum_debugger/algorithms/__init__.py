@@ -373,6 +373,49 @@ from .excited_states import (
     deflation_hamiltonian,
     excited_spectrum_by_deflation,
 )
+from .quantum_distances import (
+    trace_distance,
+    uhlmann_fidelity,
+    bures_distance,
+    bures_angle,
+    hilbert_schmidt_distance,
+    fuchs_van_de_graaf,
+    quantum_relative_entropy,
+)
+from .quantum_entropies import (
+    von_neumann_entropy,
+    renyi_entropy,
+    tsallis_entropy,
+    conditional_entropy,
+    quantum_mutual_information,
+    entanglement_entropy_pure,
+)
+from .coherence import (
+    l1_coherence,
+    relative_entropy_of_coherence,
+    robustness_of_coherence,
+    is_incoherent,
+    dephase,
+)
+from .entanglement_measures import (
+    concurrence,
+    entanglement_of_formation,
+    tangle,
+    schmidt_coefficients,
+    schmidt_rank,
+)
+from .majorization import (
+    majorizes,
+    nielsen_convertible,
+    majorization_entropy_bound,
+)
+from .entanglement_witness import (
+    witness_expectation,
+    bell_witness,
+    realign,
+    realignment_norm,
+    realignment_criterion,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -804,6 +847,43 @@ __all__ = [
     "ssvqe_cost",
     "deflation_hamiltonian",
     "excited_spectrum_by_deflation",
+    # Quantum information — distances
+    "trace_distance",
+    "uhlmann_fidelity",
+    "bures_distance",
+    "bures_angle",
+    "hilbert_schmidt_distance",
+    "fuchs_van_de_graaf",
+    "quantum_relative_entropy",
+    # Quantum information — entropies
+    "von_neumann_entropy",
+    "renyi_entropy",
+    "tsallis_entropy",
+    "conditional_entropy",
+    "quantum_mutual_information",
+    "entanglement_entropy_pure",
+    # Quantum information — coherence
+    "l1_coherence",
+    "relative_entropy_of_coherence",
+    "robustness_of_coherence",
+    "is_incoherent",
+    "dephase",
+    # Quantum information — entanglement measures
+    "concurrence",
+    "entanglement_of_formation",
+    "tangle",
+    "schmidt_coefficients",
+    "schmidt_rank",
+    # Quantum information — majorization
+    "majorizes",
+    "nielsen_convertible",
+    "majorization_entropy_bound",
+    # Quantum information — witnesses
+    "witness_expectation",
+    "bell_witness",
+    "realign",
+    "realignment_norm",
+    "realignment_criterion",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

@@ -5,7 +5,72 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.4.0.dev)
+## [Unreleased] (1.5.0.dev)
+
+Theme: quantum information & resource theories — how to *quantify* quantum resources.
+State-distinguishability (trace distance, Uhlmann fidelity, Bures metric, relative
+entropy), the entropy family (von Neumann, Rényi, Tsallis, conditional, mutual
+information), coherence measures (l1, relative entropy, robustness), entanglement
+measures (concurrence, entanglement of formation, tangle, realignment/CCNR witness),
+and the majorization order behind LOCC convertibility (Nielsen's theorem) — every
+measure verified against Bell/Werner/product states and closed forms.
+
+### Added
+- **Trace distance** (`algorithms.trace_distance`) — ``(1/2)||rho-sigma||_1``, the optimal
+  distinguishing bias; verified 1 for orthogonal states, 0 for equal.
+- **Uhlmann fidelity** (`algorithms.uhlmann_fidelity`) — ``(Tr sqrt(sqrt(rho) sigma
+  sqrt(rho)))^2``; reduces to ``|<psi|phi>|^2`` for pure states (verified).
+- **Bures distance & angle** (`algorithms.bures_distance`, `bures_angle`) — the
+  fidelity-induced metric and geodesic angle on state space.
+- **Hilbert-Schmidt distance** (`algorithms.hilbert_schmidt_distance`) — the ``L2`` metric
+  ``sqrt(Tr[(rho-sigma)^2])``.
+- **Fuchs-van de Graaf bounds** (`algorithms.fuchs_van_de_graaf`) — the inequalities
+  ``1-sqrt(F) <= T <= sqrt(1-F)``, verified on random state pairs.
+- **Quantum relative entropy** (`algorithms.quantum_relative_entropy`) —
+  ``Tr rho(log rho - log sigma)``, non-negative by Klein's inequality (verified), ``+inf``
+  on support mismatch.
+- **von Neumann entropy** (`algorithms.von_neumann_entropy`) — ``-Tr rho log rho``; 0 for
+  pure, ``log d`` for maximally mixed.
+- **Rényi entropy** (`algorithms.renyi_entropy`) — the ``alpha``-family, verified to
+  recover von Neumann as ``alpha->1`` and ``log rank`` as ``alpha->0``.
+- **Tsallis entropy** (`algorithms.tsallis_entropy`) — the non-additive ``q``-entropy,
+  reducing to von Neumann as ``q->1``.
+- **Conditional entropy** (`algorithms.conditional_entropy`) — ``S(A|B)=S(AB)-S(B)``,
+  verified negative (``-1``) for a Bell state — a signature of entanglement.
+- **Quantum mutual information** (`algorithms.quantum_mutual_information`) —
+  ``S(A)+S(B)-S(AB)``, total correlations; ``2`` bits for a Bell pair (verified).
+- **Bipartite entanglement entropy** (`algorithms.entanglement_entropy_pure`) — the
+  reduced-state entropy of a pure state, from its Schmidt spectrum.
+- **l1 coherence** (`algorithms.l1_coherence`) — summed off-diagonal magnitude; ``d-1`` for
+  a maximally coherent state, 0 for a diagonal one (verified).
+- **Relative entropy of coherence** (`algorithms.relative_entropy_of_coherence`) —
+  ``S(rho_diag)-S(rho)``, the distillable coherence; ``log d`` for maximal coherence.
+- **Robustness of coherence** (`algorithms.robustness_of_coherence`) — the minimal mixing
+  that destroys coherence (``2|rho_01|`` for a qubit).
+- **Incoherence test & dephasing** (`algorithms.is_incoherent`, `dephase`) — the diagonal
+  (incoherent) projection and its check.
+- **Wootters concurrence** (`algorithms.concurrence`) — closed-form two-qubit
+  entanglement; verified 1 for Bell, 0 for product, and matching the Werner ``(3p-1)/2``.
+- **Entanglement of formation** (`algorithms.entanglement_of_formation`) — from the
+  concurrence via the binary entropy; ``1`` bit for a Bell pair.
+- **Tangle** (`algorithms.tangle`) — concurrence squared, the CKW-monogamous measure.
+- **Schmidt decomposition** (`algorithms.schmidt_coefficients`, `schmidt_rank`) — the
+  bipartite pure-state coefficients and rank (1 iff a product state).
+- **Majorization test** (`algorithms.majorizes`) — the ``x > y`` partial order behind
+  resource monotones, verified on peaked/flat distributions.
+- **Nielsen's theorem** (`algorithms.nielsen_convertible`) — pure-state LOCC
+  convertibility via Schmidt-vector majorization; verified directional (max-entangled
+  converts down, not up).
+- **Schur-concavity entropy bound** (`algorithms.majorization_entropy_bound`) — the entropy
+  ordering implied by majorization.
+- **Entanglement witnesses** (`algorithms.witness_expectation`, `bell_witness`) — a
+  Hermitian operator whose negative expectation proves entanglement; verified on Bell vs.
+  maximally mixed.
+- **Realignment (CCNR) criterion** (`algorithms.realignment_criterion`, `realign`,
+  `realignment_norm`) — the computable cross-norm test ``||R(rho)||_1 > 1``; verified to
+  fire on a Bell state (norm 2) and not on the mixed state.
+
+## [1.4.0]
 
 Theme: quantum chemistry & electronic structure — the flagship near-term application.
 Fermion-to-qubit mappings (Jordan-Wigner, parity, Bravyi-Kitaev), second-quantized
