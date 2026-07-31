@@ -5,7 +5,65 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.9.0.dev)
+## [Unreleased] (2.0.0.dev)
+
+Theme: quantum compilation & circuit optimization — the milestone 2.0 release. The
+transpiler stack that turns an abstract circuit into one a real device can run: a circuit
+IR with exact-equivalence checking, peephole optimization (inverse cancellation, rotation
+merging, identity removal), gate commutation, qubit routing with SWAP networks for limited
+connectivity, two-qubit KAK synthesis and optimal CNOT counts, ASAP scheduling and depth
+analysis, and gate-template decompositions (Toffoli → Clifford+T). Every rewrite is
+verified to preserve the circuit's unitary.
+
+### Added
+- **Circuit IR** (`algorithms.op`, `circuit_unitary`) — the ``(matrix, qubits)`` operation
+  representation and its full-unitary builder, the substrate for every compiler pass.
+- **Equivalence oracle** (`algorithms.circuits_equivalent`) — tests two circuits for
+  equal unitaries up to global phase, the correctness check every pass is verified against.
+- **Circuit metrics** (`algorithms.gate_count`, `two_qubit_count`) — the gate and
+  two-qubit-gate counts, the primary cost measures.
+- **Inverse cancellation** (`algorithms.cancel_inverses`) — remove adjacent ``G, G^dagger``
+  pairs, verified to preserve the unitary.
+- **Identity removal** (`algorithms.remove_identities`) — delete identity operations.
+- **Rotation merging** (`algorithms.merge_rotations`) — fuse consecutive diagonal rotations
+  ``Rz(a)Rz(b)=Rz(a+b)``, verified equivalent.
+- **Peephole optimizer** (`algorithms.optimize_circuit`) — iterate the local passes to a
+  fixed point, verified to shrink the gate count while preserving the unitary.
+- **Commutation test** (`algorithms.operations_commute`) — decide whether two operations
+  commute (disjoint support or commuting matrices).
+- **Commute-forward** (`algorithms.commute_forward`) — bubble an operation earlier through
+  commuting neighbours, verified equivalent.
+- **Commutation graph** (`algorithms.commutation_graph`) — the pairwise-commutation
+  structure a scheduler uses.
+- **Coupling map & executability** (`algorithms.coupling_map`, `is_executable`) — the device
+  connectivity and the check that every two-qubit gate is on a connected pair.
+- **Permutation unitary** (`algorithms.permutation_matrix`) — the unitary of a qubit
+  permutation, the routing target.
+- **SWAP network** (`algorithms.swap_network`) — decompose a permutation into adjacent SWAPs
+  for a linear architecture, verified to compose to the permutation.
+- **Linear routing** (`algorithms.route_linear`) — insert SWAPs to make a circuit executable
+  on a line, verified executable and equivalent to the original.
+- **SWAP template** (`algorithms.swap_decomposition`) — SWAP as three CNOTs, verified.
+- **Controlled-Z template** (`algorithms.controlled_z_decomposition`) — CZ as ``H·CNOT·H``,
+  verified.
+- **Toffoli template** (`algorithms.toffoli_decomposition`, `toffoli_matrix`) — the 6-CNOT
+  Clifford+T decomposition, verified equal to the Toffoli unitary.
+- **Template verifier** (`algorithms.verify_template`) — check a decomposition's unitary
+  against the gate it replaces.
+- **Makhlin invariants** (`algorithms.makhlin_invariants`) — the local invariants ``(G1,G2)``
+  of a two-qubit gate.
+- **Local-gate detection** (`algorithms.is_local`, `locally_equivalent`) — recognize
+  tensor-product gates and local equivalence (CNOT ~ CZ, not ~ SWAP), verified.
+- **Optimal CNOT count** (`algorithms.cnot_count`) — the minimal CNOTs (0-3) for a two-qubit
+  gate from its magic-basis spectrum, verified local=0, CNOT/CZ=1, iSWAP=2, SWAP/generic=3.
+- **ASAP scheduling** (`algorithms.asap_layers`, `flatten_layers`) — the earliest-layer
+  schedule (parallel gates on disjoint qubits), verified to preserve the unitary.
+- **Circuit depth** (`algorithms.circuit_depth`, `critical_path_length`) — the scheduled
+  depth / critical-path length, verified against serial and parallel circuits.
+- **Circuit parallelism** (`algorithms.circuit_parallelism`) — gates per time step, the
+  parallelism the scheduler exposes.
+
+## [1.9.0]
 
 Theme: characterization & benchmarking — measuring how good a quantum device really is.
 Randomized benchmarking (and interleaved RB for per-gate error), cross-entropy

@@ -575,6 +575,51 @@ from .mirror_benchmarking import (
     depolarizing_layer,
     mirror_fidelity_decay,
 )
+from .circuit_ir import (
+    op,
+    circuit_unitary,
+    circuits_equivalent,
+    gate_count,
+    two_qubit_count,
+)
+from .gate_optimization import (
+    cancel_inverses,
+    remove_identities,
+    merge_rotations,
+    optimize_circuit,
+)
+from .commutation import (
+    operations_commute,
+    commute_forward,
+    commutation_graph,
+)
+from .qubit_routing import (
+    coupling_map,
+    is_executable,
+    permutation_matrix,
+    swap_network,
+    route_linear,
+)
+from .gate_templates import (
+    swap_decomposition,
+    controlled_z_decomposition,
+    toffoli_decomposition,
+    toffoli_matrix,
+    verify_template,
+)
+from .two_qubit_synthesis import (
+    makhlin_invariants,
+    is_local,
+    locally_equivalent,
+    cnot_count,
+)
+from .scheduling import (
+    asap_layers,
+    circuit_depth,
+    circuit_parallelism,
+    flatten_layers,
+    critical_path_length,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1184,6 +1229,44 @@ __all__ = [
     "mirror_survival",
     "depolarizing_layer",
     "mirror_fidelity_decay",
+    # Compilation — circuit IR
+    "op",
+    "circuit_unitary",
+    "circuits_equivalent",
+    "gate_count",
+    "two_qubit_count",
+    # Compilation — optimization
+    "cancel_inverses",
+    "remove_identities",
+    "merge_rotations",
+    "optimize_circuit",
+    # Compilation — commutation
+    "operations_commute",
+    "commute_forward",
+    "commutation_graph",
+    # Compilation — routing
+    "coupling_map",
+    "is_executable",
+    "permutation_matrix",
+    "swap_network",
+    "route_linear",
+    # Compilation — templates
+    "swap_decomposition",
+    "controlled_z_decomposition",
+    "toffoli_decomposition",
+    "toffoli_matrix",
+    "verify_template",
+    # Compilation — two-qubit synthesis
+    "makhlin_invariants",
+    "is_local",
+    "locally_equivalent",
+    "cnot_count",
+    # Compilation — scheduling
+    "asap_layers",
+    "circuit_depth",
+    "circuit_parallelism",
+    "flatten_layers",
+    "critical_path_length",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
