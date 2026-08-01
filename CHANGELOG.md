@@ -16,8 +16,8 @@ quantum fingerprinting — every measure computed by brute force and every relat
 
 ### Added
 - **Truth table** (`algorithms.truth_table`) — evaluate a Boolean function on all inputs.
-- **Sensitivity** (`algorithms.sensitivity_at`, `max_sensitivity`) — the local and global
-  single-bit sensitivities.
+- **Local sensitivity** (`algorithms.sensitivity_at`) — the number of pivotal bits at one input.
+- **Sensitivity** (`algorithms.max_sensitivity`) — the global ``s(f) = max_x s(f,x)``.
 - **Block sensitivity** (`algorithms.block_sensitivity`) — the max disjoint sensitive blocks,
   verified ``>= s(f)``.
 - **Certificate complexity** (`algorithms.certificate_complexity`) — the smallest certifying
@@ -45,26 +45,35 @@ quantum fingerprinting — every measure computed by brute force and every relat
   classical.
 - **Simon queries** (`algorithms.simon_queries`) — ``O(n)`` quantum vs ``Omega(2^{n/2})``
   classical.
-- **Grover queries** (`algorithms.grover_queries`, `grover_is_optimal`) — the ``(pi/4)sqrt N``
-  count, verified order-optimal (``Theta(sqrt N)``).
+- **Grover queries** (`algorithms.grover_queries`) — the ``(pi/4)sqrt N`` quantum search count.
+- **Grover optimality** (`algorithms.grover_is_optimal`) — verifies the count is ``Theta(sqrt N)``
+  (BBBV-optimal).
 - **Parity queries** (`algorithms.parity_queries`) — ``ceil(n/2)`` quantum vs ``n`` classical.
 - **Quantum speedup** (`algorithms.quantum_speedup`) — the classical/quantum query ratio.
 - **Polynomial-method bound** (`algorithms.polynomial_method_bound`) — the ``deg(f)/2`` quantum
   query lower bound.
 - **Exponential separation test** (`algorithms.is_exponential_separation`) — verified for
   Deutsch-Jozsa/Simon, not for parity.
-- **Equality communication** (`algorithms.equality_deterministic`, `equality_randomized`) — the
-  ``n+1`` deterministic vs ``O(log n)`` randomized costs.
-- **Quantum fingerprint** (`algorithms.quantum_fingerprint_length`, `equality_exponential_saving`) —
-  the ``O(log n)`` fingerprint, verified below the deterministic cost.
+- **Deterministic equality** (`algorithms.equality_deterministic`) — the ``n+1``-bit deterministic
+  cost.
+- **Randomized equality** (`algorithms.equality_randomized`) — the ``O(log n)`` shared-coin cost.
+- **Quantum fingerprint** (`algorithms.quantum_fingerprint_length`) — the ``O(log n)`` qubit
+  fingerprint for Equality.
+- **Equality saving** (`algorithms.equality_exponential_saving`) — verifies the exponential
+  fingerprint saving over deterministic communication.
 - **Inner-product complexity** (`algorithms.inner_product_complexity`) — ``Theta(n)`` with no
   quantum advantage.
-- **Disjointness complexity** (`algorithms.disjointness_complexity`, `has_quantum_advantage`) — the
-  ``sqrt n`` quantum vs ``n`` classical quadratic advantage.
-- **Class containments** (`algorithms.known_containments`, `contains`) — the proven
-  ``P subseteq BPP subseteq BQP subseteq PP subseteq PSPACE`` DAG and transitive-closure queries.
-- **Problem classification** (`algorithms.problem_class`, `in_bqp`) — the smallest known class of a
-  problem (factoring in BQP, sorting in P).
+- **Disjointness complexity** (`algorithms.disjointness_complexity`) — ``sqrt n`` quantum vs ``n``
+  classical.
+- **Quantum-advantage test** (`algorithms.has_quantum_advantage`) — flags a communication quantum
+  speedup (disjointness yes, inner product no).
+- **Containment DAG** (`algorithms.known_containments`) — the proven
+  ``P subseteq BPP subseteq BQP subseteq PP subseteq PSPACE`` order.
+- **Containment query** (`algorithms.contains`) — transitive-closure membership in the class
+  order.
+- **Problem classification** (`algorithms.problem_class`) — the smallest known class of a problem.
+- **BQP membership** (`algorithms.in_bqp`) — whether a problem is efficiently quantum-solvable
+  (factoring, sorting yes).
 - **Open separations** (`algorithms.is_open_separation`) — flags open questions (BPP vs BQP, BQP
   vs NP).
 - **Hierarchy consistency** (`algorithms.hierarchy_is_consistent`) — verifies the containment order
