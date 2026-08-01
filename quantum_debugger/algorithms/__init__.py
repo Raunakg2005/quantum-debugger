@@ -898,6 +898,42 @@ from .entanglement_scaling import (
     is_area_law,
     volume_law_slope,
 )
+from .graph_states import (
+    graph_state_stabilizers,
+    verify_stabilizers,
+    linear_cluster_edges,
+    cluster_2d_edges,
+    complete_graph_edges,
+    star_graph_edges,
+    graph_state_entanglement,
+    local_complementation,
+    local_clifford_equivalent,
+)
+from .one_way_computing import (
+    rz,
+    xy_measurement_states,
+    teleport_step,
+    expected_step_unitary,
+    expected_rotation_unitary,
+    mbqc_identity,
+    measurement_probability,
+    byproduct_operator,
+)
+from .measurement_calculus import (
+    measurement_pattern,
+    causal_flow,
+    verify_flow,
+    has_flow,
+    pattern_depth,
+)
+from .mbqc_two_qubit import (
+    native_cz,
+    mbqc_hadamard,
+    hadamard_is_teleport,
+    cnot_decomposition,
+    verify_cnot_decomposition,
+    mbqc_cnot,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1790,6 +1826,38 @@ __all__ = [
     "renyi2_entropy",
     "is_area_law",
     "volume_law_slope",
+    # MBQC — graph states
+    "graph_state_stabilizers",
+    "verify_stabilizers",
+    "linear_cluster_edges",
+    "cluster_2d_edges",
+    "complete_graph_edges",
+    "star_graph_edges",
+    "graph_state_entanglement",
+    "local_complementation",
+    "local_clifford_equivalent",
+    # MBQC — one-way computing
+    "rz",
+    "xy_measurement_states",
+    "teleport_step",
+    "expected_step_unitary",
+    "expected_rotation_unitary",
+    "mbqc_identity",
+    "measurement_probability",
+    "byproduct_operator",
+    # MBQC — measurement calculus
+    "measurement_pattern",
+    "causal_flow",
+    "verify_flow",
+    "has_flow",
+    "pattern_depth",
+    # MBQC — two-qubit gates
+    "native_cz",
+    "mbqc_hadamard",
+    "hadamard_is_teleport",
+    "cnot_decomposition",
+    "verify_cnot_decomposition",
+    "mbqc_cnot",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

@@ -5,7 +5,67 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.7.0.dev)
+## [Unreleased] (2.8.0.dev)
+
+Theme: measurement-based & cluster-state computing — computing by *measuring* a fixed
+entangled resource. Graph-state construction and stabilizers, the 1D/2D cluster states,
+local complementation, one-way single-qubit rotations and CNOT via adaptive measurements
+with Pauli byproduct tracking, and the measurement-calculus notion of causal flow — every
+measurement pattern verified to reproduce the intended circuit unitary.
+
+### Added
+- **Graph state** (`graph_states.graph_state`) — the ``prod CZ |+>^n`` MBQC resource state.
+- **Graph-state stabilizers** (`algorithms.graph_state_stabilizers`) — the
+  ``K_v = X_v prod_{w~v} Z_w`` generators.
+- **Stabilizer verification** (`algorithms.verify_stabilizers`) — checks each generator fixes the
+  graph state.
+- **Linear cluster** (`algorithms.linear_cluster_edges`) — the 1D cluster (path graph) edges.
+- **2D cluster** (`algorithms.cluster_2d_edges`) — the universal 2D cluster-state lattice edges.
+- **Complete-graph state** (`algorithms.complete_graph_edges`) — the ``K_n`` graph, GHZ-equivalent.
+- **Star-graph state** (`algorithms.star_graph_edges`) — the star graph, exactly GHZ up to local
+  Cliffords.
+- **Graph-state entanglement** (`algorithms.graph_state_entanglement`) — the Meyer-Wallach measure,
+  verified 0 for the empty graph and ~1 for a connected one.
+- **Local complementation** (`algorithms.local_complementation`) — the edge-toggle transformation
+  on a graph.
+- **Local-Clifford equivalence** (`algorithms.local_clifford_equivalent`) — verifies a graph and
+  its local complement give locally-equivalent states.
+- **Z-rotation** (`algorithms.rz`) — the ``R_z`` gate the teleportation angle implements.
+- **X-Y measurement basis** (`algorithms.xy_measurement_states`) — the ``|+-_phi>`` measurement
+  outcomes of the one-way model.
+- **Teleportation step** (`algorithms.teleport_step`) — one MBQC measurement step, verified equal
+  to ``X^s H R_z(-phi)|psi>``.
+- **Step unitary** (`algorithms.expected_step_unitary`) — the gate a teleportation step
+  implements, the verification target.
+- **MBQC rotation** (`one_way_computing.mbqc_rotation`) — a chain of teleportation steps realizing
+  an arbitrary single-qubit rotation.
+- **Rotation unitary** (`algorithms.expected_rotation_unitary`) — the composed gate the step chain
+  implements, verified against the MBQC output.
+- **MBQC identity wire** (`algorithms.mbqc_identity`) — two angle-0 steps giving ``H.H=I`` up to a
+  Pauli, verified.
+- **Measurement probability** (`algorithms.measurement_probability`) — verified ``1/2`` (the
+  outcome is random, as MBQC requires).
+- **Byproduct operator** (`algorithms.byproduct_operator`) — the tracked Pauli correction.
+- **Measurement pattern** (`algorithms.measurement_pattern`) — the declarative one-way computation
+  (entangle / measure / correct).
+- **Causal flow** (`algorithms.causal_flow`) — the Danos-Kashefi flow, verified for the linear
+  cluster (``f(i)=i+1``).
+- **Flow verification** (`algorithms.verify_flow`) — checks the causal-flow determinism
+  conditions.
+- **Flow existence** (`algorithms.has_flow`) — whether a pattern admits a deterministic flow.
+- **Pattern depth** (`algorithms.pattern_depth`) — the parallel measurement depth of the flow.
+- **Native CZ** (`algorithms.native_cz`) — the free entangling gate of the one-way model (a
+  cluster edge).
+- **MBQC Hadamard** (`algorithms.mbqc_hadamard`) — the Hadamard realized by a measurement step.
+- **Hadamard verification** (`algorithms.hadamard_is_teleport`) — verifies the angle-0 step equals
+  the ``H`` gate.
+- **CNOT decomposition** (`algorithms.cnot_decomposition`) — the ``(I⊗H)CZ(I⊗H)`` MBQC identity.
+- **CNOT verification** (`algorithms.verify_cnot_decomposition`) — verifies the decomposition
+  equals the exact CNOT.
+- **MBQC CNOT** (`algorithms.mbqc_cnot`) — the two-qubit gate via a native CZ bond plus Hadamard
+  teleportations, verified against the exact CNOT.
+
+## [2.7.0]
 
 Theme: tensor networks II — the geometry of entanglement beyond 1D. Tensor-contraction cost
 analysis and optimal contraction ordering; 2D **PEPS** construction and exact contraction;
