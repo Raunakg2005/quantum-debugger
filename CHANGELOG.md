@@ -14,6 +14,20 @@ analysis on the Boolean cube (Parseval, influences, noise stability); the quantu
 separations behind Deutsch-Jozsa, Simon, Grover, and parity; and communication complexity with
 quantum fingerprinting — every measure computed by brute force and every relation verified.
 
+### Documentation & developer tooling
+- **Narrative guides** for every advanced theme added since v0.8 — many-body physics, tensor
+  networks II, QSVT, error mitigation II, fault-tolerant QEC, quantum chemistry, quantum
+  information, advanced algorithms II, continuous-variable, benchmarking, compilation,
+  optimization/QAOA, VQA theory, Hamiltonian simulation, metrology, foundations, communication,
+  MBQC, thermodynamics, and complexity — each with runnable, verified examples, wired into the
+  Sphinx table of contents.
+- **Algorithms API reference** (`docs/algorithms_api.md`) — autodoc coverage of every module in
+  `quantum_debugger.algorithms`; `conf.py` now documents the in-tree package and mocks optional
+  integrations so the reference builds cleanly.
+- **AI Development Lifecycle** scaffolding — `AGENTS.md` (agent working agreement),
+  `docs/aidlc_guide.md` (the five-phase Intent → Decompose → Implement → Verify → Integrate
+  lifecycle), and a verification checklist added to the pull-request template.
+
 ### Added
 - **Truth table** (`algorithms.truth_table`) — evaluate a Boolean function on all inputs.
 - **Local sensitivity** (`algorithms.sensitivity_at`) — the number of pivotal bits at one input.
