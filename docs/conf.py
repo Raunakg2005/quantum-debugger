@@ -1,4 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
+import os
+import sys
+
+# Document the in-tree package (this checkout), not any older copy that happens to be
+# pip-installed in the build environment.
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 project = 'QuantumDebugger'
@@ -39,6 +45,16 @@ intersphinx_mapping = {
 # Napoleon settings
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
+
+# Optional heavy integrations (framework bridges, GPU, autodiff) are not needed to render the
+# API docs and may be absent or version-mismatched in the build environment. Mock them so
+# autodoc can import every module for its docstrings.
+autodoc_mock_imports = [
+    'pennylane', 'jax', 'jaxlib', 'qiskit', 'cirq',
+    'torch', 'tensorflow', 'cupy', 'sklearn', 'matplotlib',
+]
+# Keep going if a single object fails to import rather than aborting the whole build.
+autodoc_inherit_docstrings = True
 
 # MyST settings
 myst_enable_extensions = [

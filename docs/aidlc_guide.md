@@ -6,8 +6,9 @@ produced the algorithm library in `quantum_debugger/algorithms/`, and it is desi
 principle: **an AI can write a lot of plausible code quickly, so the lifecycle's job is to make
 sure every piece is *verified before it counts*.**
 
-The agent-facing contract is [`AGENTS.md`](../AGENTS.md) at the repository root; this guide is
-the human-readable explanation of the same lifecycle.
+The agent-facing contract is
+[`AGENTS.md`](https://github.com/Raunakg2005/quantum-debugger/blob/main/AGENTS.md) at the
+repository root; this guide is the human-readable explanation of the same lifecycle.
 
 ## Why an explicit lifecycle
 

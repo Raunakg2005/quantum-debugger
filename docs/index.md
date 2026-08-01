@@ -1,8 +1,15 @@
 # Quantum Debugger Documentation
 
-**Version 0.7.0 (development)** - Interactive quantum circuit debugger with Quantum Machine Learning
+**Version 3.0.0 (development)** - Interactive quantum circuit debugger with a large, verified quantum algorithms library
 
 Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
+
+Since v0.8 the library has grown a broad, *verified* algorithms library
+(`quantum_debugger.algorithms`) spanning many-body physics, tensor networks, QSVT,
+error correction and mitigation, quantum chemistry, metrology, thermodynamics, and quantum
+complexity. Each area has a narrative guide (see the sidebar sections below) and a complete
+[Algorithms API reference](algorithms_api); every routine is checked against a closed form or an
+exact computation. The process behind this is documented in the [AI Development Lifecycle](aidlc_guide).
 
 ## What's New in v0.7.0 (in development)
 
@@ -168,9 +175,61 @@ circuit_optimization_guide
 
 ```{toctree}
 :maxdepth: 2
+:caption: Advanced Physics & Simulation (v0.9–v3.0)
+
+many_body_guide
+tensor_networks_advanced_guide
+qsvt_guide
+hamiltonian_simulation_adv_guide
+quantum_chemistry_guide
+optimization_qaoa_guide
+vqa_theory_guide
+metrology_guide
+thermodynamics_guide
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Error Correction & Mitigation (v1.2–v1.6)
+
+error_mitigation_advanced_guide
+fault_tolerant_qec_guide
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Information, Foundations & Complexity (v1.5–v3.0)
+
+quantum_information_theory_guide
+foundations_guide
+communication_guide
+complexity_guide
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Models, Algorithms & Compilation (v1.7–v2.8)
+
+advanced_algorithms_2_guide
+continuous_variable_guide
+benchmarking_guide
+compilation_guide
+mbqc_guide
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Development
+
+aidlc_guide
+```
+
+```{toctree}
+:maxdepth: 2
 :caption: API Reference
 
 modules
+algorithms_api
 api
 api_reference
 qml_api
