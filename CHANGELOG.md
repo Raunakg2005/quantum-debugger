@@ -5,7 +5,72 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.9.0.dev)
+## [Unreleased] (3.0.0.dev)
+
+Theme: quantum complexity & advantage — the milestone 3.0 release, on *why* quantum computers
+are (sometimes) faster. Boolean-function complexity (sensitivity, block sensitivity, certificate
+complexity, decision-tree depth, degree) and the exact inequalities between them; Fourier
+analysis on the Boolean cube (Parseval, influences, noise stability); the quantum query
+separations behind Deutsch-Jozsa, Simon, Grover, and parity; and communication complexity with
+quantum fingerprinting — every measure computed by brute force and every relation verified.
+
+### Added
+- **Truth table** (`algorithms.truth_table`) — evaluate a Boolean function on all inputs.
+- **Sensitivity** (`algorithms.sensitivity_at`, `max_sensitivity`) — the local and global
+  single-bit sensitivities.
+- **Block sensitivity** (`algorithms.block_sensitivity`) — the max disjoint sensitive blocks,
+  verified ``>= s(f)``.
+- **Certificate complexity** (`algorithms.certificate_complexity`) — the smallest certifying
+  assignment, verified ``>= bs(f)``.
+- **Decision-tree complexity** (`algorithms.decision_tree_complexity`) — the deterministic query
+  complexity ``D(f)``.
+- **Polynomial degree** (`algorithms.polynomial_degree`) — the multilinear representing-polynomial
+  degree, verified ``<= D(f)``.
+- **Complexity hierarchy** (`algorithms.sensitivity_hierarchy_holds`) — verifies
+  ``s <= bs <= C <= D`` and ``deg <= D`` on OR/AND/parity/majority.
+- **±1 conversion** (`algorithms.to_pm1`) — the ``{0,1} -> {-1,+1}`` map for Fourier analysis.
+- **Fourier coefficients** (`algorithms.fourier_coefficients`) — the character-basis spectrum
+  ``fhat(S)``.
+- **Parseval** (`algorithms.parseval`) — the total Fourier weight, verified equal to 1.
+- **Variable influence** (`algorithms.influence`) — the weight on sets containing a variable.
+- **Total influence** (`algorithms.total_influence`) — the average sensitivity, verified ``n`` for
+  parity and 1 for a dictator.
+- **Noise stability** (`algorithms.noise_stability`) — ``sum rho^{|S|} fhat(S)^2``, verified 1 at
+  ``rho=1``.
+- **High-degree weight** (`algorithms.fourier_weight_above_degree`) — the spectral weight above a
+  degree.
+- **Fourier degree** (`algorithms.degree_from_fourier`) — the top non-zero level, verified equal
+  to the polynomial degree.
+- **Deutsch-Jozsa queries** (`algorithms.deutsch_jozsa_queries`) — ``1`` quantum vs ``2^{n-1}+1``
+  classical.
+- **Simon queries** (`algorithms.simon_queries`) — ``O(n)`` quantum vs ``Omega(2^{n/2})``
+  classical.
+- **Grover queries** (`algorithms.grover_queries`, `grover_is_optimal`) — the ``(pi/4)sqrt N``
+  count, verified order-optimal (``Theta(sqrt N)``).
+- **Parity queries** (`algorithms.parity_queries`) — ``ceil(n/2)`` quantum vs ``n`` classical.
+- **Quantum speedup** (`algorithms.quantum_speedup`) — the classical/quantum query ratio.
+- **Polynomial-method bound** (`algorithms.polynomial_method_bound`) — the ``deg(f)/2`` quantum
+  query lower bound.
+- **Exponential separation test** (`algorithms.is_exponential_separation`) — verified for
+  Deutsch-Jozsa/Simon, not for parity.
+- **Equality communication** (`algorithms.equality_deterministic`, `equality_randomized`) — the
+  ``n+1`` deterministic vs ``O(log n)`` randomized costs.
+- **Quantum fingerprint** (`algorithms.quantum_fingerprint_length`, `equality_exponential_saving`) —
+  the ``O(log n)`` fingerprint, verified below the deterministic cost.
+- **Inner-product complexity** (`algorithms.inner_product_complexity`) — ``Theta(n)`` with no
+  quantum advantage.
+- **Disjointness complexity** (`algorithms.disjointness_complexity`, `has_quantum_advantage`) — the
+  ``sqrt n`` quantum vs ``n`` classical quadratic advantage.
+- **Class containments** (`algorithms.known_containments`, `contains`) — the proven
+  ``P subseteq BPP subseteq BQP subseteq PP subseteq PSPACE`` DAG and transitive-closure queries.
+- **Problem classification** (`algorithms.problem_class`, `in_bqp`) — the smallest known class of a
+  problem (factoring in BQP, sorting in P).
+- **Open separations** (`algorithms.is_open_separation`) — flags open questions (BPP vs BQP, BQP
+  vs NP).
+- **Hierarchy consistency** (`algorithms.hierarchy_is_consistent`) — verifies the containment order
+  is reflexive, transitive, and acyclic.
+
+## [2.9.0]
 
 Theme: quantum thermodynamics — the laws of heat and work at the quantum scale. Work and heat
 along a quantum process, entropy production and the second law, the Jarzynski equality and

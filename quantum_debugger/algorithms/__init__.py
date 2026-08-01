@@ -970,6 +970,53 @@ from .passive_states import (
     bound_energy,
     gibbs_is_passive,
 )
+from .boolean_complexity import (
+    truth_table,
+    sensitivity_at,
+    max_sensitivity,
+    block_sensitivity,
+    certificate_complexity,
+    decision_tree_complexity,
+    polynomial_degree,
+    sensitivity_hierarchy_holds,
+)
+from .fourier_analysis import (
+    to_pm1,
+    fourier_coefficients,
+    parseval,
+    influence,
+    total_influence,
+    noise_stability,
+    fourier_weight_above_degree,
+    degree_from_fourier,
+)
+from .query_complexity import (
+    deutsch_jozsa_queries,
+    simon_queries,
+    grover_queries,
+    parity_queries,
+    quantum_speedup,
+    polynomial_method_bound,
+    is_exponential_separation,
+    grover_is_optimal,
+)
+from .communication_complexity import (
+    equality_deterministic,
+    equality_randomized,
+    quantum_fingerprint_length,
+    inner_product_complexity,
+    disjointness_complexity,
+    equality_exponential_saving,
+    has_quantum_advantage,
+)
+from .complexity_classes import (
+    known_containments,
+    contains,
+    problem_class,
+    in_bqp,
+    is_open_separation,
+    hierarchy_is_consistent,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1926,6 +1973,48 @@ __all__ = [
     "max_extractable_work",
     "bound_energy",
     "gibbs_is_passive",
+    # Complexity — Boolean functions
+    "truth_table",
+    "sensitivity_at",
+    "max_sensitivity",
+    "block_sensitivity",
+    "certificate_complexity",
+    "decision_tree_complexity",
+    "polynomial_degree",
+    "sensitivity_hierarchy_holds",
+    # Complexity — Fourier analysis
+    "to_pm1",
+    "fourier_coefficients",
+    "parseval",
+    "influence",
+    "total_influence",
+    "noise_stability",
+    "fourier_weight_above_degree",
+    "degree_from_fourier",
+    # Complexity — query complexity
+    "deutsch_jozsa_queries",
+    "simon_queries",
+    "grover_queries",
+    "parity_queries",
+    "quantum_speedup",
+    "polynomial_method_bound",
+    "is_exponential_separation",
+    "grover_is_optimal",
+    # Complexity — communication complexity
+    "equality_deterministic",
+    "equality_randomized",
+    "quantum_fingerprint_length",
+    "inner_product_complexity",
+    "disjointness_complexity",
+    "equality_exponential_saving",
+    "has_quantum_advantage",
+    # Complexity — complexity classes
+    "known_containments",
+    "contains",
+    "problem_class",
+    "in_bqp",
+    "is_open_separation",
+    "hierarchy_is_consistent",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

@@ -13,7 +13,7 @@ Features:
 - Hardware profile support
 """
 
-__version__ = "2.9.0.dev0"
+__version__ = "3.0.0.dev0"
 __author__ = "Raunak Kumar Gupta"
 __license__ = "MIT"
 
