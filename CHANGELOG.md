@@ -5,7 +5,70 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.5.0.dev)
+## [Unreleased] (2.6.0.dev)
+
+Theme: quantum communication & networks — sending quantum information reliably and securely.
+Quantum-channel capacities (coherent information, quantum / private / entanglement-assisted
+capacity, with closed forms for the erasure, dephasing, and depolarizing channels); quantum
+key distribution (BB84, six-state, and E91 key rates with their QBER thresholds); and quantum
+networks (entanglement swapping, repeater rates, and entanglement routing) — every rate and
+threshold verified against its closed form.
+
+### Added
+- **Binary entropy** (`algorithms.binary_entropy`) — ``h(p)``, the workhorse of capacity and
+  key-rate formulas.
+- **Depolarizing channel** (`algorithms.depolarizing_kraus`) — the isotropic-noise Kraus
+  operators.
+- **Dephasing channel** (`algorithms.dephasing_kraus`) — the phase-flip Kraus operators.
+- **Amplitude-damping channel** (`algorithms.amplitude_damping_kraus`) — the energy-loss Kraus
+  operators.
+- **Channel application** (`algorithms.apply_channel`) — apply a Kraus channel to a density
+  matrix.
+- **Coherent information** (`quantum_channels_advanced.coherent_information`) —
+  ``S(N(rho)) - S(N^c(rho))``, verified equal to the dephasing quantum capacity ``1-h(p)``.
+- **Entanglement-assisted capacity** (`algorithms.entanglement_assisted_capacity`) — the
+  quantum mutual information, verified to exceed the coherent information.
+- **Erasure quantum capacity** (`algorithms.erasure_quantum_capacity`) — the closed form
+  ``max(0, 1-2p)``, zero above ``p=1/2``.
+- **Dephasing quantum capacity** (`algorithms.dephasing_quantum_capacity`) — the closed form
+  ``1-h(p)``.
+- **Holevo information** (`algorithms.holevo_information`) — the classical-information bound of a
+  quantum ensemble, verified 1 bit for orthogonal states and 0 for identical.
+- **Channel fidelity** (`algorithms.channel_fidelity`) — the average gate fidelity to the
+  identity, verified 1 for the identity channel.
+- **BB84 key rate** (`algorithms.bb84_key_rate`) — ``1 - 2h(QBER)``, verified positive below the
+  threshold.
+- **BB84 threshold** (`algorithms.bb84_threshold`) — the ``QBER ~ 11%`` security threshold,
+  verified where the key rate hits zero.
+- **Six-state key rate** (`algorithms.six_state_key_rate`) — the three-basis protocol rate.
+- **Six-state threshold** (`algorithms.six_state_threshold`) — the higher ``~12.6%`` threshold,
+  verified above BB84's.
+- **QBER from CHSH** (`algorithms.qber_from_chsh`) — the E91 error rate from the CHSH value,
+  verified 0 at Tsirelson's bound.
+- **E91 key rate** (`algorithms.e91_key_rate`) — the Ekert-protocol rate, verified 1 at
+  Tsirelson and 0 at the classical bound.
+- **Secret fraction & sifting** (`algorithms.secret_fraction`, `sifting_ratio`) — the asymptotic
+  secret fraction and the basis-reconciliation efficiency (``1/2`` BB84, ``1/3`` six-state).
+- **Decoy-state gain** (`algorithms.decoy_state_gain`) — the single-photon detection gain that
+  defeats photon-number-splitting attacks.
+- **Werner fidelity** (`algorithms.werner_fidelity`) — the Bell-state fidelity of a Werner link.
+- **Entanglement swapping** (`algorithms.swap_werner`, `entanglement_swapping_fidelity`) — the
+  Werner-parameter product and swapped fidelity, verified to reduce to the input for a perfect
+  link.
+- **Repeater scaling** (`algorithms.repeater_werner`, `repeater_rate`) — the ``w^n`` fidelity
+  decay and the generation rate across a repeater chain.
+- **Purification** (`algorithms.purified_fidelity`) — one DEJMPS round, verified to raise the
+  link fidelity.
+- **Path fidelity** (`algorithms.path_fidelity`) — the end-to-end fidelity of a swap chain,
+  verified to fall with hops.
+- **Reach before threshold** (`algorithms.hops_before_threshold`) — the number of swaps before
+  the fidelity drops below a target, verified to shrink with link quality.
+- **GHZ distribution** (`algorithms.ghz_distribution_fidelity`) — the fidelity of a distributed
+  multipartite GHZ state.
+- **Entanglement routing** (`algorithms.entanglement_routing`) — max-fidelity path search across
+  a network graph, verified to pick the higher-fidelity route.
+
+## [2.5.0]
 
 Theme: quantum foundations & nonlocality — what makes quantum correlations impossible to
 explain classically. The CHSH inequality with its classical (2), Tsirelson (2√2), and
