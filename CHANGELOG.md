@@ -5,7 +5,59 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (3.1.0.dev)
+## [Unreleased] (3.2.0.dev)
+
+Theme: quantum optimal control & pulse engineering — how to *steer* a quantum system to a target
+gate or state. Piecewise-constant control propagators and GRAPE (gradient-ascent pulse
+engineering) with an analytic, finite-difference-checked gradient; the dynamical-Lie-algebra
+controllability test; the Mandelstam-Tamm and Margolus-Levitin quantum speed limits; and the
+pulse-area theorem with square/Gaussian/DRAG envelopes — every routine verified against a synthesized
+gate fidelity, an exact Lie-algebra dimension, a saturated speed-limit bound, or a rotation unitary.
+
+### Added
+- **Control Hamiltonian** (`algorithms.control_hamiltonian`) — assembles ``H_0 + Σ_j u_j H_j``.
+- **Slice / total propagators** (`algorithms.slice_propagators`, `piecewise_propagator`) — the
+  per-slice and product unitaries of a piecewise-constant pulse.
+- **Gate fidelity** (`algorithms.gate_fidelity`) — ``|Tr(target† U)|²/d²``, 1 up to global phase.
+- **State fidelity** (`algorithms.state_fidelity`) — ``|⟨target|ψ⟩|²`` for state transfer.
+- **GRAPE gradient** (`algorithms.grape_gradient`) — the analytic fidelity gradient, verified
+  against finite differences.
+- **GRAPE optimizer** (`algorithms.grape_optimize`) — gradient-ascent pulse synthesis, verified to
+  reach fidelity > 0.999 for X and Hadamard.
+- **GRAPE state transfer** (`algorithms.grape_state_transfer`) — optimize controls to move a state
+  to a target.
+- **Control fluence** (`algorithms.control_fluence`) — the pulse-energy cost of a control.
+- **Pauli controls** (`algorithms.pauli`) — the single-qubit control operators.
+- **Lie bracket** (`algorithms.lie_bracket`) — the commutator ``[A, B]``.
+- **Lie closure** (`algorithms.lie_closure`) — a basis for the dynamical Lie algebra generated
+  under commutation.
+- **DLA dimension** (`algorithms.dla_dimension`) — the dynamical-Lie-algebra dimension.
+- **su(d)/u(d) dimensions** (`algorithms.su_dimension`, `u_dimension`) — the controllability targets.
+- **Controllability** (`algorithms.is_controllable`, `gate_reachable`) — the Lie-algebra rank
+  criterion; verified ``{X, Z}`` generates ``su(2)`` and a full-local-plus-``ZZ`` set generates ``su(4)``.
+- **Mean energy** (`algorithms.mean_energy`) — ``⟨H⟩`` of a state.
+- **Energy variance** (`algorithms.energy_variance`) — ``⟨H²⟩ − ⟨H⟩²``.
+- **Energy uncertainty** (`algorithms.energy_uncertainty`) — ``ΔE = √Var H``, the Mandelstam-Tamm
+  speed scale.
+- **Mandelstam-Tamm bound** (`algorithms.mandelstam_tamm_time`) — ``arccos(overlap)/ΔE``.
+- **Margolus-Levitin bound** (`algorithms.margolus_levitin_time`) — the mean-energy speed limit.
+- **Quantum speed limit** (`algorithms.quantum_speed_limit_time`) — the tighter of the two bounds.
+- **Survival amplitude** (`algorithms.evolution_overlap`) — ``|⟨ψ₀|e^{−iHt}|ψ₀⟩|``.
+- **Orthogonalization time** (`algorithms.orthogonalization_time`) — the first orthogonal time,
+  found by first-crossing refinement.
+- **Speed-limit saturation** (`algorithms.saturates_mandelstam_tamm`) — verified that a qubit
+  precession is time-optimal.
+- **Square & Gaussian pulses** (`algorithms.square_pulse`, `gaussian_pulse`) — the basic control
+  envelopes.
+- **DRAG pulse** (`algorithms.drag_pulse`) — the leakage-suppressing derivative quadrature.
+- **Pulse area** (`algorithms.pulse_area`, `gaussian_area`) — the drive area, numeric and analytic.
+- **Rotation from area** (`algorithms.rotation_from_area`) — the pulse-area theorem ``θ = area``.
+- **π-pulse amplitude** (`algorithms.pi_pulse_amplitude`) — the square bit-flip amplitude.
+- **Pulse unitary** (`algorithms.pulse_unitary`, `square_pulse_unitary`) — the rotation a pulse
+  realizes.
+- **Pulse-area theorem** (`algorithms.pi_pulse_is_bit_flip`) — verified an area-π pulse equals X.
+
+## [3.1.0]
 
 Theme: open quantum systems & Lindblad dynamics — how real, noisy quantum systems evolve when
 coupled to an environment. The Gorini-Kossakowski-Sudarshan-Lindblad master equation and its

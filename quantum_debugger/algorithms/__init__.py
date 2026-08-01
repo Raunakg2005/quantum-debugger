@@ -1126,6 +1126,51 @@ from .open_qubit import (
     bloch_decay_matches_lindblad,
     purity,
 )
+# Quantum optimal control & pulse engineering (v3.2)
+from .optimal_control import (
+    control_hamiltonian,
+    slice_propagators,
+    piecewise_propagator,
+    gate_fidelity,
+    state_fidelity,
+    grape_gradient,
+    grape_optimize,
+    grape_state_transfer,
+    control_fluence,
+    pauli,
+)
+from .controllability import (
+    lie_bracket,
+    lie_closure,
+    dla_dimension,
+    su_dimension,
+    u_dimension,
+    is_controllable,
+    gate_reachable,
+)
+from .quantum_speed_limit import (
+    mean_energy,
+    energy_variance,
+    energy_uncertainty,
+    mandelstam_tamm_time,
+    margolus_levitin_time,
+    quantum_speed_limit_time,
+    evolution_overlap,
+    orthogonalization_time,
+    saturates_mandelstam_tamm,
+)
+from .pulse_shapes import (
+    square_pulse,
+    gaussian_pulse,
+    drag_pulse,
+    pulse_area,
+    gaussian_area,
+    rotation_from_area,
+    pi_pulse_amplitude,
+    pulse_unitary,
+    pi_pulse_is_bit_flip,
+    square_pulse_unitary,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -2124,4 +2169,44 @@ __all__ = [
     "bloch_decay",
     "bloch_decay_matches_lindblad",
     "purity",
+    # Optimal control — GRAPE
+    "control_hamiltonian",
+    "slice_propagators",
+    "piecewise_propagator",
+    "gate_fidelity",
+    "state_fidelity",
+    "grape_gradient",
+    "grape_optimize",
+    "grape_state_transfer",
+    "control_fluence",
+    "pauli",
+    # Optimal control — controllability
+    "lie_bracket",
+    "lie_closure",
+    "dla_dimension",
+    "su_dimension",
+    "u_dimension",
+    "is_controllable",
+    "gate_reachable",
+    # Optimal control — quantum speed limits
+    "mean_energy",
+    "energy_variance",
+    "energy_uncertainty",
+    "mandelstam_tamm_time",
+    "margolus_levitin_time",
+    "quantum_speed_limit_time",
+    "evolution_overlap",
+    "orthogonalization_time",
+    "saturates_mandelstam_tamm",
+    # Optimal control — pulse shapes
+    "square_pulse",
+    "gaussian_pulse",
+    "drag_pulse",
+    "pulse_area",
+    "gaussian_area",
+    "rotation_from_area",
+    "pi_pulse_amplitude",
+    "pulse_unitary",
+    "pi_pulse_is_bit_flip",
+    "square_pulse_unitary",
 ]
