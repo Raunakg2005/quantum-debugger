@@ -859,6 +859,45 @@ from .quantum_networks import (
     ghz_distribution_fidelity,
     entanglement_routing,
 )
+from .tensor_contraction import (
+    contract_pair,
+    pairwise_cost,
+    contract_chain,
+    matrix_chain_left_cost,
+    matrix_chain_optimal_cost,
+    matrix_chain_optimal_order,
+    svd_bond_truncation,
+    contraction_speedup,
+)
+from .peps import (
+    product_peps,
+    bond_dimension,
+    is_product_peps,
+    contract_2x2,
+    cluster_peps_statevector,
+    cluster_state_reference,
+)
+from .mera import (
+    disentangler,
+    isometry,
+    is_isometry,
+    descending_superoperator,
+    ascending_superoperator,
+    causal_cone_width,
+    ternary_isometry,
+    renormalize_operator,
+    coarse_grain_state,
+)
+from .entanglement_scaling import (
+    bipartite_entropy,
+    max_entanglement,
+    page_average_entropy,
+    random_state_entropy,
+    entanglement_spectrum,
+    renyi2_entropy,
+    is_area_law,
+    volume_law_slope,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1716,6 +1755,41 @@ __all__ = [
     "hops_before_threshold",
     "ghz_distribution_fidelity",
     "entanglement_routing",
+    # Tensor networks II — contraction
+    "contract_pair",
+    "pairwise_cost",
+    "contract_chain",
+    "matrix_chain_left_cost",
+    "matrix_chain_optimal_cost",
+    "matrix_chain_optimal_order",
+    "svd_bond_truncation",
+    "contraction_speedup",
+    # Tensor networks II — PEPS
+    "product_peps",
+    "bond_dimension",
+    "is_product_peps",
+    "contract_2x2",
+    "cluster_peps_statevector",
+    "cluster_state_reference",
+    # Tensor networks II — MERA
+    "disentangler",
+    "isometry",
+    "is_isometry",
+    "descending_superoperator",
+    "ascending_superoperator",
+    "causal_cone_width",
+    "ternary_isometry",
+    "renormalize_operator",
+    "coarse_grain_state",
+    # Tensor networks II — entanglement scaling
+    "bipartite_entropy",
+    "max_entanglement",
+    "page_average_entropy",
+    "random_state_entropy",
+    "entanglement_spectrum",
+    "renyi2_entropy",
+    "is_area_law",
+    "volume_law_slope",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

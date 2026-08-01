@@ -5,7 +5,62 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.6.0.dev)
+## [Unreleased] (2.7.0.dev)
+
+Theme: tensor networks II — the geometry of entanglement beyond 1D. Tensor-contraction cost
+analysis and optimal contraction ordering; 2D **PEPS** construction and exact contraction;
+**MERA** disentanglers and isometric coarse-graining; **tree tensor networks**; and the
+entanglement-scaling laws (area law, the Page value of a random state, critical log-scaling) —
+verified by round-tripping to the exact state vector and against closed forms.
+
+### Added
+- **Pairwise contraction** (`algorithms.contract_pair`) — the atomic ``tensordot`` of two
+  tensors over shared indices.
+- **Contraction cost** (`algorithms.pairwise_cost`) — the FLOP cost of one pairwise contraction.
+- **Chain contraction** (`algorithms.contract_chain`) — the matrix-chain product, the reference
+  result every order must reproduce.
+- **Naive chain cost** (`algorithms.matrix_chain_left_cost`) — the left-to-right
+  scalar-multiplication count.
+- **Optimal chain cost** (`algorithms.matrix_chain_optimal_cost`) — the dynamic-program minimum,
+  verified below the naive cost.
+- **Optimal chain order** (`algorithms.matrix_chain_optimal_order`) — the parenthesization
+  achieving the optimal cost.
+- **SVD bond truncation** (`algorithms.svd_bond_truncation`) — truncate a bipartition to a bond
+  dimension and report the retained fidelity, the core compression step.
+- **Contraction speedup** (`algorithms.contraction_speedup`) — the naive/optimal cost ratio.
+- **Product PEPS** (`algorithms.product_peps`, `is_product_peps`) — the bond-dimension-1 (product)
+  2D tensor network.
+- **Bond dimension** (`algorithms.bond_dimension`) — the maximum PEPS virtual bond.
+- **PEPS contraction** (`algorithms.contract_2x2`) — exact contraction of a ``2x2`` PEPS to the
+  state vector, verified on product states.
+- **Cluster-state PEPS** (`algorithms.cluster_peps_statevector`, `cluster_state_reference`) — the
+  bond-dimension-2 cluster-state PEPS, verified equal to the ``H``+``CZ`` construction.
+- **Disentangler & isometry** (`algorithms.disentangler`, `isometry`, `is_isometry`) — the MERA
+  building blocks, verified unitary and ``w^dagger w = I``.
+- **MERA superoperators** (`algorithms.descending_superoperator`, `ascending_superoperator`) — the
+  fine<->coarse renormalization maps, verified trace-preserving.
+- **Causal cone** (`algorithms.causal_cone_width`) — the constant-width MERA past cone that makes
+  observables scalable.
+- **Ternary isometry** (`algorithms.ternary_isometry`) — the 3-site->1-site MERA coarse-grainer,
+  verified isometric.
+- **Operator renormalization** (`algorithms.renormalize_operator`, `coarse_grain_state`) — the RG
+  flow of an observable / state up the network.
+- **Bipartite entropy** (`algorithms.bipartite_entropy`) — the entanglement entropy of a
+  subsystem, verified 0 for product and 1 for a Bell pair.
+- **Maximum entanglement** (`algorithms.max_entanglement`) — the ``min(n_A, n-n_A)`` volume-law
+  ceiling.
+- **Page average entropy** (`algorithms.page_average_entropy`) — Page's closed form for a random
+  state's average entanglement.
+- **Random-state entropy** (`algorithms.random_state_entropy`) — the sampled mean, verified to
+  match the Page value (volume law).
+- **Entanglement spectrum** (`algorithms.entanglement_spectrum`) — the squared Schmidt
+  coefficients of a bipartition.
+- **Rényi-2 entropy** (`algorithms.renyi2_entropy`) — the measurable second Rényi entanglement
+  entropy.
+- **Area-law test** (`algorithms.is_area_law`, `volume_law_slope`) — the constant-entropy (area)
+  and ``~1 bit/qubit`` (volume) scaling checks.
+
+## [2.6.0]
 
 Theme: quantum communication & networks — sending quantum information reliably and securely.
 Quantum-channel capacities (coherent information, quantum / private / entanglement-assisted
