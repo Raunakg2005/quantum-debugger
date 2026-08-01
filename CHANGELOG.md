@@ -5,7 +5,69 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (3.0.0.dev)
+## [Unreleased] (3.1.0.dev)
+
+Theme: open quantum systems & Lindblad dynamics — how real, noisy quantum systems evolve when
+coupled to an environment. The Gorini-Kossakowski-Sudarshan-Lindblad master equation and its
+Liouvillian superoperator; quantum-trajectory (Monte Carlo wavefunction) unravelings; the
+Breuer-Laine-Piilo non-Markovianity measure; collision-model thermalization; and closed-form
+qubit T1/T2 relaxation — every routine verified against an exact channel, the analytic steady
+state, or Bloch decay.
+
+### Added
+- **Vectorization** (`algorithms.vectorize` / `unvectorize`) — column-stacking map that turns the
+  master equation into a linear system.
+- **Superoperators** (`algorithms.left_multiply`, `right_multiply`) — the ``I⊗A`` / ``A^T⊗I`` maps
+  on a vectorized density matrix.
+- **Dissipator** (`algorithms.dissipator_superoperator`, `apply_dissipator`) — the GKSL dissipator
+  ``D[L]ρ = LρL† − ½{L†L, ρ}``, superoperator and direct forms.
+- **Liouvillian** (`algorithms.lindbladian`, `lindblad_derivative`) — the full GKSL superoperator,
+  verified against the direct ``dρ/dt``.
+- **Lindblad evolution** (`algorithms.evolve_lindblad`) — ``ρ(t) = unvec(e^{Lt} vec ρ₀)``, matched
+  to the exact amplitude-damping and dephasing channels.
+- **Trace preservation** (`algorithms.is_trace_preserving`) — checks the Liouvillian conserves
+  probability.
+- **Liouvillian spectrum & gap** (`algorithms.liouvillian_spectrum`, `spectral_gap`) — all
+  eigenvalues have ``Re ≤ 0``; the gap sets the relaxation rate.
+- **Steady state** (`algorithms.steady_state`) — the kernel of the Liouvillian, verified equal to
+  ``|0⟩⟨0|`` for amplitude damping.
+- **Jump operators** (`algorithms.amplitude_damping_jump`, `dephasing_jump`) — the T1 and T2
+  Lindblad operators.
+- **Effective Hamiltonian** (`algorithms.effective_hamiltonian`) — ``H − (i/2)ΣL†L`` governing the
+  no-jump evolution.
+- **Jump rates** (`algorithms.jump_rates`) — instantaneous quantum-jump probabilities.
+- **Quantum trajectory** (`algorithms.quantum_jump_trajectory`) — one Monte Carlo wavefunction run.
+- **Trajectory ensemble** (`algorithms.trajectory_ensemble`) — the stochastic estimate of ``ρ(t)``.
+- **Unraveling convergence** (`algorithms.trajectory_lindblad_error`) — trace distance to the exact
+  Lindblad state, verified < 0.05.
+- **Emission statistics** (`algorithms.mean_photon_emissions`) — mean jumps per trajectory, matched
+  to ``1 − e^{−γt}``.
+- **Dephasing map** (`algorithms.dephasing_map`) — a coherence-shrinking qubit channel.
+- **BLP trace distance** (`algorithms.coherence_trace_distance`) — the ``|+⟩/|−⟩`` distinguishability,
+  equal to ``|c(t)|``.
+- **Coherence models** (`algorithms.markovian_coherence`, `nonmarkovian_coherence`) — monotone vs
+  reviving decoherence.
+- **Distinguishability backflow** (`algorithms.distinguishability_backflow`) — the positive
+  trace-distance increments.
+- **BLP non-Markovianity** (`algorithms.blp_measure`, `is_markovian`) — 0 for Markovian dynamics,
+  positive when the trace distance revives.
+- **Revival count** (`algorithms.revival_count`) — number of information-backflow episodes.
+- **Partial swap** (`algorithms.partial_swap`) — the ``exp(−iθ·SWAP)`` collision unitary.
+- **Thermal ancilla** (`algorithms.thermal_qubit`) — the Gibbs state that drives thermalization.
+- **Collision step** (`algorithms.collision_step`, `repeated_collisions`) — one system-ancilla
+  interaction and its iteration.
+- **Thermalization** (`algorithms.thermalize`, `fixed_point_error`) — repeated collisions drive the
+  system to the Gibbs state (fixed-point error → 0).
+- **Full-swap thermalization** (`algorithms.full_swap_is_one_step`) — a full SWAP replaces the
+  system with the ancilla in one collision.
+- **Bloch vector** (`algorithms.bloch_vector`, `density_from_bloch`) — Bloch ↔ density-matrix.
+- **T1/T2 relations** (`algorithms.t2_from_t1_tphi`, `t2_upper_bound`, `relaxation_times`) — the
+  ``1/T2 = 1/(2T1) + 1/Tφ`` relation and the ``T2 ≤ 2T1`` bound.
+- **Bloch decay** (`algorithms.bloch_decay`, `bloch_decay_matches_lindblad`) — the closed-form
+  T1/T2 decay, verified against exact Lindblad evolution.
+- **Purity** (`algorithms.purity`) — the ``Tr ρ²`` decoherence witness.
+
+## [3.0.0]
 
 Theme: quantum complexity & advantage — the milestone 3.0 release, on *why* quantum computers
 are (sometimes) faster. Boolean-function complexity (sensitivity, block sensitivity, certificate

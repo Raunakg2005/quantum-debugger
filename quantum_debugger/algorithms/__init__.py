@@ -1069,6 +1069,63 @@ from .pec_ptm import (
     depolarizing_overhead,
     pec_mitigate_ptm,
 )
+# Open quantum systems & Lindblad dynamics (v3.1)
+from .lindblad import (
+    vectorize,
+    unvectorize,
+    left_multiply,
+    right_multiply,
+    dissipator_superoperator,
+    apply_dissipator,
+    lindbladian,
+    lindblad_derivative,
+    evolve_lindblad,
+    is_trace_preserving,
+    liouvillian_spectrum,
+    spectral_gap,
+    steady_state,
+    amplitude_damping_jump,
+    dephasing_jump,
+)
+from .quantum_trajectories import (
+    effective_hamiltonian,
+    jump_rates,
+    quantum_jump_trajectory,
+    trajectory_ensemble,
+    trajectory_lindblad_error,
+    mean_photon_emissions,
+)
+# NOTE: nonmarkovianity.trace_distance collides with quantum_distances.trace_distance;
+# it is available via the submodule (quantum_debugger.algorithms.nonmarkovianity).
+from .nonmarkovianity import (
+    dephasing_map,
+    coherence_trace_distance,
+    markovian_coherence,
+    nonmarkovian_coherence,
+    distinguishability_backflow,
+    blp_measure,
+    is_markovian,
+    revival_count,
+)
+from .collision_model import (
+    partial_swap,
+    thermal_qubit,
+    collision_step,
+    repeated_collisions,
+    thermalize,
+    fixed_point_error,
+    full_swap_is_one_step,
+)
+from .open_qubit import (
+    bloch_vector,
+    density_from_bloch,
+    t2_from_t1_tphi,
+    t2_upper_bound,
+    relaxation_times,
+    bloch_decay,
+    bloch_decay_matches_lindblad,
+    purity,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -2018,4 +2075,53 @@ __all__ = [
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
+    # Open systems — Lindblad dynamics
+    "vectorize",
+    "unvectorize",
+    "left_multiply",
+    "right_multiply",
+    "dissipator_superoperator",
+    "apply_dissipator",
+    "lindbladian",
+    "lindblad_derivative",
+    "evolve_lindblad",
+    "is_trace_preserving",
+    "liouvillian_spectrum",
+    "spectral_gap",
+    "steady_state",
+    "amplitude_damping_jump",
+    "dephasing_jump",
+    # Open systems — quantum trajectories
+    "effective_hamiltonian",
+    "jump_rates",
+    "quantum_jump_trajectory",
+    "trajectory_ensemble",
+    "trajectory_lindblad_error",
+    "mean_photon_emissions",
+    # Open systems — non-Markovianity
+    "dephasing_map",
+    "coherence_trace_distance",
+    "markovian_coherence",
+    "nonmarkovian_coherence",
+    "distinguishability_backflow",
+    "blp_measure",
+    "is_markovian",
+    "revival_count",
+    # Open systems — collision models
+    "partial_swap",
+    "thermal_qubit",
+    "collision_step",
+    "repeated_collisions",
+    "thermalize",
+    "fixed_point_error",
+    "full_swap_is_one_step",
+    # Open systems — qubit relaxation (T1/T2)
+    "bloch_vector",
+    "density_from_bloch",
+    "t2_from_t1_tphi",
+    "t2_upper_bound",
+    "relaxation_times",
+    "bloch_decay",
+    "bloch_decay_matches_lindblad",
+    "purity",
 ]
