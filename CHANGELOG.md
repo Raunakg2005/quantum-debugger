@@ -5,7 +5,57 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (2.8.0.dev)
+## [Unreleased] (2.9.0.dev)
+
+Theme: quantum thermodynamics — the laws of heat and work at the quantum scale. Work and heat
+along a quantum process, entropy production and the second law, the Jarzynski equality and
+Crooks fluctuation theorem, the Landauer bound on erasure, passive states, and the quantum Otto
+engine cycle — every relation verified against its closed form and the exact statistics.
+
+### Added
+- **Gibbs state** (`quantum_thermodynamics.gibbs_state`) — the thermal equilibrium state
+  ``e^{-beta H}/Z``.
+- **Partition function** (`quantum_thermodynamics.partition_function`) — ``Z = Tr e^{-beta H}``.
+- **Free energy** (`algorithms.free_energy`) — the equilibrium ``-(1/beta) ln Z``.
+- **Internal energy** (`algorithms.internal_energy`) — the mean energy ``<H>``.
+- **Quench work** (`algorithms.quench_work`) — the work of a sudden Hamiltonian change.
+- **Heat exchanged** (`algorithms.heat_exchanged`) — the energy change at fixed Hamiltonian.
+- **Non-equilibrium free energy** (`algorithms.nonequilibrium_free_energy`) — ``<H> - S/beta``,
+  verified minimized by the Gibbs state.
+- **Heat capacity** (`algorithms.heat_capacity`) — ``beta^2 Var(H)``, verified non-negative.
+- **Thermal entropy** (`algorithms.thermal_entropy`) — the Gibbs-state entropy.
+- **Entropy production** (`algorithms.entropy_production`) — ``beta(W - Delta F)``, the second
+  law, verified non-negative.
+- **Two-point work distribution** (`algorithms.two_point_work_distribution`) — the measurement
+  statistics of work, verified normalized.
+- **Jarzynski average** (`algorithms.jarzynski_average`, `verify_jarzynski`) — ``<e^{-beta W}>``,
+  verified equal to ``e^{-beta Delta F}`` exactly.
+- **Free-energy difference** (`algorithms.free_energy_difference`) — the ``Delta F`` Jarzynski
+  recovers from non-equilibrium work.
+- **Average & dissipated work** (`algorithms.average_work`, `dissipated_work`) — the mean work and
+  its irreversible excess ``<W> - Delta F``, verified non-negative (the second law).
+- **Work variance** (`algorithms.work_variance`) — the size of the work fluctuations.
+- **Landauer bound** (`algorithms.landauer_bound`) — the ``k_B T ln 2`` erasure cost, verified.
+- **Crooks ratio** (`algorithms.crooks_ratio`) — the forward/reverse work-probability ratio,
+  verified 1 at the reversible work.
+- **Otto cycle** (`algorithms.otto_cycle`) — the four-stroke qubit engine, returning heats, work,
+  and efficiency.
+- **Otto efficiency** (`algorithms.otto_efficiency`) — the closed form ``1 - omega_c/omega_h``.
+- **Carnot efficiency** (`algorithms.carnot_efficiency`) — the universal ``1 - T_c/T_h`` bound.
+- **Engine test** (`algorithms.is_engine`) — whether the Otto cycle delivers net work.
+- **Carnot bound check** (`algorithms.efficiency_below_carnot`) — verifies the Otto efficiency
+  never exceeds Carnot (the second law).
+- **Passive state** (`algorithms.passive_state`) — the work-free rearrangement of a state's
+  populations.
+- **Ergotropy** (`algorithms.ergotropy`, `max_extractable_work`) — the maximum unitary-extractable
+  work, verified non-negative and zero for passive states.
+- **Passivity test** (`algorithms.is_passive`) — whether a state has zero ergotropy.
+- **Bound energy** (`algorithms.bound_energy`) — the non-extractable part of the energy, verified
+  to sum with ergotropy to ``<H>``.
+- **Gibbs passivity** (`algorithms.gibbs_is_passive`) — verifies a thermal state stores no
+  extractable work.
+
+## [2.8.0]
 
 Theme: measurement-based & cluster-state computing — computing by *measuring* a fixed
 entangled resource. Graph-state construction and stabilizers, the 1D/2D cluster states,

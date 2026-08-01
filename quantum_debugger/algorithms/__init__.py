@@ -934,6 +934,42 @@ from .mbqc_two_qubit import (
     verify_cnot_decomposition,
     mbqc_cnot,
 )
+from .quantum_thermodynamics import (
+    free_energy,
+    internal_energy,
+    quench_work,
+    heat_exchanged,
+    nonequilibrium_free_energy,
+    heat_capacity,
+    thermal_entropy,
+    entropy_production,
+)
+from .fluctuation_theorems import (
+    two_point_work_distribution,
+    jarzynski_average,
+    free_energy_difference,
+    average_work,
+    work_variance,
+    dissipated_work,
+    verify_jarzynski,
+    landauer_bound,
+    crooks_ratio,
+)
+from .quantum_otto_cycle import (
+    otto_cycle,
+    otto_efficiency,
+    carnot_efficiency,
+    is_engine,
+    efficiency_below_carnot,
+)
+from .passive_states import (
+    passive_state,
+    ergotropy,
+    is_passive,
+    max_extractable_work,
+    bound_energy,
+    gibbs_is_passive,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 from .readout_mitigation import (
     assignment_matrix,
@@ -1858,6 +1894,38 @@ __all__ = [
     "cnot_decomposition",
     "verify_cnot_decomposition",
     "mbqc_cnot",
+    # Thermodynamics — work, heat, entropy
+    "free_energy",
+    "internal_energy",
+    "quench_work",
+    "heat_exchanged",
+    "nonequilibrium_free_energy",
+    "heat_capacity",
+    "thermal_entropy",
+    "entropy_production",
+    # Thermodynamics — fluctuation theorems
+    "two_point_work_distribution",
+    "jarzynski_average",
+    "free_energy_difference",
+    "average_work",
+    "work_variance",
+    "dissipated_work",
+    "verify_jarzynski",
+    "landauer_bound",
+    "crooks_ratio",
+    # Thermodynamics — Otto engine
+    "otto_cycle",
+    "otto_efficiency",
+    "carnot_efficiency",
+    "is_engine",
+    "efficiency_below_carnot",
+    # Thermodynamics — passive states
+    "passive_state",
+    "ergotropy",
+    "is_passive",
+    "max_extractable_work",
+    "bound_energy",
+    "gibbs_is_passive",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
