@@ -28,12 +28,16 @@ engine cycle — every relation verified against its closed form and the exact s
   law, verified non-negative.
 - **Two-point work distribution** (`algorithms.two_point_work_distribution`) — the measurement
   statistics of work, verified normalized.
-- **Jarzynski average** (`algorithms.jarzynski_average`, `verify_jarzynski`) — ``<e^{-beta W}>``,
-  verified equal to ``e^{-beta Delta F}`` exactly.
+- **Jarzynski average** (`algorithms.jarzynski_average`) — the exponential work average
+  ``<e^{-beta W}>``.
+- **Jarzynski verification** (`algorithms.verify_jarzynski`) — verifies ``<e^{-beta W}> =
+  e^{-beta Delta F}`` exactly.
 - **Free-energy difference** (`algorithms.free_energy_difference`) — the ``Delta F`` Jarzynski
   recovers from non-equilibrium work.
-- **Average & dissipated work** (`algorithms.average_work`, `dissipated_work`) — the mean work and
-  its irreversible excess ``<W> - Delta F``, verified non-negative (the second law).
+- **Average work** (`algorithms.average_work`) — the mean two-point-measurement work, verified
+  ``>= Delta F``.
+- **Dissipated work** (`algorithms.dissipated_work`) — the irreversible excess ``<W> - Delta F``,
+  verified non-negative.
 - **Work variance** (`algorithms.work_variance`) — the size of the work fluctuations.
 - **Landauer bound** (`algorithms.landauer_bound`) — the ``k_B T ln 2`` erasure cost, verified.
 - **Crooks ratio** (`algorithms.crooks_ratio`) — the forward/reverse work-probability ratio,
@@ -47,8 +51,10 @@ engine cycle — every relation verified against its closed form and the exact s
   never exceeds Carnot (the second law).
 - **Passive state** (`algorithms.passive_state`) — the work-free rearrangement of a state's
   populations.
-- **Ergotropy** (`algorithms.ergotropy`, `max_extractable_work`) — the maximum unitary-extractable
-  work, verified non-negative and zero for passive states.
+- **Ergotropy** (`algorithms.ergotropy`) — the maximum unitary-extractable work, verified
+  non-negative and zero for passive states.
+- **Max extractable work** (`algorithms.max_extractable_work`) — the ergotropy as the single-copy
+  work bound.
 - **Passivity test** (`algorithms.is_passive`) — whether a state has zero ergotropy.
 - **Bound energy** (`algorithms.bound_energy`) — the non-extractable part of the energy, verified
   to sum with ergotropy to ``<H>``.
