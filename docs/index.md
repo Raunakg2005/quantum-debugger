@@ -187,6 +187,7 @@ vqa_theory_guide
 metrology_guide
 thermodynamics_guide
 open_systems_guide
+optimal_control_guide
 ```
 
 ```{toctree}

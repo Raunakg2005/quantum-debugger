@@ -10,7 +10,7 @@
 
 A Python library for quantum circuit debugging, state inspection, and simulation across **four engines** — dense state-vector, Clifford/stabilizer (hundreds of qubits), density-matrix (open systems), and matrix-product-state (tensor networks) — plus a large, individually-verified quantum-algorithms library and quantum machine learning.
 
-## What's New (v0.8 → v3.1, in development)
+## What's New (v0.8 → v3.2, in development)
 
 The library grew from a state-vector simulator into a full quantum-computing stack.
 Every routine below is verified against a closed form, an exact computation, or the
@@ -56,6 +56,9 @@ state-vector engine.
   quantum-trajectory (Monte Carlo wavefunction) unravelings, the Breuer-Laine-Piilo
   non-Markovianity measure, collision-model thermalization, and closed-form qubit T1/T2
   relaxation.
+- **Quantum optimal control (v3.2)** — GRAPE pulse synthesis of target gates (fidelity → 1),
+  dynamical-Lie-algebra controllability, the Mandelstam-Tamm / Margolus-Levitin quantum speed
+  limits, and the pulse-area theorem with square/Gaussian/DRAG envelopes.
 - **Docs & process** — narrative guides for every advanced theme plus a complete autodoc
   [Algorithms API reference](docs/algorithms_api.md), and an
   [AI Development Lifecycle](docs/aidlc_guide.md) (see [`AGENTS.md`](AGENTS.md)) that
@@ -400,7 +403,8 @@ verified examples, plus a complete autodoc API reference:
   [VQA theory](docs/vqa_theory_guide.md) ·
   [Metrology](docs/metrology_guide.md) ·
   [Thermodynamics](docs/thermodynamics_guide.md) ·
-  [Open quantum systems](docs/open_systems_guide.md)
+  [Open quantum systems](docs/open_systems_guide.md) ·
+  [Optimal control](docs/optimal_control_guide.md)
 - [Error mitigation II](docs/error_mitigation_advanced_guide.md) ·
   [Fault-tolerant QEC](docs/fault_tolerant_qec_guide.md) ·
   [Quantum information](docs/quantum_information_theory_guide.md) ·
@@ -493,5 +497,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0 → 3.1.0 (in development, staged for release)  
+**Version:** 0.7.1 (on PyPI) · 0.8.0 → 3.2.0 (in development, staged for release)  
 **Last Updated:** July 2026

@@ -1695,6 +1695,48 @@ Each function's docstring states what it computes and what it is verified agains
    :no-index:
 ```
 
+## Quantum optimal control & pulse engineering (3.2)
+
+### `optimal_control`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.optimal_control
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `controllability`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.controllability
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `quantum_speed_limit`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.quantum_speed_limit
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `pulse_shapes`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.pulse_shapes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
 ## Core & foundational
 
 ### `amplitude_amplification`
