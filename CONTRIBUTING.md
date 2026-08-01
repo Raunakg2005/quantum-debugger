@@ -25,6 +25,21 @@ venv\Scripts\activate     # Windows
 pip install -e ".[dev]"
 ```
 
+## How this project is built (AI Development Lifecycle)
+
+This repository follows an explicit **AI Development Lifecycle (AIDLC)**: every feature is
+*verified against a known-good outcome* (a closed form, exact diagonalization, brute force, or
+the state-vector engine) before it counts, and that verification is captured as a permanent
+test. Two documents define the workflow — read them before contributing a feature:
+
+- [`AGENTS.md`](AGENTS.md) — the working agreement (golden rule, conventions, per-feature loop,
+  definition of done). Applies to AI agents *and* humans.
+- [`docs/aidlc_guide.md`](docs/aidlc_guide.md) — the five-phase lifecycle
+  (Intent → Decompose → Implement → **Verify** → Integrate) with worked examples.
+
+The short version: **verify, never fake.** If a construction cannot be verified, it is not
+added.
+
 ## Making Changes
 
 ### 1. Create a Branch
