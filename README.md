@@ -10,7 +10,7 @@
 
 A Python library for quantum circuit debugging, state inspection, and simulation across **four engines** — dense state-vector, Clifford/stabilizer (hundreds of qubits), density-matrix (open systems), and matrix-product-state (tensor networks) — plus a large, individually-verified quantum-algorithms library and quantum machine learning.
 
-## What's New (v0.8 → v1.3, in development)
+## What's New (v0.8 → v3.1, in development)
 
 The library grew from a state-vector simulator into a full quantum-computing stack.
 Every routine below is verified against a closed form, an exact computation, or the
@@ -39,6 +39,27 @@ state-vector engine.
 - **Foundations** — Bell/CHSH & Horodecki nonlocality, contextuality, geometric phase,
   uncertainty relations, weak values, Holevo bound, channel capacity, state
   discrimination, no-cloning, magic measures, and quantum metrology.
+- **Optimization & variational theory** — QUBO/Ising encodings & QAOA theory, adiabatic
+  optimization and quantum annealing; parameter-shift gradients, barren plateaus,
+  expressibility, quantum natural gradient, and entangling capability.
+- **Simulation & compilation** — Trotter-Suzuki/qDRIFT/Taylor Hamiltonian simulation with
+  rigorous error bounds; a circuit IR with routing, scheduling, gate cancellation, and
+  verified templates; quantum volume, XEB, and randomized benchmarking.
+- **Communication, networks & MBQC** — channel capacities, advanced QKD (BB84/E91/six-state,
+  decoy states), quantum repeaters; PEPS/MERA tensor networks; measurement-based (one-way)
+  computing with graph states and causal flow.
+- **Metrology, thermodynamics & complexity** — quantum Fisher information and
+  Heisenberg-limited sensing; quantum thermodynamics (Jarzynski/Crooks, Landauer, the Otto
+  engine, ergotropy); and the v3.0 **quantum-complexity** milestone (Boolean-function
+  complexity, query/communication separations, and complexity-class containments).
+- **Open quantum systems (v3.1)** — the Lindblad master equation and Liouvillian spectra,
+  quantum-trajectory (Monte Carlo wavefunction) unravelings, the Breuer-Laine-Piilo
+  non-Markovianity measure, collision-model thermalization, and closed-form qubit T1/T2
+  relaxation.
+- **Docs & process** — narrative guides for every advanced theme plus a complete autodoc
+  [Algorithms API reference](docs/algorithms_api.md), and an
+  [AI Development Lifecycle](docs/aidlc_guide.md) (see [`AGENTS.md`](AGENTS.md)) that
+  formalizes the *verify-never-fake* workflow behind the library.
 
 See [CHANGELOG.md](CHANGELOG.md) for the full, per-version list.
 
@@ -368,6 +389,32 @@ pip install quantum-debugger[dev]
 
 ## Documentation
 
+**Advanced algorithm guides (v0.9 → v3.1)** — one narrative guide per theme, each with runnable,
+verified examples, plus a complete autodoc API reference:
+- [Many-body physics](docs/many_body_guide.md) ·
+  [Tensor networks II](docs/tensor_networks_advanced_guide.md) ·
+  [QSVT](docs/qsvt_guide.md) ·
+  [Hamiltonian simulation](docs/hamiltonian_simulation_adv_guide.md)
+- [Quantum chemistry](docs/quantum_chemistry_guide.md) ·
+  [Optimization & QAOA](docs/optimization_qaoa_guide.md) ·
+  [VQA theory](docs/vqa_theory_guide.md) ·
+  [Metrology](docs/metrology_guide.md) ·
+  [Thermodynamics](docs/thermodynamics_guide.md) ·
+  [Open quantum systems](docs/open_systems_guide.md)
+- [Error mitigation II](docs/error_mitigation_advanced_guide.md) ·
+  [Fault-tolerant QEC](docs/fault_tolerant_qec_guide.md) ·
+  [Quantum information](docs/quantum_information_theory_guide.md) ·
+  [Foundations](docs/foundations_guide.md) ·
+  [Communication](docs/communication_guide.md) ·
+  [Complexity](docs/complexity_guide.md)
+- [Advanced algorithms II](docs/advanced_algorithms_2_guide.md) ·
+  [Continuous-variable](docs/continuous_variable_guide.md) ·
+  [Benchmarking](docs/benchmarking_guide.md) ·
+  [Compilation](docs/compilation_guide.md) ·
+  [MBQC](docs/mbqc_guide.md)
+- **[Full algorithms API reference](docs/algorithms_api.md)** ·
+  **[AI Development Lifecycle](docs/aidlc_guide.md)** (the verify-never-fake workflow)
+
 **v0.6.0 Guides:**
 - [V0.6.0 Features](V06_FEATURES.md) - Complete feature reference
 - [Transfer Learning Guide](docs/transfer_learning_guide.md)
@@ -446,5 +493,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0 → 1.3.0 (in development, staged for release)  
+**Version:** 0.7.1 (on PyPI) · 0.8.0 → 3.1.0 (in development, staged for release)  
 **Last Updated:** July 2026

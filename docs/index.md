@@ -186,6 +186,7 @@ optimization_qaoa_guide
 vqa_theory_guide
 metrology_guide
 thermodynamics_guide
+open_systems_guide
 ```
 
 ```{toctree}

@@ -1643,6 +1643,58 @@ Each function's docstring states what it computes and what it is verified agains
    :no-index:
 ```
 
+## Open quantum systems & Lindblad dynamics (3.1)
+
+### `lindblad`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.lindblad
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `quantum_trajectories`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.quantum_trajectories
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `nonmarkovianity`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.nonmarkovianity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `collision_model`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.collision_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `open_qubit`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.open_qubit
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
 ## Core & foundational
 
 ### `amplitude_amplification`
