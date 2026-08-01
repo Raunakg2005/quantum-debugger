@@ -47,16 +47,21 @@ threshold verified against its closed form.
   verified 0 at Tsirelson's bound.
 - **E91 key rate** (`algorithms.e91_key_rate`) — the Ekert-protocol rate, verified 1 at
   Tsirelson and 0 at the classical bound.
-- **Secret fraction & sifting** (`algorithms.secret_fraction`, `sifting_ratio`) — the asymptotic
-  secret fraction and the basis-reconciliation efficiency (``1/2`` BB84, ``1/3`` six-state).
+- **Secret fraction** (`algorithms.secret_fraction`) — the asymptotic secret-key fraction of a
+  protocol at a given QBER.
+- **Sifting ratio** (`algorithms.sifting_ratio`) — the basis-reconciliation efficiency (``1/2``
+  BB84, ``1/3`` six-state).
 - **Decoy-state gain** (`algorithms.decoy_state_gain`) — the single-photon detection gain that
   defeats photon-number-splitting attacks.
 - **Werner fidelity** (`algorithms.werner_fidelity`) — the Bell-state fidelity of a Werner link.
-- **Entanglement swapping** (`algorithms.swap_werner`, `entanglement_swapping_fidelity`) — the
-  Werner-parameter product and swapped fidelity, verified to reduce to the input for a perfect
-  link.
-- **Repeater scaling** (`algorithms.repeater_werner`, `repeater_rate`) — the ``w^n`` fidelity
-  decay and the generation rate across a repeater chain.
+- **Werner swap** (`algorithms.swap_werner`) — the Werner-parameter product after swapping two
+  links.
+- **Swapped fidelity** (`algorithms.entanglement_swapping_fidelity`) — the fidelity after
+  swapping, verified to reduce to the input for a perfect second link.
+- **Repeater fidelity** (`algorithms.repeater_werner`) — the ``w^n`` fidelity decay across a
+  chain of swaps.
+- **Repeater rate** (`algorithms.repeater_rate`) — the entanglement-generation rate across a
+  repeater chain.
 - **Purification** (`algorithms.purified_fidelity`) — one DEJMPS round, verified to raise the
   link fidelity.
 - **Path fidelity** (`algorithms.path_fidelity`) — the end-to-end fidelity of a swap chain,
