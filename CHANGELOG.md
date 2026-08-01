@@ -28,23 +28,33 @@ verified by round-tripping to the exact state vector and against closed forms.
 - **SVD bond truncation** (`algorithms.svd_bond_truncation`) — truncate a bipartition to a bond
   dimension and report the retained fidelity, the core compression step.
 - **Contraction speedup** (`algorithms.contraction_speedup`) — the naive/optimal cost ratio.
-- **Product PEPS** (`algorithms.product_peps`, `is_product_peps`) — the bond-dimension-1 (product)
-  2D tensor network.
+- **Product PEPS** (`algorithms.product_peps`) — the bond-dimension-1 (product) 2D tensor
+  network.
+- **Product-PEPS test** (`algorithms.is_product_peps`) — the bond-dimension-1 check.
 - **Bond dimension** (`algorithms.bond_dimension`) — the maximum PEPS virtual bond.
 - **PEPS contraction** (`algorithms.contract_2x2`) — exact contraction of a ``2x2`` PEPS to the
   state vector, verified on product states.
-- **Cluster-state PEPS** (`algorithms.cluster_peps_statevector`, `cluster_state_reference`) — the
-  bond-dimension-2 cluster-state PEPS, verified equal to the ``H``+``CZ`` construction.
-- **Disentangler & isometry** (`algorithms.disentangler`, `isometry`, `is_isometry`) — the MERA
-  building blocks, verified unitary and ``w^dagger w = I``.
-- **MERA superoperators** (`algorithms.descending_superoperator`, `ascending_superoperator`) — the
-  fine<->coarse renormalization maps, verified trace-preserving.
+- **Cluster-state PEPS** (`algorithms.cluster_peps_statevector`) — the exact bond-dimension-2
+  cluster-state PEPS contraction.
+- **Cluster-state reference** (`algorithms.cluster_state_reference`) — the ``H``+``CZ`` cluster
+  state the PEPS is verified against.
+- **MERA disentangler** (`algorithms.disentangler`) — the two-site unitary that removes
+  cross-boundary entanglement, verified unitary.
+- **MERA isometry** (`algorithms.isometry`) — the two-site coarse-grainer with orthonormal
+  columns.
+- **Isometry test** (`algorithms.is_isometry`) — the ``w^dagger w = I`` check.
+- **Descending superoperator** (`algorithms.descending_superoperator`) — the coarse->fine MERA
+  map, verified trace-preserving.
+- **Ascending superoperator** (`algorithms.ascending_superoperator`) — the fine->coarse
+  renormalization of observables.
 - **Causal cone** (`algorithms.causal_cone_width`) — the constant-width MERA past cone that makes
   observables scalable.
 - **Ternary isometry** (`algorithms.ternary_isometry`) — the 3-site->1-site MERA coarse-grainer,
   verified isometric.
-- **Operator renormalization** (`algorithms.renormalize_operator`, `coarse_grain_state`) — the RG
-  flow of an observable / state up the network.
+- **Operator renormalization** (`algorithms.renormalize_operator`) — the RG flow of an observable
+  up the network.
+- **State coarse-graining** (`algorithms.coarse_grain_state`) — one MERA layer applied to a
+  state.
 - **Bipartite entropy** (`algorithms.bipartite_entropy`) — the entanglement entropy of a
   subsystem, verified 0 for product and 1 for a Bell pair.
 - **Maximum entanglement** (`algorithms.max_entanglement`) — the ``min(n_A, n-n_A)`` volume-law
@@ -57,8 +67,9 @@ verified by round-tripping to the exact state vector and against closed forms.
   coefficients of a bipartition.
 - **Rényi-2 entropy** (`algorithms.renyi2_entropy`) — the measurable second Rényi entanglement
   entropy.
-- **Area-law test** (`algorithms.is_area_law`, `volume_law_slope`) — the constant-entropy (area)
-  and ``~1 bit/qubit`` (volume) scaling checks.
+- **Area-law test** (`algorithms.is_area_law`) — the constant-entropy-across-cuts check.
+- **Volume-law slope** (`algorithms.volume_law_slope`) — the ``~1 bit/qubit`` entropy-vs-size
+  slope of a random state.
 
 ## [2.6.0]
 
