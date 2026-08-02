@@ -1737,6 +1737,48 @@ Each function's docstring states what it computes and what it is verified agains
    :no-index:
 ```
 
+## LDPC codes & message-passing decoding (3.3)
+
+### `ldpc_codes`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.ldpc_codes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `syndrome_decoding`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.syndrome_decoding
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `belief_propagation`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.belief_propagation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `bit_flipping_decoder`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.bit_flipping_decoder
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
 ## Core & foundational
 
 ### `amplitude_amplification`

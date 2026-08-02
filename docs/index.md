@@ -196,6 +196,7 @@ optimal_control_guide
 
 error_mitigation_advanced_guide
 fault_tolerant_qec_guide
+ldpc_guide
 ```
 
 ```{toctree}

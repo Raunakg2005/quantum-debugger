@@ -10,7 +10,7 @@
 
 A Python library for quantum circuit debugging, state inspection, and simulation across **four engines** — dense state-vector, Clifford/stabilizer (hundreds of qubits), density-matrix (open systems), and matrix-product-state (tensor networks) — plus a large, individually-verified quantum-algorithms library and quantum machine learning.
 
-## What's New (v0.8 → v3.2, in development)
+## What's New (v0.8 → v3.3, in development)
 
 The library grew from a state-vector simulator into a full quantum-computing stack.
 Every routine below is verified against a closed form, an exact computation, or the
@@ -59,6 +59,9 @@ state-vector engine.
 - **Quantum optimal control (v3.2)** — GRAPE pulse synthesis of target gates (fidelity → 1),
   dynamical-Lie-algebra controllability, the Mandelstam-Tamm / Margolus-Levitin quantum speed
   limits, and the pulse-area theorem with square/Gaussian/DRAG envelopes.
+- **LDPC codes & decoding (v3.3)** — parity-check matrices and Tanner graphs, exact
+  maximum-likelihood syndrome decoding, and the belief-propagation (sum-product/min-sum) and
+  Gallager bit-flipping decoders, verified against the ML decoder on a regular column-weight-3 LDPC.
 - **Docs & process** — narrative guides for every advanced theme plus a complete autodoc
   [Algorithms API reference](docs/algorithms_api.md), and an
   [AI Development Lifecycle](docs/aidlc_guide.md) (see [`AGENTS.md`](AGENTS.md)) that
@@ -407,6 +410,7 @@ verified examples, plus a complete autodoc API reference:
   [Optimal control](docs/optimal_control_guide.md)
 - [Error mitigation II](docs/error_mitigation_advanced_guide.md) ·
   [Fault-tolerant QEC](docs/fault_tolerant_qec_guide.md) ·
+  [LDPC codes & decoding](docs/ldpc_guide.md) ·
   [Quantum information](docs/quantum_information_theory_guide.md) ·
   [Foundations](docs/foundations_guide.md) ·
   [Communication](docs/communication_guide.md) ·
@@ -497,5 +501,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0 → 3.2.0 (in development, staged for release)  
+**Version:** 0.7.1 (on PyPI) · 0.8.0 → 3.3.0 (in development, staged for release)  
 **Last Updated:** July 2026
