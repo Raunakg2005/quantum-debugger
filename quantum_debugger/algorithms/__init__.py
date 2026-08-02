@@ -1171,6 +1171,47 @@ from .pulse_shapes import (
     pi_pulse_is_bit_flip,
     square_pulse_unitary,
 )
+# LDPC codes & message-passing decoding (v3.3)
+from .ldpc_codes import (
+    repetition_check,
+    hamming_code_check,
+    syndrome,
+    is_codeword,
+    all_codewords,
+    code_dimension,
+    code_rate,
+    code_parameters,
+    minimum_distance,
+    tanner_graph,
+    column_weights,
+    row_weights,
+    is_regular,
+    tanner_girth,
+    random_regular_ldpc,
+)
+# NOTE: syndrome_decoding.corrects_all_errors_up_to collides with surface_code's; use the submodule.
+from .syndrome_decoding import (
+    syndrome_table,
+    coset_leader,
+    ml_decode,
+    error_correcting_capability,
+)
+from .belief_propagation import (
+    bsc_llr,
+    sum_product_decode,
+    min_sum_decode,
+    bp_decode_error,
+    bp_corrects,
+    bp_matches_ml_on_weight1,
+)
+from .bit_flipping_decoder import (
+    unsatisfied_checks,
+    unsatisfied_count_per_bit,
+    gallager_bit_flip,
+    bit_flip_corrects,
+    bit_flip_corrects_all_weight1,
+    min_column_weight,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -2209,4 +2250,39 @@ __all__ = [
     "pulse_unitary",
     "pi_pulse_is_bit_flip",
     "square_pulse_unitary",
+    # LDPC codes
+    "repetition_check",
+    "hamming_code_check",
+    "syndrome",
+    "is_codeword",
+    "all_codewords",
+    "code_dimension",
+    "code_rate",
+    "code_parameters",
+    "minimum_distance",
+    "tanner_graph",
+    "column_weights",
+    "row_weights",
+    "is_regular",
+    "tanner_girth",
+    "random_regular_ldpc",
+    # LDPC — exact syndrome decoding
+    "syndrome_table",
+    "coset_leader",
+    "ml_decode",
+    "error_correcting_capability",
+    # LDPC — belief propagation
+    "bsc_llr",
+    "sum_product_decode",
+    "min_sum_decode",
+    "bp_decode_error",
+    "bp_corrects",
+    "bp_matches_ml_on_weight1",
+    # LDPC — bit flipping
+    "unsatisfied_checks",
+    "unsatisfied_count_per_bit",
+    "gallager_bit_flip",
+    "bit_flip_corrects",
+    "bit_flip_corrects_all_weight1",
+    "min_column_weight",
 ]

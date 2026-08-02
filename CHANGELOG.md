@@ -5,7 +5,54 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (3.2.0.dev)
+## [Unreleased] (3.3.0.dev)
+
+Theme: low-density parity-check (LDPC) codes & message-passing decoding — the codes and iterative
+decoders behind modern classical and quantum error correction. Parity-check matrices and Tanner
+graphs; exact maximum-likelihood syndrome decoding as the reference; and the belief-propagation
+(sum-product / min-sum) and Gallager bit-flipping decoders — verified against the exact ML decoder
+and the ``[7,4,3]`` Hamming code, with the message-passing decoders shown to correct every single-bit
+error on a regular column-weight-3 LDPC.
+
+### Added
+- **Repetition check** (`algorithms.repetition_check`) — the ``[n, 1, n]`` parity-check matrix.
+- **Hamming check** (`algorithms.hamming_code_check`) — the ``[2^r−1, 2^r−1−r, 3]`` parity-check
+  matrix (``[7,4,3]`` at ``r=3``).
+- **Syndrome** (`algorithms.syndrome`) — ``H w (mod 2)``, zero iff a codeword.
+- **Codeword test** (`algorithms.is_codeword`) — checks the zero syndrome.
+- **Codeword enumeration** (`algorithms.all_codewords`) — the GF(2) null space.
+- **Code dimension** (`algorithms.code_dimension`) — ``k = n − rank H``.
+- **Code rate** (`algorithms.code_rate`) — ``k / n``.
+- **Code parameters** (`algorithms.code_parameters`) — the ``[n, k, d]`` triple.
+- **Minimum distance** (`algorithms.minimum_distance`) — brute-force over non-zero codewords.
+- **Tanner graph** (`algorithms.tanner_graph`) — the bipartite check/bit adjacency.
+- **Column weights** (`algorithms.column_weights`) — checks per bit.
+- **Row weights** (`algorithms.row_weights`) — bits per check.
+- **Regularity** (`algorithms.is_regular`) — constant column and row weight.
+- **Tanner girth** (`algorithms.tanner_girth`) — the shortest cycle length (short cycles hurt BP).
+- **Random regular LDPC** (`algorithms.random_regular_ldpc`) — a permuted-socket sparse ``H``.
+- **Syndrome table** (`algorithms.syndrome_table`) — the exact syndrome → coset-leader map.
+- **Coset leader** (`algorithms.coset_leader`) — the minimum-weight error of a syndrome.
+- **ML decode** (`algorithms.ml_decode`) — maximum-likelihood decoding via the coset leader.
+- **Error-correcting capability** (`algorithms.error_correcting_capability`) — ``t = ⌊(d−1)/2⌋``;
+  exact decoding verified to correct all weight-``t`` errors on Hamming.
+- **Channel LLRs** (`algorithms.bsc_llr`) — binary-symmetric-channel log-likelihood ratios.
+- **Sum-product decoding** (`algorithms.sum_product_decode`) — the belief-propagation decoder.
+- **Min-sum decoding** (`algorithms.min_sum_decode`) — its low-complexity approximation.
+- **BP error recovery** (`algorithms.bp_decode_error`, `bp_corrects`) — decode an error pattern and
+  test recovery of the zero codeword.
+- **BP vs ML** (`algorithms.bp_matches_ml_on_weight1`) — verified BP corrects every single-bit error
+  on a regular column-weight-3 LDPC.
+- **Unsatisfied checks** (`algorithms.unsatisfied_checks`) — the failed parity checks of a word.
+- **Unsatisfied count per bit** (`algorithms.unsatisfied_count_per_bit`) — the bit-flip decision
+  statistic.
+- **Bit-flipping decoder** (`algorithms.gallager_bit_flip`) — Gallager's hard-decision decoder.
+- **Bit-flip recovery** (`algorithms.bit_flip_corrects`, `bit_flip_corrects_all_weight1`) — verified
+  to correct every single-bit error on a column-weight-3 LDPC.
+- **Minimum column weight** (`algorithms.min_column_weight`) — the bit-flipping reliability
+  indicator.
+
+## [3.2.0]
 
 Theme: quantum optimal control & pulse engineering — how to *steer* a quantum system to a target
 gate or state. Piecewise-constant control propagators and GRAPE (gradient-ascent pulse
