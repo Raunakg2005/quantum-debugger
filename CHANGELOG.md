@@ -5,7 +5,51 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (3.3.0.dev)
+## [Unreleased] (3.4.0.dev)
+
+Theme: the ZX-calculus — a diagrammatic language for qubit computing. Z- and X-spiders with phases
+and their exact tensor/matrix semantics; the core rewrite rules (spider fusion, identity, colour
+change, copy, pi-commutation, Hopf) each verified as a matrix identity; the Clifford+T gate set and
+CNOT/CZ built as ZX diagrams; and phase gadgets for multi-qubit Pauli-Z rotations — every diagram
+checked against the exact linear map (rules hold up to the ZX scalar, accounted for where noted).
+
+### Added
+- **Hadamard box** (`algorithms.hadamard_matrix`) — the colour-swapping Hadamard.
+- **Hadamard self-inverse** (`algorithms.is_hadamard_self_inverse`) — verifies ``H H = I``.
+- **Z-spider tensor** (`algorithms.z_spider_tensor`) — the green spider as a leg tensor.
+- **Z-spider matrix** (`algorithms.z_spider_matrix`) — ``|0..0><0..0| + e^{iα}|1..1><1..1|``.
+- **X-spider tensor** (`algorithms.x_spider_tensor`) — the red spider (Hadamard-conjugated) tensor.
+- **X-spider matrix** (`algorithms.x_spider_matrix`) — its linear map.
+- **Spider matrix** (`algorithms.spider_to_matrix`) — reshape a spider tensor into a matrix.
+- **Green phase spider** (`algorithms.green_phase`) — a single-leg Z rotation.
+- **Red phase spider** (`algorithms.red_phase`) — a single-leg X rotation.
+- **Z spider fusion** (`algorithms.spider_fusion_z`) — connected green spiders merge, phases add.
+- **Multi-leg fusion** (`algorithms.spider_fusion_multi`) — fusion checked by tensor contraction.
+- **X spider fusion** (`algorithms.spider_fusion_x`) — the red-spider fusion rule.
+- **Identity rule** (`algorithms.identity_rule`) — a phase-0 two-legged spider is a bare wire.
+- **Colour change** (`algorithms.color_change_rule`) — ``X = H^{⊗n} Z H^{⊗m}`` on every leg.
+- **Copy rule** (`algorithms.copy_rule`) — the Z-spider copies computational-basis states.
+- **pi-commutation** (`algorithms.pi_copy_rule`) — an ``X(π)`` pushes through a Z-spider, negating its
+  phase (up to the ZX scalar).
+- **Hopf rule** (`algorithms.hopf_rule`) — a Z- and X-spider on two shared wires decouple.
+- **Hadamard gate** (`algorithms.hadamard_gate`) — the Hadamard as a ZX box.
+- **Z-phase gate** (`algorithms.z_phase_gate`) — Rz as a one-legged Z-spider.
+- **X-phase gate** (`algorithms.x_phase_gate`) — Rx as a one-legged X-spider.
+- **Pauli gates** (`algorithms.z_gate`, `x_gate`) — Z and X as π-spiders, verified.
+- **S and T gates** (`algorithms.s_gate`, `t_gate`) — Clifford+T phase spiders, verified.
+- **CNOT diagram** (`algorithms.cnot_zx`) — a Z-copy joined to an X-spider.
+- **CNOT verification** (`algorithms.cnot_zx_is_cnot`) — verified equal to CNOT (little-endian).
+- **CZ diagram** (`algorithms.cz_zx`) — two Z-spiders on a Hadamard edge.
+- **CZ verification** (`algorithms.cz_zx_is_cz`) — verified equal to CZ.
+- **Gate equality** (`algorithms.gate_equals`) — equality up to a global phase.
+- **ZZ phase gadget** (`algorithms.zz_gadget`) — the CNOT-ladder ``exp(−i(α/2) Z⊗Z)``.
+- **ZZ exact target** (`algorithms.zz_phase_exact`) — the reference matrix exponential.
+- **n-qubit phase gadget** (`algorithms.phase_gadget`) — the CNOT-ladder gadget for
+  ``exp(−i(α/2) Z^{⊗n})``.
+- **Gadget verification** (`algorithms.phase_gadget_exact`, `gadget_matches_exact`) — verified
+  against the exponential for n up to 4.
+
+## [3.3.0]
 
 Theme: low-density parity-check (LDPC) codes & message-passing decoding — the codes and iterative
 decoders behind modern classical and quantum error correction. Parity-check matrices and Tanner

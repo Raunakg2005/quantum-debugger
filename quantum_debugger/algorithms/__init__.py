@@ -1212,6 +1212,50 @@ from .bit_flipping_decoder import (
     bit_flip_corrects_all_weight1,
     min_column_weight,
 )
+# ZX-calculus (v3.4)
+from .zx_spiders import (
+    hadamard_matrix,
+    z_spider_tensor,
+    spider_to_matrix,
+    z_spider_matrix,
+    x_spider_tensor,
+    x_spider_matrix,
+    is_hadamard_self_inverse,
+    green_phase,
+    red_phase,
+)
+from .zx_rewrite import (
+    spider_fusion_z,
+    spider_fusion_multi,
+    spider_fusion_x,
+    identity_rule,
+    color_change_rule,
+    copy_rule,
+    pi_copy_rule,
+    hopf_rule,
+)
+from .zx_gates import (
+    hadamard_gate,
+    z_phase_gate,
+    x_phase_gate,
+    z_gate,
+    x_gate,
+    s_gate,
+    t_gate,
+    cnot_zx,
+    cz_zx,
+    gate_equals,
+    cnot_zx_is_cnot,
+    cz_zx_is_cz,
+)
+# NOTE: phase_gadgets.rz collides with the one_way_computing/clifford_t rz; use the submodule.
+from .phase_gadgets import (
+    zz_phase_exact,
+    zz_gadget,
+    phase_gadget_exact,
+    phase_gadget,
+    gadget_matches_exact,
+)
 
 __all__ = [
     "assignment_matrix",
@@ -2285,4 +2329,42 @@ __all__ = [
     "bit_flip_corrects",
     "bit_flip_corrects_all_weight1",
     "min_column_weight",
+    # ZX-calculus — spiders
+    "hadamard_matrix",
+    "z_spider_tensor",
+    "spider_to_matrix",
+    "z_spider_matrix",
+    "x_spider_tensor",
+    "x_spider_matrix",
+    "is_hadamard_self_inverse",
+    "green_phase",
+    "red_phase",
+    # ZX-calculus — rewrite rules
+    "spider_fusion_z",
+    "spider_fusion_multi",
+    "spider_fusion_x",
+    "identity_rule",
+    "color_change_rule",
+    "copy_rule",
+    "pi_copy_rule",
+    "hopf_rule",
+    # ZX-calculus — gates
+    "hadamard_gate",
+    "z_phase_gate",
+    "x_phase_gate",
+    "z_gate",
+    "x_gate",
+    "s_gate",
+    "t_gate",
+    "cnot_zx",
+    "cz_zx",
+    "gate_equals",
+    "cnot_zx_is_cnot",
+    "cz_zx_is_cz",
+    # ZX-calculus — phase gadgets
+    "zz_phase_exact",
+    "zz_gadget",
+    "phase_gadget_exact",
+    "phase_gadget",
+    "gadget_matches_exact",
 ]
