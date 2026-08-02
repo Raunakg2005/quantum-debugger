@@ -5,7 +5,58 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (3.4.0.dev)
+## [Unreleased] (3.5.0.dev)
+
+Theme: quantum chaos & scrambling — the statistical signatures that distinguish a chaotic quantum
+system from an integrable one. Random-matrix theory (GOE/GUE ensembles, the Wigner surmise, the
+semicircle law); the spectral form factor with its ``D^2`` normalization and diagonal plateau;
+Krylov (operator-growth) complexity via the operator Lanczos algorithm; and the eigenstate
+thermalization hypothesis — every quantity verified against a closed form, the exact spectrum, or
+the exact autocorrelation function.
+
+### Added
+- **GOE / GUE matrices** (`algorithms.goe_matrix`, `gue_matrix`) — the Gaussian ensembles.
+- **Wigner surmise** (`algorithms.wigner_surmise`) — the GOE/GUE spacing density with level repulsion.
+- **Poisson spacing** (`algorithms.poisson_spacing_pdf`) — the integrable ``e^{-s}`` density.
+- **Semicircle law** (`algorithms.semicircle_density`) — the averaged spectral density.
+- **Unfolded spacings** (`algorithms.unfolded_spacings`) — nearest-neighbour gaps, mean-normalized.
+- **Gap ratios** (`algorithms.level_spacing_ratios`, `mean_ratio`) — unfolding-free chaos diagnostics
+  (``<r>`` ≈ 0.386 Poisson, 0.53 GOE, 0.60 GUE).
+- **Surmise checks** (`algorithms.surmise_normalization`, `surmise_mean`) — the surmise integrates to
+  1 with mean spacing 1.
+- **Spectral form factor** (`algorithms.spectral_form_factor`) — ``|Σ_j e^{−iE_j t}|^2``.
+- **Connected SFF** (`algorithms.connected_sff`) — the ensemble-averaged ramp (disconnected piece
+  removed).
+- **SFF curve** (`algorithms.sff_curve`) — the SFF sampled over a time window.
+- **SFF at zero** (`algorithms.sff_at_zero`) — verified ``SFF(0) = D^2``.
+- **Plateau value** (`algorithms.plateau_value`) — the late-time plateau ``D``.
+- **Long-time average** (`algorithms.long_time_average`, `reaches_plateau`) — verified to converge to
+  the plateau ``D``.
+- **Normalized SFF** (`algorithms.normalized_sff`) — the SFF divided by ``D``.
+- **Liouvillian action** (`algorithms.liouvillian`) — the operator commutator ``[H, O]``.
+- **Operator inner product** (`algorithms.operator_inner_product`, `operator_norm`) — the
+  infinite-temperature ``Tr(A†B)/d``.
+- **Lanczos coefficients** (`algorithms.lanczos_coefficients`) — the operator-growth ``b_n``.
+- **Autocorrelation** (`algorithms.autocorrelation`) — the exact ``C(t) = (O(t)|O)``.
+- **Autocorrelation reconstruction** (`algorithms.reconstruct_autocorrelation`) — ``C(t)`` from the
+  Lanczos coefficients, verified against the exact ``C(t)``.
+- **Krylov wavefunction** (`algorithms.krylov_wavefunction`) — the operator amplitudes on the Krylov
+  chain.
+- **Krylov complexity** (`algorithms.krylov_complexity`) — the mean Krylov position ``Σ n|φ_n|^2``.
+- **Krylov dimension** (`algorithms.krylov_dimension`) — the size of the Krylov space.
+- **Autocorrelation moments** (`algorithms.moment`) — ``μ_k = (O|L^k|O)``.
+- **Eigenbasis** (`algorithms.eigenbasis`, `observable_matrix`) — the observable in the energy basis.
+- **Diagonal elements** (`algorithms.diagonal_elements`) — the eigenstate expectation values.
+- **Off-diagonal elements** (`algorithms.offdiagonal_elements`) — the ETH pseudo-random elements.
+- **Eigenstate expectation** (`algorithms.eigenstate_expectation`) — ``<n|O|n>``.
+- **Microcanonical average** (`algorithms.microcanonical_average`) — the thermal prediction in an
+  energy window.
+- **ETH fluctuations** (`algorithms.eth_diagonal_fluctuation`, `eth_offdiagonal_variance`) — verified
+  to shrink with Hilbert-space dimension.
+- **ETH thermalization** (`algorithms.thermalizes`, `eigenstate_matches_microcanonical`) — verified
+  that a chaotic eigenstate matches the microcanonical average.
+
+## [3.4.0]
 
 Theme: the ZX-calculus — a diagrammatic language for qubit computing. Z- and X-spiders with phases
 and their exact tensor/matrix semantics; the core rewrite rules (spider fusion, identity, colour
