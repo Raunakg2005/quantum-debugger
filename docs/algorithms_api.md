@@ -1821,6 +1821,48 @@ Each function's docstring states what it computes and what it is verified agains
    :no-index:
 ```
 
+## Quantum chaos & scrambling (3.5)
+
+### `random_matrix`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.random_matrix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `spectral_form_factor`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.spectral_form_factor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `krylov_complexity`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.krylov_complexity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `eth`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.eth
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
 ## Core & foundational
 
 ### `amplitude_amplification`

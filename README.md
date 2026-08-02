@@ -10,7 +10,7 @@
 
 A Python library for quantum circuit debugging, state inspection, and simulation across **four engines** — dense state-vector, Clifford/stabilizer (hundreds of qubits), density-matrix (open systems), and matrix-product-state (tensor networks) — plus a large, individually-verified quantum-algorithms library and quantum machine learning.
 
-## What's New (v0.8 → v3.4, in development)
+## What's New (v0.8 → v3.5, in development)
 
 The library grew from a state-vector simulator into a full quantum-computing stack.
 Every routine below is verified against a closed form, an exact computation, or the
@@ -65,6 +65,9 @@ state-vector engine.
 - **ZX-calculus (v3.4)** — Z/X spiders with exact matrix semantics, the core rewrite rules (spider
   fusion, colour change, copy, π-commutation, Hopf) each verified as a matrix identity, Clifford+T
   and CNOT/CZ as ZX diagrams, and phase gadgets for multi-qubit Z-rotations.
+- **Quantum chaos & scrambling (v3.5)** — random-matrix theory (GOE/GUE, the Wigner surmise,
+  semicircle law), the spectral form factor (`D²` → plateau `D`), Krylov (operator-growth)
+  complexity via the Lanczos algorithm, and the eigenstate thermalization hypothesis.
 - **Docs & process** — narrative guides for every advanced theme plus a complete autodoc
   [Algorithms API reference](docs/algorithms_api.md), and an
   [AI Development Lifecycle](docs/aidlc_guide.md) (see [`AGENTS.md`](AGENTS.md)) that
@@ -417,7 +420,8 @@ verified examples, plus a complete autodoc API reference:
   [Quantum information](docs/quantum_information_theory_guide.md) ·
   [Foundations](docs/foundations_guide.md) ·
   [Communication](docs/communication_guide.md) ·
-  [Complexity](docs/complexity_guide.md)
+  [Complexity](docs/complexity_guide.md) ·
+  [Quantum chaos](docs/chaos_guide.md)
 - [Advanced algorithms II](docs/advanced_algorithms_2_guide.md) ·
   [Continuous-variable](docs/continuous_variable_guide.md) ·
   [Benchmarking](docs/benchmarking_guide.md) ·
@@ -505,5 +509,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0 → 3.4.0 (in development, staged for release)  
+**Version:** 0.7.1 (on PyPI) · 0.8.0 → 3.5.0 (in development, staged for release)  
 **Last Updated:** July 2026

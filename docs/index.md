@@ -207,6 +207,7 @@ quantum_information_theory_guide
 foundations_guide
 communication_guide
 complexity_guide
+chaos_guide
 ```
 
 ```{toctree}
