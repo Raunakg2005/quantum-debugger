@@ -1779,6 +1779,48 @@ Each function's docstring states what it computes and what it is verified agains
    :no-index:
 ```
 
+## ZX-calculus (3.4)
+
+### `zx_spiders`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.zx_spiders
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `zx_rewrite`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.zx_rewrite
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `zx_gates`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.zx_gates
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
+### `phase_gadgets`
+
+```{eval-rst}
+.. automodule:: quantum_debugger.algorithms.phase_gadgets
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:
+```
+
 ## Core & foundational
 
 ### `amplitude_amplification`

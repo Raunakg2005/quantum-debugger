@@ -218,6 +218,7 @@ continuous_variable_guide
 benchmarking_guide
 compilation_guide
 mbqc_guide
+zx_calculus_guide
 ```
 
 ```{toctree}
