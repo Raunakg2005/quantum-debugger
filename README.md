@@ -11,26 +11,33 @@
 
 A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and quantum machine learning. From basic circuits to QML with one-line AutoML.
 
-## What's New in v0.7.0 (in development)
+## What's New in v0.8.0
 
-A large, genuinely gate-based **quantum algorithms library** (`quantum_debugger.algorithms`),
-every routine verified against its known outcome:
+A comprehensive **quantum-information-theory layer** on both simulation engines —
+every routine verified against a closed form or an independent computation:
 
-- **Shor's algorithm** — quantum period finding that genuinely factors (15 → 3×5, 21 → 3×7).
-- **Quantum error correction** — 3-qubit bit-flip / phase-flip codes and the 9-qubit
-  Shor code (corrects an arbitrary single-qubit error) with real stabilizer syndromes.
-- **Clifford / stabilizer simulator** — a second engine (CHP tableau) that runs
-  hundred-qubit Clifford circuits instantly.
-- **Hamiltonian simulation** (Trotter-Suzuki), **gate decomposition** (ZYZ / ABC / KAK),
-  **randomized benchmarking**, **Draper QFT adder**, a **QAOA MaxCut solver**,
-  entangled **state preparation** (GHZ / W / graph), **teleportation**, **superdense
-  coding**, **state tomography**, plus the textbook set (QFT, Grover, QPE, HHL,
-  Bernstein-Vazirani, Deutsch-Jozsa, quantum walk/counting, amplitude estimation).
-- **Advanced QML/QRL** — VQD excited states, quantum autoencoder, QCNN,
-  data-reuploading classifier, multi-class VQC, ansatz analysis, SPSA, plus Policy
-  Gradient, DQN, and Actor-Critic reinforcement learning.
+- **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
+  channels, Lindblad master-equation evolution, channel metrics (process / average
+  gate fidelity, Choi matrix, CPTP checks), **Stinespring dilation**, and **quantum
+  process tomography**.
+- **Fault tolerance & QEC** — the 5-qubit `[[5,1,3]]` perfect code, Steane `[[7,1,3]]`
+  with transversal gates, the `[[4,2,2]]` error-detecting code, magic-state injection,
+  the **Petz recovery map** for approximate QEC, and QEC run against continuous
+  (density-matrix) noise with CPTP syndrome recovery.
+- **Quantum networking** — BBPSSW / DEJMPS entanglement distillation, noisy
+  entanglement swapping, and repeater chains.
+- **Noise protection without QEC** — decoherence-free subspaces, spin echo, and the
+  quantum Zeno effect.
+- **Foundations & resource measures** — negativity, concurrence, discord, mutual
+  information, Horodecki nonlocality, contextuality (Mermin-Peres), geometric
+  (Pancharatnam-Berry) phase, uncertainty relations, weak values, Holevo bound,
+  channel capacity, state discrimination, no-cloning, stabilizer-Rényi magic, and
+  measurement-based computation.
+- **Clifford engine** — stabilizer entanglement entropy straight from the tableau
+  (`O(n^3)`, works on hundreds of qubits), plus a quantum multiplier and a
+  ripple-carry subtractor.
 
-See [CHANGELOG.md](CHANGELOG.md) for the full list.
+See [CHANGELOG.md](CHANGELOG.md) for the full, itemized list.
 
 ## What's New in v0.7.0
 
@@ -46,7 +53,7 @@ A **second simulation engine** plus a large, verified quantum-algorithms library
 - **VQE** ground-state solver converges to machine precision on larger chains
   (BFGS optimizer).
 
-### In development (0.8.0-dev)
+### Density-matrix engine (v0.8.0)
 - **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
   channels, Lindblad master-equation evolution, and channel metrics (process /
   average gate fidelity, Choi matrix, CPTP checks).
@@ -415,5 +422,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0-dev (in development)  
-**Last Updated:** July 2026
+**Version:** 0.8.0 (latest on PyPI) · 0.7.1, 0.7.0 (previous)  
+**Last Updated:** August 2026
