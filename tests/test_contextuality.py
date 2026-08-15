@@ -29,9 +29,17 @@ class TestClassicalObstruction:
 
 
 class TestQuantumDeterminism:
-    @pytest.mark.parametrize("context,index", [
-        ("row", 0), ("row", 1), ("row", 2), ("col", 0), ("col", 1), ("col", 2),
-    ])
+    @pytest.mark.parametrize(
+        "context,index",
+        [
+            ("row", 0),
+            ("row", 1),
+            ("row", 2),
+            ("col", 0),
+            ("col", 1),
+            ("col", 2),
+        ],
+    )
     def test_product_deterministic_on_random_states(self, context, index):
         rng = np.random.default_rng(hash((context, index)) % 2**31)
         for trial in range(6):
@@ -51,8 +59,10 @@ class TestQuantumDeterminism:
         # Individual outcomes vary with the branch -- only the product is fixed.
         # (Use a state that is NOT an eigenstate of the row-0 observables.)
         psi = np.array([1, 0.5j, -0.3, 0.8], dtype=complex)
-        seen = {tuple(quantum_context_measurement(psi, "row", 0, seed=s)["outcomes"])
-                for s in range(25)}
+        seen = {
+            tuple(quantum_context_measurement(psi, "row", 0, seed=s)["outcomes"])
+            for s in range(25)
+        }
         assert len(seen) > 1
 
     def test_invalid_context_rejected(self):

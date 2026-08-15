@@ -59,7 +59,9 @@ class TestADCapacity:
         assert amplitude_damping_capacity(g)["capacity"] == 0.0
 
     def test_monotone_decreasing(self):
-        caps = [amplitude_damping_capacity(g)["capacity"] for g in (0.0, 0.1, 0.25, 0.4)]
+        caps = [
+            amplitude_damping_capacity(g)["capacity"] for g in (0.0, 0.1, 0.25, 0.4)
+        ]
         assert all(b < a for a, b in zip(caps, caps[1:]))
 
     def test_capacity_matches_analytic_form(self):

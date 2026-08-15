@@ -10,11 +10,17 @@ _T_STATE = np.array([1, np.exp(1j * np.pi / 4)], dtype=complex) / np.sqrt(2)
 
 
 class TestStabilizerStatesHaveZeroMagic:
-    @pytest.mark.parametrize("sv", [
-        [1, 0], [0, 1],
-        np.array([1, 1]) / np.sqrt(2), np.array([1, -1]) / np.sqrt(2),
-        np.array([1, 1j]) / np.sqrt(2), np.array([1, -1j]) / np.sqrt(2),
-    ])
+    @pytest.mark.parametrize(
+        "sv",
+        [
+            [1, 0],
+            [0, 1],
+            np.array([1, 1]) / np.sqrt(2),
+            np.array([1, -1]) / np.sqrt(2),
+            np.array([1, 1j]) / np.sqrt(2),
+            np.array([1, -1j]) / np.sqrt(2),
+        ],
+    )
     def test_all_six_single_qubit_stabilizer_states(self, sv):
         assert abs(stabilizer_renyi_entropy(np.array(sv, dtype=complex))) < 1e-9
 

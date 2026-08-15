@@ -81,7 +81,9 @@ class TestAccessibleInformation:
             v = rng.normal(size=2) + 1j * rng.normal(size=2)
             states.append(v / np.linalg.norm(v))
         probs = [0.5, 0.3, 0.2]
-        assert accessible_information(probs, states) <= holevo_bound(probs, states) + 1e-9
+        assert (
+            accessible_information(probs, states) <= holevo_bound(probs, states) + 1e-9
+        )
 
 
 class TestDenseCodingCapacity:

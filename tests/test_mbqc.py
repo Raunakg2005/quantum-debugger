@@ -34,11 +34,21 @@ class TestMBQCRotation:
         alpha = rng.uniform(0, 2 * np.pi)
         r = mbqc_rotation(psi, alpha, seed=seed, correct=False)
         assert r["fidelity"] > 1 - 1e-9
-        ideal = np.linalg.matrix_power(_X, r["outcome"]) @ _H @ _rz(-alpha) @ (
-            psi / np.linalg.norm(psi)
+        ideal = (
+            np.linalg.matrix_power(_X, r["outcome"])
+            @ _H
+            @ _rz(-alpha)
+            @ (psi / np.linalg.norm(psi))
         )
-        fid = abs(np.vdot(ideal / np.linalg.norm(ideal),
-                          r["output"] / np.linalg.norm(r["output"]))) ** 2
+        fid = (
+            abs(
+                np.vdot(
+                    ideal / np.linalg.norm(ideal),
+                    r["output"] / np.linalg.norm(r["output"]),
+                )
+            )
+            ** 2
+        )
         assert fid > 1 - 1e-9
 
     @pytest.mark.parametrize("seed", range(20))
@@ -62,7 +72,9 @@ class TestMBQCRotation:
             assert fid > 1 - 1e-9
 
     def test_both_outcomes_occur(self):
-        outcomes = {mbqc_rotation([1, 0], np.pi / 2, seed=s)["outcome"] for s in range(30)}
+        outcomes = {
+            mbqc_rotation([1, 0], np.pi / 2, seed=s)["outcome"] for s in range(30)
+        }
         assert outcomes == {0, 1}
 
     def test_outcome_probabilities_are_half_on_plus(self):

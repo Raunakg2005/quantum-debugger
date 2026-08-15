@@ -48,7 +48,9 @@ def holevo_bound(probs, states) -> float:
     dms = []
     for s in states:
         s = np.asarray(s, dtype=complex)
-        dms.append(DensityMatrix(state_vector=s) if s.ndim == 1 else DensityMatrix(rho=s))
+        dms.append(
+            DensityMatrix(state_vector=s) if s.ndim == 1 else DensityMatrix(rho=s)
+        )
     avg = sum(p * dm.rho for p, dm in zip(probs, dms))
     chi = DensityMatrix(rho=avg).von_neumann_entropy()
     for p, dm in zip(probs, dms):
@@ -68,7 +70,9 @@ def accessible_information(probs, states, restarts: int = 8, seed: int = 0) -> f
     dms = []
     for s in states:
         s = np.asarray(s, dtype=complex)
-        dms.append(DensityMatrix(state_vector=s) if s.ndim == 1 else DensityMatrix(rho=s))
+        dms.append(
+            DensityMatrix(state_vector=s) if s.ndim == 1 else DensityMatrix(rho=s)
+        )
     probs = np.asarray(probs, dtype=float)
 
     def neg_mi(x):
@@ -97,8 +101,12 @@ def accessible_information(probs, states, restarts: int = 8, seed: int = 0) -> f
     best = 0.0
     for _ in range(restarts):
         x0 = [rng.uniform(0, np.pi), rng.uniform(0, 2 * np.pi)]
-        res = minimize(neg_mi, x0, method="Nelder-Mead",
-                       options={"xatol": 1e-10, "fatol": 1e-13, "maxiter": 800})
+        res = minimize(
+            neg_mi,
+            x0,
+            method="Nelder-Mead",
+            options={"xatol": 1e-10, "fatol": 1e-13, "maxiter": 800},
+        )
         best = max(best, -float(res.fun))
     return best
 

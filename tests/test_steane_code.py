@@ -29,14 +29,14 @@ class TestSteaneCode:
     def test_css_x_error_only_trips_z_stabilizers(self):
         # X-type stabilizers are the first three; a pure X error leaves them +1.
         r = steane_code(1.0, 0.0, error="X0")
-        assert r["syndrome"][:3] == (0, 0, 0)      # X-type unaffected by X error
-        assert r["syndrome"][3:] != (0, 0, 0)      # Z-type detect it
+        assert r["syndrome"][:3] == (0, 0, 0)  # X-type unaffected by X error
+        assert r["syndrome"][3:] != (0, 0, 0)  # Z-type detect it
         assert r["correction"] == "X0"
 
     def test_css_z_error_only_trips_x_stabilizers(self):
         r = steane_code(1.0, 0.0, error="Z6")
-        assert r["syndrome"][3:] == (0, 0, 0)      # Z-type unaffected by Z error
-        assert r["syndrome"][:3] != (0, 0, 0)      # X-type detect it
+        assert r["syndrome"][3:] == (0, 0, 0)  # Z-type unaffected by Z error
+        assert r["syndrome"][:3] != (0, 0, 0)  # X-type detect it
 
     def test_invalid_error_rejected(self):
         with pytest.raises(ValueError):
@@ -48,9 +48,16 @@ class TestSteaneCode:
 
 
 class TestTransversalGates:
-    @pytest.mark.parametrize("gate,expected", [
-        ("X", "X"), ("Z", "Z"), ("H", "H"), ("S", "Sdg"), ("Sdg", "S"),
-    ])
+    @pytest.mark.parametrize(
+        "gate,expected",
+        [
+            ("X", "X"),
+            ("Z", "Z"),
+            ("H", "H"),
+            ("S", "Sdg"),
+            ("Sdg", "S"),
+        ],
+    )
     def test_logical_action(self, gate, expected):
         from quantum_debugger.algorithms import steane_transversal
 
@@ -63,13 +70,16 @@ class TestTransversalGates:
         # transversal S must match S-dagger, NOT S.
         import numpy as np
         from quantum_debugger.algorithms.steane_code import (
-            _encode, _S_GATE, apply_gate_tensor, _N,
+            _encode,
+            _S_GATE,
+            apply_gate_tensor,
+            _N,
         )
 
         acted = _encode(1.0, 1.0)
         for q in range(_N):
             acted = apply_gate_tensor(np, acted, _S_GATE, [q], _N)
-        ideal_s = _encode(1.0, 1j)     # logical S on |+_L>
+        ideal_s = _encode(1.0, 1j)  # logical S on |+_L>
         ideal_sdg = _encode(1.0, -1j)  # logical S-dagger on |+_L>
         assert abs(np.vdot(ideal_sdg, acted)) ** 2 > 1 - 1e-9
         assert abs(np.vdot(ideal_s, acted)) ** 2 < 0.6
@@ -82,9 +92,15 @@ class TestTransversalGates:
 
 
 class TestTransversalCNOT:
-    @pytest.mark.parametrize("ctrl,tgt", [
-        ((1, 0), (1, 0)), ((0, 1), (1, 0)), ((1, 0), (0, 1)), ((0, 1), (0, 1)),
-    ])
+    @pytest.mark.parametrize(
+        "ctrl,tgt",
+        [
+            ((1, 0), (1, 0)),
+            ((0, 1), (1, 0)),
+            ((1, 0), (0, 1)),
+            ((0, 1), (0, 1)),
+        ],
+    )
     def test_logical_basis(self, ctrl, tgt):
         from quantum_debugger.algorithms import steane_transversal_cnot
 
