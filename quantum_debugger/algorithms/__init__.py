@@ -69,6 +69,8 @@ from .arithmetic import (
     qft_subtract,
     quantum_compare,
     ripple_carry_add,
+    ripple_carry_subtract,
+    quantum_multiply,
 )
 from .maxcut import solve_maxcut, brute_force_maxcut
 from .state_preparation import ghz_state, w_state, graph_state
@@ -77,6 +79,7 @@ from .metrology import (
     phase_sensitivity,
     parity_signal,
     quantum_fisher_information,
+    qfi_mixed,
 )
 from .bell_test import chsh_value, correlator, bell_state, chsh_game, mermin_ghz_test
 from .bb84 import bb84
@@ -89,6 +92,77 @@ from .sat_solver import grover_solve
 from .multicontrol import toffoli_gates, fredkin_gates, mcx_gates, apply_gates
 from .grover_optimize import grover_minimize
 from .qec_threshold import repetition_code_error_rate
+from .qec_noise import (
+    bit_flip_code_noisy,
+    phase_flip_code_noisy,
+    syndrome_extraction_cycle,
+    repetition_code_logical_error,
+    repeated_qec_cycles,
+)
+from .perfect_code import five_qubit_code, five_qubit_stabilizers
+from .steane_code import (
+    steane_code,
+    steane_stabilizers,
+    steane_transversal,
+    steane_transversal_cnot,
+    steane_code_noisy,
+)
+from .magic_state import t_magic_state, inject_t_gate
+from .distillation import (
+    werner_state,
+    bbpssw_distill,
+    distillation_rounds,
+    entanglement_swap_noisy,
+    repeater_chain,
+    bell_diagonal_state,
+    dejmps_distill,
+    dejmps_recurrence,
+    dejmps_rounds,
+)
+from .decoherence_free import collective_dephasing, dfs_encode, dfs_protection
+from .dynamical_decoupling import spin_echo, echo_state_fidelity
+from .zeno import quantum_zeno, zeno_postselected
+from .loss_robustness import loss_robustness
+from .nonlocality import (
+    correlation_matrix,
+    chsh_maximum,
+    chsh_maximum_optimized,
+    werner_nonlocality,
+)
+from .channel_capacity import coherent_information, amplitude_damping_capacity
+from .holevo import (
+    holevo_bound,
+    accessible_information,
+    holevo_gap,
+    dense_coding_capacity,
+)
+from .discrimination import (
+    helstrom_bound,
+    helstrom_measurement,
+    unambiguous_discrimination,
+)
+from .cloning import universal_clone
+from .contextuality import (
+    mermin_peres_square,
+    classical_assignment_maximum,
+    quantum_context_measurement,
+)
+from .geometric_phase import (
+    bloch_spinor,
+    pancharatnam_phase,
+    solid_angle,
+    berry_phase_triangle,
+)
+from .uncertainty import robertson_bound, entropic_uncertainty
+from .magic_measures import stabilizer_renyi_entropy, magic_of_t_states
+from .error_detection import (
+    four_two_two_codewords,
+    detect_single_errors,
+    postselected_memory,
+)
+from .mbqc import cluster_pair, mbqc_rotation
+from .weak_values import weak_value, weak_measurement_shift, weak_value_demo
+from .petz import petz_recovery, petz_code_recovery
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -153,6 +227,8 @@ __all__ = [
     "qft_subtract",
     "quantum_compare",
     "ripple_carry_add",
+    "ripple_carry_subtract",
+    "quantum_multiply",
     # QAOA MaxCut solver
     "solve_maxcut",
     "brute_force_maxcut",
@@ -167,6 +243,7 @@ __all__ = [
     "phase_sensitivity",
     "parity_signal",
     "quantum_fisher_information",
+    "qfi_mixed",
     # Bell / CHSH test
     "chsh_value",
     "correlator",
@@ -190,6 +267,72 @@ __all__ = [
     "grover_minimize",
     # QEC threshold
     "repetition_code_error_rate",
+    "bit_flip_code_noisy",
+    "phase_flip_code_noisy",
+    "syndrome_extraction_cycle",
+    "repetition_code_logical_error",
+    "repeated_qec_cycles",
+    "five_qubit_code",
+    "five_qubit_stabilizers",
+    "steane_code",
+    "steane_stabilizers",
+    "steane_transversal",
+    "steane_transversal_cnot",
+    "steane_code_noisy",
+    "t_magic_state",
+    "inject_t_gate",
+    "werner_state",
+    "bbpssw_distill",
+    "distillation_rounds",
+    "entanglement_swap_noisy",
+    "repeater_chain",
+    "bell_diagonal_state",
+    "dejmps_distill",
+    "dejmps_recurrence",
+    "dejmps_rounds",
+    "collective_dephasing",
+    "dfs_encode",
+    "dfs_protection",
+    "spin_echo",
+    "echo_state_fidelity",
+    "quantum_zeno",
+    "zeno_postselected",
+    "loss_robustness",
+    "correlation_matrix",
+    "chsh_maximum",
+    "chsh_maximum_optimized",
+    "werner_nonlocality",
+    "coherent_information",
+    "amplitude_damping_capacity",
+    "holevo_bound",
+    "accessible_information",
+    "holevo_gap",
+    "dense_coding_capacity",
+    "helstrom_bound",
+    "helstrom_measurement",
+    "unambiguous_discrimination",
+    "universal_clone",
+    "mermin_peres_square",
+    "classical_assignment_maximum",
+    "quantum_context_measurement",
+    "bloch_spinor",
+    "pancharatnam_phase",
+    "solid_angle",
+    "berry_phase_triangle",
+    "robertson_bound",
+    "entropic_uncertainty",
+    "stabilizer_renyi_entropy",
+    "magic_of_t_states",
+    "four_two_two_codewords",
+    "detect_single_errors",
+    "postselected_memory",
+    "cluster_pair",
+    "mbqc_rotation",
+    "weak_value",
+    "weak_measurement_shift",
+    "weak_value_demo",
+    "petz_recovery",
+    "petz_code_recovery",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",

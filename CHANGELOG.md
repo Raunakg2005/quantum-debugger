@@ -5,14 +5,387 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.1] - 2026-07-24
+## [0.8.0]
 
-Documentation / packaging patch (no code changes).
+Theme: a comprehensive quantum-information-theory layer on the two simulation
+engines — open systems & noise (Lindblad, channel metrics, Stinespring dilation,
+process tomography), fault tolerance & QEC ([[5,1,3]], Steane [[7,1,3]] with
+transversal gates, [[4,2,2]], magic-state injection, Petz recovery), quantum
+networking (BBPSSW/DEJMPS distillation, noisy swapping, repeater chains),
+noise-protection without QEC (DFS, spin echo, Zeno), and foundational measures
+(negativity, concurrence, discord, mutual information, Horodecki nonlocality,
+contextuality, geometric phase, uncertainty relations, weak values, Holevo,
+channel capacity, state discrimination, no-cloning, magic, MBQC). Every routine
+verified against a closed form or an independent computation.
 
-### Changed
-- Refreshed the PyPI project summary and README to reflect the current scope —
-  the state-vector and Clifford/stabilizer engines and the verified algorithm
-  library — instead of the older QML-only description.
+### Added
+- **Petz recovery map (approximate QEC)** (`algorithms.petz_recovery`,
+  `petz_code_recovery`) — the canonical "best-effort" recovery for noise that has no
+  perfect correction: `R_sigma(rho) = sigma^{1/2} N^dagger(N(sigma)^{-1/2} rho
+  N(sigma)^{-1/2}) sigma^{1/2}`. Verified on three fronts: it recovers *correctable*
+  errors perfectly (bit-flip errors on the 3-qubit code, fidelity 1.0 from 0.75 —
+  reproducing the syndrome decoder); it gives genuine *approximate* recovery for
+  uncorrectable amplitude damping (0.82 → 0.93, degrading with damping strength);
+  and it satisfies the defining identity `R_sigma(N(sigma)) = sigma` exactly while
+  preserving trace.
+- **Weak values (Aharonov-Albert-Vaidman)** (`algorithms.weak_value`,
+  `weak_measurement_shift`, `weak_value_demo`) — pre- and post-selection let a
+  weakly-measured observable read `A_w = <phi|A|psi>/<phi|psi>`, which can sit far
+  outside its spectrum or be complex. Verified both ways: `A_w` reduces to the
+  eigenvalue/expectation in the appropriate limits, reaches ~ -20 for an observable
+  with eigenvalues +/-1 under near-orthogonal selection (the amplification effect),
+  and — running the actual pointer-qubit weak measurement `exp(-i g A x Y/2)` — the
+  post-selected pointer's `<X>/g` shift converges to `Re(A_w)` in the weak-coupling
+  limit.
+- **Quantum process tomography** (`density_matrix.process_tomography`) —
+  reconstruct an unknown single-qubit channel's full Choi matrix from its
+  input/output behavior alone: probe the black box on the four
+  informationally-complete states `|0>, |1>, |+>, |+i>`, recover the off-diagonal
+  image by linear combination, and assemble `J = sum_ij |i><j| x N(|i><j|)`.
+  Verified to recover the exact `choi_matrix` for every standard channel and for
+  unitary channels, with the reconstruction certified CPTP (positive Choi, partial
+  trace = I). A channel is fully characterized by how it acts, not how it is built.
+- **Stabilizer entanglement entropy from the tableau**
+  (`StabilizerSimulator.entanglement_entropy`) — the entropy across any cut of a
+  stabilizer state in `O(n^3)` directly from the binary tableau (Fattal et al.:
+  `S_A = rank_GF2(G_B) - |B|`), no `2^n` state vector — so it works on the hundreds
+  of qubits the Clifford engine reaches (verified on a 200-qubit GHZ cut, instant).
+  Matches the dense density-matrix entanglement entropy exactly on random Clifford
+  states across many cuts; always an integer number of bits; 1 bit for Bell/GHZ
+  cuts, 0 for product cuts.
+- **Stinespring dilation** (`density_matrix.stinespring_isometry`,
+  `apply_channel_dilated`) — the constructive proof that all noise is entanglement
+  with an environment: any Kraus channel `N(rho) = sum_k K_k rho K_k^dagger` is
+  realized as an isometry `V|psi> = sum_k K_k|psi>|k>_env` followed by discarding
+  the environment. Verified that `Tr_env(V rho V^dagger)` reproduces every standard
+  channel exactly, that `V^dagger V = I` (trace preservation), that a unitary
+  channel dilates to itself (env dimension 1), and that the dilated global state is
+  pure — the environment *purifies* the noise.
+- **Measurement-based quantum computation** (`algorithms.mbqc_rotation`,
+  `cluster_pair`) — the opposite of the circuit model: compute by *measuring* a
+  fixed entangled resource. Measuring one qubit of a two-qubit cluster state in the
+  `alpha`-tilted basis teleports `X^s H Rz(-alpha)|psi>` onto the ancilla — verified
+  to fidelity 1 on 200+ random inputs against the exact byproduct law. Applying the
+  outcome-conditioned `X^s` correction turns it into a *deterministic* gate
+  `H Rz(-alpha)` (exactly `H` at `alpha = 0`), a genuine unitary enacted purely by
+  measurement, with the outcome unbiased and both branches occurring.
+- **[[4,2,2]] error-detecting code** (`algorithms.four_two_two_codewords`,
+  `detect_single_errors`, `postselected_memory`) — the smallest useful stabilizer
+  code: 4 qubits, 2 logical qubits, distance 2, stabilizers `XXXX`/`ZZZZ`.
+  Verified: orthonormal stabilized codewords, all 12 single-qubit Pauli errors
+  anticommute with a stabilizer (detected), and detect-and-discard memory under
+  depolarizing noise gives post-selected infidelity O(p^2) (ratio 4.02 on p
+  doubling, 330x below a bare qubit at p = 0.002) at an O(p) rejection cost — the
+  strategy behind many early fault-tolerance experiments.
+- **Dense coding with a noisy resource** (`algorithms.dense_coding_capacity`) —
+  superdense coding meets reality: encoding 2 bits by local Paulis on half a
+  Werner pair gives an ensemble whose Holevo capacity (computed directly with
+  `holevo_bound`) equals `2 - S(rho_W)` exactly at every fidelity. A perfect Bell
+  pair delivers 2 bits, the maximally mixed resource exactly 0, capacity is
+  monotone in F, and the *quantum advantage* (beating the 1 classical bit) is lost
+  well before entanglement is — another resource-hierarchy gap, quantified.
+- **Magic measures: stabilizer Renyi entropy**
+  (`algorithms.stabilizer_renyi_entropy`, `magic_of_t_states`) — quantify the
+  resource that takes computation beyond classically-simulable Clifford circuits:
+  `M_2 = -log2(sum_P <P>^4 / d)` over all `4^n` Pauli strings (Leone et al., PRL
+  128, 050402). Verified: exactly 0 on all six single-qubit stabilizer states,
+  Bell, GHZ, and random Clifford-orbit states (via the stabilizer engine's
+  `to_statevector`); exactly `log2(4/3)` on the T-magic state; invariant under H,
+  S, and entangling CNOT (Clifford invariance); and exactly additive over parallel
+  T states — connecting the magic-state injection arc to a measurable resource.
+- **Mixed-state quantum Fisher information** (`algorithms.qfi_mixed`) — precision
+  metrology for realistic (noisy) probes: the SLD spectral formula
+  `F_Q = 2 sum (l_i-l_j)^2/(l_i+l_j) |<i|G|j>|^2`. Triple-verified: reduces to
+  `4 Var(G)` on pure states, hits the Heisenberg limit `N^2` on a GHZ probe, and
+  matches an *independent* numerical Bures-fidelity derivative
+  (`8(1-sqrt(F))/dphi^2`) on random mixed states. Mixing monotonically destroys
+  Fisher information, down to exactly 0 for the maximally mixed (phase-blind)
+  state.
+- **Uncertainty relations** (`algorithms.robertson_bound`,
+  `entropic_uncertainty`) — Heisenberg made precise, twice. Robertson:
+  `dA dB >= |<[A,B]>|/2`, verified on random observables/states and *tight* on a Z
+  eigenstate for (X, Y); its weakness — the bound degenerating to zero on an X
+  eigenstate — is demonstrated too. Maassen-Uffink entropic form:
+  `H(A) + H(B) >= -log2 max|<a_i|b_j>|^2` = exactly 1 bit for the mutually
+  unbiased X/Z pair on ANY state, with equality precisely on the eigenstates —
+  complementarity that never degenerates.
+- **Geometric (Pancharatnam-Berry) phase** (`algorithms.berry_phase_triangle`,
+  `pancharatnam_phase`, `bloch_spinor`, `solid_angle`) — the phase that depends
+  only on the path: transporting a qubit around a geodesic Bloch triangle gives
+  `gamma = arg(<n1|n2><n2|n3><n3|n1>) = Omega/2` (mod 2pi), verified against the
+  solid angle computed *independently* by classical spherical trigonometry
+  (L'Huilier's excess) — exact agreement on 50/50 random triangles, the octant
+  giving exactly `pi/4`. Gauge invariance (re-phasing any state changes nothing),
+  orientation-oddness (reversing the loop flips the sign), and the degenerate-loop
+  zero are all confirmed. The working principle of holonomic quantum gates.
+- **Quantum contextuality: the Peres-Mermin magic square**
+  (`algorithms.mermin_peres_square`, `classical_assignment_maximum`,
+  `quantum_context_measurement`) — a complete 2-qubit Kochen-Specker proof. The 3x3
+  grid of two-qubit Paulis is verified operator-by-operator (every row/column
+  mutually commutes; row products `+I,+I,+I`, column products `+I,+I,-I`);
+  brute-forcing all 512 non-contextual value assignments shows at most **5 of 6**
+  constraints can ever hold classically; yet sequential projective measurement of
+  any context on ANY state gives outcomes whose product equals the context's sign
+  deterministically — all 6 constraints at once, on 120 randomized context
+  measurements, with the individual outcomes still random. Measurement outcomes
+  cannot be pre-existing context-independent values.
+- **Optimal universal quantum cloning (Buzek-Hillery)**
+  (`algorithms.universal_clone`) — no-cloning made quantitative: the exact 1 -> 2
+  cloning machine (a verified 8x2 isometry with two clones + ancilla) copies ANY
+  unknown qubit with fidelity exactly 5/6 — the proven optimum — for every input
+  state (universality confirmed on random states to 1e-12), with the two clones
+  identical. Beats the best classical measure-and-prepare strategy (2/3) while
+  respecting the no-cloning bound (< 1).
+- **Logical qubit lifetime under repeated QEC cycles**
+  (`algorithms.repeated_qec_cycles`) — the fault-tolerance payoff, exact: each
+  (noise -> recovery) cycle of the 3-qubit bit-flip code acts on the code space as a
+  *logical* bit-flip channel with `q = 3p^2 - 2p^3` (weight-2/3 errors decode to
+  exactly `X_L`), so k cycles give `F_k = (1 + (1-2q)^k)/2` — matched by the
+  simulation to machine precision at every cycle. The encoded qubit outlives a bare
+  one by `lifetime_gain ~ 1/(3p)` (33.9x at p = 0.01), the gain exceeds 1 for every
+  `p < 1/2` with the fixed point exactly at threshold, and `|+_L>` never decays at
+  all.
+- **Quantum state discrimination** (`algorithms.helstrom_bound`,
+  `helstrom_measurement`, `unambiguous_discrimination`) — the two optimal ways to
+  tell non-orthogonal states apart. Helstrom minimum-error:
+  `P_err = (1 - ||p0 rho0 - p1 rho1||_1)/2`, with the optimal measurement
+  constructed explicitly (positive-eigenspace projector) and achieving the bound to
+  machine precision, including mixed states and unequal priors
+  (`(1-sqrt(1-4 p0 p1 s^2))/2` verified). Unambiguous (IDP): a 3-outcome POVM that
+  is *never* wrong (error exactly 0), succeeding with exactly `1 - |<psi0|psi1>|`
+  and paying the difference in inconclusive outcomes — strictly below the Helstrom
+  success rate, the price of certainty.
+- **Holevo bound & accessible information** (`algorithms.holevo_bound`,
+  `accessible_information`, `holevo_gap`) — why a qubit carries at most one
+  classical bit, and why non-orthogonal states can't even deliver that:
+  `chi = S(avg) - sum p_i S(rho_i)` vs the best measurement's mutual information
+  (optimized over the Bloch sphere). Verified against the exact two-pure-state
+  closed forms `chi = h((1+cos t)/2)` and `I_acc = 1 - h((1+sin t)/2)` (Levitin),
+  with a strictly positive gap for non-orthogonal states; the BB84 ensemble gives
+  exactly `chi = 1` but accessible information exactly `1/2` — the eavesdropper's
+  fundamental limit that makes QKD secure.
+- **Channel coherent information & quantum capacity**
+  (`algorithms.coherent_information`, `amplitude_damping_capacity`) — quantum
+  Shannon theory from first principles: `I_c = S(N(rho)) - S(E)` computed by
+  genuinely purifying the input, sending the system half through the channel, and
+  reading the environment entropy off the joint output. Verified against the known
+  amplitude-damping closed form `h((1-g)p) - h(gp)` at every tested `(g, p)`, the
+  identity channel gives `I_c = S(rho)`, and the AD capacity behaves exactly as
+  Shannon theory demands: 1 at `g = 0`, monotone decreasing, and **exactly zero
+  from `g = 1/2`** — the antidegradable point where the environment learns as much
+  as the receiver (with the exact antisymmetry `I_c(g) = -I_c(1-g)` confirmed).
+- **Wootters concurrence & entanglement of formation**
+  (`DensityMatrix.concurrence`, `entanglement_of_formation`) — the exact two-qubit
+  entanglement measure for ANY mixed state: `C = max(0, l1-l2-l3-l4)` from the
+  spin-flipped spectrum (computed in a Hermitian-similar form for eigvalsh
+  precision), and `E = h((1+sqrt(1-C^2))/2)` — the cost in Bell pairs of preparing
+  the state. Verified: pure states match `C = 2|ad-bc|` and EoF equals the
+  entanglement entropy; Bell-diagonal states match `C = max(0, 2 max(lam) - 1)`;
+  Werner states give `2F - 1` above the `F = 1/2` separability threshold and exactly
+  0 below it.
+- **CHSH nonlocality of mixed states — the Horodecki criterion**
+  (`algorithms.chsh_maximum`, `chsh_maximum_optimized`, `correlation_matrix`,
+  `werner_nonlocality`) — the exact maximal CHSH value of ANY two-qubit state:
+  `S_max = 2 sqrt(u1 + u2)` from the correlation matrix `T`. Verified: matches
+  brute-force optimization over all measurement angles on random mixed states, a
+  Bell pair reaches Tsirelson's `2 sqrt(2)`, Werner states follow
+  `2 sqrt(2)|4F-1|/3` with `S = 2` exactly at `F = (1+3/sqrt(2))/4 ≈ 0.7803` — and
+  the **entangled-but-local window** `1/2 < F < 0.7803` is demonstrated: states
+  whose entanglement is certified by negativity, yet no CHSH experiment on them can
+  ever violate a Bell inequality. Entanglement and nonlocality are different
+  resources.
+- **Steane code under continuous depolarizing noise**
+  (`algorithms.steane_code_noisy`) — the distance-3 promise demonstrated exactly on
+  the 7-qubit density matrix: independent `depolarizing(p)` on every physical qubit,
+  then the exact 64-syndrome CPTP recovery. Doubling `p` quadruples the logical
+  error (measured ratio 3.98 — quadratic suppression, `1-F ~ O(p^2)` vs `O(p)`
+  bare), the logical error at `p = 0.002` is 24x below the bare qubit's, the exact
+  fidelity always exceeds the weight-1 floor `(1-p)^7 + 7p(1-p)^6`, and the
+  pseudo-threshold is visible: encoding wins below `p ~ 0.05` and loses at 0.25.
+- **T1/T2 relaxation times** (`density_matrix.relaxation_times`) — extract a qubit's
+  datasheet numbers from exact Lindblad evolution (amplitude damping + pure
+  dephasing) and verify the fundamental relation `1/T2 = 1/(2 T1) + 1/T_phi`, hence
+  `T2 <= 2 T1` always, with equality iff there is no pure dephasing. Includes the
+  dephasing-dominated regime (`T2 < T1`).
+- **Quantum discord** (`density_matrix.quantum_discord`) — the quantum correlation
+  that survives *without* entanglement: `D = S(B) - S(AB) + min_M sum p_k S(A|k)`,
+  minimized over all projective measurements (grid-seeded Nelder-Mead). Verified: a
+  Bell state carries exactly 1 bit, classical and product states exactly 0, pure
+  states reduce to the entanglement entropy, random Bell-diagonal states match Luo's
+  closed form (PRA 77, 042303) to 1e-5 — and a *separable* Werner state (negativity
+  0) still has discord 0.049, quantum correlation with no entanglement at all.
+- **DEJMPS distillation** (`algorithms.dejmps_distill`, `bell_diagonal_state`,
+  `dejmps_recurrence`, `dejmps_rounds`) — the protocol real repeaters use: works on
+  *any* Bell-diagonal state (BBPSSW needs Werner) via local `Rx(±pi/2)` rotations
+  before the bilateral CNOTs. The exact 4-qubit circuit reproduces the Deutsch et al.
+  four-coefficient recurrence to machine precision (all Bell weights, plus success
+  probability `(l1+l4)^2 + (l2+l3)^2`); on Werner inputs it reduces exactly to
+  BBPSSW, and on an asymmetric state of the same fidelity it purifies strictly
+  faster (0.845 vs 0.735 in one round from F = 0.7). Bell-diagonal states are closed
+  under the map, so `dejmps_rounds` iterates the exact recurrence to a target.
+- **GHZ vs W robustness under particle loss** (`algorithms.loss_robustness`) —
+  the standard demonstration that how entanglement is *shared* matters: tracing one
+  qubit out of an n-qubit GHZ leaves a fully separable mixture (negativity exactly 0,
+  though the intact state is maximally entangled at 1/2), while a W state's surviving
+  pair stays entangled with negativity exactly `(sqrt((n-2)^2+4) - (n-2))/(2n)` —
+  the golden value `(sqrt(5)-1)/6` at n=3 — verified for n = 3..6, diluting but never
+  vanishing as n grows.
+- **Quantum Zeno effect** (`algorithms.quantum_zeno`, `zeno_postselected`) —
+  frequent measurement freezes coherent evolution. A Rabi drive interrupted by N
+  unread projective measurements (exact measurement channels on the density matrix)
+  leaves `|0>` population exactly `1/2 + cos^N(wT/N)/2`; demanding outcome 0 every
+  time survives with probability exactly `cos^{2N}(wT/2N)` with the state pinned at
+  `|0>`. Both verified against their closed forms, monotone in N, tending to 1 —
+  while a free pi-pulse fully inverts the qubit (survival 0), 50 interleaved
+  measurements keep it above 0.95.
+- **Dynamical decoupling (Hahn spin echo)** (`algorithms.spin_echo`,
+  `echo_state_fidelity`) — the temporal counterpart to a DFS: under quasi-static
+  dephasing (random per-shot detuning, Gauss-Hermite ensemble of unitaries) a bare
+  `|+>` decays as `exp(-sigma^2/2)`, but an X pulse at mid-evolution refocuses the
+  phase (`U(phi/2) X U(phi/2) = X` shot by shot) and restores coherence to exactly 1
+  at any noise strength — for arbitrary input states. Crucially also verified where
+  the echo *fails*: if the noise re-randomizes between the two halves, the echoed
+  decay is exactly `exp(-sigma^2/2)` — no advantage. Noise *correlation* is the
+  resource dynamical decoupling consumes.
+- **Decoherence-free subspaces** (`algorithms.collective_dephasing`, `dfs_encode`,
+  `dfs_protection`) — protection by symmetry instead of redundancy: under collective
+  Gaussian dephasing (the same random Z phase on every qubit, computed as an exact
+  Gauss-Hermite ensemble average of unitaries), a logical qubit encoded in
+  `span{|01>, |10>}` keeps fidelity exactly 1 at ANY noise strength, while a bare
+  `|+>` qubit's coherence dies as `exp(-sigma^2/2)` and an `a|00> + b|11>` qubit
+  decays four times faster (`exp(-2 sigma^2)`) — all three verified against their
+  closed forms.
+- **Noisy entanglement swapping & repeater chains**
+  (`algorithms.entanglement_swap_noisy`, `repeater_chain`) — a Bell measurement at a
+  middle node splices two noisy Werner pairs A-B, B-C into an A-C pair of fidelity
+  `F1·F2 + (1-F1)(1-F2)/3`, exact for every measurement outcome (each probability
+  1/4), run as the 4-qubit density-matrix circuit with Pauli corrections. Since
+  Werner⊗Werner swaps to Werner again, the scalar recurrence composes exactly:
+  `repeater_chain` gives the end-to-end fidelity of an n-link chain, decaying toward
+  1/4. Verified highlights: two *entangled* pairs (0.7, 0.6) swap to a *separable*
+  0.46 pair (cross-checked via negativity), and one BBPSSW round rescues a degraded
+  chain — the complete quantum-repeater story.
+- **Entanglement distillation (BBPSSW)** (`algorithms.bbpssw_distill`,
+  `werner_state`, `distillation_rounds`) — two noisy Werner pairs → one
+  higher-fidelity pair using only local CNOTs, measurement, and classical
+  communication, run as the exact 4-qubit density-matrix circuit. Verified to
+  machine precision against the Bennett et al. closed form
+  `F' = (F² + (1-F)²/9)/(F² + 2F(1-F)/3 + 5(1-F)²/9)` with success probability equal
+  to the denominator; `F = 1/2` is confirmed as the distillation threshold (fixed
+  point, degradation below, improvement above), and the Werner state's entanglement
+  threshold at `F > 1/2` is cross-checked via negativity. `distillation_rounds`
+  iterates the recurrence to a target fidelity (2^r pairs per output).
+- **Magic states & T-gate injection** (`algorithms.t_magic_state`,
+  `inject_t_gate`) — how fault-tolerant computers get non-Clifford gates: the T gate
+  enacted on data using only Clifford operations (CNOT, S, measurement) plus one
+  consumed magic state `T|+>`, via gate teleportation. Verified exactly: both
+  measurement branches deliver `T|psi>` at fidelity 1 for arbitrary inputs (outcome 1
+  needing the `S T-dagger = T` fix-up, and demonstrably wrong without it), and each
+  outcome occurs with probability exactly 1/2 — the measurement reveals nothing about
+  the data.
+- **Transversal logical gates on the Steane code** (`algorithms.steane_transversal`,
+  `steane_transversal_cnot`) — fault tolerance's defining property, demonstrated
+  exactly: applying a physical gate to all 7 qubits enacts the *logical* gate without
+  decoding. Verified: transversal X/Z/H enact logical X/Z/H; transversal S enacts
+  logical **S-dagger** (the code's weight-structure hallmark — and explicitly *not*
+  logical S); and a bitwise CNOT between two code blocks (14 qubits) enacts a perfect
+  logical CNOT, including entangling superposition inputs into encoded logical Bell
+  states (fidelity 1.0 for random logical inputs).
+- **Steane 7-qubit code [[7,1,3]]** (`algorithms.steane_code`,
+  `steane_stabilizers`) — the CSS code built from the classical [7,4,3] Hamming code,
+  correcting an arbitrary single-qubit error. Three X-type and three Z-type stabilizer
+  generators decode Z and X errors independently (a Y error trips both). Verified:
+  all 22 syndromes distinct, every one of the 21 single-qubit errors corrected to
+  fidelity 1 for arbitrary logical inputs, and the CSS structure confirmed (a pure X
+  error leaves all X-type stabilizers at +1 and vice versa). Completes the code
+  family: 3-qubit repetition → [[5,1,3]] → [[7,1,3]] → 9-qubit Shor.
+- **5-qubit perfect code [[5,1,3]]** (`algorithms.five_qubit_code`,
+  `five_qubit_stabilizers`) — the smallest code that corrects an *arbitrary*
+  single-qubit error. Encodes a logical qubit via the stabilizer projector, applies a
+  chosen `X`/`Y`/`Z` error on any qubit, extracts the 4-bit syndrome, and recovers
+  exactly. Verified: all 16 syndromes are distinct (the "perfect" property — 1
+  error-free + 15 single-qubit errors, none left over), and every single-qubit error
+  is corrected to fidelity 1 for arbitrary logical inputs.
+- **Quantum mutual information** (`DensityMatrix.mutual_information`) —
+  `I(A:B) = S(A) + S(B) - S(AB)`, the total (classical + quantum) correlation across a
+  cut. Verified: a Bell pair carries 2 bits, a classically correlated pair 1 bit, and a
+  product state 0.
+- **Entanglement negativity** (`DensityMatrix.negativity`,
+  `logarithmic_negativity`, `partial_transpose`) — a mixed-state entanglement measure
+  from the Peres-Horodecki partial transpose: `N = (||rho^{T_A}||_1 - 1)/2` and the
+  log-negativity `log2(2N+1)`. Verified exactly: a Bell pair gives `N = 1/2`
+  (1 bit log-negativity), a product state 0, and a Werner state matches the analytic
+  `max(0, (3p-1)/4)` with the PPT-separability threshold at `p = 1/3`.
+- **Coherence measures** (`DensityMatrix.l1_coherence`,
+  `relative_entropy_coherence`) — quantify superposition as a resource: the l1-norm of
+  coherence (sum of off-diagonal magnitudes) and the relative entropy of coherence
+  `S(diag rho) - S(rho)`. Verified: `|+>` and a Bell state each carry exactly 1 bit,
+  computational-basis and maximally mixed states carry none, and full phase damping
+  destroys all coherence.
+- **Choi matrix & CPTP verification** (`density_matrix.choi_matrix`, `is_cptp`,
+  `kraus_rank`) — the Jamiolkowski image of a Kraus channel, a completely-positive
+  + trace-preserving check, and the Kraus rank (minimal number of Kraus operators).
+  Verified: the identity channel gives a rank-1 Choi ∝ the maximally entangled state,
+  all standard channels are CPTP, a non-trace-preserving map is rejected, and the
+  Kraus rank counts noise terms (unitary → 1, full depolarizing → 4).
+- **Lindblad master-equation evolution** (`DensityMatrix.evolve_lindblad`) —
+  continuous-time open-system dynamics: evolve `rho` under a Hamiltonian plus
+  collapse (jump) operators `{L_k}` for `T1` relaxation, `T2` dephasing, and general
+  Markovian decoherence. Computed exactly by exponentiating the Liouvillian
+  superoperator (no time-stepping error). Verified against the analytic laws:
+  excited-state population `e^{-γt}`, coherence decay `½e^{-2κt}`, closed-system Rabi
+  in the no-collapse limit, trace preservation, and relaxation to the ground state.
+- **Channel quality metrics** (`density_matrix.process_fidelity`,
+  `average_gate_fidelity`) — quantify how noisy a Kraus channel is: the entanglement
+  (process) fidelity to a target unitary and the state-averaged gate fidelity, linked
+  by the exact identity `F_avg = (d·F_process + 1)/(d+1)`. Verified: identity gate → 1,
+  `depolarizing(p)` → `1 - p/2`, a stray Pauli-X error → 1/3.
+- **Measured syndrome-extraction circuit** (`algorithms.syndrome_extraction_cycle`) —
+  the *physical* 3-qubit bit-flip code cycle on the density-matrix engine: two ancilla
+  qubits, CNOT parity checks (`Z0Z1`, `Z1Z2`), ancilla measurement, and the
+  outcome-conditioned `X` correction (summed as a CPTP measurement channel), then the
+  ancillas are traced out. Verified to reproduce the ideal-recovery fidelity
+  `(1-p)^3 + 3p(1-p)^2` exactly, confirming the circuit implements the code.
+- **QEC under continuous noise** (`algorithms.bit_flip_code_noisy`,
+  `phase_flip_code_noisy`, `repetition_code_logical_error`) — run a quantum
+  error-correcting code against *continuous* noise (an independent bit-/phase-flip
+  channel of strength `p` on every physical qubit) exactly on the density-matrix
+  engine, with an exact CPTP syndrome-recovery map, and read out the logical
+  fidelity. Verified against the closed form `(1-p)^3 + 3p(1-p)^2`: the encoded
+  qubit beats the un-encoded one for all `p < 1/2` and is worse above threshold;
+  `|+_L>` is logical-X-invariant and stays perfectly protected. Ships the exact
+  majority-vote logical error rate for any odd code distance, showing distance-`d`
+  error suppression below threshold.
+- **Random Clifford circuits** (`StabilizerSimulator.random`) — apply a random
+  H/S/CNOT Clifford circuit (default depth `10n`) and get back the sim; useful for
+  randomized benchmarking, testing, and random stabilizer states. Scales to hundreds
+  of qubits instantly.
+- **Density-matrix simulator** (`quantum_debugger.density_matrix.DensityMatrix`) — an
+  open-quantum-systems engine tracking the full `rho`: apply unitary gates and Kraus
+  noise channels, take partial traces, and read out purity, populations, expectation
+  values, and Uhlmann state fidelity. Ships standard channels (`bit_flip`,
+  `phase_flip`, `depolarizing`, `amplitude_damping`, `phase_damping`). Verified:
+  purity 1 for pure states, Bell reduced state maximally mixed, depolarizing → I/2,
+  amplitude damping relaxes |1> → |0>; unitary evolution matches the state-vector sim.
+  Also `von_neumann_entropy` and `entanglement_entropy` (Bell → 1 bit, product → 0),
+  plus projective `measure(qubit)` (Born-rule collapse) and `sample(shots)`.
+- **Scalable graph / cluster states** (`StabilizerSimulator.graph`) — prepare a graph
+  (cluster) state (H on all qubits + CZ per edge) in `O(n + |edges|)`; thousand-qubit
+  cluster states are instant, with the canonical stabilizers `X_i prod_{j~i} Z_j`.
+  Verified against the state-vector `graph_state` for small graphs.
+- **Stabilizer simulator: expectation values, S-dagger, state-vector bridge, sampling**
+  (`StabilizerSimulator.expectation_value`, `.s_dagger`, `.to_statevector`, `.copy`,
+  `.sample`) — compute `<psi|P|psi>` for any Pauli string directly from the tableau
+  (exactly +1/-1 if P or -P is in the stabilizer group, else 0); reconstruct the dense
+  state vector for small n via the stabilizer projector; the inverse phase gate; and
+  non-destructive shot sampling of measurement outcomes (each shot measures a copy).
+  All verified against the state-vector simulator.
+- **Quantum multiplier** (`algorithms.quantum_multiply`) — Fourier-basis
+  multiplication `|a>|b>|0> -> |a>|b>|a*b>` via doubly-controlled phase rotations
+  (adds `2^(j+k)` per pair of set input bits). Returns the exact `2n`-bit product for
+  every input pair; complements the Fourier and ripple-carry adders.
+- **Ripple-carry subtractor** (`algorithms.ripple_carry_subtract`) — the Cuccaro adder
+  run in reverse, computing `b - a` with a borrow bit (exact for every input pair).
 
 ## [0.7.0] - 2026-07-22
 

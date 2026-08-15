@@ -32,6 +32,13 @@ def _controlled_phase(angle):
     return m
 
 
+def _cc_phase(angle):
+    """Doubly-controlled phase: e^{i angle} on the |111> component only."""
+    m = np.eye(8, dtype=complex)
+    m[7, 7] = np.exp(1j * angle)
+    return m
+
+
 def _apply_circuit(state, circuit):
     for g in circuit.gates:
         state.apply_gate(g.matrix, g.qubits)
@@ -86,18 +93,70 @@ def quantum_compare(a: int, b: int, n_bits: int) -> dict:
     return {"a_geq_b": sign == 0, "a_lt_b": sign == 1, "difference": diff}
 
 
+def _maj_gates(c, b, a):
+    return [(_CNOT, [a, b]), (_CNOT, [a, c]), (_TOFFOLI, [c, b, a])]
+
+
+def _uma_gates(c, b, a):
+    return [(_TOFFOLI, [c, b, a]), (_CNOT, [a, c]), (_CNOT, [c, b])]
+
+
 def _maj(state, c, b, a):
     """Cuccaro MAJ gate: compute the majority (carry) into qubit a."""
-    state.apply_gate(_CNOT, [a, b])
-    state.apply_gate(_CNOT, [a, c])
-    state.apply_gate(_TOFFOLI, [c, b, a])
+    for mat, qubits in _maj_gates(c, b, a):
+        state.apply_gate(mat, qubits)
 
 
 def _uma(state, c, b, a):
     """Cuccaro UMA gate: un-majority and add (inverse of MAJ plus the sum bit)."""
-    state.apply_gate(_TOFFOLI, [c, b, a])
-    state.apply_gate(_CNOT, [a, c])
-    state.apply_gate(_CNOT, [c, b])
+    for mat, qubits in _uma_gates(c, b, a):
+        state.apply_gate(mat, qubits)
+
+
+def _cuccaro_gates(n_bits, c, a_q, b_q, z):
+    """Full Cuccaro adder gate list (b += a, carry-out into z)."""
+    gates = list(_maj_gates(c, b_q[0], a_q[0]))
+    for i in range(1, n_bits):
+        gates += _maj_gates(a_q[i - 1], b_q[i], a_q[i])
+    gates.append((_CNOT, [a_q[n_bits - 1], z]))
+    for i in range(n_bits - 1, 0, -1):
+        gates += _uma_gates(a_q[i - 1], b_q[i], a_q[i])
+    gates += _uma_gates(c, b_q[0], a_q[0])
+    return gates
+
+
+def ripple_carry_subtract(a: int, b: int, n_bits: int) -> dict:
+    """
+    Ripple-carry subtractor: compute ``b - a`` by running the Cuccaro adder in
+    reverse (every CNOT/Toffoli is self-inverse, so the inverse circuit is the gate
+    list reversed).
+
+    Returns dict with 'result' = ``(b - a) mod 2**n_bits`` and 'borrow' = 1 iff
+    ``a > b``. ``a`` is restored.
+    """
+    total = 2 * n_bits + 2
+    c = 0
+    a_q = [1 + i for i in range(n_bits)]
+    b_q = [1 + n_bits + i for i in range(n_bits)]
+    z = 1 + 2 * n_bits
+
+    state = QuantumState(total)
+    index = 0
+    for i in range(n_bits):
+        if (a >> i) & 1:
+            index |= 1 << a_q[i]
+        if (b >> i) & 1:
+            index |= 1 << b_q[i]
+    sv = np.zeros(2**total, dtype=complex)
+    sv[index] = 1.0
+    state.state_vector = sv
+
+    for mat, qubits in reversed(_cuccaro_gates(n_bits, c, a_q, b_q, z)):
+        state.apply_gate(mat, qubits)
+
+    out = int(np.argmax(np.abs(state.state_vector) ** 2))
+    result = sum(((out >> b_q[i]) & 1) << i for i in range(n_bits))
+    return {"result": result, "borrow": (out >> z) & 1}
 
 
 def ripple_carry_add(a: int, b: int, n_bits: int) -> int:
@@ -173,3 +232,52 @@ def quantum_adder(a: int, b: int, n_bits: int) -> int:
     probs = np.abs(state.state_vector) ** 2
     index = int(np.argmax(probs))
     return index & ((1 << n) - 1)
+
+
+def quantum_multiply(a: int, b: int, n_bits: int) -> int:
+    """
+    Multiply two ``n_bits`` numbers in the Fourier basis: ``|a>|b>|0> -> |a>|b>|a*b>``.
+
+    QFTs a ``2*n_bits`` product register, then for every pair of input bits
+    ``(a_j, b_k)`` applies a doubly-controlled phase that adds ``2**(j+k)`` to the
+    product; the inverse QFT reads out ``a * b`` exactly.
+
+    Registers: a = qubits 0..n-1, b = qubits n..2n-1, product = qubits 2n..4n-1.
+    Returns the exact product ``a * b``.
+    """
+    n = n_bits
+    width = 2 * n
+    total = 2 * n + width
+    a_q = list(range(n))
+    b_q = list(range(n, 2 * n))
+    p_q = list(range(2 * n, 2 * n + width))
+
+    state = QuantumState(total)
+    index = 0
+    for i in range(n):
+        if (a >> i) & 1:
+            index |= 1 << a_q[i]
+        if (b >> i) & 1:
+            index |= 1 << b_q[i]
+    sv = np.zeros(2**total, dtype=complex)
+    sv[index] = 1.0
+    state.state_vector = sv
+
+    # QFT the product register (reversed order -> analytic-DFT convention).
+    order = list(reversed(p_q))
+    qft = QuantumCircuit(total)
+    apply_qft(qft, qubits=order)
+    _apply_circuit(state, qft)
+
+    for j in range(n):
+        for k in range(n):
+            for q in range(width):
+                angle = 2 * np.pi * (2 ** (j + k + q)) / (2**width)
+                state.apply_gate(_cc_phase(angle), [a_q[j], b_q[k], p_q[q]])
+
+    iqft = QuantumCircuit(total)
+    apply_inverse_qft(iqft, qubits=order)
+    _apply_circuit(state, iqft)
+
+    out = int(np.argmax(np.abs(state.state_vector) ** 2))
+    return sum(((out >> p_q[q]) & 1) << q for q in range(width))

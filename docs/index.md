@@ -1,12 +1,18 @@
 # Quantum Debugger Documentation
 
-**Version 0.7.0 (development)** - Interactive quantum circuit debugger with Quantum Machine Learning
+**Version 0.8.0** - Interactive quantum circuit debugger with Quantum Machine Learning
 
 Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
 
-## What's New in v0.7.0 (in development)
+## What's New in v0.8.0
 
-A large, genuinely gate-based **quantum algorithms library** (`quantum_debugger.algorithms`),
+A comprehensive quantum-information-theory layer on both engines — a density-matrix
+simulator (Lindblad, channel metrics, Stinespring dilation, process tomography),
+fault tolerance & QEC (`[[5,1,3]]`, Steane `[[7,1,3]]`, `[[4,2,2]]`, magic states,
+Petz recovery), quantum networking (distillation, repeaters), noise protection (DFS,
+spin echo, Zeno), and foundational measures (negativity, discord, nonlocality,
+contextuality, geometric phase, weak values, Holevo, magic, MBQC). Preceded by the
+v0.7.0 gate-based **quantum algorithms library** (`quantum_debugger.algorithms`),
 every routine verified against its known outcome:
 
 - **Textbook algorithms** — QFT, Grover, Quantum Phase Estimation (+ iterative),
@@ -129,6 +135,8 @@ advanced_qml_guide
 quantum_rl_guide
 advanced_algorithms_guide
 stabilizer_guide
+density_matrix_guide
+qec_noise_guide
 ```
 
 ```{toctree}

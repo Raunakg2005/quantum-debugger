@@ -203,6 +203,74 @@ from quantum_debugger.algorithms import superdense_coding
 superdense_coding((1, 0))["decoded"]   # (1, 0) -- both bits recovered
 ```
 
+## Entanglement Distillation (BBPSSW)
+
+Real channels deliver *noisy* Bell pairs. Distillation converts two noisy pairs
+into one better pair using only local operations and classical communication —
+the primitive behind quantum repeaters:
+
+```python
+from quantum_debugger.algorithms import bbpssw_distill, distillation_rounds
+
+r = bbpssw_distill(0.7)        # two Werner pairs of fidelity 0.7
+r["fidelity"]                  # 0.7353 -- the kept pair is better
+r["success_probability"]       # 0.68   -- kept iff the two measurements agree
+r["analytic"]                  # matches the Bennett et al. closed form exactly
+
+distillation_rounds(0.7, 0.99)["rounds"]   # rounds of 2-to-1 to reach F = 0.99
+```
+
+Each party CNOTs their half of pair 1 onto their half of pair 2, both measure
+pair 2, and they keep pair 1 iff the outcomes agree. `F = 1/2` is the threshold:
+above it every round improves the pair, below it distillation only makes things
+worse — matching exactly the Werner state's entanglement threshold (checked via
+negativity).
+
+### DEJMPS: distilling any Bell-diagonal state
+
+BBPSSW assumes Werner inputs. The **DEJMPS** protocol (Deutsch et al., 1996) adds
+local `Rx(±pi/2)` rotations before the bilateral CNOTs and handles *any*
+Bell-diagonal state — converging faster because it never throws the noise
+asymmetry away:
+
+```python
+from quantum_debugger.algorithms import dejmps_distill, dejmps_rounds
+
+# All the noise concentrated in one Bell component (fidelity still 0.7):
+r = dejmps_distill((0.7, 0.3, 0.0, 0.0))
+r["fidelity"]              # 0.845  -- vs 0.735 for BBPSSW at the same F!
+r["coefficients"]          # all four output Bell weights, == the exact recurrence
+
+dejmps_rounds((0.7, 0.3, 0.0, 0.0), 0.99)["rounds"]   # fewer rounds than BBPSSW
+```
+
+The 4-qubit circuit reproduces the four-coefficient DEJMPS recurrence to machine
+precision, and on Werner inputs it reduces exactly to BBPSSW — the two protocols
+agree where their domains overlap.
+
+## Noisy Entanglement Swapping & Repeater Chains
+
+Distillation's partner primitive. A middle node holding halves of two noisy pairs
+performs a Bell measurement, splicing them into one long-distance pair between
+parties that never interacted:
+
+```python
+from quantum_debugger.algorithms import entanglement_swap_noisy, repeater_chain
+
+entanglement_swap_noisy(0.9, 0.9)["fidelity"]   # 0.8133 = F1*F2 + (1-F1)(1-F2)/3
+entanglement_swap_noisy(0.7, 0.6)["fidelity"]   # 0.46 -- SEPARABLE! (< 1/2)
+
+r = repeater_chain(0.9, links=8)                # 8 links, 7 swaps
+r["fidelity"]                                   # decays toward 1/4 (fully mixed)
+r["entangled"]                                  # False -- chain too long
+```
+
+Two striking exact results: swapping two *entangled* pairs can produce a
+*separable* pair (0.7 and 0.6 above), and an n-link chain's fidelity decays
+geometrically toward 1/4. That is why real repeaters interleave the two
+primitives: swap to extend distance, distill (`bbpssw_distill`) to restore
+fidelity — and the tests confirm one round of BBPSSW rescues a degraded chain.
+
 ## Shor's Algorithm -- Period Finding & Factoring
 
 Quantum phase estimation on the modular-multiplication unitary
@@ -363,6 +431,29 @@ For three qubits the **GHZ (Mermin) test** gives an all-or-nothing violation: th
 Mermin operator `M = XXX - XYY - YXY - YYX` has expectation 4 on the GHZ state, but
 any local hidden-variable model is bounded by 2.
 
+### Mixed states: the Horodecki criterion & the entangled-but-local window
+
+For a noisy (mixed) state, what is the best CHSH value *any* measurement choice can
+reach? There is an exact answer — `S_max = 2 sqrt(u1 + u2)` from the two largest
+eigenvalues of `T^T T`, where `T` is the state's 3x3 Pauli correlation matrix:
+
+```python
+from quantum_debugger.algorithms import chsh_maximum, werner_nonlocality
+
+r = werner_nonlocality(0.65)   # a Werner state, fidelity 0.65
+r["entangled"]                 # True  -- negativity certifies entanglement
+r["nonlocal"]                  # False -- S_max = 1.51 < 2: NO measurement violates CHSH
+r["entangled_but_local"]       # True  -- the window 1/2 < F < 0.7803
+
+werner_nonlocality(0.9)["chsh"]    # 2.45  > 2 -- genuinely nonlocal
+```
+
+The closed form is verified against brute-force optimization over all four
+measurement directions and hits `S = 2` exactly at `F = (1 + 3/sqrt(2))/4`.
+The window shows that **entanglement and Bell nonlocality are inequivalent
+resources** — some entangled states admit a local hidden-variable model for every
+CHSH experiment.
+
 ```python
 from quantum_debugger.algorithms import mermin_ghz_test
 
@@ -390,6 +481,29 @@ r["delta_phi_ghz"]     # 0.25  (= 1/N)
 
 parity_signal(4, phi)  # cos(4*phi) -- the GHZ interferometer oscillates N x faster
 ```
+
+### Noisy probes: mixed-state QFI
+
+Real probes decohere. `qfi_mixed` gives the exact Fisher information of any mixed
+state via the symmetric-logarithmic-derivative formula:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import qfi_mixed
+
+G = np.diag([0.5, -0.5])                       # phase generator Z/2
+psi = np.array([1, 1]) / np.sqrt(2)
+pure = np.outer(psi, psi.conj())
+
+qfi_mixed(pure, G)                             # 1.0 = 4 Var(G)
+qfi_mixed(0.5 * pure + 0.5 * np.eye(2)/2, G)   # 0.5 -- decoherence costs precision
+qfi_mixed(np.eye(2) / 2, G)                    # 0.0 -- fully mixed = phase-blind
+```
+
+Verified three independent ways: `4 Var(G)` on pure states, `N^2` on a GHZ probe,
+and the numerical Bures-fidelity derivative on random mixed states. The quantum
+Cramer-Rao bound `delta_phi >= 1/sqrt(F_Q)` then tells you exactly what your noisy
+sensor can still resolve.
 
 ## Simon's Algorithm
 
@@ -422,6 +536,26 @@ graph_state([(0,1),(1,2)], 3)   # cluster/graph state (H on all, CZ per edge)
 `ghz_state` uses a Hadamard + CNOT chain; `w_state` distributes a single
 excitation evenly with a cascade of Givens rotations; `graph_state` is the MBQC
 resource state whose stabilizers are `X_i prod_{j~i} Z_j`.
+
+### GHZ vs W: robustness under particle loss
+
+GHZ and W are the two inequivalent classes of 3-qubit entanglement, and losing a
+qubit tells them apart *operationally*:
+
+```python
+from quantum_debugger.algorithms import loss_robustness
+
+r = loss_robustness(3)
+r["ghz_before_loss"]        # 0.5    -- intact GHZ: maximally entangled
+r["ghz_pair_negativity"]    # 0.0    -- lose ONE qubit: fully separable!
+r["w_pair_negativity"]      # 0.206  == (sqrt(5)-1)/6 -- W survivors stay entangled
+```
+
+All of GHZ's entanglement is global — the surviving pair is the classical mixture
+`(|00><00| + |11><11|)/2`. The W state spreads its entanglement pairwise, so any
+surviving pair keeps negativity `(sqrt((n-2)^2+4) - (n-2))/(2n) > 0` for every n
+(exact, verified for n = 3..6). This is why W-type entanglement is preferred when
+qubit loss is the dominant error.
 
 ## QAOA MaxCut Solver
 
@@ -478,6 +612,27 @@ from quantum_debugger.algorithms import ripple_carry_add
 ripple_carry_add(9, 7, n_bits=4)     # 16   -- exact 5-bit sum with carry-out
 ripple_carry_add(15, 15, n_bits=4)   # 30
 ```
+
+Running that adder in reverse gives a subtractor (`b - a` with a borrow bit):
+
+```python
+from quantum_debugger.algorithms import ripple_carry_subtract
+
+ripple_carry_subtract(4, 9, n_bits=4)   # {"result": 5,  "borrow": 0}  (9-4)
+ripple_carry_subtract(9, 4, n_bits=4)   # {"result": 11, "borrow": 1}  (4-9 mod 16)
+```
+
+Multiplication is done in the Fourier basis too -- `|a>|b>|0> -> |a>|b>|a*b>` via
+doubly-controlled phase rotations that add `2^(j+k)` for each pair of set input bits:
+
+```python
+from quantum_debugger.algorithms import quantum_multiply
+
+quantum_multiply(7, 6, n_bits=3)     # 42
+quantum_multiply(15, 15, n_bits=4)   # 225
+```
+
+`quantum_multiply` returns the exact `2*n`-bit product for every input pair.
 
 ## Randomized Benchmarking
 
@@ -599,6 +754,102 @@ The syndrome is extracted by measuring each stabilizer with an ancilla
 (`|0> -> H -> controlled-Pauli string -> H -> measure`), so no error information
 leaks about the encoded amplitudes -- exactly as real QEC requires.
 
+### The 5-qubit perfect code [[5,1,3]]
+
+The **smallest** code that corrects an arbitrary single-qubit error — smaller than the
+9-qubit Shor code. Its four stabilizers give 16 distinct syndromes, exactly matching
+the error-free case plus the 15 single-qubit Pauli errors (hence "perfect": none left
+over).
+
+```python
+from quantum_debugger.algorithms import five_qubit_code, five_qubit_stabilizers
+
+five_qubit_stabilizers()                       # ['XZZXI', 'IXZZX', 'XIXZZ', 'ZXIXZ']
+
+r = five_qubit_code(0.6, 0.8j, error="Y3")     # Y error on qubit 3
+r["syndrome"]                                  # the measured 4-bit syndrome
+r["correction"]                                # 'Y3' -- decoded exactly
+r["fidelity"]                                  # 1.0 for ANY single-qubit error
+```
+
+`error` is `"I"` or `"<P><q>"` with `P` in `X/Y/Z` and `q` in `0..4`. Every one of the
+15 single-qubit errors is corrected to fidelity 1 for an arbitrary logical input.
+
+### The Steane code [[7,1,3]]
+
+The classic **CSS code**, built from the classical [7,4,3] Hamming code. Its six
+stabilizers split into three X-type and three Z-type generators taken from the same
+Hamming parity-check matrix — so X and Z errors are detected and decoded
+*independently* (a Y error just trips both sets):
+
+```python
+from quantum_debugger.algorithms import steane_code, steane_stabilizers
+
+steane_stabilizers()
+# ['IIIXXXX', 'IXXIIXX', 'XIXIXIX', 'IIIZZZZ', 'IZZIIZZ', 'ZIZIZIZ']
+
+r = steane_code(0.6, 0.8j, error="Z5")
+r["syndrome"]      # Z-type half is (0,0,0): a Z error only trips X-type checks
+r["correction"]    # 'Z5'
+r["fidelity"]      # 1.0 for ANY single-qubit error
+```
+
+The CSS structure is what makes the Steane code the workhorse of fault-tolerance
+theory: transversal CNOT, H, and S gates all preserve the code space. Together the
+QEC family now spans the 3-qubit repetition codes, the [[5,1,3]] perfect code, the
+[[7,1,3]] Steane code, and the 9-qubit Shor code.
+
+### Transversal logical gates
+
+Why the Steane code is fault tolerance's workhorse, demonstrated directly: apply a
+physical gate to **all 7 qubits at once** and the *logical* gate happens — no
+decoding, and no physical gate ever couples two qubits of the same block (so one
+faulty gate cannot spread into an uncorrectable multi-qubit error):
+
+```python
+from quantum_debugger.algorithms import steane_transversal, steane_transversal_cnot
+
+steane_transversal("H", 0.6, 0.8j)
+# {'logical_action': 'H', 'fidelity': 1.0}
+
+steane_transversal("S", 1.0, 1.0)
+# {'logical_action': 'Sdg', 'fidelity': 1.0}   <- transversal S = logical S-DAGGER!
+
+# Bitwise CNOT between two code blocks (14 qubits) = perfect logical CNOT,
+# even for entangling inputs: (|0_L> + |1_L>) x |0_L> -> a logical Bell state.
+steane_transversal_cnot(control=(1.0, 1.0), target=(1.0, 0.0))
+# {'fidelity': 1.0}
+```
+
+The S → S-dagger twist is a real property of the code (the `|1_L>` codewords have
+Hamming weight ≡ 3 mod 4), and the tests confirm the transversal S matches logical
+S-dagger and *not* logical S. The missing gate is T — no distance-3 CSS code has a
+transversal T, which is why magic-state distillation exists.
+
+### Magic states & T-gate injection
+
+The missing T gate is supplied by **gate teleportation**: consume one pre-prepared
+magic state `|A> = T|+>` using only Clifford operations, and the non-Clifford T
+happens on the data:
+
+```python
+from quantum_debugger.algorithms import t_magic_state, inject_t_gate
+
+t_magic_state()               # (|0> + e^{i pi/4}|1>)/sqrt(2)
+
+r = inject_t_gate(0.6, 0.8j)  # data |psi>, CNOT to |A>, measure, Clifford fix-up
+r["fidelity"]                 # 1.0 -- data is exactly T|psi>
+r["probability"]              # 0.5 -- either measurement outcome, for ANY input
+r["correction"]               # 'S' if outcome was 1 (since S T-dagger = T), else None
+```
+
+The circuit: CNOT (control data, target magic), measure the magic qubit. Outcome 0
+leaves the data in `T|psi>` directly; outcome 1 leaves `T-dagger|psi>`, fixed by the
+Clifford `S`. Both outcomes occur with probability exactly 1/2 — the measurement
+reveals nothing about the data. This is why "distilling" high-fidelity `|A>` states
+is the dominant cost of universal fault-tolerant quantum computing: every T gate in
+an algorithm consumes one.
+
 ## State Tomography
 
 Reconstruct the density matrix of a small (<= 3 qubit) state from simulated
@@ -614,3 +865,245 @@ result = state_tomography(qc.get_statevector().state_vector, shots=8000)
 result["density_matrix"]   # reconstructed 4x4 rho
 result["fidelity"]          # ~1.0 vs the true Bell state
 ```
+
+## The Holevo Bound & Accessible Information
+
+Alice encodes classical data in quantum states; Bob measures. The **Holevo
+quantity** bounds what any measurement can extract — and for non-orthogonal
+states, even that bound is unreachable:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import holevo_gap, holevo_bound, accessible_information
+
+r = holevo_gap(np.pi / 4)      # two pure states with overlap cos(pi/4)
+r["chi"]                       # 0.601 == h((1+cos)/2) -- the Holevo bound
+r["accessible"]                # 0.399 == 1 - h((1+sin)/2) -- best measurement
+r["gap"]                       # 0.202 -- information no measurement can reach
+
+# The BB84 ensemble: the eavesdropper's fundamental limit.
+bb84 = [np.array([1,0]), np.array([0,1]),
+        np.array([1,1])/np.sqrt(2), np.array([1,-1])/np.sqrt(2)]
+holevo_bound([0.25]*4, bb84)            # 1.0 exactly
+accessible_information([0.25]*4, bb84)  # 0.5 exactly
+```
+
+The accessible information is found by genuinely optimizing a projective
+measurement over the Bloch sphere and matches Levitin's closed form. The BB84
+numbers are the security of quantum key distribution in two lines: the four
+states *hold* one bit but surrender only half of it to any single measurement.
+
+## Quantum State Discrimination
+
+Non-orthogonal states cannot be perfectly distinguished — the fact quantum
+cryptography is built on. Two optimal strategies, both exact:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    helstrom_bound, helstrom_measurement, unambiguous_discrimination,
+)
+
+a = np.array([1, 0]); b = np.array([1, 1]) / np.sqrt(2)   # overlap 1/sqrt(2)
+
+# Minimum-error (Helstrom): guess every time, err as little as possible.
+helstrom_bound(0.5, a, 0.5, b)               # 0.146 = (1 - sqrt(1 - s^2))/2
+helstrom_measurement(0.5, a, 0.5, b)         # explicit optimal measurement hits it
+
+# Unambiguous (IDP): NEVER guess wrong -- pay with inconclusive outcomes.
+r = unambiguous_discrimination(a, b)
+r["success_probability"]      # 0.293 = 1 - |<a|b>|
+r["error_probability"]        # 0.0   -- exactly
+r["inconclusive_probability"] # 0.707
+```
+
+The Helstrom measurement projects onto the positive part of `p0 rho0 - p1 rho1`
+(works for mixed states and unequal priors too); the IDP POVM's conclusive
+elements are orthogonal to the *other* state, so a conclusive click is a
+guarantee. Certainty costs success rate: `1 - |s|` < the Helstrom success
+`(1 + sqrt(1-s^2))/2` for every overlap `s != 0`.
+
+## Optimal Universal Cloning (Buzek-Hillery)
+
+Perfect cloning is impossible — but the *optimal imperfect* cloner is exactly
+known, and it is a genuine 3-qubit circuit:
+
+```python
+from quantum_debugger.algorithms import universal_clone
+
+r = universal_clone(0.6, 0.8j)     # clone an arbitrary unknown qubit
+r["clone1_fidelity"]               # 0.8333... = 5/6 exactly
+r["clone2_fidelity"]               # 0.8333... = 5/6 -- clones identical
+r["classical_limit"]               # 2/3 -- best measure-and-prepare strategy
+```
+
+The Buzek-Hillery isometry sends `|psi>|0>|0>` to a symmetric 3-qubit state whose
+two clone marginals are each `5/6 |psi><psi| + 1/6 |psi_perp><psi_perp|` — the
+same fidelity for *every* input (universality, verified on random states). The
+gap between 5/6 (quantum) and 2/3 (classical) is another face of the Holevo/
+discrimination limits above; the gap between 5/6 and 1 is the no-cloning theorem.
+
+## Contextuality: the Peres-Mermin Magic Square
+
+A stronger statement than Bell violation — provable with operators alone, on
+*any* state:
+
+```python
+from quantum_debugger.algorithms import (
+    mermin_peres_square, classical_assignment_maximum, quantum_context_measurement,
+)
+
+mermin_peres_square()["square"]
+# [['XI', 'IX', 'XX'], ['IZ', 'ZI', 'ZZ'], ['XZ', 'ZX', 'YY']]
+# rows multiply to +I; columns to +I, +I, -I  (verified matrix-by-matrix)
+
+classical_assignment_maximum()["max_satisfied"]   # 5 of 6 -- for ALL 512 assignments
+
+import numpy as np
+r = quantum_context_measurement(np.array([1, 1j, -1, 0.5]), "col", 2)
+r["outcomes"]   # three +/-1 results (individually random)
+r["product"]    # -1 == expected_sign, deterministically, every time
+```
+
+The parity obstruction: the six constraints multiply to `-1`, yet each of the nine
+values appears in exactly two constraints — so no pre-assigned values can satisfy
+them all. Quantum measurements do, on every state, because what an observable
+"reveals" depends on which commuting context it is measured in. This is the
+Kochen-Specker theorem in its smallest, sharpest form.
+
+## Geometric (Berry) Phase
+
+Take a qubit around a closed loop on the Bloch sphere and it remembers only the
+*geometry* — the solid angle enclosed:
+
+```python
+from quantum_debugger.algorithms import berry_phase_triangle
+
+r = berry_phase_triangle([1, 0, 0], [0, 1, 0], [0, 0, 1])   # one octant
+r["solid_angle"]   # pi/2  -- classical spherical trigonometry (L'Huilier)
+r["phase"]         # pi/4  -- quantum spinor overlaps: exactly Omega/2
+r["matches"]       # True  -- two independent computations agree
+```
+
+The Pancharatnam phase `arg(<n1|n2><n2|n3><n3|n1>)` is gauge invariant (re-phase
+any state, nothing changes), flips sign with loop orientation, and vanishes for
+degenerate loops. Because it depends on the path and not the timing, it is
+naturally robust — the working principle behind holonomic (geometric) quantum
+gates.
+
+## Uncertainty Relations
+
+Two rigorous faces of Heisenberg's principle:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import robertson_bound, entropic_uncertainty
+
+X = np.array([[0, 1], [1, 0]]); Y = np.array([[0, -1j], [1j, 0]])
+Z = np.array([[1, 0], [0, -1]])
+
+r = robertson_bound(X, Y, [1, 0])       # X, Y on |0>
+r["product"], r["bound"]                # 1.0, 1.0 -- TIGHT
+
+robertson_bound(X, Y, [1, 1])["bound"]  # 0.0 -- Robertson can degenerate...
+
+e = entropic_uncertainty(X, Z, [1, 0])  # ...the entropic bound cannot:
+e["bound"]                              # 1.0 bit for X/Z on ANY state
+e["sum"]                                # 1.0 -- equality on an eigenstate
+```
+
+Robertson's `dA dB >= |<[A,B]>|/2` is state-dependent and can collapse to a
+trivial 0; the Maassen-Uffink bound `H(A) + H(B) >= -log2 c` depends only on the
+*bases* — for mutually unbiased qubit measurements it guarantees one full bit of
+combined ignorance no matter the state, which is exactly the complementarity that
+BB84 turns into security.
+
+## Magic: the Stabilizer Renyi Entropy
+
+Clifford circuits are classically simulable — **magic** is what takes a
+computation beyond them, and it is directly measurable:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import stabilizer_renyi_entropy, magic_of_t_states
+
+stabilizer_renyi_entropy(np.array([1, 0]))                  # 0.0 -- stabilizer state
+t = np.array([1, np.exp(1j*np.pi/4)]) / np.sqrt(2)          # the T-magic state
+stabilizer_renyi_entropy(t)                                 # 0.415 = log2(4/3)
+
+magic_of_t_states(3)["computed"]                            # 3 * log2(4/3): additive
+```
+
+`M_2 = -log2(sum_P <P>^4 / d)` over all Pauli strings: zero exactly on stabilizer
+states (verified on random Clifford orbits from the tableau engine), invariant
+under every Clifford gate (H, S, CNOT — verified), and additive. Each T state
+carries `log2(4/3) ~ 0.415` of magic — the quantity that magic-state distillation
+concentrates and `inject_t_gate` spends, one T gate per state.
+
+### Dense coding with a noisy resource
+
+How much of superdense coding's 2-bit capacity survives a noisy shared pair?
+
+```python
+from quantum_debugger.algorithms import dense_coding_capacity
+
+dense_coding_capacity(1.0)["capacity"]    # 2.0  bits -- perfect Bell pair
+dense_coding_capacity(0.9)["capacity"]    # 1.37 -- still beats 1 classical bit
+dense_coding_capacity(0.7)["capacity"]    # 0.88 -- quantum advantage GONE
+dense_coding_capacity(0.25)["capacity"]   # 0.0  -- maximally mixed = useless
+```
+
+The four Pauli-encoded states form an ensemble whose Holevo quantity — computed
+directly with `holevo_bound` — equals `2 - S(rho_W)` exactly. Note the hierarchy:
+the quantum advantage disappears near `F ~ 0.81`, while the pair stays *entangled*
+down to `F = 1/2` — entanglement is necessary but not sufficient for beating the
+classical channel.
+
+## Measurement-Based Quantum Computation
+
+In the one-way model you never apply a gate — you prepare an entangled cluster
+state and *measure* it. The elementary step teleports a rotation:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import mbqc_rotation
+
+# Measure one qubit of a cluster in the alpha-tilted basis; the ancilla is left
+# holding H Rz(-alpha)|psi> (byproduct corrected -> deterministic gate).
+r = mbqc_rotation([1, 0], alpha=np.pi / 3, correct=True)
+r["output"]     # exactly H Rz(-pi/3)|0>
+r["fidelity"]   # 1.0
+
+mbqc_rotation([1, 0], alpha=0.0, correct=True)["output"]   # exactly H|0> = |+>
+```
+
+Without correction the ancilla holds `X^s H Rz(-alpha)|psi>` — the `X^s` byproduct
+is the randomness measurement injects (verified against the exact law on 200
+random inputs). Feeding that outcome forward to condition later corrections is how
+the model chains steps into any circuit: measurement *is* computation.
+
+## Weak Values
+
+Measure gently, and pre- and post-select the state, and an observable can read a
+value far outside its own spectrum:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import weak_value, weak_value_demo
+
+Z = np.array([[1, 0], [0, -1]])           # eigenvalues +/- 1
+pre = np.array([1, 1]) / np.sqrt(2)       # pre-selection |+>
+post = np.array([np.cos(np.pi/4 + 0.05), -np.sin(np.pi/4 + 0.05)])  # nearly _|_ to pre
+
+weak_value(Z, pre, post)                  # ~ -20  (!!) -- outside [-1, 1]
+
+r = weak_value_demo(Z, pre, post)
+r["outside_spectrum"]                     # True
+r["pointer_shift_per_coupling"]           # matches Re(A_w): the measured shift
+```
+
+`A_w = <phi|A|psi>/<phi|psi>` is not an eigenvalue — it is what a pointer weakly
+coupled to `A` actually registers, verified here by running the coupling
+`exp(-i g A x Y/2)` and post-selecting. As the pre- and post-selection approach
+orthogonality the value blows up: weak-value amplification, used to sense tiny
+couplings. (The unbounded shift costs post-selection probability — no free lunch.)

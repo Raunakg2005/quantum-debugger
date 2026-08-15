@@ -46,6 +46,56 @@ assert sim.measure(0) == b                 # deterministic on repeat
 assert sim.measure(2) == b                 # perfectly correlated
 ```
 
+## Graph / cluster states at scale
+
+`StabilizerSimulator.graph(n, edges)` prepares a graph (cluster) state -- Hadamard on
+every qubit, then CZ on each edge -- in `O(n + |edges|)`. Graph states of thousands of
+qubits are instant, with the canonical stabilizers `X_i * prod_{j~i} Z_j`.
+
+```python
+sim = StabilizerSimulator.graph(3, [(0, 1), (1, 2)])   # linear cluster
+sim.stabilizers()        # [(1, 'XZI'), (1, 'ZXZ'), (1, 'IZX')]
+
+# A 1000-qubit ring cluster state, instantly:
+ring = StabilizerSimulator.graph(1000, [(i, (i + 1) % 1000) for i in range(1000)])
+```
+
+## Pauli expectation values
+
+`expectation_value(pauli_string)` returns `<psi|P|psi>` for the current stabilizer
+state -- exactly `+1`/`-1` if `P` (or `-P`) is in the stabilizer group, else `0`
+(when `P` anticommutes with a stabilizer). No state vector required.
+
+```python
+sim = StabilizerSimulator(2)
+sim.h(0); sim.cnot(0, 1)          # Bell state
+sim.expectation_value("XX")        # 1
+sim.expectation_value("YY")        # -1
+sim.expectation_value("XZ")        # 0
+```
+
+`s_dagger(q)` is also available (the inverse phase gate).
+
+## Entanglement entropy without a state vector
+
+The entanglement entropy across any bipartition is computable directly from the
+binary tableau in `O(n^3)` — so it scales to the hundreds of qubits the engine
+handles, where a `2^n` state vector is hopeless:
+
+```python
+sim = StabilizerSimulator(200, seed=1)
+sim.h(0)
+for q in range(199):
+    sim.cnot(0, q + 1)             # 200-qubit GHZ
+
+sim.entanglement_entropy(range(100))   # 1.0 bit -- instant, no state vector
+```
+
+The result is `S_A = rank_GF2(G_B) - |B|` (Fattal et al.), where `G_B` is the
+stabilizer check matrix restricted to the complementary region — always an integer
+number of bits, and verified against the dense density-matrix entropy on random
+Clifford states.
+
 ## When to use it
 
 Use the stabilizer simulator for stabilizer codes, GHZ/graph/cluster states,

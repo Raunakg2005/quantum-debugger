@@ -37,6 +37,41 @@ class StabilizerSimulator:
             self.x[i, i] = 1  # destabilizer i = X_i
             self.z[n + i, i] = 1  # stabilizer i = Z_i
 
+    @classmethod
+    def random(cls, n: int, depth: int = None, seed: int = 0) -> "StabilizerSimulator":
+        """
+        Apply a random Clifford circuit (random H / S / CNOT gates) and return the sim.
+        Handy for randomized benchmarking, testing, and random stabilizer states.
+        ``depth`` defaults to ``10 * n`` gates.
+        """
+        rng = np.random.default_rng(seed)
+        depth = depth if depth is not None else 10 * n
+        sim = cls(n, seed=seed)
+        for _ in range(depth):
+            g = rng.integers(3)
+            if g == 0 or n < 2:
+                sim.h(int(rng.integers(n)))
+            elif g == 1:
+                sim.s(int(rng.integers(n)))
+            else:
+                a, b = (int(x) for x in rng.choice(n, 2, replace=False))
+                sim.cnot(a, b)
+        return sim
+
+    @classmethod
+    def graph(cls, n: int, edges, seed: int = 0) -> "StabilizerSimulator":
+        """
+        Prepare the graph (cluster) state on ``n`` qubits for ``edges``: Hadamard on
+        every qubit, then CZ on each edge. Runs in O(n + |edges|) -- graph states of
+        thousands of qubits are instant, with stabilizers ``X_i prod_{j~i} Z_j``.
+        """
+        sim = cls(n, seed=seed)
+        for q in range(n):
+            sim.h(q)
+        for a, b in edges:
+            sim.cz(a, b)
+        return sim
+
     # --- Clifford gates -----------------------------------------------------
 
     def h(self, a: int):
@@ -49,6 +84,13 @@ class StabilizerSimulator:
         """Phase gate S on qubit a."""
         self.r ^= self.x[:, a] & self.z[:, a]
         self.z[:, a] ^= self.x[:, a]
+        return self
+
+    def s_dagger(self, a: int):
+        """Inverse phase gate S-dagger on qubit a (= S applied three times)."""
+        self.s(a)
+        self.s(a)
+        self.s(a)
         return self
 
     def z_gate(self, a: int):
@@ -131,6 +173,29 @@ class StabilizerSimulator:
         """Measure every qubit (0..n-1) in order."""
         return [self.measure(q) for q in range(self.n)]
 
+    def copy(self) -> "StabilizerSimulator":
+        """Return an independent copy of the tableau (state)."""
+        new = StabilizerSimulator(self.n)
+        new.x = self.x.copy()
+        new.z = self.z.copy()
+        new.r = self.r.copy()
+        return new
+
+    def sample(self, shots: int, seed: int = 0) -> dict:
+        """
+        Sample ``shots`` computational-basis measurement outcomes without disturbing
+        this state (each shot measures a fresh copy). Returns a dict mapping bitstring
+        (qubit 0 = first character) to its count.
+        """
+        rng = np.random.default_rng(seed)
+        counts = {}
+        for _ in range(shots):
+            clone = self.copy()
+            clone._rng = np.random.default_rng(int(rng.integers(2**31)))
+            key = "".join(str(b) for b in clone.measure_all())
+            counts[key] = counts.get(key, 0) + 1
+        return counts
+
     # --- Inspection / verification -----------------------------------------
 
     def stabilizers(self) -> list:
@@ -150,6 +215,99 @@ class StabilizerSimulator:
                 )
             out.append((-1 if self.r[i] else 1, "".join(chars)))
         return out
+
+    def expectation_value(self, pauli_string: str) -> int:
+        """
+        Expectation value <psi|P|psi> of a Pauli string P for this stabilizer state.
+
+        Returns exactly +1 or -1 if P (or -P) is in the stabilizer group, else 0
+        (P anticommutes with a stabilizer). ``pauli_string[q]`` in {'I','X','Y','Z'}
+        acts on qubit q.
+        """
+        n = self.n
+        px = [1 if c in "XY" else 0 for c in pauli_string]
+        pz = [1 if c in "ZY" else 0 for c in pauli_string]
+
+        # If P anticommutes with any stabilizer generator, <P> = 0.
+        for i in range(n, 2 * n):
+            sp = sum(px[q] * self.z[i, q] + pz[q] * self.x[i, q] for q in range(n)) % 2
+            if sp:
+                return 0
+
+        # P commutes with all stabilizers -> P = +/- product of the generators whose
+        # partner destabilizer anticommutes with P. Build that product in the scratch
+        # row and read its sign.
+        sc = 2 * n
+        self.x[sc, :] = 0
+        self.z[sc, :] = 0
+        self.r[sc] = 0
+        for i in range(n):
+            sp = sum(px[q] * self.z[i, q] + pz[q] * self.x[i, q] for q in range(n)) % 2
+            if sp:
+                self._rowsum(sc, n + i)
+        return -1 if self.r[sc] else 1
+
+    def to_statevector(self) -> np.ndarray:
+        """
+        Reconstruct the dense state vector for small ``n`` (bridge to the state-vector
+        engine). Builds the rank-1 projector ``prod_i (I + S_i) / 2`` onto the common
+        +1 eigenspace of the stabilizers and returns its normalized image. O(4^n).
+        """
+        dim = 2**self.n
+        proj = np.eye(dim, dtype=complex)
+        identity = np.eye(dim, dtype=complex)
+        for sign, ps in self.stabilizers():
+            proj = proj @ ((identity + stabilizer_to_pauli_matrix(sign, ps)) / 2)
+        # The projector is |psi><psi|; take its largest-norm column and normalize.
+        col = int(np.argmax(np.linalg.norm(proj, axis=0)))
+        psi = proj[:, col]
+        return psi / np.linalg.norm(psi)
+
+    def entanglement_entropy(self, region) -> float:
+        """
+        Entanglement entropy (in bits) of a subset ``region`` of qubits, computed in
+        ``O(n^3)`` directly from the binary tableau -- no ``2^n`` state vector, so it
+        works for the hundreds of qubits the stabilizer engine reaches.
+
+        For a stabilizer state the entropy across the cut ``A = region`` vs the rest
+        ``B`` is ``S_A = rank_{GF(2)}(G_B) - |B|`` (Fattal et al., quant-ph/0406168),
+        where ``G_B`` is the ``n x 2|B|`` binary matrix of the stabilizer generators
+        restricted to the ``B`` qubits. Always an integer number of bits; 0 for a
+        product cut, up to ``min(|A|, |B|)`` for a maximally entangled one.
+        """
+        n = self.n
+        region = set(region)
+        b_qubits = [q for q in range(n) if q not in region]
+        if not b_qubits:
+            return 0.0
+        rows = []
+        for i in range(n, 2 * n):  # stabilizer generators
+            row = []
+            for q in b_qubits:
+                row.append(int(self.x[i, q]))
+                row.append(int(self.z[i, q]))
+            rows.append(row)
+        rank_b = _gf2_rank(np.array(rows, dtype=np.int8))
+        return float(rank_b - len(b_qubits))
+
+
+def _gf2_rank(M: np.ndarray) -> int:
+    """Rank of a binary matrix over GF(2) by Gaussian elimination."""
+    M = (M.copy() % 2).astype(np.int8)
+    rows, cols = M.shape
+    r = 0
+    for c in range(cols):
+        piv = next((i for i in range(r, rows) if M[i, c]), None)
+        if piv is None:
+            continue
+        M[[r, piv]] = M[[piv, r]]
+        for i in range(rows):
+            if i != r and M[i, c]:
+                M[i] ^= M[r]
+        r += 1
+        if r == rows:
+            break
+    return r
 
 
 def _g(x1, z1, x2, z2):
