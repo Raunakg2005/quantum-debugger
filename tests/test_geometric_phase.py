@@ -12,10 +12,13 @@ from quantum_debugger.algorithms import (
 
 
 class TestSpinor:
-    @pytest.mark.parametrize("n,expected", [
-        ([0, 0, 1], [1, 0]),
-        ([1, 0, 0], [1 / np.sqrt(2), 1 / np.sqrt(2)]),
-    ])
+    @pytest.mark.parametrize(
+        "n,expected",
+        [
+            ([0, 0, 1], [1, 0]),
+            ([1, 0, 0], [1 / np.sqrt(2), 1 / np.sqrt(2)]),
+        ],
+    )
     def test_known_spinors(self, n, expected):
         assert np.allclose(np.abs(bloch_spinor(n)), np.abs(expected), atol=1e-12)
 
@@ -26,7 +29,7 @@ class TestSpinor:
 class TestBerryPhase:
     def test_octant_is_quarter_pi(self):
         r = berry_phase_triangle([1, 0, 0], [0, 1, 0], [0, 0, 1])
-        assert abs(r["solid_angle"] - np.pi / 2) < 1e-9   # octant = 4pi/8
+        assert abs(r["solid_angle"] - np.pi / 2) < 1e-9  # octant = 4pi/8
         assert abs(r["phase"] - np.pi / 4) < 1e-9
         assert r["matches"]
 

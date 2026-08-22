@@ -82,8 +82,9 @@ def amplitude_damping_capacity(gamma: float) -> dict:
     def neg_ic(p):
         return -coherent_information(kraus, np.diag([1 - p, p]).astype(complex))
 
-    res = minimize_scalar(neg_ic, bounds=(1e-9, 1 - 1e-9), method="bounded",
-                          options={"xatol": 1e-10})
+    res = minimize_scalar(
+        neg_ic, bounds=(1e-9, 1 - 1e-9), method="bounded", options={"xatol": 1e-10}
+    )
     p_star = float(res.x)
     ic = -float(res.fun)
     capacity = max(0.0, ic)

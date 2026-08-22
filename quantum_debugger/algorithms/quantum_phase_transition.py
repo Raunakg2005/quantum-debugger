@@ -34,7 +34,9 @@ def ground_state_fidelity(terms_func, lam: float, dlam: float, n: int) -> float:
     return float(abs(np.vdot(psi0, psi1)))
 
 
-def fidelity_susceptibility(terms_func, lam: float, n: int, dlam: float = 1e-3) -> float:
+def fidelity_susceptibility(
+    terms_func, lam: float, n: int, dlam: float = 1e-3
+) -> float:
     """
     Fidelity susceptibility ``chi_F = 2 (1 - F) / dlambda^2`` from the ground-state
     fidelity ``F`` -- the leading (intensive) response that diverges at a quantum critical
@@ -53,6 +55,8 @@ def tfim_critical_field(n: int, fields=None) -> float:
     """
     if fields is None:
         fields = np.linspace(0.4, 1.6, 25)
-    chi = [fidelity_susceptibility(lambda h: tfim_hamiltonian(n, h, 1.0), float(h), n)
-           for h in fields]
+    chi = [
+        fidelity_susceptibility(lambda h: tfim_hamiltonian(n, h, 1.0), float(h), n)
+        for h in fields
+    ]
     return float(fields[int(np.argmax(chi))])

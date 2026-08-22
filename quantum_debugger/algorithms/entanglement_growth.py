@@ -41,7 +41,7 @@ def entanglement_growth(hamiltonian, initial_state, region, times) -> dict:
         entropies.append(DensityMatrix(state_vector=psi).entanglement_entropy(region))
     entropies = np.array(entropies)
 
-    tail = entropies[max(1, 2 * len(entropies) // 3):]
+    tail = entropies[max(1, 2 * len(entropies) // 3) :]
     return {
         "entropy": entropies,
         "initial": float(entropies[0]),

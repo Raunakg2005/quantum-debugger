@@ -24,7 +24,9 @@ def _ground_state(H):
     return vecs[:, 0].astype(complex)
 
 
-def adiabatic_evolution(h_initial, h_final, total_time: float, steps: int = None) -> dict:
+def adiabatic_evolution(
+    h_initial, h_final, total_time: float, steps: int = None
+) -> dict:
     """
     Prepare the ground state of ``h_initial``, sweep ``H(s) = (1-s) H_i + s H_f`` over
     total time ``total_time``, and return how well the result matches the ground state

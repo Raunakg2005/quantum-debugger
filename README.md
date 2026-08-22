@@ -11,26 +11,26 @@
 
 A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and quantum machine learning. From basic circuits to QML with one-line AutoML.
 
-## What's New in v0.7.0 (in development)
+## What's New in v0.9.0
 
-A large, genuinely gate-based **quantum algorithms library** (`quantum_debugger.algorithms`),
-every routine verified against its known outcome:
+Quantum **chemistry, many-body physics & advanced simulation** — every routine verified
+against a closed form or an independent computation:
 
-- **Shor's algorithm** — quantum period finding that genuinely factors (15 → 3×5, 21 → 3×7).
-- **Quantum error correction** — 3-qubit bit-flip / phase-flip codes and the 9-qubit
-  Shor code (corrects an arbitrary single-qubit error) with real stabilizer syndromes.
-- **Clifford / stabilizer simulator** — a second engine (CHP tableau) that runs
-  hundred-qubit Clifford circuits instantly.
-- **Hamiltonian simulation** (Trotter-Suzuki), **gate decomposition** (ZYZ / ABC / KAK),
-  **randomized benchmarking**, **Draper QFT adder**, a **QAOA MaxCut solver**,
-  entangled **state preparation** (GHZ / W / graph), **teleportation**, **superdense
-  coding**, **state tomography**, plus the textbook set (QFT, Grover, QPE, HHL,
-  Bernstein-Vazirani, Deutsch-Jozsa, quantum walk/counting, amplitude estimation).
-- **Advanced QML/QRL** — VQD excited states, quantum autoencoder, QCNN,
-  data-reuploading classifier, multi-class VQC, ansatz analysis, SPSA, plus Policy
-  Gradient, DQN, and Actor-Critic reinforcement learning.
+- **Fermionic systems** — Jordan-Wigner transform, the Fermi-Hubbard model, and the
+  Kitaev topological chain (Majorana edge modes).
+- **Ground- & excited-state solvers** — chemistry via VQE with Pauli decomposition,
+  imaginary-time cooling, Krylov/Lanczos, and adiabatic evolution.
+- **Finite-temperature physics** — Gibbs states and thermodynamic quantities.
+- **Quantum dynamics** — Trotter error scaling, the Loschmidt echo & dynamical quantum
+  phase transitions, out-of-time-order correlators (scrambling), and entanglement growth.
+- **Quantum chaos** — level-spacing statistics (GOE vs Poisson).
+- **Metrology** — spin squeezing and mixed-state quantum Fisher information.
+- **Modern measurement & tensor-network toolkit** — classical shadows, Schmidt
+  decomposition, and the area law.
 
-See [CHANGELOG.md](CHANGELOG.md) for the full list.
+(Open systems, noise, and fault tolerance shipped in v0.8.0.)
+
+See [CHANGELOG.md](CHANGELOG.md) for the full, itemized list.
 
 ## What's New in v0.7.0
 
@@ -46,7 +46,7 @@ A **second simulation engine** plus a large, verified quantum-algorithms library
 - **VQE** ground-state solver converges to machine precision on larger chains
   (BFGS optimizer).
 
-### In development (0.8.0-dev)
+### v0.8.0 — density-matrix engine & open systems
 - **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
   channels, Lindblad master-equation evolution, and channel metrics (process /
   average gate fidelity, Choi matrix, CPTP checks).
@@ -415,5 +415,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0-dev (in development)  
-**Last Updated:** July 2026
+**Version:** 0.9.0 (latest on PyPI) · 0.8.0, 0.7.1 (previous)  
+**Last Updated:** August 2026

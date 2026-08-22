@@ -30,7 +30,9 @@ class TestAnalyticTwoQubit:
     def test_reaches_one_bit_at_quarter_period(self):
         # At g t = pi/4, sin^2 = 1/2 -> maximal entanglement (1 bit).
         H = hamiltonian_matrix([(1.0, "XX")], 2)
-        r = entanglement_growth(H, np.array([1, 0, 0, 0], dtype=complex), [0], [np.pi / 4])
+        r = entanglement_growth(
+            H, np.array([1, 0, 0, 0], dtype=complex), [0], [np.pi / 4]
+        )
         assert abs(r["entropy"][0] - 1.0) < 1e-9
 
 
@@ -49,7 +51,7 @@ class TestQuenchGrowth:
         psi0 = np.zeros(2**n, dtype=complex)
         psi0[0] = 1
         r = entanglement_growth(H, psi0, [0, 1, 2], np.linspace(0, 10, 60))
-        assert r["saturation"] > 0.5              # grew substantially
+        assert r["saturation"] > 0.5  # grew substantially
         assert r["saturation"] <= r["max_entropy"] + 1e-9  # bounded by volume law
 
     def test_never_exceeds_bound(self):

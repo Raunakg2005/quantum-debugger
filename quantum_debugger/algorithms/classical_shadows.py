@@ -88,7 +88,9 @@ def estimate_observable(shadows: dict, pauli_string: str) -> float:
     return float(np.mean(ests))
 
 
-def shadow_estimates(state_vector, observables, shots: int = 2000, seed: int = 0) -> dict:
+def shadow_estimates(
+    state_vector, observables, shots: int = 2000, seed: int = 0
+) -> dict:
     """
     Estimate several Pauli ``observables`` of ``state_vector`` from ONE collection of
     ``shots`` random measurements.
@@ -103,7 +105,9 @@ def shadow_estimates(state_vector, observables, shots: int = 2000, seed: int = 0
     estimates, true_values = {}, {}
     for obs in observables:
         estimates[obs] = estimate_observable(shadows, obs)
-        true_values[obs] = float(np.real(state.conj() @ _observable_matrix(obs) @ state))
+        true_values[obs] = float(
+            np.real(state.conj() @ _observable_matrix(obs) @ state)
+        )
 
     max_error = max(abs(estimates[o] - true_values[o]) for o in observables)
     return {"estimates": estimates, "true_values": true_values, "max_error": max_error}

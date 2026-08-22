@@ -27,9 +27,9 @@ class TestBestSqueezing:
     def test_reports_sql_and_gain(self):
         r = best_squeezing(6)
         assert abs(r["sql"] - 1.0) < 1e-9
-        assert r["metrological_gain"] > 1.0        # beats the SQL
-        assert r["squeezing_dB"] < 0                # negative dB = squeezed
-        assert 0 < r["best_chi_t"]                  # squeezing needs finite twisting
+        assert r["metrological_gain"] > 1.0  # beats the SQL
+        assert r["squeezing_dB"] < 0  # negative dB = squeezed
+        assert 0 < r["best_chi_t"]  # squeezing needs finite twisting
 
     def test_gain_matches_xi2(self):
         r = best_squeezing(6)

@@ -46,7 +46,9 @@ class TestDimer:
         assert abs(r["ground_energy"] - r["heisenberg_limit"]) < 0.02
 
     def test_energy_increases_with_repulsion(self):
-        energies = [hubbard_dimer_energy(1.0, u)["ground_energy"] for u in (0, 2, 5, 10)]
+        energies = [
+            hubbard_dimer_energy(1.0, u)["ground_energy"] for u in (0, 2, 5, 10)
+        ]
         assert all(b > a for a, b in zip(energies, energies[1:]))
 
 

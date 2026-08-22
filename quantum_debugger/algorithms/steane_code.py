@@ -267,10 +267,20 @@ def steane_transversal_cnot(control=(1.0, 0.0), target=(1.0, 0.0)) -> dict:
     def enc2(i, j):  # block A = qubits 0..6, block B = qubits 7..13 (little-endian)
         return np.kron(basis[j], basis[i])
 
-    vec = a * c * enc2(0, 0) + a * d * enc2(0, 1) + b * c * enc2(1, 0) + b * d * enc2(1, 1)
+    vec = (
+        a * c * enc2(0, 0)
+        + a * d * enc2(0, 1)
+        + b * c * enc2(1, 0)
+        + b * d * enc2(1, 1)
+    )
     for q in range(_N):
         vec = apply_gate_tensor(np, vec, GateLibrary.CNOT, [q, _N + q], 2 * _N)
 
     # Logical CNOT: (i, j) -> (i, j XOR i).
-    ideal = a * c * enc2(0, 0) + a * d * enc2(0, 1) + b * c * enc2(1, 1) + b * d * enc2(1, 0)
+    ideal = (
+        a * c * enc2(0, 0)
+        + a * d * enc2(0, 1)
+        + b * c * enc2(1, 1)
+        + b * d * enc2(1, 0)
+    )
     return {"fidelity": float(abs(np.vdot(ideal, vec)) ** 2)}

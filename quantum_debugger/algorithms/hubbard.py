@@ -52,7 +52,11 @@ def fermi_hubbard_hamiltonian(
 
 
 def hubbard_ground_energy(
-    n_sites: int, t: float = 1.0, u: float = 0.0, n_particles=None, periodic: bool = False
+    n_sites: int,
+    t: float = 1.0,
+    u: float = 0.0,
+    n_particles=None,
+    periodic: bool = False,
 ) -> float:
     """
     Ground-state energy of the Fermi-Hubbard model, optionally within a fixed
@@ -64,7 +68,9 @@ def hubbard_ground_energy(
     if n_particles is None:
         return float(np.linalg.eigvalsh(H).real.min())
     N = jw_total_number(2 * n_sites)
-    sector = [k for k in range(H.shape[0]) if abs(np.real(N[k, k]) - n_particles) < 1e-9]
+    sector = [
+        k for k in range(H.shape[0]) if abs(np.real(N[k, k]) - n_particles) < 1e-9
+    ]
     return float(np.linalg.eigvalsh(H[np.ix_(sector, sector)]).real.min())
 
 

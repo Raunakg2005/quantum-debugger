@@ -30,7 +30,9 @@ def _thresholded_gevp(Hk, S, tol=1e-10):
     return np.sort(np.linalg.eigvalsh(projected).real)
 
 
-def krylov_spectrum(hamiltonian, dim: int, initial_state=None, seed: int = 0) -> np.ndarray:
+def krylov_spectrum(
+    hamiltonian, dim: int, initial_state=None, seed: int = 0
+) -> np.ndarray:
     """
     Ritz values from a ``dim``-dimensional Krylov subspace built from ``initial_state``
     (default random). Returns the sorted real eigenvalues of the projected problem --
@@ -56,7 +58,9 @@ def krylov_spectrum(hamiltonian, dim: int, initial_state=None, seed: int = 0) ->
     return _thresholded_gevp(Hk, S)
 
 
-def krylov_ground_energy(hamiltonian, dim: int, initial_state=None, seed: int = 0) -> dict:
+def krylov_ground_energy(
+    hamiltonian, dim: int, initial_state=None, seed: int = 0
+) -> dict:
     """
     Estimate the ground-state energy of ``hamiltonian`` from a ``dim``-vector Krylov
     subspace.

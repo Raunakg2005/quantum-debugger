@@ -61,8 +61,13 @@ def otoc(hamiltonian, w_op, v_op, times) -> dict:
     return {"F": F, "C": C, "identity_ok": identity_ok}
 
 
-def scrambling_time(hamiltonian, n_qubits: int, t_max: float = 8.0, points: int = 100,
-                    threshold: float = 1.0) -> dict:
+def scrambling_time(
+    hamiltonian,
+    n_qubits: int,
+    t_max: float = 8.0,
+    points: int = 100,
+    threshold: float = 1.0,
+) -> dict:
     """
     Measure how a local ``X`` perturbation on qubit 0 scrambles to the far edge
     (qubit ``n-1``): compute the OTOC of ``X_0`` with ``X_{n-1}`` and find the first

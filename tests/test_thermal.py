@@ -53,7 +53,7 @@ class TestThermodynamics:
         H = fermi_hubbard_hamiltonian(2, 1.0, 2.0)
         d = H.shape[0]
         hot = thermal_properties(H, 1e-6)["entropy"]
-        assert abs(hot - np.log(d)) < 1e-3          # max entropy = ln(d)
+        assert abs(hot - np.log(d)) < 1e-3  # max entropy = ln(d)
         assert thermal_properties(H, 100)["entropy"] < 1e-3  # -> 0 at T=0
 
     def test_heat_capacity_nonnegative(self):

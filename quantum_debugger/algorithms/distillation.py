@@ -111,7 +111,12 @@ def dejmps_recurrence(lams) -> tuple:
     """
     l1, l2, l3, l4 = lams
     N = (l1 + l4) ** 2 + (l2 + l3) ** 2
-    return ((l1**2 + l4**2) / N, 2 * l1 * l4 / N, (l2**2 + l3**2) / N, 2 * l2 * l3 / N), N
+    return (
+        (l1**2 + l4**2) / N,
+        2 * l1 * l4 / N,
+        (l2**2 + l3**2) / N,
+        2 * l2 * l3 / N,
+    ), N
 
 
 def dejmps_distill(lams) -> dict:
@@ -147,7 +152,8 @@ def dejmps_distill(lams) -> dict:
     pair = DensityMatrix(rho=kept / p_success).partial_trace([0, 1])
 
     coeffs = tuple(
-        float(np.real(b.conj() @ pair.rho @ b)) for b in (_PHI_P, _PHI_M, _PSI_P, _PSI_M)
+        float(np.real(b.conj() @ pair.rho @ b))
+        for b in (_PHI_P, _PHI_M, _PSI_P, _PSI_M)
     )
     analytic, N = dejmps_recurrence(lams)
     return {

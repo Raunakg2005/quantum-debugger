@@ -60,9 +60,7 @@ def chsh_maximum_optimized(rho: np.ndarray, restarts: int = 12, seed: int = 0) -
     T = correlation_matrix(rho)
 
     def nvec(th, ph):
-        return np.array(
-            [np.sin(th) * np.cos(ph), np.sin(th) * np.sin(ph), np.cos(th)]
-        )
+        return np.array([np.sin(th) * np.cos(ph), np.sin(th) * np.sin(ph), np.cos(th)])
 
     def neg_s(x):
         a, ap = nvec(*x[0:2]), nvec(*x[2:4])

@@ -362,7 +362,9 @@ def phase_damping(gamma: float):
 # --- T1 / T2 relaxation -----------------------------------------------------
 
 
-def relaxation_times(gamma1: float, gamma_phi: float = 0.0, probe_time: float = 1.0) -> dict:
+def relaxation_times(
+    gamma1: float, gamma_phi: float = 0.0, probe_time: float = 1.0
+) -> dict:
     """
     Extract the relaxation time ``T1`` and coherence time ``T2`` of a qubit evolving
     under the Lindblad equation with amplitude damping (rate ``gamma1 > 0``, jump
@@ -415,7 +417,9 @@ def relaxation_times(gamma1: float, gamma_phi: float = 0.0, probe_time: float = 
 # --- quantum discord --------------------------------------------------------
 
 
-def quantum_discord(dm: "DensityMatrix", measured_qubit: int = 1, grid: int = 6) -> float:
+def quantum_discord(
+    dm: "DensityMatrix", measured_qubit: int = 1, grid: int = 6
+) -> float:
     """
     Quantum discord ``D_B(rho) = I(A:B) - J_B(rho)`` in bits: the part of the mutual
     information that NO projective measurement on qubit ``measured_qubit`` (side B)
@@ -484,7 +488,11 @@ def process_fidelity(kraus_ops, target=None) -> float:
     """
     K0 = np.asarray(kraus_ops[0], dtype=complex)
     d = K0.shape[0]
-    U = np.eye(d, dtype=complex) if target is None else np.asarray(target, dtype=complex)
+    U = (
+        np.eye(d, dtype=complex)
+        if target is None
+        else np.asarray(target, dtype=complex)
+    )
     Ud = U.conj().T
     return float(
         sum(abs(np.trace(Ud @ np.asarray(K, dtype=complex))) ** 2 for K in kraus_ops)
@@ -535,8 +543,10 @@ def is_cptp(kraus_ops, atol: float = 1e-9) -> bool:
     """
     K0 = np.asarray(kraus_ops[0], dtype=complex)
     d = K0.shape[0]
-    tp = sum(np.asarray(K, dtype=complex).conj().T @ np.asarray(K, dtype=complex)
-             for K in kraus_ops)
+    tp = sum(
+        np.asarray(K, dtype=complex).conj().T @ np.asarray(K, dtype=complex)
+        for K in kraus_ops
+    )
     if not np.allclose(tp, np.eye(d, dtype=complex), atol=atol):
         return False
     eigs = np.linalg.eigvalsh(choi_matrix(kraus_ops)).real

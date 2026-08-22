@@ -28,13 +28,13 @@ class TestTopologicalPhase:
     def test_degenerate_ground_in_topological_phase(self):
         r = kitaev_ground_degeneracy(6, mu=0.0, t=1.0, delta=1.0)
         assert r["topological"]
-        assert r["splitting"] < 1e-9          # essentially exact degeneracy
+        assert r["splitting"] < 1e-9  # essentially exact degeneracy
         assert r["nearly_degenerate"]
 
     def test_unique_ground_in_trivial_phase(self):
         r = kitaev_ground_degeneracy(6, mu=3.0, t=1.0, delta=1.0)
         assert not r["topological"]
-        assert r["splitting"] > 0.1           # large gap, unique ground
+        assert r["splitting"] > 0.1  # large gap, unique ground
         assert not r["nearly_degenerate"]
 
     def test_splitting_decays_exponentially_with_length(self):
@@ -44,7 +44,7 @@ class TestTopologicalPhase:
             for n in (4, 5, 6, 7, 8)
         ]
         ratios = [b / a for a, b in zip(splittings, splittings[1:])]
-        assert all(r < 0.7 for r in ratios)   # each step shrinks it markedly
+        assert all(r < 0.7 for r in ratios)  # each step shrinks it markedly
         assert splittings[-1] < splittings[0]
 
     def test_bulk_gap_stays_open_in_topological_phase(self):

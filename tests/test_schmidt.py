@@ -15,7 +15,9 @@ from quantum_debugger.density_matrix import DensityMatrix
 
 class TestSchmidtDecomposition:
     def test_bell_two_equal_values(self):
-        d = schmidt_decomposition(np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2), [0])
+        d = schmidt_decomposition(
+            np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2), [0]
+        )
         assert np.allclose(d["schmidt_values"], [1 / np.sqrt(2)] * 2, atol=1e-9)
         assert d["schmidt_rank"] == 2
         assert abs(d["entropy"] - 1.0) < 1e-9

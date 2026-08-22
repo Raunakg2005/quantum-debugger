@@ -104,8 +104,10 @@ def mbqc_rotation(psi_in, alpha: float, seed: int = 0, correct: bool = True) -> 
     if abs(phase) > 1e-12:
         output = output * np.conj(phase) / abs(phase)
 
-    fidelity = float(abs(np.vdot(ideal / np.linalg.norm(ideal),
-                                 output / np.linalg.norm(output))) ** 2)
+    fidelity = float(
+        abs(np.vdot(ideal / np.linalg.norm(ideal), output / np.linalg.norm(output)))
+        ** 2
+    )
     return {
         "output": output,
         "outcome": outcome,

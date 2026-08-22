@@ -196,7 +196,7 @@ class TestChannelMetrics:
 
 
 class TestLindblad:
-    _SM = np.array([[0, 1], [0, 0]], dtype=complex)   # sigma_- : |1> -> |0>
+    _SM = np.array([[0, 1], [0, 0]], dtype=complex)  # sigma_- : |1> -> |0>
     _SZ = np.array([[1, 0], [0, -1]], dtype=complex)
     _H0 = np.zeros((2, 2), dtype=complex)
 
@@ -221,7 +221,9 @@ class TestLindblad:
         # No collapse ops -> closed-system Rabi oscillation under H = omega X / 2.
         omega, t = 1.0, 1.1
         dm = DensityMatrix(state_vector=np.array([1, 0], dtype=complex))
-        dm.evolve_lindblad(0.5 * omega * np.array([[0, 1], [1, 0]], dtype=complex), [], t)
+        dm.evolve_lindblad(
+            0.5 * omega * np.array([[0, 1], [1, 0]], dtype=complex), [], t
+        )
         assert abs(dm.rho[1, 1].real - np.sin(omega * t / 2) ** 2) < 1e-9
 
     def test_zero_time_is_identity(self):
@@ -267,8 +269,8 @@ class TestChoiCPTP:
         from quantum_debugger.density_matrix import kraus_rank
 
         X = np.array([[0, 1], [1, 0]], dtype=complex)
-        assert kraus_rank([X]) == 1                 # unitary -> rank 1
-        assert kraus_rank(depolarizing(0.3)) == 4   # full depolarizing -> rank 4
+        assert kraus_rank([X]) == 1  # unitary -> rank 1
+        assert kraus_rank(depolarizing(0.3)) == 4  # full depolarizing -> rank 4
         assert kraus_rank(amplitude_damping(0.2)) == 2
 
 
@@ -378,7 +380,9 @@ class TestQuantumDiscord:
     def test_bell_state_is_one_bit(self):
         from quantum_debugger.density_matrix import quantum_discord
 
-        dm = DensityMatrix(state_vector=np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2))
+        dm = DensityMatrix(
+            state_vector=np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
+        )
         assert abs(quantum_discord(dm) - 1.0) < 1e-6
 
     def test_classical_state_is_zero(self):
@@ -427,7 +431,9 @@ class TestQuantumDiscord:
 
 
 class TestRelaxationTimes:
-    @pytest.mark.parametrize("g1,gphi", [(0.5, 0.0), (0.5, 0.3), (1.0, 0.8), (0.2, 2.0)])
+    @pytest.mark.parametrize(
+        "g1,gphi", [(0.5, 0.0), (0.5, 0.3), (1.0, 0.8), (0.2, 2.0)]
+    )
     def test_identity_holds(self, g1, gphi):
         from quantum_debugger.density_matrix import relaxation_times
 
@@ -514,13 +520,20 @@ class TestStinespringDilation:
     @pytest.mark.parametrize("channel", ["depol", "ad", "pd", "bf", "phaseflip"])
     def test_dilation_reproduces_channel(self, channel):
         from quantum_debugger.density_matrix import (
-            apply_channel_dilated, depolarizing, amplitude_damping,
-            phase_damping, bit_flip, phase_flip,
+            apply_channel_dilated,
+            depolarizing,
+            amplitude_damping,
+            phase_damping,
+            bit_flip,
+            phase_flip,
         )
 
         kr = {
-            "depol": depolarizing(0.3), "ad": amplitude_damping(0.4),
-            "pd": phase_damping(0.5), "bf": bit_flip(0.25), "phaseflip": phase_flip(0.15),
+            "depol": depolarizing(0.3),
+            "ad": amplitude_damping(0.4),
+            "pd": phase_damping(0.5),
+            "bf": bit_flip(0.25),
+            "phaseflip": phase_flip(0.15),
         }[channel]
         rho = np.array([[0.7, 0.3 - 0.2j], [0.3 + 0.2j, 0.3]], dtype=complex)
         direct = DensityMatrix(rho=rho.copy())
@@ -530,11 +543,17 @@ class TestStinespringDilation:
     @pytest.mark.parametrize("channel", ["depol", "ad", "pd"])
     def test_isometry_is_trace_preserving(self, channel):
         from quantum_debugger.density_matrix import (
-            stinespring_isometry, depolarizing, amplitude_damping, phase_damping,
+            stinespring_isometry,
+            depolarizing,
+            amplitude_damping,
+            phase_damping,
         )
 
-        kr = {"depol": depolarizing(0.3), "ad": amplitude_damping(0.4),
-              "pd": phase_damping(0.5)}[channel]
+        kr = {
+            "depol": depolarizing(0.3),
+            "ad": amplitude_damping(0.4),
+            "pd": phase_damping(0.5),
+        }[channel]
         V = stinespring_isometry(kr)
         assert np.allclose(V.conj().T @ V, np.eye(2), atol=1e-12)
 
@@ -563,17 +582,26 @@ class TestProcessTomography:
             dm = DensityMatrix(rho=np.array(rho, dtype=complex))
             dm.apply_channel(kraus, [0])
             return dm.rho
+
         return f
 
     @pytest.mark.parametrize("channel", ["depol", "ad", "pd", "bf"])
     def test_recovers_true_choi(self, channel):
         from quantum_debugger.density_matrix import (
-            process_tomography, choi_matrix, depolarizing,
-            amplitude_damping, phase_damping, bit_flip,
+            process_tomography,
+            choi_matrix,
+            depolarizing,
+            amplitude_damping,
+            phase_damping,
+            bit_flip,
         )
 
-        kr = {"depol": depolarizing(0.3), "ad": amplitude_damping(0.4),
-              "pd": phase_damping(0.5), "bf": bit_flip(0.2)}[channel]
+        kr = {
+            "depol": depolarizing(0.3),
+            "ad": amplitude_damping(0.4),
+            "pd": phase_damping(0.5),
+            "bf": bit_flip(0.2),
+        }[channel]
         J = process_tomography(self._apply(kr))
         assert np.allclose(J, choi_matrix(kr), atol=1e-9)
 
@@ -584,7 +612,10 @@ class TestProcessTomography:
         assert np.allclose(J, choi_matrix([np.eye(2, dtype=complex)]), atol=1e-9)
 
     def test_reconstructed_choi_is_cptp(self):
-        from quantum_debugger.density_matrix import process_tomography, amplitude_damping
+        from quantum_debugger.density_matrix import (
+            process_tomography,
+            amplitude_damping,
+        )
 
         J = process_tomography(self._apply(amplitude_damping(0.3)))
         # CP: positive semidefinite; TP: partial trace over output = I.

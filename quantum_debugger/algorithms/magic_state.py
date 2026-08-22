@@ -55,7 +55,9 @@ def inject_t_gate(alpha=1.0, beta=0.0, seed=None, force_outcome=None) -> dict:
 
     # Qubit 0 = data, qubit 1 = magic (little-endian).
     state = QuantumState(2)
-    state.state_vector = np.kron(t_magic_state(), np.array([alpha, beta], dtype=complex))
+    state.state_vector = np.kron(
+        t_magic_state(), np.array([alpha, beta], dtype=complex)
+    )
 
     state.apply_gate(GateLibrary.CNOT, [0, 1])  # control data, target magic
 
