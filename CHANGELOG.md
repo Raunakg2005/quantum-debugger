@@ -5,6 +5,187 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0]
+
+Theme: quantum chemistry, many-body physics & advanced simulation. Fermionic systems
+(Jordan-Wigner, Fermi-Hubbard, the Kitaev topological chain), ground- and
+excited-state solvers (chemistry-via-VQE with Pauli decomposition, imaginary-time
+cooling, Krylov/Lanczos, adiabatic evolution), finite-temperature physics (Gibbs
+states & thermodynamics), quantum dynamics (Trotter error scaling, Loschmidt echo &
+DQPTs, out-of-time-order correlators, entanglement growth), quantum chaos (level-
+spacing statistics), metrology (spin squeezing, mixed-state QFI), and the modern
+measurement/tensor-network toolkit (classical shadows, Schmidt decomposition & the
+area law). Every routine verified against a closed form or an independent
+computation. (Open systems, noise, and fault tolerance landed in 0.8.0.)
+
+### Added
+- **SSH topological insulator** (`algorithms.ssh_hamiltonian`) — the Su-Schrieffer-Heeger
+  chain with alternating hoppings `v, w`, the textbook 1D topological insulator; the
+  single-particle Hamiltonian is exactly diagonalized and verified to have a
+  chiral-symmetric spectrum.
+- **SSH winding number** (`algorithms.ssh_winding_number`) — the bulk `Z` invariant of the
+  chiral class BDI: `1` (topological) when `|w| > |v|`, `0` (trivial) otherwise.
+- **SSH edge modes** (`algorithms.ssh_zero_modes`, `ssh_edge_polarization`) — the
+  bulk-boundary correspondence made concrete: `2` protected zero-energy modes localized on
+  the ends in the topological phase, `0` in the trivial phase, verified against the exact
+  spectrum and eigenvectors.
+- **Ground-state fidelity** (`algorithms.ground_state_fidelity`) — the overlap
+  `|<psi(lambda)|psi(lambda+dlambda)>|` between neighbouring ground states, near 1 inside a
+  phase and dipping sharply at a quantum phase transition.
+- **Fidelity susceptibility** (`algorithms.fidelity_susceptibility`, `tfim_critical_field`)
+  — the intensive response `chi_F = 2(1-F)/dlambda^2` that peaks at a critical point;
+  verified to locate the transverse-field Ising transition, its finite-size peak drifting
+  toward the exact `h_c = 1` as the system grows.
+- **Connected correlation functions** (`algorithms.connected_correlation`) —
+  `<O_i O_j> - <O_i><O_j>`, the probe of correlations beyond mean field; verified `1` on a
+  GHZ state and `0` on a product state.
+- **Correlation length** (`algorithms.correlation_length`) — `xi` from the exponential
+  decay of the connected correlator; verified `0` for a product state and growing toward
+  criticality for the TFIM ground state.
+- **Static structure factor** (`algorithms.structure_factor`) — `S(k)` from the spatial
+  correlations, the Fourier probe of order; verified to Bragg-peak at `k=0` for a
+  ferromagnet and `k=pi` for an antiferromagnet.
+- **Entanglement negativity** (`algorithms.negativity`, `logarithmic_negativity`) — the
+  computable mixed-state entanglement measure from the partial transpose; verified
+  `E_N = 1` for a Bell pair, `0` for a product state.
+- **Peres-Horodecki (PPT) criterion** (`algorithms.partial_transpose`, `is_entangled_ppt`)
+  — the partial transpose and its negative-eigenvalue entanglement witness; verified to
+  reproduce the Werner-state entanglement threshold `p > 1/3`.
+- **Schmidt decomposition & the area law** (`algorithms.schmidt_decomposition`,
+  `truncation_fidelity`, `area_law_compressibility`) — the tensor-network bridge:
+  write any bipartite pure state as `sum lambda_i |i>_A|i>_B` via SVD. Verified that a
+  Bell pair gives two equal Schmidt values (1 bit), a product state rank 1, the values
+  are normalized and descending, and the Schmidt entropy matches the density-matrix
+  entanglement entropy exactly. The headline result: a gapped 1D ground state (TFIM)
+  keeps > 99% of its weight in a handful of Schmidt values (area law → compressible to
+  a low-bond-dimension MPS), while a random volume-law state has a flat spectrum that
+  refuses to compress — exactly why matrix product states work.
+- **Classical shadows** (`algorithms.collect_shadows`, `estimate_observable`,
+  `shadow_estimates`) — estimate many observables from few measurements
+  (Huang-Kueng-Preskill): measure each qubit in a random Pauli basis, build the
+  unbiased single-shot snapshot `prod_q (3|b_q><b_q| - I)`, and read off `<O> =
+  Tr(O rho_hat)` for *any* observable from the *same* dataset. Verified: Bell-pair
+  correlators (`<XX>=1`, `<YY>=-1`, `<ZZ>=1`, `<ZI>=0`) all recovered from one
+  collection, the error shrinks with shot count, `<I...I>=1` exactly per snapshot, and
+  a shadow set is reusable across observables — the cost set by observable locality,
+  not Hilbert-space dimension.
+- **Spin squeezing (one-axis twisting)** (`algorithms.one_axis_twisting`,
+  `best_squeezing`) — metrologically useful entanglement that beats the standard
+  quantum limit. Evolving a coherent spin state under `H = chi J_z^2` (Kitagawa-Ueda)
+  redistributes the transverse noise; the Wineland parameter `xi^2 = N min Var(J_perp)
+  / |<J>|^2` (minimum variance computed in closed form from the 2x2 covariance matrix)
+  drops below 1. Verified: `xi^2 = 1` exactly at zero twisting (the SQL), squeezing
+  reaches -2.9 to -4.5 dB, improves with atom number, and `1/xi^2` gives the
+  phase-sensitivity gain — the interferometric payoff of the entanglement.
+- **Kitaev chain (topological superconductor)** (`algorithms.kitaev_chain_hamiltonian`,
+  `kitaev_ground_degeneracy`) — the simplest model with Majorana edge modes, built on
+  the Jordan-Wigner operators: `-mu sum n_j - t sum hopping + Delta sum pairing`.
+  Verified the topological hallmarks — for `|mu| < 2t` the ground state is doubly
+  degenerate (splitting < 1e-9 at `mu = 0`) with the bulk gap staying open, while for
+  `|mu| > 2t` it is unique and gapped; the topological flag flips exactly at the
+  `|mu| = 2t` transition; fermion parity is conserved; and the ground-state splitting
+  decays *exponentially* with chain length (halving per site) — the localization of
+  the two Majorana modes at the chain ends, the nonlocal storage behind topological
+  qubits.
+- **Level-spacing statistics (quantum chaos)** (`algorithms.level_spacing_ratio`,
+  `goe_reference`, `poisson_reference`, `classify_spectrum`) — the symmetry-free
+  Oganesyan-Huse gap-ratio `<r>` that distinguishes integrable from chaotic spectra
+  without unfolding. Validated against both defining ensembles: Gaussian Orthogonal
+  Ensemble spectra give `<r> ~ 0.531` (Wigner-Dyson level repulsion) and uncorrelated
+  Poisson spectra give `~ 0.386`, with a rigid equally-spaced spectrum giving exactly
+  1. `classify_spectrum` labels a spectrum against these universal values.
+  Honestly documented: physical Hamiltonians only show the clean values within a
+  single symmetry sector (mixed sectors bias toward Poisson).
+- **Entanglement growth after a quench** (`algorithms.entanglement_growth`) — how
+  isolated systems thermalize: start in a product state, evolve under an entangling
+  Hamiltonian, and watch a subregion's entanglement entropy grow and saturate near
+  the volume-law value. Verified against the analytic two-qubit case (an `X x X`
+  quench of `|00>` gives exactly the binary entropy `h(sin^2(gt))`, reaching 1 bit at
+  a quarter period), and for larger TFIM/Heisenberg quenches the entropy starts at 0,
+  grows, saturates below its `min(|A|, n-|A|)` bound, and stays static for an energy
+  eigenstate.
+- **Out-of-time-order correlators (scrambling)** (`algorithms.otoc`,
+  `scrambling_time`) — the butterfly effect of quantum chaos: the growth of
+  `C(t) = <|[W(t), V]|^2>` as a local operator spreads across the lattice. Verified
+  the exact structure — `C(0) = 0` for spatially-separated operators (they commute),
+  `C(0) = 4` for anticommuting same-site operators, `C(t) >= 0` always, and the exact
+  identity `C(t) = 2(1 - Re F(t))` with the OTOC `F(0) = 1`. `scrambling_time` tracks
+  a perturbation from one edge to the other and finds when it arrives — the far qubit
+  lagging the near one, the operator light cone made quantitative.
+- **Loschmidt echo & dynamical quantum phase transitions**
+  (`algorithms.loschmidt_echo`, `rate_function`, `quench_dynamics`) — quench a state
+  under a Hamiltonian and track `L(t) = |<psi_0|e^{-iHt}|psi_0>|^2` and its rate
+  function `-ln L / N`, whose non-analytic cusps mark DQPTs. Verified: an eigenstate
+  never dephases (`L = 1`), a two-level superposition reproduces the analytic
+  `1 - sin^2(2θ) sin^2(Δt/2)` exactly, the rate function peaks precisely where the
+  echo dips, and at `θ = π/4` the echo hits zero — a genuine dynamical phase
+  transition where the evolved state becomes orthogonal to the start.
+- **Krylov subspace diagonalization (Lanczos)** (`algorithms.krylov_spectrum`,
+  `krylov_ground_energy`) — build a small subspace `span{|psi>, H|psi>, ...,
+  H^{m-1}|psi>}` and diagonalize `H` inside it. The Ritz values converge to the exact
+  extreme eigenvalues — ground energy to machine precision by `m = 8` on TFIM
+  (Fermi-Hubbard, Heisenberg too), and, unlike imaginary-time evolution, the lowest
+  Ritz values recover the low-lying *excited* states as well. Solved through a
+  thresholded generalized eigenproblem for stability against the near-parallel Krylov
+  vectors; Ritz values are provably bracketed by the exact spectrum.
+- **Adiabatic quantum computation** (`algorithms.adiabatic_evolution`) — the
+  alternative computing paradigm: start in the easy ground state of a driver
+  Hamiltonian and slowly interpolate `H(s) = (1-s)H_i + s H_f` to the problem
+  Hamiltonian, ending in *its* ground state. Verified across both regimes of the
+  adiabatic theorem: a slow sweep (T=50) reaches the target ground state at fidelity
+  > 0.99, a fast one (T=0.5) is left excited at < 0.5 (diabatic transition), fidelity
+  is monotone in the total time, and the minimum spectral gap along the path is
+  tracked — the quantity that sets how slow "slow enough" must be.
+- **Trotter error scaling** (`algorithms.trotter_unitary`,
+  `trotter_error_scaling`) — assemble the full Trotterized evolution operator and
+  measure how its error `|| U_trotter - exp(-iHt) ||` shrinks with the step count.
+  Verified against the theoretical rates: the first-order formula converges as
+  `~ t^2/n` (measured log-log slope -1.03) and the symmetric second-order Suzuki
+  formula as `~ t^3/n^2` (slope -2.02) on TFIM and Heisenberg Hamiltonians, with
+  second order strictly beating first at fixed step count — quantifying the accuracy
+  of Hamiltonian-simulation circuits.
+- **Imaginary-time evolution** (`algorithms.imaginary_time_evolution`) — cool any
+  state to a Hamiltonian's ground state via normalized `e^{-tau H}`, the engine
+  behind QITE and projector Monte Carlo — no optimizer, no local minima. Verified to
+  converge to the exact ground energy (Fermi-Hubbard, TFIM, Heisenberg) with the
+  energy decreasing monotonically and the converged state a true ground eigenstate.
+  Honestly bounded: because the ground component decays slowest, even a start made
+  orthogonal to the ground state still cools *to* it (its ~1e-16 residual overlap is
+  re-amplified) — so plain ITE targets the ground state, never an excited level.
+- **Gibbs states & quantum thermodynamics** (`algorithms.gibbs_state`,
+  `partition_function`, `thermal_properties`) — finite-temperature physics of any
+  Hamiltonian: `rho(beta) = e^{-beta H}/Z` and its thermodynamic potentials. Verified
+  the full set of identities — `beta -> 0` gives the maximally mixed `I/d` (entropy
+  `ln d`), `beta -> infinity` projects onto the ground state (entropy 0), the
+  Helmholtz free energy satisfies `F = -ln Z / beta = E - S/beta` exactly, entropy is
+  monotone in temperature, heat capacity is non-negative, and a single spin
+  reproduces the analytic `<H> = -tanh(beta)`, `Z = 2 cosh(beta)`. Applied to the
+  Fermi-Hubbard Hamiltonian, this gives its thermal state directly.
+- **Pauli decomposition + chemistry-via-VQE**
+  (`algorithms.pauli_decompose`) — decompose any Hermitian matrix into weighted
+  Pauli strings (`c_P = Tr(P H)/2^n`), the step that turns a dense molecular or
+  Fermi-Hubbard Hamiltonian into something a gate-based algorithm can run. Verified
+  to round-trip random Hermitian operators exactly and to preserve the full
+  spectrum; feeding the decomposed Fermi-Hubbard dimer (and a hopping chain) to the
+  existing VQE solver recovers the exact ground energy to ~1e-11 — the complete
+  fermion → qubit → variational-ground-state pipeline.
+- **Fermi-Hubbard model** (`algorithms.fermi_hubbard_hamiltonian`,
+  `hubbard_ground_energy`, `hubbard_dimer_energy`) — interacting electrons on a
+  lattice, built on the Jordan-Wigner operators: hopping `t` vs on-site repulsion
+  `U`, two spin-orbitals per site. Verified: the Hamiltonian conserves total and
+  per-spin particle number, and the exactly-solvable half-filled two-site dimer
+  reproduces the analytic ground energy `(U - sqrt(U^2 + 16t^2))/2` at every `U`,
+  interpolating from the non-interacting `-2t` (`U = 0`) to the Heisenberg
+  antiferromagnet `-4t^2/U` (large `U`) — the Mott physics in miniature.
+- **Jordan-Wigner transformation** (`algorithms.jw_annihilation`, `jw_creation`,
+  `jw_number`, `jw_total_number`, `hopping_hamiltonian`, `anticommutation_error`) —
+  the bridge from fermions to qubits that makes quantum chemistry simulable. Mode
+  `j` maps to `(prod_{k<j} Z_k) sigma_j^-`; verified that the operators satisfy the
+  fermionic algebra `{a_i, a_j} = 0`, `{a_i, a_j^dagger} = delta_ij` exactly, that
+  number operators are {0,1} projectors, that `(a^dagger)^2 = 0` (Pauli exclusion),
+  and that the tight-binding hopping Hamiltonian reproduces the exact band
+  `-2t cos(k)` (open chain and ring) while conserving particle number.
+
 ## [0.8.0]
 
 Theme: a comprehensive quantum-information-theory layer on the two simulation

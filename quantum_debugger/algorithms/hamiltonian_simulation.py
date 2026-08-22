@@ -52,6 +52,81 @@ def hamiltonian_matrix(terms, n_qubits: int) -> np.ndarray:
     return H
 
 
+def pauli_decompose(H, tol: float = 1e-12) -> list:
+    """
+    Decompose a Hermitian ``2**n x 2**n`` matrix into a sum of weighted Pauli strings,
+
+        H = sum_P c_P P,   c_P = Tr(P H) / 2**n,
+
+    returning the ``(coefficient, pauli_string)`` terms (in the same format
+    :func:`hamiltonian_matrix`, ``trotter_evolve``, and the VQE solver consume) with
+    ``|c_P| > tol``. For a Hermitian ``H`` the coefficients are real. This is what
+    turns a dense operator -- a molecular or Fermi-Hubbard Hamiltonian -- into
+    something a gate-based quantum algorithm can run.
+    """
+    import itertools
+
+    H = np.asarray(H, dtype=complex)
+    dim = H.shape[0]
+    n = int(round(np.log2(dim)))
+    terms = []
+    for labels in itertools.product("IXYZ", repeat=n):
+        pauli = "".join(labels)
+        coeff = np.trace(pauli_term_matrix(pauli) @ H) / dim
+        if abs(coeff) > tol:
+            terms.append((float(np.real(coeff)), pauli))
+    return terms
+
+
+def trotter_unitary(terms, time, steps=1, order=1) -> np.ndarray:
+    """
+    Assemble the full ``2**n x 2**n`` Trotterized evolution operator for
+    ``exp(-i H t)`` with ``steps`` Trotter steps of the given ``order`` (1 or 2).
+    """
+    from ..core.quantum_state import apply_gate_tensor
+
+    n = len(terms[0][1])
+    dim = 2**n
+    U = np.eye(dim, dtype=complex)
+    for mat, qubits in trotter_circuit(terms, time, steps, order):
+        G = np.zeros((dim, dim), dtype=complex)
+        for c in range(dim):
+            v = np.zeros(dim, dtype=complex)
+            v[c] = 1.0
+            G[:, c] = apply_gate_tensor(np, v, mat, qubits, n)
+        U = G @ U
+    return U
+
+
+def trotter_error_scaling(
+    terms, time=1.0, step_counts=(2, 4, 8, 16, 32), order=1
+) -> dict:
+    """
+    Measure how the Trotter approximation converges as the number of steps grows.
+
+    For each ``n`` in ``step_counts`` computes the spectral-norm error
+    ``|| U_trotter(n) - exp(-i H t) ||`` and fits the log-log slope. The theory
+    predicts error ``~ t^2 / n`` for first order (slope -1) and ``~ t^3 / n^2`` for the
+    symmetric second order (slope -2).
+
+    Returns dict with ``errors`` (one per step count), ``slope`` (log-log fit), and
+    ``expected_slope`` (``-order``).
+    """
+    from scipy.linalg import expm
+
+    n_qubits = len(terms[0][1])
+    H = hamiltonian_matrix(terms, n_qubits)
+    exact = expm(-1j * time * H)
+
+    errors = []
+    for steps in step_counts:
+        U = trotter_unitary(terms, time, steps, order)
+        errors.append(float(np.linalg.norm(U - exact, 2)))
+
+    slope = float(np.polyfit(np.log(step_counts), np.log(errors), 1)[0])
+    return {"errors": errors, "slope": slope, "expected_slope": float(-order)}
+
+
 def _append_pauli_exp(gates, pauli_string, angle):
     """Append gates realizing exp(-i * angle * P) for a single Pauli string P."""
     active = [q for q, p in enumerate(pauli_string) if p != "I"]

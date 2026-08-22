@@ -11,31 +11,24 @@
 
 A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and quantum machine learning. From basic circuits to QML with one-line AutoML.
 
-## What's New in v0.8.0
+## What's New in v0.9.0
 
-A comprehensive **quantum-information-theory layer** on both simulation engines —
-every routine verified against a closed form or an independent computation:
+Quantum **chemistry, many-body physics & advanced simulation** — every routine verified
+against a closed form or an independent computation:
 
-- **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
-  channels, Lindblad master-equation evolution, channel metrics (process / average
-  gate fidelity, Choi matrix, CPTP checks), **Stinespring dilation**, and **quantum
-  process tomography**.
-- **Fault tolerance & QEC** — the 5-qubit `[[5,1,3]]` perfect code, Steane `[[7,1,3]]`
-  with transversal gates, the `[[4,2,2]]` error-detecting code, magic-state injection,
-  the **Petz recovery map** for approximate QEC, and QEC run against continuous
-  (density-matrix) noise with CPTP syndrome recovery.
-- **Quantum networking** — BBPSSW / DEJMPS entanglement distillation, noisy
-  entanglement swapping, and repeater chains.
-- **Noise protection without QEC** — decoherence-free subspaces, spin echo, and the
-  quantum Zeno effect.
-- **Foundations & resource measures** — negativity, concurrence, discord, mutual
-  information, Horodecki nonlocality, contextuality (Mermin-Peres), geometric
-  (Pancharatnam-Berry) phase, uncertainty relations, weak values, Holevo bound,
-  channel capacity, state discrimination, no-cloning, stabilizer-Rényi magic, and
-  measurement-based computation.
-- **Clifford engine** — stabilizer entanglement entropy straight from the tableau
-  (`O(n^3)`, works on hundreds of qubits), plus a quantum multiplier and a
-  ripple-carry subtractor.
+- **Fermionic systems** — Jordan-Wigner transform, the Fermi-Hubbard model, and the
+  Kitaev topological chain (Majorana edge modes).
+- **Ground- & excited-state solvers** — chemistry via VQE with Pauli decomposition,
+  imaginary-time cooling, Krylov/Lanczos, and adiabatic evolution.
+- **Finite-temperature physics** — Gibbs states and thermodynamic quantities.
+- **Quantum dynamics** — Trotter error scaling, the Loschmidt echo & dynamical quantum
+  phase transitions, out-of-time-order correlators (scrambling), and entanglement growth.
+- **Quantum chaos** — level-spacing statistics (GOE vs Poisson).
+- **Metrology** — spin squeezing and mixed-state quantum Fisher information.
+- **Modern measurement & tensor-network toolkit** — classical shadows, Schmidt
+  decomposition, and the area law.
+
+(Open systems, noise, and fault tolerance shipped in v0.8.0.)
 
 See [CHANGELOG.md](CHANGELOG.md) for the full, itemized list.
 
@@ -53,31 +46,7 @@ A **second simulation engine** plus a large, verified quantum-algorithms library
 - **VQE** ground-state solver converges to machine precision on larger chains
   (BFGS optimizer).
 
-### Density-matrix engine (v0.8.0)
-- **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
-  channels, Lindblad master-equation evolution, and channel metrics (process /
-  average gate fidelity, Choi matrix, CPTP checks).
-- **QEC under continuous noise** — a code run against an independent bit-/phase-flip
-  channel on every qubit, exactly, with CPTP syndrome recovery.
-- **Quantum multiplier** and a **ripple-carry subtractor**.
-
-See [CHANGELOG.md](CHANGELOG.md) for the full list.
-
-## What's New in v0.7.0
-
-A **second simulation engine** plus a large, verified quantum-algorithms library:
-- **Clifford / stabilizer simulator** (`StabilizerSimulator`) — the
-  Aaronson-Gottesman tableau: GHZ, graph/cluster states, and randomized
-  benchmarking on **hundreds of qubits** instantly, far past the state-vector wall.
-- **Big algorithms library** — Shor factoring, Simon, quantum error correction
-  (bit-flip / phase-flip / the 9-qubit Shor code), Trotter Hamiltonian simulation,
-  gate decomposition (ZYZ/KAK), quantum arithmetic (Fourier + ripple-carry adders),
-  teleportation / superdense / entanglement swapping, Bell-CHSH & GHZ-Mermin
-  nonlocality, and BB84 QKD — each verified against its known outcome.
-- **VQE** ground-state solver converges to machine precision on larger chains
-  (BFGS optimizer).
-
-### In development (0.8.0-dev)
+### v0.8.0 — density-matrix engine & open systems
 - **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
   channels, Lindblad master-equation evolution, and channel metrics (process /
   average gate fidelity, Choi matrix, CPTP checks).
@@ -446,5 +415,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.8.0 (latest on PyPI) · 0.7.1, 0.7.0 (previous)  
+**Version:** 0.9.0 (latest on PyPI) · 0.8.0, 0.7.1 (previous)  
 **Last Updated:** August 2026

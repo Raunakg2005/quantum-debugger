@@ -482,6 +482,27 @@ r["delta_phi_ghz"]     # 0.25  (= 1/N)
 parity_signal(4, phi)  # cos(4*phi) -- the GHZ interferometer oscillates N x faster
 ```
 
+### Spin squeezing: entanglement for metrology
+
+A coherent spin state only reaches the standard quantum limit; entangling the spins
+via one-axis twisting squeezes the transverse noise and beats it:
+
+```python
+from quantum_debugger.algorithms import best_squeezing
+
+r = best_squeezing(n=8)
+r["sql"]                 # 1.0  -- coherent state, standard quantum limit
+r["best_xi2"]            # 0.354 -- squeezed below 1
+r["squeezing_dB"]        # -4.5 dB
+r["metrological_gain"]   # 2.82 -- phase sensitivity beats the SQL by this factor
+```
+
+`H = chi J_z^2` shears the coherent state's noise disk; the Wineland parameter
+`xi^2 = N min Var(J_perp)/|<J>|^2` (the smaller eigenvalue of the transverse
+covariance matrix) drops below 1, and `1/xi^2` is exactly the interferometric gain.
+The squeezing deepens with atom number — the same GHZ-vs-product story as the
+Heisenberg limit above, now with experimentally friendly states.
+
 ### Noisy probes: mixed-state QFI
 
 Real probes decohere. `qfi_mixed` gives the exact Fisher information of any mixed
@@ -711,6 +732,22 @@ trotter_evolve(H, time=1.0, steps=50, order=2)["fidelity"]   # ~1.0
 returns the raw gate list, and `hamiltonian_matrix(terms, n)` builds the dense
 operator if you want to inspect it.
 
+### Error scaling
+
+`trotter_error_scaling` quantifies the convergence directly — the operator error
+against the exact exponential, fit on a log-log scale:
+
+```python
+from quantum_debugger.algorithms import trotter_error_scaling
+
+trotter_error_scaling(H, order=1)["slope"]   # -1.03  (error ~ t^2 / n)
+trotter_error_scaling(H, order=2)["slope"]   # -2.02  (error ~ t^3 / n^2)
+```
+
+The measured slopes match the theoretical first- and second-order Trotter rates,
+so you can pick a step count for any target accuracy. `trotter_unitary(...)` returns
+the full assembled evolution operator behind the measurement.
+
 ## Repetition-Code Logical Error Rate
 
 The central promise of QEC in one experiment: below a noise threshold, encoding
@@ -865,6 +902,32 @@ result = state_tomography(qc.get_statevector().state_vector, shots=8000)
 result["density_matrix"]   # reconstructed 4x4 rho
 result["fidelity"]          # ~1.0 vs the true Bell state
 ```
+
+## Classical Shadows
+
+Full tomography is exponentially expensive; classical shadows estimate *many*
+observables from *one* set of random measurements:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import shadow_estimates, collect_shadows, estimate_observable
+
+bell = np.array([1, 0, 0, 1]) / np.sqrt(2)
+
+r = shadow_estimates(bell, ["XX", "YY", "ZZ", "ZI"], shots=4000)
+r["estimates"]     # {'XX': 0.97, 'YY': -1.01, 'ZZ': 0.99, 'ZI': 0.02}  -- all from ONE dataset
+r["max_error"]     # shrinks with shot count
+
+# Or collect once, query any observable later:
+shadows = collect_shadows(bell, shots=3000)
+estimate_observable(shadows, "XX")     # ~1.0
+```
+
+Each shot measures every qubit in a random X/Y/Z basis and forms the unbiased
+snapshot `prod_q (3|b_q><b_q| - I)`; averaging gives `Tr(O rho_hat)` for any Pauli
+`O`. The number of measurements needed scales with the *locality* of the observables,
+not the dimension of the state — which is why shadows have become a workhorse for
+reading out near-term quantum devices.
 
 ## The Holevo Bound & Accessible Information
 
@@ -1107,3 +1170,298 @@ coupled to `A` actually registers, verified here by running the coupling
 `exp(-i g A x Y/2)` and post-selecting. As the pre- and post-selection approach
 orthogonality the value blows up: weak-value amplification, used to sense tiny
 couplings. (The unbounded shift costs post-selection probability — no free lunch.)
+
+## Jordan-Wigner: Fermions on a Quantum Computer
+
+Quantum chemistry and the Hubbard model are written with fermionic operators, which
+anticommute. The Jordan-Wigner map turns them into qubit operators while preserving
+that algebra:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    jw_annihilation, jw_number, hopping_hamiltonian, anticommutation_error,
+)
+
+anticommutation_error(4)          # ~1e-16 -- {a_i, a_j^dag} = delta_ij, exactly
+
+# Tight-binding chain: eigenvalues are the exact band -2t cos(k).
+H = hopping_hamiltonian(n_modes=4, t=1.0)
+# (single-particle sector eigenvalues) == -2 cos(k pi / 5)
+```
+
+Mode `j` becomes `(Z_0 ... Z_{j-1}) sigma_j^-` — the trailing `Z` string encodes the
+fermionic exchange sign. The number operator `a_j^dagger a_j` has eigenvalues 0/1
+(occupied or empty), `(a_j^dagger)^2 = 0` enforces Pauli exclusion, and the hopping
+Hamiltonian conserves particle number. These are the building blocks for encoding a
+molecular Hamiltonian and finding its ground state with VQE.
+
+## The Fermi-Hubbard Model
+
+The workhorse model of correlated electrons — hopping versus on-site repulsion —
+assembled from the Jordan-Wigner operators:
+
+```python
+from quantum_debugger.algorithms import hubbard_dimer_energy, hubbard_ground_energy
+
+# The exactly-solvable half-filled two-site dimer:
+r = hubbard_dimer_energy(t=1.0, u=4.0)
+r["ground_energy"]      # -1.123...
+r["analytic"]           # (U - sqrt(U^2 + 16 t^2)) / 2 -- matches exactly
+r["heisenberg_limit"]   # -4 t^2 / U, the large-U antiferromagnet it approaches
+
+hubbard_ground_energy(2, t=1.0, u=4.0, n_particles=2)   # same, via the spectrum
+```
+
+`H = -t sum (hopping) + U sum n_up n_down`. At `U = 0` the two electrons fill the
+bonding orbital (`-2t`); as `U` grows they localize to avoid the energy cost, and
+the ground energy crosses over to the Heisenberg exchange `-4t^2/U` — the
+metal-to-Mott-insulator transition on two sites. The model conserves total and
+per-spin electron number, which is exactly what makes particle-number-preserving
+VQE ansaetze the right tool for its larger cousins.
+
+## Pauli Decomposition: Running Chemistry on Qubits
+
+A molecular or Hubbard Hamiltonian arrives as a dense matrix; a quantum algorithm
+needs it as Pauli strings. `pauli_decompose` bridges the two, completing the
+fermion -> qubit -> VQE pipeline:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    fermi_hubbard_hamiltonian, pauli_decompose, variational_ground_state,
+)
+
+H = fermi_hubbard_hamiltonian(2, t=1.0, u=3.0)   # dense 16x16 Hamiltonian
+terms = pauli_decompose(H)                        # -> [(coeff, 'IZIZ'), ...]
+
+res = variational_ground_state(terms, layers=4, restarts=6)
+res["energy"]                                     # -1.0, matching exact diag to ~1e-11
+```
+
+`c_P = Tr(P H) / 2^n` for every Pauli string `P`; the decomposition round-trips any
+Hermitian operator exactly and preserves its whole spectrum. Combined with
+`jordan_wigner` (fermions -> operators) and `variational_ground_state` (ground
+state on the RY+CNOT ansatz), this is the end-to-end path a real quantum-chemistry
+calculation follows.
+
+## Imaginary-Time Evolution (Cooling to the Ground State)
+
+Swap real time for imaginary time and unitary evolution becomes cooling: excited
+components decay exponentially, leaving the ground state. No optimizer, no local
+minima:
+
+```python
+from quantum_debugger.algorithms import (
+    imaginary_time_evolution, fermi_hubbard_hamiltonian,
+)
+
+H = fermi_hubbard_hamiltonian(2, t=1.0, u=3.0)
+r = imaginary_time_evolution(H, dtau=0.1, steps=200)
+
+r["energy"]              # -1.0, matching exact diagonalization
+r["error"]               # < 1e-6
+r["energy_trajectory"]   # monotonically decreasing toward the ground energy
+```
+
+`|psi(tau)> = e^{-tau H}|psi(0)> / norm`; because the ground component decays the
+slowest, the state converges to it whenever the start overlaps it — which a random
+start always does. It's the deterministic counterpart to `variational_ground_state`
+(no ansatz, no optimization), and the classical model of QITE. One honest caveat:
+plain imaginary-time evolution *cannot* target excited states — even a start made
+orthogonal to the ground state is pulled back to it by its residual overlap.
+
+## Adiabatic Quantum Computation
+
+Encode the answer in a Hamiltonian's ground state and *slowly* deform an easy
+Hamiltonian into it — the adiabatic theorem keeps you in the ground state the whole
+way:
+
+```python
+from quantum_debugger.algorithms import adiabatic_evolution, hamiltonian_matrix
+
+driver  = hamiltonian_matrix([(-1.0, "XII"), (-1.0, "IXI"), (-1.0, "IIX")], 3)  # |+++>
+problem = hamiltonian_matrix([(-1.0, "ZZI"), (-1.0, "IZZ"), (-0.3, "ZII")], 3)  # |000>
+
+adiabatic_evolution(driver, problem, total_time=50)["fidelity"]   # 0.9999 -- slow succeeds
+adiabatic_evolution(driver, problem, total_time=0.5)["fidelity"]  # 0.15   -- fast fails
+```
+
+`H(s) = (1-s)H_i + s H_f` is swept from `s=0` to `s=1`. Go slowly relative to the
+inverse-square of the minimum spectral gap and the state tracks the instantaneous
+ground state; go too fast and it is excited (a diabatic transition). The returned
+`min_gap` is exactly the quantity that sets the required runtime — small gaps are
+what make some optimization problems hard for adiabatic (and quantum-annealing)
+machines.
+
+## Krylov Subspace Diagonalization (Lanczos)
+
+Neither variational search nor cooling — just apply the Hamiltonian a few times and
+diagonalize in the tiny subspace it spans. This recovers the ground energy *and* the
+excited states (which imaginary-time evolution cannot):
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    krylov_ground_energy, krylov_spectrum, hamiltonian_matrix, tfim_hamiltonian,
+)
+
+H = hamiltonian_matrix(tfim_hamiltonian(3, 1.0, 0.7), 3)
+
+krylov_ground_energy(H, dim=8)["error"]     # < 1e-8 -- machine precision from 8 vectors
+krylov_spectrum(H, dim=8)[:3]               # ground + first two excited levels, exact
+```
+
+The Krylov space `span{|psi>, H|psi>, ..., H^{m-1}|psi>}` is diagonalized via a
+thresholded generalized eigenproblem (the vectors become near-parallel, so the
+overlap matrix is regularized). The Ritz values are always bracketed by the true
+spectrum and converge to its extremes exponentially in `m` — the classical Lanczos
+method, and the blueprint for quantum Krylov / subspace-expansion algorithms.
+
+## Loschmidt Echo & Dynamical Phase Transitions
+
+Quench a state — evolve it under a Hamiltonian it is *not* an eigenstate of — and
+watch how much of it survives:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import quench_dynamics, loschmidt_echo
+
+delta, theta = 2.0, np.pi / 4
+H = np.array([[delta/2, 0], [0, -delta/2]])
+psi0 = np.array([1, 1]) / np.sqrt(2)
+
+r = quench_dynamics(H, psi0, t_max=2*np.pi/delta)
+r["min_echo"]   # ~0 -- the echo hits zero: a dynamical quantum phase transition
+r["revival"]    # True -- coherent few-level dynamics returns near 1
+```
+
+`L(t) = |<psi_0|e^{-iHt}|psi_0>|^2`, and its rate function `-ln L / N` is the
+dynamical analogue of a free energy — cusps in time are DQPTs, where the evolved
+state momentarily becomes orthogonal to the start. Eigenstates give a flat `L = 1`;
+a two-level superposition follows the exact `1 - sin^2(2θ)sin^2(Δt/2)`, verified to
+machine precision.
+
+## Out-of-Time-Order Correlators (Scrambling)
+
+How fast does a local disturbance spread — the quantum butterfly effect? The OTOC
+tracks the growth of a commutator between a time-evolved operator and a distant one:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import scrambling_time, hamiltonian_matrix, tfim_hamiltonian
+
+n = 4
+H = hamiltonian_matrix(tfim_hamiltonian(n, 1.0, 1.0), n)
+
+r = scrambling_time(H, n, t_max=8.0)
+r["C"][0]                 # 0 -- edges commute initially
+r["scrambling_time"]      # when the disturbance reaches the far edge
+r["max_C"]                # peak commutator growth
+```
+
+`C(t) = <|[W(t), V]|^2>` with `W(t) = e^{iHt} W e^{-iHt}`; it starts at 0 (separated
+operators commute) and grows as `W` scrambles across the system. The exact identity
+`C(t) = 2(1 - Re F(t))` links it to the OTOC `F(t)`, and comparing near vs far
+operators reveals the operator light cone — information cannot spread faster than the
+interactions allow.
+
+## Entanglement Growth & Thermalization
+
+Quench a product state under an entangling Hamiltonian and its subregions grow
+entangled — the microscopic story of how isolated quantum systems thermalize:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    entanglement_growth, hamiltonian_matrix, tfim_hamiltonian,
+)
+
+n = 6
+H = hamiltonian_matrix(tfim_hamiltonian(n, 1.0, 1.0), n)
+psi0 = np.zeros(2**n); psi0[0] = 1        # product state |000000>
+
+r = entanglement_growth(H, psi0, region=[0, 1, 2], times=np.linspace(0, 10, 60))
+r["initial"]       # 0 -- product state
+r["saturation"]    # grows and levels off, below...
+r["max_entropy"]   # min(|A|, n-|A|) = 3 bits, the volume-law ceiling
+```
+
+Locally the subregion looks thermal once information has spread into entanglement
+with the rest. The routine is checked against the exact two-qubit result — an
+`X x X` quench of `|00>` gives entropy `h(sin^2(gt))` precisely — and reproduces the
+grow-then-saturate curve for many-body quenches, while an energy eigenstate keeps a
+constant entropy.
+
+## Level-Spacing Statistics (Quantum Chaos)
+
+Integrable and chaotic systems differ in how their energy levels correlate — and the
+gap-ratio statistic reads it off without any spectral unfolding:
+
+```python
+from quantum_debugger.algorithms import (
+    level_spacing_ratio, goe_reference, poisson_reference, classify_spectrum,
+)
+
+goe_reference()       # ~0.531 -- chaotic (Wigner-Dyson level repulsion)
+poisson_reference()   # ~0.386 -- integrable (uncorrelated levels)
+
+classify_spectrum(my_eigenvalues)["classification"]   # 'chaotic' | 'integrable'
+```
+
+`<r> = <min(s_n, s_{n+1}) / max(s_n, s_{n+1})>` over adjacent gaps `s_n`
+(Oganesyan-Huse). It is validated against its two defining ensembles — GOE random
+matrices and Poisson spectra — reproducing the universal 0.531 and 0.386. One
+important caveat, documented in the module: a *physical* Hamiltonian only shows these
+clean values within a single symmetry sector; leaving symmetries unresolved biases
+`<r>` toward Poisson even for a chaotic system.
+
+## The Kitaev Chain (Topological Superconductor)
+
+The simplest model hosting Majorana zero modes — and the physics behind topological
+qubits — built from the Jordan-Wigner operators:
+
+```python
+from quantum_debugger.algorithms import kitaev_ground_degeneracy
+
+# Topological phase (|mu| < 2t): two Majoranas at the ends -> degenerate ground state.
+kitaev_ground_degeneracy(6, mu=0.0, t=1.0, delta=1.0)["splitting"]   # ~1e-15
+
+# Trivial phase (|mu| > 2t): unique, gapped ground state.
+kitaev_ground_degeneracy(6, mu=3.0, t=1.0, delta=1.0)["splitting"]   # ~0.5
+```
+
+`H = -mu sum n_j - t sum hopping + Delta sum pairing`. In the topological phase an
+unpaired Majorana localizes at each end; because no *local* operator connects them,
+the two ground states are split only exponentially in the chain length (the splitting
+halves with every added site — a direct test of Majorana localization). That nonlocal,
+noise-protected degeneracy is exactly what a topological qubit would store its
+information in.
+
+## Schmidt Decomposition & the Area Law
+
+Every bipartite pure state factors as `sum lambda_i |i>_A |i>_B` — and how fast the
+`lambda_i` decay decides whether the state compresses to a tensor network:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    schmidt_decomposition, area_law_compressibility,
+    hamiltonian_matrix, tfim_hamiltonian,
+)
+
+# Bell state: two equal Schmidt values.
+schmidt_decomposition(np.array([1, 0, 0, 1]) / np.sqrt(2), [0])["schmidt_values"]  # [0.707, 0.707]
+
+# A gapped 1D ground state obeys the area law -> compresses to small bond dimension.
+gs = np.linalg.eigh(hamiltonian_matrix(tfim_hamiltonian(6, 1.0, 1.0), 6))[1][:, 0]
+area_law_compressibility(gs, region=[0, 1, 2], bond_dim=3)["truncation_fidelity"]  # > 0.99
+```
+
+The Schmidt values are the singular values of the state reshaped as an A-by-B matrix;
+their squares are the reduced density matrix's eigenvalues, so
+`S = -sum lambda_i^2 log2 lambda_i^2` reproduces the entanglement entropy exactly. A
+gapped ground state's spectrum decays fast — a few values hold almost all the weight,
+which is precisely the condition that lets a matrix product state represent it
+efficiently. A random (volume-law) state has a flat spectrum and cannot be
+compressed.

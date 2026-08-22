@@ -354,3 +354,30 @@ The channel is probed on the four informationally-complete states `|0>, |1>, |+>
 everything, and the Choi matrix follows by linear inversion. The reconstruction is
 certified CPTP and matches `choi_matrix` exactly — the experimental route to the
 same object `stinespring_isometry` and `is_cptp` analyze.
+
+## Thermal states and quantum thermodynamics
+
+At temperature `T = 1/beta`, a Hamiltonian's equilibrium state is the Gibbs state
+`e^{-beta H}/Z` — and every thermodynamic potential follows from it:
+
+```python
+from quantum_debugger.algorithms import (
+    gibbs_state, thermal_properties, fermi_hubbard_hamiltonian,
+)
+
+H = fermi_hubbard_hamiltonian(2, t=1.0, u=3.0)
+
+r = thermal_properties(H, beta=1.0)
+r["energy"]         # <H> at this temperature
+r["entropy"]        # von Neumann entropy (nats)
+r["free_energy"]    # F = -ln(Z)/beta  ==  E - S/beta  (verified)
+r["heat_capacity"]  # beta^2 * Var(H)  >= 0
+
+gibbs_state(H, beta=300)   # -> the ground state (T -> 0)
+gibbs_state(H, beta=1e-7)  # -> I/d, maximally mixed (T -> infinity)
+```
+
+The free-energy identity `F = E - TS`, the entropy bounds (`0` at `T=0`, `ln d` at
+`T=infinity`), and the energy-fluctuation heat capacity are all reproduced exactly.
+This is the finite-temperature companion to the ground-state VQE — the same
+molecular and lattice Hamiltonians, now at thermal equilibrium.

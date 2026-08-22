@@ -52,6 +52,9 @@ from .hamiltonian_simulation import (
     trotter_circuit,
     hamiltonian_matrix,
     pauli_term_matrix,
+    pauli_decompose,
+    trotter_unitary,
+    trotter_error_scaling,
 )
 from .decomposition import (
     zyz_decompose,
@@ -163,6 +166,71 @@ from .error_detection import (
 from .mbqc import cluster_pair, mbqc_rotation
 from .weak_values import weak_value, weak_measurement_shift, weak_value_demo
 from .petz import petz_recovery, petz_code_recovery
+from .jordan_wigner import (
+    jw_annihilation,
+    jw_creation,
+    jw_number,
+    jw_total_number,
+    hopping_hamiltonian,
+    anticommutation_error,
+)
+from .hubbard import (
+    fermi_hubbard_hamiltonian,
+    hubbard_ground_energy,
+    hubbard_dimer_energy,
+)
+from .thermal import (
+    gibbs_state,
+    partition_function,
+    thermal_properties,
+)
+from .imaginary_time import imaginary_time_evolution
+from .adiabatic import adiabatic_evolution
+from .krylov import krylov_spectrum, krylov_ground_energy
+from .loschmidt import loschmidt_echo, rate_function, quench_dynamics
+from .otoc import otoc, scrambling_time
+from .entanglement_growth import entanglement_growth
+from .level_statistics import (
+    level_spacing_ratio,
+    goe_reference,
+    poisson_reference,
+    classify_spectrum,
+)
+from .kitaev_chain import kitaev_chain_hamiltonian, kitaev_ground_degeneracy
+from .spin_squeezing import one_axis_twisting, best_squeezing
+from .classical_shadows import (
+    collect_shadows,
+    estimate_observable,
+    shadow_estimates,
+)
+from .schmidt import (
+    schmidt_decomposition,
+    truncation_fidelity,
+    area_law_compressibility,
+)
+from .ssh_model import (
+    ssh_hamiltonian,
+    ssh_winding_number,
+    ssh_zero_modes,
+    ssh_edge_polarization,
+)
+from .quantum_phase_transition import (
+    ground_state_fidelity,
+    fidelity_susceptibility,
+    tfim_critical_field,
+)
+from .many_body_correlations import (
+    connected_correlation,
+    correlation_length,
+    structure_factor,
+    expectation,
+)
+from .entanglement_negativity import (
+    partial_transpose,
+    negativity,
+    logarithmic_negativity,
+    is_entangled_ppt,
+)
 from .spectroscopy import unitary_eigenphase, hermitian_eigenvalue
 
 __all__ = [
@@ -213,6 +281,9 @@ __all__ = [
     "trotter_circuit",
     "hamiltonian_matrix",
     "pauli_term_matrix",
+    "pauli_decompose",
+    "trotter_unitary",
+    "trotter_error_scaling",
     # Gate decomposition
     "zyz_decompose",
     "abc_decomposition",
@@ -333,6 +404,61 @@ __all__ = [
     "weak_value_demo",
     "petz_recovery",
     "petz_code_recovery",
+    "jw_annihilation",
+    "jw_creation",
+    "jw_number",
+    "jw_total_number",
+    "hopping_hamiltonian",
+    "anticommutation_error",
+    "fermi_hubbard_hamiltonian",
+    "hubbard_ground_energy",
+    "hubbard_dimer_energy",
+    "gibbs_state",
+    "partition_function",
+    "thermal_properties",
+    "imaginary_time_evolution",
+    "adiabatic_evolution",
+    "krylov_spectrum",
+    "krylov_ground_energy",
+    "loschmidt_echo",
+    "rate_function",
+    "quench_dynamics",
+    "otoc",
+    "scrambling_time",
+    "entanglement_growth",
+    "level_spacing_ratio",
+    "goe_reference",
+    "poisson_reference",
+    "classify_spectrum",
+    "kitaev_chain_hamiltonian",
+    "kitaev_ground_degeneracy",
+    "one_axis_twisting",
+    "best_squeezing",
+    "collect_shadows",
+    "estimate_observable",
+    "shadow_estimates",
+    "schmidt_decomposition",
+    "truncation_fidelity",
+    "area_law_compressibility",
+    # SSH topological insulator
+    "ssh_hamiltonian",
+    "ssh_winding_number",
+    "ssh_zero_modes",
+    "ssh_edge_polarization",
+    # Quantum phase transitions (fidelity)
+    "ground_state_fidelity",
+    "fidelity_susceptibility",
+    "tfim_critical_field",
+    # Many-body correlations
+    "connected_correlation",
+    "correlation_length",
+    "structure_factor",
+    "expectation",
+    # Entanglement negativity
+    "partial_transpose",
+    "negativity",
+    "logarithmic_negativity",
+    "is_entangled_ppt",
     # Quantum spectroscopy
     "unitary_eigenphase",
     "hermitian_eigenvalue",
