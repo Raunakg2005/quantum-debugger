@@ -114,16 +114,29 @@ class DepolarizingNoise(NoiseModel):
         """
         Get Kraus operators for stochastic sampling
 
+        These describe the same channel as apply(), which implements the
+        Pauli-error convention this class documents:
+
+            rho -> (1 - p) rho + (p/3) (X rho X + Y rho Y + Z rho Z)
+
+        so K0 = sqrt(1 - p) I and K1..K3 = sqrt(p/3) {X, Y, Z}.
+
+        The previous sqrt(p/4) form implemented a different convention,
+        rho -> (1 - p) rho + p I/2, which coincides with the above only at
+        4p/3.  StochasticNoiseSampler consumes this method, so the mismatch
+        made sampled noise 4/3 stronger than apply() produced for the same p.
+
         Returns:
             List of Kraus operators [K0, K1, K2, K3] for depolarizing channel
         """
         p = self.probability
 
-        # Kraus operators: K0 = √(1-3p/4)I, K1 = √(p/4)X, K2 = √(p/4)Y, K3 = √(p/4)Z
-        K0 = np.sqrt(1 - 3 * p / 4) * np.eye(2, dtype=complex)
-        K1 = np.sqrt(p / 4) * np.array([[0, 1], [1, 0]], dtype=complex)  # X
-        K2 = np.sqrt(p / 4) * np.array([[0, -1j], [1j, 0]], dtype=complex)  # Y
-        K3 = np.sqrt(p / 4) * np.array([[1, 0], [0, -1]], dtype=complex)  # Z
+        # K0 = √(1-p)I, K1 = √(p/3)X, K2 = √(p/3)Y, K3 = √(p/3)Z
+        # Completeness: (1-p)I + (p/3)(X² + Y² + Z²) = (1-p)I + pI = I
+        K0 = np.sqrt(1 - p) * np.eye(2, dtype=complex)
+        K1 = np.sqrt(p / 3) * np.array([[0, 1], [1, 0]], dtype=complex)  # X
+        K2 = np.sqrt(p / 3) * np.array([[0, -1j], [1j, 0]], dtype=complex)  # Y
+        K3 = np.sqrt(p / 3) * np.array([[1, 0], [0, -1]], dtype=complex)  # Z
 
         return [K0, K1, K2, K3]
 
