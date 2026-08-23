@@ -5,6 +5,21 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1]
+
+Theme: correctness patch for the depolarizing noise channel.
+
+### Fixed
+- **`DepolarizingNoise.get_kraus_operators()`** now implements the same channel as
+  `DepolarizingNoise.apply()` and the class docstring — the Pauli-error convention
+  `ρ → (1−p)ρ + (p/3)(XρX + YρY + ZρZ)`, giving `K₀ = √(1−p)·I` and `K₁₋₃ = √(p/3)·{X, Y, Z}`.
+  It previously used a `√(p/4)` weighting (the uniform `ρ → (1−p)ρ + pI/2` convention), which
+  agrees with `apply()` only under the substitution `p → 4p/3`. Because
+  `StochasticNoiseSampler` consumes the Kraus path, Monte-Carlo–sampled depolarizing noise was
+  silently `4/3×` too strong for a given `p`. The operators remain trace-preserving
+  (`Σ Kᵢ†Kᵢ = I`). Added channel-equivalence, trace-preservation, edge-case, and sampler
+  regression tests. (Present in 0.8.0 and 0.9.0; fixed here.)
+
 ## [0.9.0]
 
 Theme: quantum chemistry, many-body physics & advanced simulation. Fermionic systems

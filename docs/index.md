@@ -1,8 +1,17 @@
 # Quantum Debugger Documentation
 
-**Version 0.9.0** - Interactive quantum circuit debugger with Quantum Machine Learning
+**Version 0.9.1** - Interactive quantum circuit debugger with Quantum Machine Learning
 
 Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
+
+## What's New in v0.9.1
+
+Correctness patch: `DepolarizingNoise.get_kraus_operators()` now implements the same
+channel as `apply()` and the class docstring (the Pauli-error convention
+`ρ → (1−p)ρ + (p/3)(XρX + YρY + ZρZ)`). The old `√(p/4)` weighting made
+`StochasticNoiseSampler`'s sampled depolarizing noise `4/3×` too strong for a given `p`;
+trace preservation is unchanged. See the
+[CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CHANGELOG.md).
 
 ## What's New in v0.9.0
 

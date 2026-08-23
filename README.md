@@ -11,6 +11,15 @@
 
 A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and quantum machine learning. From basic circuits to QML with one-line AutoML.
 
+## What's New in v0.9.1
+
+Correctness patch: **`DepolarizingNoise.get_kraus_operators()`** now implements the same
+channel as `apply()` and the class docstring — the Pauli-error convention
+`ρ → (1−p)ρ + (p/3)(XρX + YρY + ZρZ)` (`K₀ = √(1−p)·I`, `K₁₋₃ = √(p/3)·{X, Y, Z}`). The old
+`√(p/4)` weighting made `StochasticNoiseSampler`'s Monte-Carlo depolarizing noise `4/3×` too
+strong for a given `p`. Trace preservation is unchanged; channel-equivalence and sampler
+regression tests added. See [CHANGELOG.md](CHANGELOG.md).
+
 ## What's New in v0.9.0
 
 Quantum **chemistry, many-body physics & advanced simulation** — every routine verified
@@ -415,5 +424,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.9.0 (latest on PyPI) · 0.8.0, 0.7.1 (previous)  
+**Version:** 0.9.1 (latest on PyPI) · 0.9.0, 0.8.0 (previous)  
 **Last Updated:** August 2026
