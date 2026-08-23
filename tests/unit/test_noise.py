@@ -124,3 +124,91 @@ def test_depolarizing_noise_bell_state():
     # Trace should be 1
     trace = np.trace(rho).real
     assert np.isclose(trace, 1.0)
+
+
+def _depolarizing_via_apply(p, psi):
+    """Channel output from DepolarizingNoise.apply()."""
+    state = QuantumState(1, state_vector=psi.copy(), use_density_matrix=True)
+    DepolarizingNoise(p).apply(state, [0])
+    return np.asarray(state.density_matrix)
+
+
+def _depolarizing_via_kraus(p, psi):
+    """Channel output from DepolarizingNoise.get_kraus_operators()."""
+    rho = np.outer(psi, psi.conj())
+    return sum(K @ rho @ K.conj().T for K in DepolarizingNoise(p).get_kraus_operators())
+
+
+def _probe_states():
+    rng = np.random.default_rng(0)
+    states = [
+        np.array([1, 0], complex),
+        np.array([0, 1], complex),
+        np.array([1, 1], complex) / np.sqrt(2),
+        np.array([1, -1], complex) / np.sqrt(2),
+        np.array([1, 1j], complex) / np.sqrt(2),
+        np.array([1, -1j], complex) / np.sqrt(2),
+    ]
+    for _ in range(3):
+        v = rng.normal(size=2) + 1j * rng.normal(size=2)
+        states.append(v / np.linalg.norm(v))
+    return states
+
+
+@pytest.mark.parametrize("p", [0.0, 0.05, 0.2, 1 / 3, 0.5, 0.9, 1.0])
+def test_depolarizing_kraus_matches_apply(p):
+    """get_kraus_operators() must describe the same channel as apply().
+
+    Both are public API.  They previously used different conventions --
+    apply() the Pauli-error form and the Kraus operators the uniform form --
+    which agree only under p -> 4p/3.
+    """
+    for psi in _probe_states():
+        assert np.allclose(
+            _depolarizing_via_apply(p, psi), _depolarizing_via_kraus(p, psi), atol=1e-12
+        )
+
+
+@pytest.mark.parametrize("p", [0.0, 0.05, 1 / 3, 0.6, 1.0])
+def test_depolarizing_kraus_is_trace_preserving(p):
+    """Completeness: (1-p)I + (p/3)(X^2 + Y^2 + Z^2) = I"""
+    kraus = DepolarizingNoise(p).get_kraus_operators()
+    total = sum(K.conj().T @ K for K in kraus)
+    assert np.allclose(total, np.eye(2), atol=1e-12)
+
+
+def test_depolarizing_kraus_edge_cases():
+    """p=0 leaves the state alone; p=1 is the full Pauli twirl."""
+    psi = np.array([1, 0], complex)
+    rho = np.outer(psi, psi.conj())
+    assert np.allclose(_depolarizing_via_kraus(0.0, psi), rho, atol=1e-12)
+
+    paulis = [
+        np.array([[0, 1], [1, 0]], complex),
+        np.array([[0, -1j], [1j, 0]], complex),
+        np.array([[1, 0], [0, -1]], complex),
+    ]
+    twirl = sum(P @ rho @ P.conj().T for P in paulis) / 3
+    assert np.allclose(_depolarizing_via_kraus(1.0, psi), twirl, atol=1e-12)
+
+
+def test_stochastic_sampler_matches_apply():
+    """Sampling Kraus operators must converge to the deterministic channel."""
+    from quantum_debugger.core.quantum_state import QuantumState as PureState
+    from quantum_debugger.noise.stochastic_sampler import StochasticNoiseSampler
+
+    np.random.seed(0)
+    p, shots = 0.3, 20000
+    psi = np.array([1, 0], complex)
+    target = _depolarizing_via_apply(p, psi)
+
+    sampler = StochasticNoiseSampler(DepolarizingNoise(p))
+    accumulated = np.zeros((2, 2), complex)
+    for _ in range(shots):
+        state = PureState(1, state_vector=psi.copy())
+        sampler.apply_stochastic_noise(state, None)
+        v = np.asarray(state.state_vector).reshape(-1)
+        accumulated += np.outer(v, v.conj())
+
+    # 3 sigma over 20k shots is about 0.01
+    assert np.abs(target - accumulated / shots).max() < 0.015
