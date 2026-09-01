@@ -35,9 +35,10 @@ class TestStatistic:
     def test_sorting_invariant(self):
         rng = np.random.default_rng(0)
         evals = rng.normal(size=500)
-        assert abs(
-            level_spacing_ratio(evals) - level_spacing_ratio(np.sort(evals))
-        ) < 1e-12
+        assert (
+            abs(level_spacing_ratio(evals) - level_spacing_ratio(np.sort(evals)))
+            < 1e-12
+        )
 
     def test_ratio_in_unit_interval(self):
         rng = np.random.default_rng(1)

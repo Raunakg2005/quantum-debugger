@@ -32,9 +32,7 @@ def loschmidt_echo(hamiltonian, initial_state, times) -> np.ndarray:
     H = np.asarray(hamiltonian, dtype=complex)
     psi0 = np.asarray(initial_state, dtype=complex)
     psi0 = psi0 / np.linalg.norm(psi0)
-    return np.array(
-        [abs(np.vdot(psi0, expm(-1j * H * t) @ psi0)) ** 2 for t in times]
-    )
+    return np.array([abs(np.vdot(psi0, expm(-1j * H * t) @ psi0)) ** 2 for t in times])
 
 
 def rate_function(hamiltonian, initial_state, times, n_qubits=None) -> np.ndarray:
@@ -51,7 +49,9 @@ def rate_function(hamiltonian, initial_state, times, n_qubits=None) -> np.ndarra
         return -np.log(L) / n_qubits
 
 
-def quench_dynamics(hamiltonian, initial_state, t_max: float = 10.0, points: int = 200) -> dict:
+def quench_dynamics(
+    hamiltonian, initial_state, t_max: float = 10.0, points: int = 200
+) -> dict:
     """
     Sample the Loschmidt echo and rate function of a quench over ``[0, t_max]``.
 
@@ -62,7 +62,7 @@ def quench_dynamics(hamiltonian, initial_state, t_max: float = 10.0, points: int
     times = np.linspace(0, t_max, points)
     echo = loschmidt_echo(hamiltonian, initial_state, times)
     rate = rate_function(hamiltonian, initial_state, times)
-    revival = bool(np.any(echo[points // 10:] > 0.99))
+    revival = bool(np.any(echo[points // 10 :] > 0.99))
     return {
         "times": times,
         "echo": echo,

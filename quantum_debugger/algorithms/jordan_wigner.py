@@ -63,7 +63,9 @@ def jw_total_number(n_modes: int) -> np.ndarray:
     return N
 
 
-def hopping_hamiltonian(n_modes: int, t: float = 1.0, periodic: bool = False) -> np.ndarray:
+def hopping_hamiltonian(
+    n_modes: int, t: float = 1.0, periodic: bool = False
+) -> np.ndarray:
     """
     Tight-binding hopping Hamiltonian ``H = -t sum_j (a_j-dagger a_{j+1} + h.c.)`` on a
     chain of ``n_modes`` modes (a ring if ``periodic``). Its single-particle

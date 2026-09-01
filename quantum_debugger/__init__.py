@@ -13,7 +13,7 @@ Features:
 - Hardware profile support
 """
 
-__version__ = "1.0.0.dev0"
+__version__ = "1.0.0"
 __author__ = "Raunak Kumar Gupta"
 __license__ = "MIT"
 
@@ -58,6 +58,9 @@ from .mitigation import (
     adaptive_fold,
 )
 
+# Tensor Networks / Matrix Product States (v1.0.0)
+from .mps import MPS
+
 # Optional integrations
 try:
     from .integrations import QiskitAdapter
@@ -79,6 +82,8 @@ __all__ = [
     "CircuitMetrics",
     "StateVisualizer",
     "BlochSphere",
+    # Tensor Networks (v1.0.0)
+    "MPS",
     # Noise Models (v0.3.0)
     "DepolarizingNoise",
     "AmplitudeDamping",

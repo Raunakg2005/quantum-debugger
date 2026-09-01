@@ -1,31 +1,43 @@
 # Quantum Debugger Documentation
 
-**Version 0.7.0 (development)** - Interactive quantum circuit debugger with Quantum Machine Learning
+**Version 1.0.0** - Interactive quantum circuit debugger with Quantum Machine Learning and Tensor Networks
 
-Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, and quantum machine learning.
+Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, quantum machine learning, and large-scale tensor-network simulation.
 
-## What's New in v0.7.0 (in development)
+## What's New in v1.0.0
 
-A large, genuinely gate-based **quantum algorithms library** (`quantum_debugger.algorithms`),
-every routine verified against its known outcome:
+Scale & tensor networks — **breaking the exponential state-vector wall**:
 
-- **Textbook algorithms** — QFT, Grover, Quantum Phase Estimation (+ iterative),
-  Bernstein-Vazirani, Deutsch-Jozsa, quantum walk, quantum counting, amplitude
-  estimation/amplification, HHL linear solver, swap test.
-- **Shor's algorithm** — quantum period finding that genuinely factors (15 → 3×5,
-  21 → 3×7).
-- **Quantum error correction** — 3-qubit bit-flip / phase-flip codes and the
-  9-qubit Shor code (corrects an arbitrary single-qubit error) with real
-  stabilizer syndrome extraction.
-- **Clifford / stabilizer simulator** — a second engine (CHP tableau) that runs
-  hundred-qubit Clifford circuits instantly.
-- **Hamiltonian simulation** (Trotter-Suzuki), **gate decomposition** (ZYZ, ABC,
-  two-qubit KAK), **randomized benchmarking**, **Draper QFT adder**, a **QAOA
-  MaxCut solver**, entangled **state preparation** (GHZ/W/graph), teleportation,
-  superdense coding, and **state tomography**.
-- **Advanced QML/QRL** — VQD excited states, quantum autoencoder, QCNN,
-  data-reuploading classifier, multi-class VQC, ansatz analysis, SPSA, plus
-  Policy Gradient, DQN, and Actor-Critic reinforcement learning.
+- **Matrix Product State Simulator (`MPS`)** — `O(n·χ²)` memory instead of `2ⁿ`. Represents large, lightly-entangled quantum systems (e.g. **100-qubit GHZ states**, area-law ground states) with exact single-qubit gates, SVD-truncated two-qubit gates, and long-range connectivity via SWAP networks.
+- **Matrix Product Operators (`MPO`)** — compact tensor chains for TFIM (`tfim_mpo`) and Heisenberg (`heisenberg_mpo`) models; evaluate `<ψ|H|ψ>` in `O(n·χ²·D²)` time without dense matrices.
+- **TEBD Real-Time Dynamics** (`tebd_tfim`, `tebd_magnetization`) — Trotterized time evolution on the MPS engine with automatic SVD bond truncation.
+- **Imaginary-Time DMRG-Style Ground States** (`imaginary_tebd_ground_state`) — cool MPS into true ground states on 24+ qubit chains unreachable by dense diagonalizers.
+- **Arbitrary Pauli & Energy Readout** — `MPS.expectation_pauli` and `MPS.energy` evaluate arbitrary Pauli strings and Hamiltonians by tensor contraction.
+- **Born-Rule Measurement Sampling** (`MPS.sample`) — sequential conditional sampling with precomputed environments, drawing shots directly from the MPS.
+- **Circuit-to-MPS Converter** (`MPS.from_circuit`) — execute `QuantumCircuit` instances directly on the tensor-network engine.
+
+See the [Matrix Product States Guide](mps_guide) and the
+[CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CHANGELOG.md) for the full list.
+
+## What's New in v0.9.1
+
+Correctness patch: `DepolarizingNoise.get_kraus_operators()` now implements the same
+channel as `apply()` and the class docstring (the Pauli-error convention
+`ρ → (1−p)ρ + (p/3)(XρX + YρY + ZρZ)`). The old `√(p/4)` weighting made
+`StochasticNoiseSampler`'s sampled depolarizing noise `4/3×` too strong for a given `p`;
+trace preservation is unchanged. See the
+[CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CHANGELOG.md).
+
+## What's New in v0.9.0
+
+Quantum chemistry, many-body physics & advanced simulation: fermionic systems
+(Jordan-Wigner, Fermi-Hubbard, the Kitaev chain), ground/excited-state solvers
+(chemistry-via-VQE, imaginary-time cooling, Krylov/Lanczos, adiabatic evolution),
+finite-temperature physics (Gibbs states & thermodynamics), quantum dynamics (Trotter
+error scaling, Loschmidt echo & DQPTs, OTOC scrambling, entanglement growth), quantum
+chaos (level statistics), metrology (spin squeezing, mixed-state QFI), and the modern
+measurement/tensor-network toolkit (classical shadows, Schmidt decomposition & the area
+law). Open systems, noise, and fault tolerance shipped in v0.8.0.
 
 See the [Algorithms guide](quantum_algorithms_guide) and the
 [CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CHANGELOG.md)

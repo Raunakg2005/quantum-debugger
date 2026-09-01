@@ -25,7 +25,7 @@ def ssh_hamiltonian(cells: int, v: float, w: float) -> np.ndarray:
     H = np.zeros((n, n))
     for c in range(cells):
         a, b = 2 * c, 2 * c + 1
-        H[a, b] = H[b, a] = v            # intracell bond
+        H[a, b] = H[b, a] = v  # intracell bond
         if c + 1 < cells:
             H[b, b + 1] = H[b + 1, b] = w  # intercell bond
     return H

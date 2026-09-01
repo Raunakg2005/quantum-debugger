@@ -98,7 +98,9 @@ def trotter_unitary(terms, time, steps=1, order=1) -> np.ndarray:
     return U
 
 
-def trotter_error_scaling(terms, time=1.0, step_counts=(2, 4, 8, 16, 32), order=1) -> dict:
+def trotter_error_scaling(
+    terms, time=1.0, step_counts=(2, 4, 8, 16, 32), order=1
+) -> dict:
     """
     Measure how the Trotter approximation converges as the number of steps grows.
 

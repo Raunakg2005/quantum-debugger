@@ -22,8 +22,9 @@ import numpy as np
 from scipy.linalg import expm
 
 
-def imaginary_time_evolution(hamiltonian, initial_state=None, dtau: float = 0.1,
-                             steps: int = 200, seed: int = 0) -> dict:
+def imaginary_time_evolution(
+    hamiltonian, initial_state=None, dtau: float = 0.1, steps: int = 200, seed: int = 0
+) -> dict:
     """
     Cool ``initial_state`` toward the ground state of ``hamiltonian`` by normalized
     imaginary-time evolution.

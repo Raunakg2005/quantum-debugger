@@ -22,8 +22,9 @@ import numpy as np
 from .jordan_wigner import jw_annihilation, jw_creation
 
 
-def kitaev_chain_hamiltonian(n: int, mu: float = 0.0, t: float = 1.0,
-                             delta: float = 1.0) -> np.ndarray:
+def kitaev_chain_hamiltonian(
+    n: int, mu: float = 0.0, t: float = 1.0, delta: float = 1.0
+) -> np.ndarray:
     """
     Kitaev-chain Hamiltonian on ``n`` sites: chemical potential ``mu``, hopping ``t``,
     p-wave pairing ``delta``. Returns the dense ``2**n x 2**n`` matrix.
@@ -41,8 +42,9 @@ def kitaev_chain_hamiltonian(n: int, mu: float = 0.0, t: float = 1.0,
     return H
 
 
-def kitaev_ground_degeneracy(n: int, mu: float = 0.0, t: float = 1.0,
-                             delta: float = 1.0) -> dict:
+def kitaev_ground_degeneracy(
+    n: int, mu: float = 0.0, t: float = 1.0, delta: float = 1.0
+) -> dict:
     """
     Diagnose the topological phase of an ``n``-site Kitaev chain via its ground-state
     degeneracy.

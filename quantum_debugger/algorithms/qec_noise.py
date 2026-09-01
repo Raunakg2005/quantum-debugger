@@ -57,10 +57,10 @@ def _recovery_channel(rho, stabilizers, corrections):
 # 3-qubit bit-flip code: stabilizers Z0Z1, Z1Z2; syndrome -> qubit to flip back.
 _BITFLIP_STABS = ["ZZI", "IZZ"]
 _BITFLIP_RECOVERY = {
-    (1, 1): "III",    # no error
-    (-1, 1): "XII",   # error on qubit 0
+    (1, 1): "III",  # no error
+    (-1, 1): "XII",  # error on qubit 0
     (-1, -1): "IXI",  # error on qubit 1
-    (1, -1): "IIX",   # error on qubit 2
+    (1, -1): "IIX",  # error on qubit 2
 }
 
 
@@ -187,7 +187,9 @@ def syndrome_extraction_cycle(p: float, alpha: float = 1.0, beta: float = 0.0) -
     }
 
 
-def repeated_qec_cycles(p: float, cycles: int, alpha: float = 1.0, beta: float = 0.0) -> dict:
+def repeated_qec_cycles(
+    p: float, cycles: int, alpha: float = 1.0, beta: float = 0.0
+) -> dict:
     """
     A logical qubit's *lifetime*: run ``cycles`` rounds of (bit-flip channel of
     strength ``p`` on each qubit -> exact syndrome recovery) on the 3-qubit code,

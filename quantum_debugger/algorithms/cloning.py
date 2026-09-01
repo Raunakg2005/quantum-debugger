@@ -29,9 +29,9 @@ def _bh_isometry() -> np.ndarray:
     V = np.zeros((8, 2), dtype=complex)
     s23, s16 = np.sqrt(2 / 3), np.sqrt(1 / 6)
     # |0> branch: sqrt(2/3)|00>|0>a + sqrt(1/6)(|01> + |10>)|1>a
-    V[0b000, 0] = s23        # clones 00, ancilla 0
-    V[0b101, 0] = s16        # clones 01 (qubit0=1), ancilla 1
-    V[0b110, 0] = s16        # clones 10 (qubit1=1), ancilla 1
+    V[0b000, 0] = s23  # clones 00, ancilla 0
+    V[0b101, 0] = s16  # clones 01 (qubit0=1), ancilla 1
+    V[0b110, 0] = s16  # clones 10 (qubit1=1), ancilla 1
     # |1> branch: sqrt(2/3)|11>|1>a + sqrt(1/6)(|01> + |10>)|0>a
     V[0b111, 1] = s23
     V[0b001, 1] = s16

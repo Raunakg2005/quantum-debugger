@@ -100,7 +100,9 @@ def classical_assignment_maximum() -> dict:
     return {"max_satisfied": best, "total_assignments": 512}
 
 
-def quantum_context_measurement(state_vector, context: str, index: int, seed: int = 0) -> dict:
+def quantum_context_measurement(
+    state_vector, context: str, index: int, seed: int = 0
+) -> dict:
     """
     Jointly measure one context (``context`` = ``"row"`` or ``"col"``, ``index`` in
     0..2) of the magic square on an arbitrary 2-qubit state, by sequential

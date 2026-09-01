@@ -25,7 +25,9 @@ class TestFiveQubitCode:
         for error in _ALL_ERRORS:
             syn = five_qubit_code(1.0, 0.0, error=error)["syndrome"]
             seen[syn] = error
-        assert len(seen) == 16  # 1 + 15 single-qubit errors, all distinct (perfect code)
+        assert (
+            len(seen) == 16
+        )  # 1 + 15 single-qubit errors, all distinct (perfect code)
 
     def test_no_error_has_trivial_syndrome(self):
         r = five_qubit_code(1.0, 0.0, error="I")

@@ -32,7 +32,9 @@ class TestWeakValue:
     def test_amplification_outside_spectrum(self):
         # Z has eigenvalues +/-1, but A_w can be ~ -20.
         pre = np.array([1, 1], dtype=complex) / np.sqrt(2)
-        post = np.array([np.cos(np.pi / 4 + 0.05), -np.sin(np.pi / 4 + 0.05)], dtype=complex)
+        post = np.array(
+            [np.cos(np.pi / 4 + 0.05), -np.sin(np.pi / 4 + 0.05)], dtype=complex
+        )
         aw = weak_value(_Z, pre, post)
         assert abs(aw.real) > 15
 
@@ -47,14 +49,18 @@ class TestWeakMeasurement:
     @pytest.mark.parametrize("eps", [0.5, 0.2, 0.05])
     def test_pointer_shift_converges_to_real_weak_value(self, eps):
         pre = np.array([1, 1], dtype=complex) / np.sqrt(2)
-        post = np.array([np.cos(np.pi / 4 + eps), -np.sin(np.pi / 4 + eps)], dtype=complex)
+        post = np.array(
+            [np.cos(np.pi / 4 + eps), -np.sin(np.pi / 4 + eps)], dtype=complex
+        )
         aw = weak_value(_Z, pre, post)
         shift = weak_measurement_shift(_Z, pre, post, 1e-3) / 1e-3
         assert abs(shift - aw.real) < 1e-2
 
     def test_demo_flags_amplification(self):
         pre = np.array([1, 1], dtype=complex) / np.sqrt(2)
-        post = np.array([np.cos(np.pi / 4 + 0.05), -np.sin(np.pi / 4 + 0.05)], dtype=complex)
+        post = np.array(
+            [np.cos(np.pi / 4 + 0.05), -np.sin(np.pi / 4 + 0.05)], dtype=complex
+        )
         r = weak_value_demo(_Z, pre, post)
         assert r["outside_spectrum"]
         assert r["matches"]

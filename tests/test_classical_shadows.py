@@ -45,8 +45,12 @@ class TestUnbiasedEstimates:
 class TestSingleQubit:
     def test_plus_state(self):
         # |+>: <X>=1, <Y>=0, <Z>=0.
-        r = shadow_estimates(np.array([1, 1], dtype=complex) / np.sqrt(2),
-                             ["X", "Y", "Z"], shots=4000, seed=5)
+        r = shadow_estimates(
+            np.array([1, 1], dtype=complex) / np.sqrt(2),
+            ["X", "Y", "Z"],
+            shots=4000,
+            seed=5,
+        )
         assert abs(r["estimates"]["X"] - 1.0) < 0.15
         assert abs(r["estimates"]["Y"]) < 0.15
         assert abs(r["estimates"]["Z"]) < 0.15

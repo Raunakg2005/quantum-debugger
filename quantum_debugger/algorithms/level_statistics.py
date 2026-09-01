@@ -60,7 +60,9 @@ def poisson_reference(size: int = 5000, samples: int = 20, seed: int = 0) -> flo
     to ``~0.3863``).
     """
     rng = np.random.default_rng(seed)
-    ratios = [level_spacing_ratio(np.sort(rng.uniform(size=size))) for _ in range(samples)]
+    ratios = [
+        level_spacing_ratio(np.sort(rng.uniform(size=size))) for _ in range(samples)
+    ]
     return float(np.mean(ratios))
 
 

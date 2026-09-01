@@ -123,7 +123,7 @@ class TestRepeaterChain:
         r = repeater_chain(0.9, 40)
         traj = r["trajectory"]
         assert all(b < a for a, b in zip(traj, traj[1:]))  # monotone decay
-        assert abs(r["fidelity"] - 0.25) < 0.01            # -> fully mixed value
+        assert abs(r["fidelity"] - 0.25) < 0.01  # -> fully mixed value
 
     def test_long_chain_loses_entanglement(self):
         from quantum_debugger.algorithms import repeater_chain
@@ -212,7 +212,9 @@ class TestDEJMPS:
         assert np.all(np.linalg.eigvalsh(rho) > -1e-12)
         # Pure Phi+ at (1,0,0,0).
         phi_p = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)
-        assert np.allclose(bell_diagonal_state(1, 0, 0, 0), np.outer(phi_p, phi_p.conj()))
+        assert np.allclose(
+            bell_diagonal_state(1, 0, 0, 0), np.outer(phi_p, phi_p.conj())
+        )
 
 
 if __name__ == "__main__":

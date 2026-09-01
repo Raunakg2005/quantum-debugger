@@ -9,28 +9,49 @@
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A powerful Python library for quantum circuit debugging, state inspection, performance analysis, and quantum machine learning. From basic circuits to QML with one-line AutoML.
+## What's New in v1.0.0
 
-## What's New in v0.7.0 (in development)
+Scale & tensor networks — **breaking the exponential state-vector wall**:
 
-A large, genuinely gate-based **quantum algorithms library** (`quantum_debugger.algorithms`),
-every routine verified against its known outcome:
+- **Matrix Product State Simulator (`MPS`)** — `O(n·χ²)` memory instead of `2ⁿ`. Represents large, lightly-entangled quantum systems (e.g. **100-qubit GHZ states**, area-law ground states) with exact single-qubit gates, SVD-truncated two-qubit gates, and long-range connectivity via SWAP networks.
+- **Matrix Product Operators (`MPO`)** — compact tensor chains for TFIM (`tfim_mpo`) and Heisenberg (`heisenberg_mpo`) models; evaluate `<ψ|H|ψ>` in `O(n·χ²·D²)` time without dense matrices.
+- **TEBD Real-Time Dynamics** (`tebd_tfim`, `tebd_magnetization`) — Trotterized time evolution on the MPS engine with automatic SVD bond truncation.
+- **Imaginary-Time DMRG-Style Ground States** (`imaginary_tebd_ground_state`) — cool MPS into true ground states on 24+ qubit chains unreachable by dense diagonalizers.
+- **Arbitrary Pauli & Energy Readout** — `MPS.expectation_pauli` and `MPS.energy` evaluate arbitrary Pauli strings and Hamiltonians by tensor contraction.
+- **Born-Rule Measurement Sampling** (`MPS.sample`) — sequential conditional sampling with precomputed environments, drawing shots directly from the MPS.
+- **Circuit-to-MPS Converter** (`MPS.from_circuit`) — execute `QuantumCircuit` instances directly on the tensor-network engine.
 
-- **Shor's algorithm** — quantum period finding that genuinely factors (15 → 3×5, 21 → 3×7).
-- **Quantum error correction** — 3-qubit bit-flip / phase-flip codes and the 9-qubit
-  Shor code (corrects an arbitrary single-qubit error) with real stabilizer syndromes.
-- **Clifford / stabilizer simulator** — a second engine (CHP tableau) that runs
-  hundred-qubit Clifford circuits instantly.
-- **Hamiltonian simulation** (Trotter-Suzuki), **gate decomposition** (ZYZ / ABC / KAK),
-  **randomized benchmarking**, **Draper QFT adder**, a **QAOA MaxCut solver**,
-  entangled **state preparation** (GHZ / W / graph), **teleportation**, **superdense
-  coding**, **state tomography**, plus the textbook set (QFT, Grover, QPE, HHL,
-  Bernstein-Vazirani, Deutsch-Jozsa, quantum walk/counting, amplitude estimation).
-- **Advanced QML/QRL** — VQD excited states, quantum autoencoder, QCNN,
-  data-reuploading classifier, multi-class VQC, ansatz analysis, SPSA, plus Policy
-  Gradient, DQN, and Actor-Critic reinforcement learning.
+See the [Matrix Product States Guide](docs/mps_guide.md) and [CHANGELOG.md](CHANGELOG.md).
 
-See [CHANGELOG.md](CHANGELOG.md) for the full list.
+## What's New in v0.9.1
+
+Correctness patch: **`DepolarizingNoise.get_kraus_operators()`** now implements the same
+channel as `apply()` and the class docstring — the Pauli-error convention
+`ρ → (1−p)ρ + (p/3)(XρX + YρY + ZρZ)` (`K₀ = √(1−p)·I`, `K₁₋₃ = √(p/3)·{X, Y, Z}`). The old
+`√(p/4)` weighting made `StochasticNoiseSampler`'s Monte-Carlo depolarizing noise `4/3×` too
+strong for a given `p`. Trace preservation is unchanged; channel-equivalence and sampler
+regression tests added. See [CHANGELOG.md](CHANGELOG.md).
+
+## What's New in v0.9.0
+
+Quantum **chemistry, many-body physics & advanced simulation** — every routine verified
+against a closed form or an independent computation:
+
+- **Fermionic systems** — Jordan-Wigner transform, the Fermi-Hubbard model, and the
+  Kitaev topological chain (Majorana edge modes).
+- **Ground- & excited-state solvers** — chemistry via VQE with Pauli decomposition,
+  imaginary-time cooling, Krylov/Lanczos, and adiabatic evolution.
+- **Finite-temperature physics** — Gibbs states and thermodynamic quantities.
+- **Quantum dynamics** — Trotter error scaling, the Loschmidt echo & dynamical quantum
+  phase transitions, out-of-time-order correlators (scrambling), and entanglement growth.
+- **Quantum chaos** — level-spacing statistics (GOE vs Poisson).
+- **Metrology** — spin squeezing and mixed-state quantum Fisher information.
+- **Modern measurement & tensor-network toolkit** — classical shadows, Schmidt
+  decomposition, and the area law.
+
+(Open systems, noise, and fault tolerance shipped in v0.8.0.)
+
+See [CHANGELOG.md](CHANGELOG.md) for the full, itemized list.
 
 ## What's New in v0.7.0
 
@@ -46,7 +67,7 @@ A **second simulation engine** plus a large, verified quantum-algorithms library
 - **VQE** ground-state solver converges to machine precision on larger chains
   (BFGS optimizer).
 
-### In development (0.8.0-dev)
+### v0.8.0 — density-matrix engine & open systems
 - **Density-matrix simulator** (`DensityMatrix`) — open quantum systems with Kraus
   channels, Lindblad master-equation evolution, and channel metrics (process /
   average gate fidelity, Choi matrix, CPTP checks).
@@ -415,5 +436,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 0.7.1 (on PyPI) · 0.8.0-dev (in development)  
-**Last Updated:** July 2026
+**Version:** 1.0.0 (latest on PyPI) · 0.9.1, 0.9.0, 0.8.0 (previous)  
+**Last Updated:** September 2026

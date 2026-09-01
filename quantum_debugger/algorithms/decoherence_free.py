@@ -28,7 +28,9 @@ from numpy.polynomial.hermite import hermgauss
 from ..density_matrix import DensityMatrix
 
 
-def collective_dephasing(dm: DensityMatrix, sigma: float, nodes: int = 41) -> DensityMatrix:
+def collective_dephasing(
+    dm: DensityMatrix, sigma: float, nodes: int = 41
+) -> DensityMatrix:
     """
     Apply collective Gaussian dephasing to a density matrix: average
     ``U(phi) rho U(phi)-dagger`` over ``phi ~ N(0, sigma^2)`` with
