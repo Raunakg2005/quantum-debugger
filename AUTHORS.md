@@ -37,11 +37,10 @@ If you use quantum-debugger in your research, please cite:
 
 ```bibtex
 @software{quantum_debugger_2026,
-  title = {Quantum Debugger: Production-Grade Quantum Machine Learning Library},
-  author = {Gupta, Raunak Kumar},
+  title = {Quantum Debugger: Interactive Circuit Debugging, Multi-Engine Simulation, and Quantum Machine Learning Framework},
+  author = {Raunak Kumar Gupta},
   year = {2026},
-  url = {https://github.com/Raunakg2005/quantum-debugger},
-  note = {Supervised by Dr. Vaibhav Prakash Vasani, K.J. Somaiya School of Engineering}
+  url = {https://github.com/Raunakg2005/quantum-debugger}
 }
 ```
 
