@@ -1,6 +1,6 @@
 # Quantum Debugger Documentation
 
-**Version 1.0.0** - Interactive quantum circuit debugger with Quantum Machine Learning and Tensor Networks
+**Version 1.0.1** - Interactive quantum circuit debugger with Quantum Machine Learning and Tensor Networks
 
 Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, quantum machine learning, and large-scale tensor-network simulation.
 

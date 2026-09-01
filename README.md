@@ -436,5 +436,5 @@ If you use quantum-debugger in your research, please cite:
 
 ---
 
-**Version:** 1.0.0 (latest on PyPI) · 0.9.1, 0.9.0, 0.8.0 (previous)  
+**Version:** 1.0.1 (latest on PyPI) · 1.0.0, 0.9.1, 0.9.0 (previous)  
 **Last Updated:** September 2026

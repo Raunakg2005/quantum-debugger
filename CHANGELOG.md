@@ -5,6 +5,14 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1]
+
+Theme: documentation and metadata refresh.
+
+### Changed
+- Updated BibTeX software citation author to full name (`Raunak Kumar Gupta`) and modernized project title across README and documentation.
+- Enriched documentation tutorials and examples for Matrix Product States (MPS), TEBD dynamics, VQE molecular chemistry, and open systems noise models.
+
 ## [1.0.0]
 
 Theme: scale & tensor networks — breaking the exponential state-vector wall. The
