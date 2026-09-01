@@ -31,7 +31,9 @@ class TestGroundState:
     def test_deep_paramagnet(self):
         # Large field: ground state ~ |+...+>, energy ~ -h * n.
         n, h = 6, 5.0
-        r = imaginary_tebd_ground_state(n, j_coupling=0.2, field=h, dtau=0.02, steps=400)
+        r = imaginary_tebd_ground_state(
+            n, j_coupling=0.2, field=h, dtau=0.02, steps=400
+        )
         assert r["error"] < 1e-2
 
 
@@ -39,15 +41,22 @@ class TestScale:
     def test_large_chain(self):
         # 24-qubit ground state -- beyond the dense diagonalizer.
         r = imaginary_tebd_ground_state(24, 1.0, 1.0, dtau=0.05, steps=150, max_bond=12)
-        assert "exact_energy" not in r          # too big to diagonalize
-        assert r["energy"] < 0                   # ferromagnetic-ish, negative
+        assert "exact_energy" not in r  # too big to diagonalize
+        assert r["energy"] < 0  # ferromagnetic-ish, negative
         assert r["bond"] <= 12
 
     def test_extensive_energy(self):
         # Ground energy per site is roughly constant (extensivity).
-        e12 = imaginary_tebd_ground_state(12, 1.0, 1.0, dtau=0.05, steps=200)["energy"] / 12
-        e20 = imaginary_tebd_ground_state(20, 1.0, 1.0, dtau=0.05, steps=200,
-                                          max_bond=16)["energy"] / 20
+        e12 = (
+            imaginary_tebd_ground_state(12, 1.0, 1.0, dtau=0.05, steps=200)["energy"]
+            / 12
+        )
+        e20 = (
+            imaginary_tebd_ground_state(
+                20, 1.0, 1.0, dtau=0.05, steps=200, max_bond=16
+            )["energy"]
+            / 20
+        )
         assert abs(e12 - e20) < 0.1
 
 

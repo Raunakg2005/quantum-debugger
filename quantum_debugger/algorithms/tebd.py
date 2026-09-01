@@ -22,7 +22,9 @@ _Z = np.array([[1, 0], [0, -1]], dtype=complex)
 _I = np.eye(2, dtype=complex)
 
 
-def tfim_bond_gate(n: int, i: int, dt: float, j_coupling: float, field: float) -> np.ndarray:
+def tfim_bond_gate(
+    n: int, i: int, dt: float, j_coupling: float, field: float
+) -> np.ndarray:
     """
     Two-site Trotter gate ``exp(-i h_{i,i+1} dt)`` for the transverse-field Ising model
     ``H = -J sum Z Z - h sum X`` on a chain of ``n`` sites. The single-site field is
@@ -31,15 +33,20 @@ def tfim_bond_gate(n: int, i: int, dt: float, j_coupling: float, field: float) -
     hx_i = field * (0.5 if i > 0 else 1.0)
     hx_j = field * (0.5 if i < n - 2 else 1.0)
     h_local = (
-        -j_coupling * np.kron(_Z, _Z)
-        - hx_i * np.kron(_I, _X)
-        - hx_j * np.kron(_X, _I)
+        -j_coupling * np.kron(_Z, _Z) - hx_i * np.kron(_I, _X) - hx_j * np.kron(_X, _I)
     )
     return expm(-1j * h_local * dt)
 
 
-def tebd_tfim(n: int, time: float, steps: int = 100, j_coupling: float = 1.0,
-              field: float = 1.0, max_bond: int = 16, initial: "MPS" = None) -> "MPS":
+def tebd_tfim(
+    n: int,
+    time: float,
+    steps: int = 100,
+    j_coupling: float = 1.0,
+    field: float = 1.0,
+    max_bond: int = 16,
+    initial: "MPS" = None,
+) -> "MPS":
     """
     Evolve a TFIM chain of ``n`` sites for total ``time`` with ``steps`` Trotter steps,
     on an MPS truncated to ``max_bond``. Starts from ``|0...0>`` unless an ``initial``
@@ -77,16 +84,19 @@ def _imag_bond_gate(n, i, dtau, j_coupling, field):
     hx_i = field * (0.5 if i > 0 else 1.0)
     hx_j = field * (0.5 if i < n - 2 else 1.0)
     h_local = (
-        -j_coupling * np.kron(_Z, _Z)
-        - hx_i * np.kron(_I, _X)
-        - hx_j * np.kron(_X, _I)
+        -j_coupling * np.kron(_Z, _Z) - hx_i * np.kron(_I, _X) - hx_j * np.kron(_X, _I)
     )
     return expm(-h_local * dtau)  # imaginary time -> real exponential (cooling)
 
 
-def imaginary_tebd_ground_state(n: int, j_coupling: float = 1.0, field: float = 1.0,
-                                dtau: float = 0.05, steps: int = 300,
-                                max_bond: int = 16) -> dict:
+def imaginary_tebd_ground_state(
+    n: int,
+    j_coupling: float = 1.0,
+    field: float = 1.0,
+    dtau: float = 0.05,
+    steps: int = 300,
+    max_bond: int = 16,
+) -> dict:
     """
     Find the TFIM ground state of an ``n``-site chain by imaginary-time TEBD -- apply
     ``e^{-h_{j,j+1} dtau}`` bond gates (cooling), renormalizing each step, until the
@@ -124,8 +134,14 @@ def imaginary_tebd_ground_state(n: int, j_coupling: float = 1.0, field: float = 
     return result
 
 
-def tebd_magnetization(n: int, time: float, steps: int = 100, j_coupling: float = 1.0,
-                       field: float = 1.0, max_bond: int = 16) -> dict:
+def tebd_magnetization(
+    n: int,
+    time: float,
+    steps: int = 100,
+    j_coupling: float = 1.0,
+    field: float = 1.0,
+    max_bond: int = 16,
+) -> dict:
     """
     Quench a TFIM chain from the all-up state and read out the transverse magnetization.
 

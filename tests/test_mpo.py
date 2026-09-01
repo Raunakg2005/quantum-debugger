@@ -38,7 +38,13 @@ class TestMPOExpectation:
         psi = psi / np.linalg.norm(psi)
         H = hamiltonian_matrix(tfim_hamiltonian(n, 0.7, 1.0), n)
         m = MPS.from_statevector(psi, max_bond=16)
-        assert abs(mpo_expectation(m, tfim_mpo(n, 1.0, 0.7)) - np.real(psi.conj() @ H @ psi)) < 1e-9
+        assert (
+            abs(
+                mpo_expectation(m, tfim_mpo(n, 1.0, 0.7))
+                - np.real(psi.conj() @ H @ psi)
+            )
+            < 1e-9
+        )
 
     def test_large_ghz(self):
         n = 30

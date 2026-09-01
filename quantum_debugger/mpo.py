@@ -30,9 +30,9 @@ def tfim_mpo(n: int, j_coupling: float = 1.0, field: float = 1.0) -> list:
     tensors = []
     for i in range(n):
         if i == 0:
-            tensors.append(W[2:3, :, :, :])   # left boundary row
+            tensors.append(W[2:3, :, :, :])  # left boundary row
         elif i == n - 1:
-            tensors.append(W[:, :, :, 0:1])   # right boundary column
+            tensors.append(W[:, :, :, 0:1])  # right boundary column
         else:
             tensors.append(W)
     return tensors
@@ -71,8 +71,8 @@ def mpo_expectation(mps, mpo) -> float:
     """
     E = np.ones((1, 1, 1), dtype=complex)  # (bra bond, mpo bond, ket bond)
     for A, W in zip(mps.tensors, mpo):
-        E = np.einsum("lmn,nSr->lmSr", E, A)        # absorb ket tensor
-        E = np.einsum("lmSr,mSTw->lTrw", E, W)      # apply operator tensor
+        E = np.einsum("lmn,nSr->lmSr", E, A)  # absorb ket tensor
+        E = np.einsum("lmSr,mSTw->lTrw", E, W)  # apply operator tensor
         E = np.einsum("lTrw,lTb->wrb", E, np.conj(A))  # absorb bra tensor
         E = E.transpose(2, 0, 1)
     return float(np.real(E[0, 0, 0]))
@@ -93,5 +93,9 @@ def mpo_to_matrix(mpo) -> np.ndarray:
     M = T.reshape(dim, dim)
     # little-endian reordering to match the rest of the library
     perm = list(range(n - 1, -1, -1))
-    Mt = M.reshape([2] * (2 * n)).transpose(perm + [n + p for p in perm]).reshape(dim, dim)
+    Mt = (
+        M.reshape([2] * (2 * n))
+        .transpose(perm + [n + p for p in perm])
+        .reshape(dim, dim)
+    )
     return Mt

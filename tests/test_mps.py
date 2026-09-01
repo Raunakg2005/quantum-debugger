@@ -105,7 +105,7 @@ class TestScale:
         assert m.max_bond_dimension() == 2
         assert abs(m.norm() - 1.0) < 1e-9
         assert abs(m.correlation(_Z, 0, _Z, n - 1) - 1.0) < 1e-9  # perfectly correlated
-        assert abs(m.expectation(_X, 0)) < 1e-9                    # <X> = 0
+        assert abs(m.expectation(_X, 0)) < 1e-9  # <X> = 0
 
     def test_product_circuit_stays_bond_one(self):
         n = 50
@@ -174,7 +174,6 @@ class TestSampling:
         assert sum(m.sample(137, seed=3).values()) == 137
 
 
-
 class TestEntanglementEntropy:
     def test_matches_dense(self):
         from quantum_debugger.density_matrix import DensityMatrix
@@ -220,20 +219,25 @@ class TestEntanglementEntropy:
         assert len(ent) == n - 1
         assert all(abs(s - 1.0) < 1e-9 for s in ent)
 
+
 class TestOverlapFidelity:
     def test_overlap_matches_dense(self):
         rng = np.random.default_rng(0)
         n = 4
-        a = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); a /= np.linalg.norm(a)
-        b = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); b /= np.linalg.norm(b)
+        a = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        a /= np.linalg.norm(a)
+        b = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        b /= np.linalg.norm(b)
         ov = MPS.from_statevector(a).overlap(MPS.from_statevector(b))
         assert abs(ov - np.vdot(b, a)) < 1e-9
 
     def test_fidelity_matches_dense(self):
         rng = np.random.default_rng(1)
         n = 4
-        a = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); a /= np.linalg.norm(a)
-        b = rng.normal(size=2**n) + 1j * rng.normal(size=2**n); b /= np.linalg.norm(b)
+        a = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        a /= np.linalg.norm(a)
+        b = rng.normal(size=2**n) + 1j * rng.normal(size=2**n)
+        b /= np.linalg.norm(b)
         fid = MPS.from_statevector(a).fidelity(MPS.from_statevector(b))
         assert abs(fid - abs(np.vdot(b, a)) ** 2) < 1e-9
 
@@ -244,8 +248,9 @@ class TestOverlapFidelity:
         assert abs(m.fidelity(m) - 1.0) < 1e-9
 
     def test_orthogonal_states_zero_overlap(self):
-        a = MPS.zero_state(3)              # |000>
-        b = MPS.zero_state(3); b.apply_single(_X, 0)  # |001>
+        a = MPS.zero_state(3)  # |000>
+        b = MPS.zero_state(3)
+        b.apply_single(_X, 0)  # |001>
         assert abs(a.overlap(b)) < 1e-12
 
     def test_large_ghz_self_fidelity(self):
@@ -259,6 +264,7 @@ class TestOverlapFidelity:
     def test_mismatched_size_rejected(self):
         with pytest.raises(ValueError):
             MPS.zero_state(3).overlap(MPS.zero_state(4))
+
 
 class TestLongRangeGates:
     @pytest.mark.parametrize("a,b", [(0, 2), (0, 4), (1, 3), (0, 3)])
@@ -277,7 +283,8 @@ class TestLongRangeGates:
 
     def test_adjacent_delegates(self):
         rng = np.random.default_rng(0)
-        psi = rng.normal(size=16) + 1j * rng.normal(size=16); psi /= np.linalg.norm(psi)
+        psi = rng.normal(size=16) + 1j * rng.normal(size=16)
+        psi /= np.linalg.norm(psi)
         m = MPS.from_statevector(psi)
         m.apply_two_long_range(_CNOT, 1, 2)
         ref = apply_gate_tensor(np, psi, _CNOT, [1, 2], 4)
@@ -294,23 +301,34 @@ class TestLongRangeGates:
         with pytest.raises(ValueError):
             MPS.zero_state(4).apply_two_long_range(_CNOT, 3, 1)
 
+
 class TestFromCircuit:
     def test_matches_state_vector(self):
         from quantum_debugger.core.circuit import QuantumCircuit
 
         qc = QuantumCircuit(5)
-        qc.h(0); qc.cnot(0, 1); qc.cnot(3, 1); qc.x(2)
-        qc.cnot(4, 2); qc.h(3); qc.cnot(2, 0)
+        qc.h(0)
+        qc.cnot(0, 1)
+        qc.cnot(3, 1)
+        qc.x(2)
+        qc.cnot(4, 2)
+        qc.h(3)
+        qc.cnot(2, 0)
         m = MPS.from_circuit(qc, max_bond=32)
-        assert np.allclose(m.to_statevector(), qc.get_statevector().state_vector, atol=1e-9)
+        assert np.allclose(
+            m.to_statevector(), qc.get_statevector().state_vector, atol=1e-9
+        )
 
     def test_reversed_cnot(self):
         from quantum_debugger.core.circuit import QuantumCircuit
 
         qc = QuantumCircuit(3)
-        qc.x(2); qc.cnot(2, 0)  # control > target
+        qc.x(2)
+        qc.cnot(2, 0)  # control > target
         m = MPS.from_circuit(qc)
-        assert np.allclose(m.to_statevector(), qc.get_statevector().state_vector, atol=1e-9)
+        assert np.allclose(
+            m.to_statevector(), qc.get_statevector().state_vector, atol=1e-9
+        )
 
     def test_ghz_circuit_bond_two(self):
         from quantum_debugger.core.circuit import QuantumCircuit
@@ -330,6 +348,7 @@ class TestFromCircuit:
         qc.toffoli(0, 1, 2)  # 8x8 gate -- must be decomposed first
         with pytest.raises(NotImplementedError):
             MPS.from_circuit(qc)
+
 
 class TestPauliExpectation:
     def test_matches_dense_all_strings(self):
@@ -352,13 +371,14 @@ class TestPauliExpectation:
         m.apply_single(_H, 0)
         for q in range(n - 1):
             m.apply_two(_CNOT, q)
-        assert abs(m.expectation_pauli("X" * n) - 1.0) < 1e-9        # X^n stabilizes GHZ
+        assert abs(m.expectation_pauli("X" * n) - 1.0) < 1e-9  # X^n stabilizes GHZ
         assert abs(m.expectation_pauli("Z" + "I" * (n - 2) + "Z") - 1.0) < 1e-9
 
     def test_identity_string_is_one(self):
         m = MPS.zero_state(4)
         m.apply_single(_H, 0)
         assert abs(m.expectation_pauli("IIII") - 1.0) < 1e-9
+
 
 class TestHamiltonianEnergy:
     def test_tfim_energy_matches_dense(self):
@@ -374,7 +394,10 @@ class TestHamiltonianEnergy:
         assert abs(m.energy(terms) - dense) < 1e-9
 
     def test_hubbard_energy_via_pauli_decompose(self):
-        from quantum_debugger.algorithms import pauli_decompose, fermi_hubbard_hamiltonian
+        from quantum_debugger.algorithms import (
+            pauli_decompose,
+            fermi_hubbard_hamiltonian,
+        )
 
         H = fermi_hubbard_hamiltonian(2, 1.0, 3.0)
         terms = pauli_decompose(H)
@@ -394,7 +417,6 @@ class TestHamiltonianEnergy:
         for q in range(n - 1):
             m.apply_two(_CNOT, q)
         assert abs(m.energy(tfim_hamiltonian(n, 1.0, 1.0)) - (-(n - 1))) < 1e-9
-
 
 
 if __name__ == "__main__":

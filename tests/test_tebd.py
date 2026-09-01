@@ -39,8 +39,15 @@ class TestAccuracy:
         exact = expm(-1j * H * t) @ psi0
 
         def err(steps):
-            m = tebd_tfim(n, t, steps=steps, j_coupling=j, field=h, max_bond=32,
-                          initial=MPS.from_statevector(psi0, max_bond=32))
+            m = tebd_tfim(
+                n,
+                t,
+                steps=steps,
+                j_coupling=j,
+                field=h,
+                max_bond=32,
+                initial=MPS.from_statevector(psi0, max_bond=32),
+            )
             return 1 - abs(np.vdot(exact, m.to_statevector())) ** 2
 
         assert err(400) < err(20)

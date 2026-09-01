@@ -74,7 +74,9 @@ class MPS:
         return mps
 
     @classmethod
-    def from_statevector(cls, state_vector, max_bond: int = None, tol: float = 1e-12) -> "MPS":
+    def from_statevector(
+        cls, state_vector, max_bond: int = None, tol: float = 1e-12
+    ) -> "MPS":
         """
         Exact MPS for a dense ``state_vector`` via sequential SVD (truncated to
         ``max_bond`` if given). Qubit ``i`` becomes site ``i`` (little-endian).
@@ -130,8 +132,8 @@ class MPS:
         E = np.ones((1, 1), dtype=complex)  # (bra bond, ket bond)
         for i, A in enumerate(self.tensors):
             Op = ops.get(i, eye)
-            tmp = np.einsum("lm,msr->lsr", E, A)          # ket contracted
-            tmp = np.einsum("ts,lsr->ltr", Op, tmp)       # apply operator
+            tmp = np.einsum("lm,msr->lsr", E, A)  # ket contracted
+            tmp = np.einsum("ts,lsr->ltr", Op, tmp)  # apply operator
             E = np.einsum("lta,ltr->ar", np.conj(A), tmp)  # bra contracted
         return complex(E[0, 0])
 
@@ -169,7 +171,7 @@ class MPS:
         U, S, Vh = np.linalg.svd(mat, full_matrices=False)
         keep = S > 1e-14
         if self.max_bond is not None:
-            keep[self.max_bond:] = False
+            keep[self.max_bond :] = False
         U, S, Vh = U[:, keep], S[keep], Vh[keep, :]
         chi_new = len(S)
         self.tensors[i] = U.reshape(chi_l, 2, chi_new)
@@ -240,7 +242,9 @@ class MPS:
         n = len(T)
         for i in range(n - 1, 0, -1):
             chi_l, d, chi_r = T[i].shape
-            U, S, Vh = np.linalg.svd(T[i].reshape(chi_l, d * chi_r), full_matrices=False)
+            U, S, Vh = np.linalg.svd(
+                T[i].reshape(chi_l, d * chi_r), full_matrices=False
+            )
             T[i] = Vh.reshape(len(S), d, chi_r)
             T[i - 1] = np.tensordot(T[i - 1], U * S, axes=(2, 0))
 
@@ -248,7 +252,9 @@ class MPS:
         carry = T[0]
         for i in range(n - 1):
             chi_l, d, chi_r = carry.shape
-            U, S, Vh = np.linalg.svd(carry.reshape(chi_l * d, chi_r), full_matrices=False)
+            U, S, Vh = np.linalg.svd(
+                carry.reshape(chi_l * d, chi_r), full_matrices=False
+            )
             S = S / np.linalg.norm(S)
             s2 = S**2
             s2 = s2[s2 > 1e-14]
@@ -325,8 +331,10 @@ class MPS:
         Two-point correlation ``<psi| O_a O_b |psi>`` for single-qubit operators on
         ``qubit_a`` and ``qubit_b`` (contraction, no dense state).
         """
-        ops = {qubit_a: np.asarray(obs_a, dtype=complex),
-               qubit_b: np.asarray(obs_b, dtype=complex)}
+        ops = {
+            qubit_a: np.asarray(obs_a, dtype=complex),
+            qubit_b: np.asarray(obs_b, dtype=complex),
+        }
         return float(np.real(self._environment_scan(ops) / self._environment_scan({})))
 
     # --- operators & reduced states ----------------------------------------
@@ -418,6 +426,7 @@ class MPS:
         Quantum mutual information ``I(a:b) = S(a) + S(b) - S(ab)`` between two qubits
         (bits), from their reduced density matrices -- total correlation across the pair.
         """
+
         def vn(rho):
             vals = np.linalg.eigvalsh(rho).real
             vals = vals[vals > 1e-12]
@@ -487,7 +496,10 @@ class MPS:
         """
         counts = self.sample(shots, seed)
         best = max(counts, key=counts.get)
-        return {"bitstring": best, "probability": self.probability([int(c) for c in best])}
+        return {
+            "bitstring": best,
+            "probability": self.probability([int(c) for c in best]),
+        }
 
     def structure_factor(self, observable, momentum: float) -> float:
         """
@@ -500,7 +512,11 @@ class MPS:
         total = 0.0 + 0j
         for i in range(n):
             for j in range(n):
-                cij = self.expectation(O @ O, i) if i == j else self.correlation(O, i, O, j)
+                cij = (
+                    self.expectation(O @ O, i)
+                    if i == j
+                    else self.correlation(O, i, O, j)
+                )
                 total += np.exp(1j * momentum * (i - j)) * cij
         return float(np.real(total) / n)
 
@@ -531,7 +547,9 @@ class MPS:
         return cls(tensors, max_bond)
 
     @classmethod
-    def random(cls, n: int, bond: int = 4, seed: int = 0, max_bond: int = None) -> "MPS":
+    def random(
+        cls, n: int, bond: int = 4, seed: int = 0, max_bond: int = None
+    ) -> "MPS":
         """
         A random MPS on ``n`` qubits with bond dimension ``bond`` (bonds taper to 1 at
         the ends). Normalized. Useful for testing and benchmarking.
@@ -628,7 +646,10 @@ class MPS:
         Energy variance ``<H^2> - <H>^2`` of a Pauli-sum Hamiltonian ``terms`` -- zero
         iff the MPS is an exact eigenstate (a convergence check for DMRG/imaginary TEBD).
         """
-        from .algorithms.hamiltonian_simulation import hamiltonian_matrix, pauli_decompose
+        from .algorithms.hamiltonian_simulation import (
+            hamiltonian_matrix,
+            pauli_decompose,
+        )
 
         H = hamiltonian_matrix(terms, self.n)
         H2_terms = pauli_decompose(H @ H)
@@ -654,13 +675,17 @@ class MPS:
         n = len(T)
         for i in range(n - 1, 0, -1):
             chi_l, d, chi_r = T[i].shape
-            U, S, Vh = np.linalg.svd(T[i].reshape(chi_l, d * chi_r), full_matrices=False)
+            U, S, Vh = np.linalg.svd(
+                T[i].reshape(chi_l, d * chi_r), full_matrices=False
+            )
             T[i] = Vh.reshape(len(S), d, chi_r)
             T[i - 1] = np.tensordot(T[i - 1], U * S, axes=(2, 0))
         carry = T[0]
         for i in range(n - 1):
             chi_l, d, chi_r = carry.shape
-            U, S, Vh = np.linalg.svd(carry.reshape(chi_l * d, chi_r), full_matrices=False)
+            U, S, Vh = np.linalg.svd(
+                carry.reshape(chi_l * d, chi_r), full_matrices=False
+            )
             S = S / np.linalg.norm(S)
             if i == bond:
                 return S**2
