@@ -182,12 +182,12 @@ python -m ipykernel install --user --name quantum-env
 
 After completing notebooks:
 1. Try with your own data
-2. Explore [documentation](../README.md)
-3. Check [V0.6.0 features](../V06_FEATURES.md)
+2. Explore [online documentation](https://quantum-debugger.readthedocs.io/en/latest/)
+3. Learn about [QSVT and Modern Primitives](../docs/qsvt_guide.md) and [Matrix Product States](../docs/mps_guide.md)
 4. Join discussions on [GitHub](https://github.com/Raunakg2005/quantum-debugger)
 
 ---
 
-**Version:** v0.6.0  
-**Last Updated:** January 14, 2026  
+**Version:** v1.1.0  
+**Last Updated:** October 2026  
 **Difficulty:** Beginner to Advanced

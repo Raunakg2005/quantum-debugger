@@ -1,6 +1,6 @@
 # Examples and Tutorials
 
-This page provides practical examples demonstrating the capabilities of QuantumDebugger v1.0.0, from interactive circuit debugging and Matrix Product States (MPS) to quantum chemistry with VQE, noise simulation, and framework integrations.
+This page provides practical examples demonstrating the capabilities of QuantumDebugger v1.1.0, from interactive circuit debugging, Quantum Singular Value Transformation (QSVT), and Matrix Product States (MPS) to quantum chemistry with VQE, noise simulation, and framework integrations.
 
 ---
 
@@ -255,8 +255,42 @@ print("Converted from Cirq:", qd_from_cirq.get_statevector())
 
 ---
 
+## 9. Quantum Singular Value Transformation (QSVT) & Modern Primitives (v1.1.0)
+
+Apply the unifying framework of modern quantum algorithms: Quantum Signal Processing (QSP), block encoding, qubitization, Hamiltonian simulation, and quantum linear systems:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import (
+    block_encode,
+    chebyshev_of_matrix,
+    hamiltonian_simulation_qsvt,
+    solve_linear_system_qsvt,
+)
+
+# 1. Block encode a Hermitian matrix and generate Chebyshev matrix polynomials via quantum walk
+A = np.array([[0.5, 0.2], [0.2, -0.4]], dtype=complex)
+U = block_encode(A)
+T3_walk = chebyshev_of_matrix(A, degree=3)  # <0|W^3|0> = T_3(A)
+print("Matrix Chebyshev T_3(A):\n", T3_walk)
+
+# 2. Hamiltonian simulation e^{-iHt} matching exact unitary diagonalization
+sim = hamiltonian_simulation_qsvt(A, time=1.0, degree=20)
+print("Simulation error vs exact diagonalization:", sim["error"])
+print("Simulation unitarity error:", sim["unitarity_error"])
+
+# 3. Quantum linear systems: solve Ax = b via optimal polynomial inversion
+b = np.array([1.0, 2.0], dtype=complex)
+res = solve_linear_system_qsvt(A, b, degree=30)
+print("QSVT solution x:", res["solution"])
+print("State fidelity to exact classical solve:", res["fidelity"])
+```
+
+---
+
 ## More Resources & Community
 
+- Explore the comprehensive [QSVT & Modern Primitives Guide](qsvt_guide.md)
 - Explore the [Quantum Algorithms Guide](quantum_algorithms_guide.md)
 - Learn about [Matrix Product States](mps_guide.md)
 - Check out example notebooks on [GitHub](https://github.com/Raunakg2005/quantum-debugger/tree/main/examples)

@@ -5,6 +5,138 @@ All notable changes to QuantumDebugger will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.1.0]
+
+Theme: QSVT & modern algorithm primitives — the unifying framework behind today's
+quantum algorithms, built bottom-up and verified at every layer. **Quantum Signal
+Processing** (designable polynomials of a scalar, Chebyshev at zero phase); the two
+input models — **block encoding** (a matrix in the corner of a unitary) and **LCU**
+(a Pauli sum via PREPARE/SELECT) — plus **qubitization** (matrix Chebyshev
+polynomials from a quantum walk); **QSVT** itself (verified to apply the same scalar
+function eigenvalue-by-eigenvalue — the theorem, to machine precision); and the
+headline applications built on it: **Hamiltonian simulation** `e^{-iHt}` and
+**quantum linear systems** `A^{-1}b`, each matching exact diagonalization. The single
+primitive from which amplitude amplification, Hamiltonian simulation, and quantum
+linear algebra all descend.
+
+### Added
+- **QSVT matrix functions on a sub-interval** (`algorithms.matrix_function_on_interval`)
+  — the interval-aware companion to the `[-1,1]` fit: for a function analytic only on a
+  positive sub-interval `[a,b]` (roots, log), rescale to `y = (2A-(a+b)I)/(b-a)` and fit
+  there so the Chebyshev series stays on the analytic region and converges geometrically.
+  Verified against the exact matrix function.
+- **Matrix sign function** (`algorithms.matrix_sign_qsvt`) — `sign(A)` (`+1`/`-1` on the
+  positive/negative eigenspaces) via an erf-smoothed sign whose sharpness matches the
+  spectral gap; verified against the exact sign on gapped spectra (`~1e-5`).
+- **Spectral projectors & eigenvalue thresholding** (`algorithms.spectral_projector_qsvt`)
+  — `(I ± sign(A - threshold))/2`, the projector onto eigenvalues above/below a cut;
+  verified idempotent and equal to the exact spectral projector.
+- **Matrix square root & inverse square root** (`algorithms.matrix_sqrt_qsvt`,
+  `matrix_inverse_sqrt_qsvt`) — `sqrt(A)` (with `sqrt(A)^2 = A`) and the whitening
+  `A^{-1/2}` (`A^{-1/2} A A^{-1/2} = I`), interval-rescaled; machine-precision against
+  `scipy.linalg.sqrtm`.
+- **General matrix power** (`algorithms.matrix_power_qsvt`) — `A^p` for any real exponent
+  (integer, fractional, negative) of a positive-definite `A`; verified against
+  `sum_i lambda_i^p |v_i><v_i|`.
+- **Regularized pseudo-inverse** (`algorithms.pseudo_inverse_qsvt`) — the Moore-Penrose
+  inverse via the Tikhonov QSVT filter `x/(x^2+eps)`, which annihilates the kernel
+  instead of blowing up. The QSVT construction reproduces the regularized filter to
+  `< 1e-9`, and the regularized inverse converges to `numpy.linalg.pinv` as `eps -> 0`
+  (condition-number-limited, exactly like the QSVT matrix inverse — documented).
+- **Real matrix exponential** (`algorithms.matrix_exp_qsvt`) — `exp(A)`, the imaginary-time
+  sibling of `e^{-iHt}`; machine-precision against `scipy.linalg.expm`.
+- **Matrix logarithm** (`algorithms.matrix_log_qsvt`) — `log(A)` of a positive-definite
+  `A`; verified against `scipy.linalg.logm`.
+- **Gibbs (thermal) states** (`algorithms.gibbs_state_qsvt`) — `rho = e^{-beta H}/Z` built
+  from the QSVT Chebyshev series and trace-normalized; verified against the exact Gibbs
+  state, reducing to the maximally mixed state at `beta = 0`.
+- **Ground-state projection & filtering** (`algorithms.ground_state_projector_qsvt`) — the
+  low-energy spectral filter that projects onto the ground space; applied to (almost) any
+  state it yields the ground state. Verified against the exact projector.
+- **Gaussian spectral bandpass filter** (`algorithms.bandpass_filter_qsvt`) — a smooth
+  window `exp(-((A-center)/width)^2)` keeping the eigenspaces near `center` — eigenstate
+  filtering / windowed phase estimation; verified against the exact windowed spectrum.
+- **Chebyshev spectral moments** (`algorithms.spectral_moments`) — `mu_k = Tr T_k(A) =
+  sum_i T_k(lambda_i)`, the raw data of the Kernel Polynomial Method, each `T_k(A)` from
+  the qubitization walk; machine-precision against the spectrum.
+- **Trace of a matrix function** (`algorithms.trace_of_function`) — `Tr f(A) = sum_k c_k
+  mu_k` from the Chebyshev moments, never forming `f(A)` densely; verified against
+  `sum_i f(lambda_i)`.
+- **Thermal partition function** (`algorithms.partition_function_qsvt`) — `Z = Tr e^{-beta
+  H} = sum_i e^{-beta lambda_i}` from the moments; verified against the exact spectral sum.
+- **Density of states (Kernel Polynomial Method)** (`algorithms.density_of_states_kpm`) —
+  the spectral density expanded in Jackson-damped Chebyshev moments; verified to integrate
+  to the dimension and to peak at the true eigenvalues.
+- **Eigenvalue counting in an interval** (`algorithms.eigenvalue_count_in_interval`) — the
+  number of eigenvalues in `(a,b)` as the trace of a smoothed spectral window; rounds to
+  the exact integer count without diagonalizing.
+- **Amplitude amplification as scalar QSVT** (`algorithms.amplitude_amplification_qsvt`) —
+  the amplitude `sin((2k+1)theta)` after `k` Grover steps (an odd Chebyshev polynomial of
+  the initial amplitude) plus the optimal step count; verified to machine precision against
+  an explicit two-dimensional reflection simulation.
+- **Chebyshev (near-minimax) approximation** (`algorithms.chebyshev_approximation`) — the
+  classical polynomial a QSP phase sequence realizes and QSVT applies to a matrix, with its
+  max-norm error; verified to converge geometrically for analytic functions.
+- **QSP completion identity** (`algorithms.qsp_complementary_response`) — the achievable
+  polynomial `P` and its complement `Q` with `|P(x)|^2 + (1-x^2)|Q(x)|^2 = 1`, the
+  algebraic condition deciding which polynomials a phase sequence can realize; verified to
+  machine precision.
+- **Quantum linear systems via QSVT** (`algorithms.matrix_inverse_qsvt`,
+  `solve_linear_system_qsvt`) — the other headline QSVT application: approximate
+  `A^{-1}` by fitting `1/x` over the spectral support and building the Chebyshev series
+  from the qubitization walk, then solve `Ax = b` — the QSVT form of the quantum
+  linear-systems (HHL) problem. Verified against `numpy.linalg.solve`: the inverse
+  converges to `< 1e-6` (improving with degree), `A^{-1}·A = I`, the solution matches
+  to `< 1e-5` with residual `||Ax-b||` tiny and fidelity ~1. (The `1/x` fit is
+  ill-conditioned, so the degree must scale with the condition number — documented.)
+- **Matrix functions & Hamiltonian simulation via QSVT**
+  (`algorithms.matrix_function_chebyshev`, `hamiltonian_simulation_qsvt`,
+  `chebyshev_coefficients`) — the payoff of the QSVT machinery: approximate any smooth
+  `f(A)` by the Chebyshev series `sum_k c_k T_k(A)`, with each `T_k(A)` built from the
+  qubitization walk. Verified to converge to the exact matrix function (< 1e-8 by
+  degree 20 for cos/sin/exp, geometric convergence for a Gaussian, `f(x)=x` giving `A`
+  exactly). As the flagship application, `hamiltonian_simulation_qsvt` builds
+  `e^{-iHt}` from the expansion of `e^{-ixt}` — matching exact diagonalization to
+  < 1e-6, staying unitary, reducing to the identity at `t=0`, and needing higher
+  degree for longer times, exactly as the theory predicts.
+- **Quantum Singular Value Transformation (QSVT)** (`algorithms.qsvt_transform`,
+  `qsvt_scalar_response`) — the capstone unifying QSP and block encoding: apply a QSP
+  phase sequence to the qubitization walk of a Hermitian `A` and obtain the matrix
+  function `P(A) = sum_i g(lambda_i)|v_i><v_i|` in the top-left block. Verified to
+  machine precision that the matrix transform equals the scalar QSVT response applied
+  *eigenvalue-by-eigenvalue* (the QSVT theorem itself) across random phase sequences,
+  that zero phases reproduce the Chebyshev `T_d(A)`, that the output commutes with `A`
+  (it is a genuine function of `A`), and the scalar response stays bounded by 1 — the
+  framework that unifies amplitude amplification, Hamiltonian simulation, and quantum
+  linear algebra.
+- **Linear Combination of Unitaries (LCU)** (`algorithms.lcu_block_encoding`,
+  `lcu_matrix`) — block-encode a weighted sum `H = sum alpha_i U_i` from its PREPARE
+  (amplitude-loading) and SELECT (controlled-unitary) pieces:
+  `PREPARE† SELECT PREPARE` has top-left block `H / lambda` with `lambda = sum alpha_i`.
+  Verified the encoding is unitary and its block equals `H/lambda` exactly for Pauli
+  sums, multi-qubit operators, and non-power-of-two term counts (ancilla padded with
+  identity); the subnormalization equals the coefficient sum, a single term encodes
+  its unitary directly, and negative coefficients are rejected — the standard way to
+  feed a Hamiltonian into qubitization/QSVT.
+- **Block encoding & qubitization** (`algorithms.block_encode`, `is_block_encoding`,
+  `qubitization_walk`, `chebyshev_of_matrix`) — the input model of QSVT: hide a
+  Hermitian matrix `A` (`||A|| <= 1`) in the corner of a unitary
+  (`<0|U|0> = A`, verified unitary with the exact top-left block), then form the
+  qubitization walk `W = U(2Π-I)` and realize the Chebyshev polynomials of the
+  *matrix*: `<0|W^d|0> = T_d(A)`. Verified against the classical matrix function
+  `sum_i T_d(lambda_i)|v_i><v_i|` for degrees 1–6 (with `T_1(A)=A`, `T_2(A)=2A^2-I`,
+  and the diagonal case exact) — the quantum-walk route to matrix functions.
+- **Quantum Signal Processing** (`algorithms.qsp_unitary`, `qsp_response`,
+  `chebyshev_via_qsp`, `signal_operator`) — the one-qubit engine of modern quantum
+  algorithms: interleave a signal rotation `W(x)` with tunable `Z` rotations set by a
+  phase sequence, and `<0|U(x)|0>` becomes a designable degree-`d` polynomial `P(x)`.
+  Verified: zero phases reproduce the Chebyshev polynomials `T_d` exactly (matching
+  `cos(d·arccos x)` and `2x^2-1` for `T_2`), a degree-`d` sequence yields a polynomial
+  of the correct parity (`d mod 2`) bounded by 1, and the QSP operator is unitary at
+  every signal value — the foundation the QSVT features build on.
+
+
 ## [1.0.1]
 
 Theme: documentation and metadata refresh.

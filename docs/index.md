@@ -1,8 +1,24 @@
 # Quantum Debugger Documentation
 
-**Version 1.0.1** - Interactive quantum circuit debugger with Quantum Machine Learning and Tensor Networks
+**Version 1.1.0** - Interactive quantum circuit debugger with Quantum Singular Value Transformation (QSVT), Tensor Networks, and Quantum Machine Learning
 
-Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, quantum machine learning, and large-scale tensor-network simulation.
+Welcome to the documentation for Quantum Debugger, a Python library for quantum circuit debugging, performance analysis, quantum machine learning, tensor-network simulation, and modern quantum algorithms.
+
+## What's New in v1.1.0
+
+Theme: **Quantum Singular Value Transformation (QSVT) & Modern Algorithm Primitives** — the unifying framework behind modern quantum algorithms, verified at every level:
+
+- **Quantum Signal Processing (QSP)** (`qsp_unitary`, `qsp_response`, `chebyshev_via_qsp`, `signal_operator`) — one-qubit signal transformation engine producing designable polynomials via interleaved signal and phase rotations. Zero phases recover Chebyshev polynomials $T_d(x)$ to machine precision.
+- **Block Encoding & Qubitization** (`block_encode`, `qubitization_walk`, `chebyshev_of_matrix`) — embedding arbitrary non-unitary Hermitian matrices into unitaries ($\langle 0|U|0\rangle = A$), with the qubitization walk generating matrix Chebyshev polynomials $T_d(A) = \langle 0|W^d|0\rangle$.
+- **Linear Combination of Unitaries (LCU)** (`lcu_block_encoding`, `lcu_matrix`) — exact PREPARE and SELECT state preparation for Pauli expansions and Hamiltonians ($H = \sum \alpha_k U_k$).
+- **Quantum Singular Value Transformation (QSVT)** (`qsvt_transform`, `qsvt_scalar_response`) — the grand unification paradigm, applying polynomial matrix functions eigenvalue-by-eigenvalue ($P(A) = \sum_i P(\lambda_i)|v_i\rangle\langle v_i|$).
+- **Quantum Linear Systems via QSVT** (`solve_linear_system_qsvt`, `matrix_inverse_qsvt`) — optimal polynomial inversion solving $A x = b$ without phase estimation, matching exact classical solutions.
+- **Matrix Functions & Hamiltonian Simulation** (`matrix_function_chebyshev`, `hamiltonian_simulation_qsvt`, `matrix_exp_qsvt`, `matrix_log_qsvt`, `matrix_sqrt_qsvt`) — smooth matrix functions and real-time unitary evolution $e^{-i H t}$ with geometric Chebyshev convergence.
+- **Spectral Filtering & Projectors** (`spectral_projector_qsvt`, `ground_state_projector_qsvt`, `bandpass_filter_qsvt`, `pseudo_inverse_qsvt`) — ground-state projection, sign functions, and regularized inverses.
+- **Kernel Polynomial Method (KPM) & Spectral Estimation** (`spectral_moments`, `density_of_states_kpm`, `eigenvalue_count_in_interval`, `trace_of_function`) — Jackson-damped Chebyshev moment estimation of density of states and eigenvalue counting without full diagonalization.
+- **Amplitude Amplification as QSVT** (`amplitude_amplification_qsvt`) — generalized Grover search unified under odd Chebyshev polynomials.
+
+See the [QSVT Guide](qsvt_guide) and the [CHANGELOG](https://github.com/Raunakg2005/quantum-debugger/blob/main/CHANGELOG.md).
 
 ## What's New in v1.0.0
 
@@ -137,6 +153,7 @@ examples
 
 algorithms_overview
 quantum_algorithms_guide
+qsvt_guide
 advanced_qml_guide
 quantum_rl_guide
 advanced_algorithms_guide

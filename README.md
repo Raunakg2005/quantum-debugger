@@ -2,12 +2,29 @@
 
 **The Most Comprehensive Quantum Machine Learning Library with AutoML**
 
+[![Documentation Status](https://readthedocs.org/projects/quantum-debugger/badge/?version=latest)](https://quantum-debugger.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/quantum-debugger.svg)](https://pypi.org/project/quantum-debugger/)
-[![Tests](https://img.shields.io/badge/tests-384%20passing-brightgreen)](https://github.com/Raunakg2005/quantum-debugger/blob/main/tests/FINAL_TEST_SUMMARY.md)
+[![Tests](https://img.shields.io/badge/tests-2468%20passing-brightgreen)](tests/README.md)
 [![CI](https://github.com/Raunakg2005/quantum-debugger/workflows/Tests/badge.svg)](https://github.com/Raunakg2005/quantum-debugger/actions)
 [![Codecov](https://codecov.io/gh/Raunakg2005/quantum-debugger/branch/main/graph/badge.svg)](https://codecov.io/gh/Raunakg2005/quantum-debugger)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+## What's New in v1.1.0
+
+Theme: **Quantum Singular Value Transformation (QSVT) & Modern Algorithm Primitives** — the grand unification framework behind modern quantum algorithms, verified bottom-up to machine precision:
+
+- **Quantum Signal Processing (QSP)** (`qsp_unitary`, `qsp_response`, `chebyshev_via_qsp`, `signal_operator`) — one-qubit signal transformation engine producing designable polynomials via interleaved signal and phase rotations. Zero phases recover Chebyshev polynomials $T_d(x)$ to machine precision.
+- **Block Encoding & Qubitization** (`block_encode`, `qubitization_walk`, `chebyshev_of_matrix`) — embedding arbitrary non-unitary Hermitian matrices into unitaries ($\langle 0|U|0\rangle = A$), with the qubitization walk generating matrix Chebyshev polynomials $T_d(A) = \langle 0|W^d|0\rangle$.
+- **Linear Combination of Unitaries (LCU)** (`lcu_block_encoding`, `lcu_matrix`) — exact PREPARE and SELECT state preparation for Pauli expansions and Hamiltonians ($H = \sum \alpha_k U_k$).
+- **Quantum Singular Value Transformation (QSVT)** (`qsvt_transform`, `qsvt_scalar_response`) — the grand unification paradigm, applying polynomial matrix functions eigenvalue-by-eigenvalue ($P(A) = \sum_i P(\lambda_i)|v_i\rangle\langle v_i|$).
+- **Quantum Linear Systems via QSVT** (`solve_linear_system_qsvt`, `matrix_inverse_qsvt`) — optimal polynomial inversion solving $A x = b$ without phase estimation, matching exact classical solutions.
+- **Matrix Functions & Hamiltonian Simulation** (`matrix_function_chebyshev`, `hamiltonian_simulation_qsvt`, `matrix_exp_qsvt`, `matrix_log_qsvt`, `matrix_sqrt_qsvt`) — smooth matrix functions and real-time unitary evolution $e^{-i H t}$ with geometric Chebyshev convergence.
+- **Spectral Filtering & Projectors** (`spectral_projector_qsvt`, `ground_state_projector_qsvt`, `bandpass_filter_qsvt`, `pseudo_inverse_qsvt`) — ground-state projection, sign functions, and regularized inverses.
+- **Kernel Polynomial Method (KPM) & Spectral Estimation** (`spectral_moments`, `density_of_states_kpm`, `eigenvalue_count_in_interval`, `trace_of_function`) — Jackson-damped Chebyshev moment estimation of density of states and eigenvalue counting without full diagonalization.
+- **Amplitude Amplification as QSVT** (`amplitude_amplification_qsvt`) — generalized Grover search unified under odd Chebyshev polynomials.
+
+See the [QSVT Guide](docs/qsvt_guide.md), [Online Documentation](https://quantum-debugger.readthedocs.io/en/latest/), and [CHANGELOG.md](CHANGELOG.md).
 
 ## What's New in v1.0.0
 
@@ -358,24 +375,28 @@ pip install quantum-debugger[dev]
 
 ## Documentation
 
-**v0.6.0 Guides:**
-- [V0.6.0 Features](V06_FEATURES.md) - Complete feature reference
-- [Transfer Learning Guide](docs/transfer_learning_guide.md)
-- [Error Mitigation Guide](docs/error_mitigation_guide.md)
-- [Circuit Optimization Guide](docs/circuit_optimization_guide.md)
-- [Hardware Backends Guide](docs/hardware_backends_guide.md)
+**Full Documentation & API Reference:** [https://quantum-debugger.readthedocs.io/en/latest/](https://quantum-debugger.readthedocs.io/en/latest/)
 
-**v0.5.0 Guides (still valid):**
-- [QNN Guide](docs/qnn_guide.md)
-- [Hybrid Models Guide](docs/hybrid_models_guide.md)
-- [VQE Guide](docs/vqe_guide.md)
-- [QAOA Guide](docs/qaoa_guide.md)
+**Key Guides:**
+- [QSVT & Modern Primitives Guide](docs/qsvt_guide.md) - Quantum Signal Processing, block encoding, LCU, Hamiltonian simulation, and linear systems
+- [Quantum Algorithms Guide](docs/quantum_algorithms_guide.md) - Complete algorithms reference (Shor, Grover, QPE, many-body, etc.)
+- [Matrix Product States Guide](docs/mps_guide.md) - 100+ qubit tensor-network simulation, TEBD, and MPO
+- [Clifford / Stabilizer Guide](docs/stabilizer_guide.md) - Aaronson-Gottesman tableau simulation past the state-vector wall
+- [Density Matrix Guide](docs/density_matrix_guide.md) - Open systems, Kraus operators, and Lindblad evolution
+- [Error Mitigation Guide](docs/error_mitigation_guide.md) - ZNE, PEC, and Clifford Data Regression
+- [GPU Acceleration Guide](docs/gpu_guide.md) - CuPy CUDA state-vector simulation
+- [Transfer Learning Guide](docs/transfer_learning_guide.md) - Pretrained QNNs and model zoo
+- [Circuit Optimization Guide](docs/circuit_optimization_guide.md) - Multi-level compilation and hardware transpilation
+- [Hardware Backends Guide](docs/hardware_backends_guide.md) - IBM Quantum and AWS Braket
 
 ## Testing
 
 ```bash
 # Run all tests
 pytest tests/ -v
+
+# Run QSVT & modern primitives suite
+pytest tests/test_qsvt.py tests/test_qsvt_applications.py tests/test_qsvt_linear_systems.py tests/test_qsp.py tests/test_block_encoding.py tests/test_lcu.py tests/test_matrix_functions.py -v
 
 # Run specific test suites
 pytest tests/qml/ -v
@@ -386,12 +407,12 @@ pytest tests/test_integrations.py -v
 pytest tests/ --cov=quantum_debugger --cov-report=html
 ```
 
-See [FINAL_TEST_SUMMARY.md](tests/FINAL_TEST_SUMMARY.md) for detailed test information.
+See [tests/README.md](tests/README.md) for detailed test information.
 
-**Test Statistics (v0.7.0):**
-- ~1400 tests passing (`pytest tests/ -m "not aws"`)
-- GPU-hardware tests require a working CUDA + CuPy install; they skip otherwise
-- A few tests are performance/timing based and may vary by machine
+**Test Statistics (v1.1.0):**
+- **2,468 comprehensive tests** passing across the repository (100% pass rate)
+- Complete coverage of QSVT, QSP, LCU, block encoding, MPS, stabilizer, open systems, QML, and circuit optimization
+- GPU-hardware tests require a working CUDA + CuPy install; they skip gracefully otherwise
 
 ## Contributing
 
@@ -429,12 +450,12 @@ If you use quantum-debugger in your research, please cite:
 
 ## Links
 
+**Documentation (ReadTheDocs):** https://quantum-debugger.readthedocs.io/en/latest/  
 **PyPI:** https://pypi.org/project/quantum-debugger/  
 **GitHub:** https://github.com/Raunakg2005/quantum-debugger  
 **Issues:** https://github.com/Raunakg2005/quantum-debugger/issues  
-**Documentation:** https://github.com/Raunakg2005/quantum-debugger#readme
 
 ---
 
-**Version:** 1.0.1 (latest on PyPI) · 1.0.0, 0.9.1, 0.9.0 (previous)  
-**Last Updated:** September 2026
+**Version:** 1.1.0 (latest) · 1.0.1, 1.0.0, 0.9.1, 0.9.0 (previous)  
+**Last Updated:** October 2026

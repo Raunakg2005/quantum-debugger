@@ -16,8 +16,8 @@
 
 ## Project Information
 
-- **Project:** Quantum Machine Learning Library with AutoML
-- **Version:** 0.6.0
+- **Project:** Quantum Debugger: Interactive Circuit Debugging, Multi-Engine Simulation, Tensor Networks, QSVT, and Quantum Machine Learning
+- **Version:** 1.1.0
 - **Started:** 2025
 - **Status:** Production Ready
 

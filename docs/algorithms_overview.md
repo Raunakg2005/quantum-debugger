@@ -81,10 +81,31 @@ from quantum_debugger.algorithms import grover_search, shor_factor, trotter_evol
 | `phase_sensitivity`, `parity_signal`, `quantum_fisher_information` | GHZ metrology |
 | `bb84` | BB84 quantum key distribution |
 
+## Quantum Singular Value Transformation (QSVT) & Modern Primitives
+
+| Function | What it does |
+| --- | --- |
+| `qsp_unitary`, `qsp_response`, `chebyshev_via_qsp`, `signal_operator` | Quantum Signal Processing (1-qubit designable polynomials) |
+| `block_encode`, `top_left_block`, `is_block_encoding` | Unitary block encoding of arbitrary matrices |
+| `qubitization_walk`, `chebyshev_of_matrix` | Qubitization walk realizing matrix Chebyshev polynomials |
+| `lcu_block_encoding`, `lcu_matrix` | Linear Combination of Unitaries (PREPARE / SELECT) |
+| `qsvt_transform`, `qsvt_scalar_response` | Quantum Singular Value Transformation (eigenvalue-wise polynomial) |
+| `hamiltonian_simulation_qsvt`, `matrix_function_chebyshev` | Real-time unitary simulation and smooth Chebyshev matrix functions |
+| `solve_linear_system_qsvt`, `matrix_inverse_qsvt` | Quantum linear systems solver ($A x = b$) via polynomial inversion |
+| `matrix_sign_qsvt`, `spectral_projector_qsvt` | Matrix sign function and spectral cut projections |
+| `matrix_sqrt_qsvt`, `matrix_power_qsvt`, `matrix_exp_qsvt` | Fractional/negative matrix powers and matrix exponentials |
+| `ground_state_projector_qsvt`, `gibbs_state_qsvt` | Low-energy ground state filtering and thermal states |
+| `spectral_moments`, `density_of_states_kpm` | Kernel Polynomial Method (KPM) moment estimation and DOS |
+| `eigenvalue_count_in_interval`, `trace_of_function` | Interval eigenvalue counting and trace estimation |
+| `amplitude_amplification_qsvt` | Grover amplitude amplification as scalar QSVT |
+
+See the [QSVT Guide](qsvt_guide) for detailed theory and examples.
+
 ## Related modules
 
-- `quantum_debugger.stabilizer.StabilizerSimulator` — Clifford tableau simulator
-  (hundreds of qubits).
+- `quantum_debugger.mps.MPS` — Matrix Product State simulator (hundreds of qubits).
+- `quantum_debugger.stabilizer.StabilizerSimulator` — Clifford tableau simulator (hundreds of qubits).
+- `quantum_debugger.density_matrix.DensityMatrix` — Open quantum systems and Lindblad dynamics.
 - `quantum_debugger.tomography.state_tomography` — reconstruct a density matrix.
 - `quantum_debugger.qml` — variational QML/QRL (QNN, VQE, QAOA, autoencoder, QCNN,
   policy gradient, DQN, actor-critic, and more).

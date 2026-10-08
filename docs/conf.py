@@ -10,7 +10,7 @@ author = 'Raunak Kumar Gupta'
 try:
     from quantum_debugger import __version__ as release
 except Exception:
-    release = '0.6.1'
+    release = '1.1.0'
 version = release
 
 # -- General configuration ---------------------------------------------------

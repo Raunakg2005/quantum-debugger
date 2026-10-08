@@ -1465,3 +1465,146 @@ gapped ground state's spectrum decays fast — a few values hold almost all the 
 which is precisely the condition that lets a matrix product state represent it
 efficiently. A random (volume-law) state has a flat spectrum and cannot be
 compressed.
+
+## Quantum Signal Processing (QSP)
+
+The one-qubit primitive behind quantum singular value transformation and modern
+algorithm design: interleave a signal rotation with tunable phase rotations and the
+output is a *designable polynomial* of the signal.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import chebyshev_via_qsp, qsp_response
+
+xs = np.linspace(-1, 1, 50)
+
+# All-zero phases -> the Chebyshev polynomials T_d.
+chebyshev_via_qsp(3, xs)         # == cos(3 arccos x) = 4x^3 - 3x, to machine precision
+
+# A general phase sequence -> a degree-d polynomial (parity d mod 2, |P| <= 1).
+qsp_response([0.3, 0.5, -0.2, 0.7], xs)   # a degree-3 (odd) polynomial
+```
+
+`U(x) = R_z(phi_0) prod_k [W(x) R_z(phi_k)]`, and `<0|U(x)|0>` is the polynomial. The
+phases *are* the design knobs — choosing them to approximate `sign(x)`, `1/x`, or
+`e^{-i t x}` is what turns QSP (lifted to a block-encoded operator via QSVT) into
+amplitude amplification, quantum linear-system solving, or Hamiltonian simulation.
+
+## Block Encoding & Qubitization
+
+Quantum computers apply unitaries, but Hamiltonians and data matrices aren't unitary.
+A **block encoding** hides a matrix in the corner of a unitary, and **qubitization**
+turns it into a walk whose powers are matrix polynomials:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import block_encode, chebyshev_of_matrix
+
+A = np.diag([0.3, -0.5, 0.8])           # Hermitian, ||A|| <= 1
+
+U = block_encode(A)                      # <0|U|0> = A, U unitary
+
+chebyshev_of_matrix(A, 3)                # T_3(A) = <0|W^3|0>, W the qubitization walk
+# == diag(T_3(0.3), T_3(-0.5), T_3(0.8))
+```
+
+`U = [[A, sqrt(I-A^2)], [sqrt(I-A^2), -A]]` block-encodes `A`; the walk
+`W = U(2Π - I)` rotates by `arccos(lambda)` in each eigenspace, so `<0|W^d|0> = T_d(A)`
+exactly. Applying tunable phase rotations between walk steps (the QSVT generalization
+of the QSP phases above) turns this into *any* polynomial of `A` — the single
+framework behind amplitude amplification, Hamiltonian simulation, and quantum linear
+algebra.
+
+## Linear Combination of Unitaries (LCU)
+
+Hamiltonians usually arrive as a weighted sum of Paulis; LCU block-encodes such a sum
+using PREPARE and SELECT:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import lcu_block_encoding, lcu_matrix
+
+X = np.array([[0, 1], [1, 0]]); Y = np.array([[0, -1j], [1j, 0]]); Z = np.array([[1, 0], [0, -1]])
+coeffs, Us = [0.5, 0.3, 0.2], [X, Z, Y]      # H = 0.5 X + 0.3 Z + 0.2 Y
+
+r = lcu_block_encoding(coeffs, Us)
+r["subnormalization"]                         # lambda = 1.0 (sum of coeffs)
+top = r["unitary"][:2, :2]
+np.allclose(top, lcu_matrix(coeffs, Us) / r["subnormalization"])   # True
+```
+
+PREPARE loads `sqrt(alpha_i)` amplitudes on the ancilla, SELECT applies `U_i`
+controlled on ancilla state `i`, and `PREPARE† SELECT PREPARE` leaves `H/lambda` in the
+top-left block. Together with `block_encode` and `qubitization_walk`, this completes
+the input side of QSVT: any Pauli-sum Hamiltonian becomes a block encoding you can
+transform.
+
+## Quantum Singular Value Transformation (QSVT)
+
+The capstone that ties QSP and block encoding together: apply a phase sequence to a
+block-encoded matrix and get a *polynomial of the matrix* in the corner.
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import qsvt_transform, qsvt_scalar_response
+
+A = np.diag([0.3, -0.5, 0.6])            # Hermitian, ||A|| <= 1
+phases = [0.2, -0.4, 0.6]
+
+qsvt_transform(A, phases)                # P(A) = sum_i g(lambda_i) |v_i><v_i|
+# == diag(g(0.3), g(-0.5), g(0.6)) with g = qsvt_scalar_response(phases, .)
+```
+
+The matrix transform applies the *same scalar function to every eigenvalue* — the
+QSVT theorem, verified here to machine precision. Zero phases give the Chebyshev
+`T_d(A)`; other phase sequences approximate `sign`, `1/x`, `exp(-i t x)`, and the rest
+of the algorithmic zoo. This is the single primitive from which amplitude
+amplification, Hamiltonian simulation, and the quantum linear-systems algorithm all
+descend.
+
+## Matrix Functions & Hamiltonian Simulation via QSVT
+
+The payoff of QSVT/qubitization: any smooth function of a Hermitian matrix, built from
+its Chebyshev polynomials:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import matrix_function_chebyshev, hamiltonian_simulation_qsvt
+
+A = np.diag([0.3, -0.5, 0.6])                        # Hermitian, ||A|| <= 1
+
+matrix_function_chebyshev(A, np.cos, degree=20)      # cos(A), error < 1e-8
+
+# The headline application -- Hamiltonian simulation e^{-iHt}:
+r = hamiltonian_simulation_qsvt(A, time=1.0, degree=24)
+r["error"]              # < 1e-6 vs exact diagonalization
+r["unitarity_error"]    # ~0 -- the approximation is unitary
+```
+
+`f(A) ~= sum_k c_k T_k(A)` with `c_k` the classical Chebyshev coefficients of `f` and
+each `T_k(A)` from the qubitization walk (a linear combination of walk powers). The
+series converges geometrically for smooth `f`, so choosing `f(x) = e^{-ixt}` gives
+Hamiltonian simulation, `f(x) = 1/x` gives matrix inversion, and a smoothed step
+function gives a spectral projector — all from the single QSVT primitive.
+
+## Quantum Linear Systems via QSVT
+
+Approximating `1/x` with QSVT solves `A x = b` — the QSVT form of the HHL algorithm:
+
+```python
+import numpy as np
+from quantum_debugger.algorithms import solve_linear_system_qsvt
+
+A = np.diag([0.2, 0.5, 0.9])          # Hermitian positive-definite
+b = np.array([1.0, 2.0, -1.0])
+
+r = solve_linear_system_qsvt(A, b, degree=40)
+r["solution"]     # A^{-1} b, matching numpy.linalg.solve to < 1e-5
+r["fidelity"]     # ~1.0
+```
+
+`matrix_inverse_qsvt` fits `1/x` on the matrix's spectral support and assembles
+`sum_k c_k T_k(A)` from the qubitization walk. Because `1/x` is singular, the fit is
+ill-conditioned and the required degree grows with the condition number — the same
+`1/kappa` cost that appears in HHL. Together with `hamiltonian_simulation_qsvt`, this
+shows the two canonical quantum algorithms falling out of the single QSVT primitive.

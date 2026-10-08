@@ -4,22 +4,15 @@ This directory contains all tests for the quantum-debugger library.
 
 ## Test Statistics
 
-**v0.6.0: 384 comprehensive tests** (100% passing)
+**v1.1.0: 2,468 comprehensive tests** (100% passing)
 
-- Core & Base (v0.5.0): 228 tests
-- Hybrid Models (Week 1): 26 tests
-- Quantum Kernels (Week 2): 19 tests
-- Transfer Learning (Week 3): 42 tests
-- Error Mitigation (Week 4): 26 tests
-- Circuit Optimization (Week 5): 26 tests
-- Framework Integrations (Week 6): 10 tests
-- Hardware Backends (Week 7): 6 tests
-- Benchmarking (Week 8): 8 tests
-- AutoML (Week 9): 6 tests
-
-**Skipped:** 3 tests (AWS Braket - optional dependency)
-
-See [FINAL_TEST_SUMMARY.md](./FINAL_TEST_SUMMARY.md) for complete breakdown.
+- QSVT & Modern Primitives (v1.1.0): 84 tests (QSP, LCU, block encoding, matrix functions, linear systems, spectral moments)
+- Matrix Product States & Tensor Networks (v1.0.0): 75+ tests (MPS, MPO, TEBD, bond dynamics, GHZ)
+- Algorithms & Many-Body Physics (v0.9.0): 250+ tests (Jordan-Wigner, Kitaev chain, Hubbard, Krylov, shadows, metrology)
+- Density Matrix & Open Quantum Systems (v0.8.0): 80+ tests (Kraus channels, Lindblad, Choi matrices)
+- Clifford & Stabilizer Simulator (v0.7.0): 60+ tests (Aaronson-Gottesman tableau)
+- QML, Hybrid Models, AutoML & Production Tools (v0.6.0): 413 tests
+- Core Circuit Simulation, Gates, Debugger & Profiler: 1,500+ tests
 
 ## Structure
 
@@ -325,6 +318,6 @@ For detailed test information, see:
 
 ---
 
-**Last Updated:** January 14, 2026  
-**Version:** v0.6.0  
-**Total Tests:** 384 passing (100%)
+**Last Updated:** October 2026  
+**Version:** v1.1.0  
+**Total Tests:** 2,468 passing (100%)
